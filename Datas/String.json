@@ -1,0 +1,4604 @@
+[
+  {
+    "Id": 1000,
+    "Name": "1000",
+    "Kor": "\uC5F0\uACB0\uB41C \uD504\uB85C\uC138\uC2A4",
+    "Eng": "Select Process"
+  },
+  {
+    "Id": 1001,
+    "Name": "1001",
+    "Kor": "\uBE44\uAD50\uD560 \uC774\uBBF8\uC9C0",
+    "Eng": "Compare Image"
+  },
+  {
+    "Id": 1002,
+    "Name": "1002",
+    "Kor": "\uC774\uBBF8\uC9C0 \uCEA1\uCCD0",
+    "Eng": "Image Capture"
+  },
+  {
+    "Id": 1003,
+    "Name": "1003",
+    "Kor": "\uC800\uC7A5",
+    "Eng": "Save"
+  },
+  {
+    "Id": 1004,
+    "Name": "1004",
+    "Kor": "\uAD6C\uC131",
+    "Eng": "Config"
+  },
+  {
+    "Id": 1005,
+    "Name": "1005",
+    "Kor": "\uD658\uACBD \uC124\uC815",
+    "Eng": "Preferences"
+  },
+  {
+    "Id": 1006,
+    "Name": "1006",
+    "Kor": "\uC774\uBCA4\uD2B8 \uD0C0\uC785",
+    "Eng": "EventType"
+  },
+  {
+    "Id": 1007,
+    "Name": "1007",
+    "Kor": "\uC774\uBCA4\uD2B8 \uB370\uC774\uD130",
+    "Eng": "EventDataSet"
+  },
+  {
+    "Id": 1008,
+    "Name": "1008",
+    "Kor": "\uD2B8\uB9AC\uAC70 \uB9AC\uC2A4\uD2B8",
+    "Eng": "TriggerList"
+  },
+  {
+    "Id": 1009,
+    "Name": "1009",
+    "Kor": "\uB9C8\uC6B0\uC2A4 \uC88C\uD45C \uC9C0\uC815",
+    "Eng": "MouseCoordinates"
+  },
+  {
+    "Id": 1010,
+    "Name": "1010",
+    "Kor": "\uB9C8\uC6B0\uC2A4 \uD720",
+    "Eng": "MouseWheel"
+  },
+  {
+    "Id": 1011,
+    "Name": "1011",
+    "Kor": "\uD720 \uC2A4\uD06C\uB864",
+    "Eng": "MouseWheelScroll"
+  },
+  {
+    "Id": 1012,
+    "Name": "1012",
+    "Kor": "\uB2EB\uAE30",
+    "Eng": "Close"
+  },
+  {
+    "Id": 1013,
+    "Name": "1013",
+    "Kor": "\uC0AD\uC81C",
+    "Eng": "Delete"
+  },
+  {
+    "Id": 1014,
+    "Name": "1014",
+    "Kor": "\uC2DC\uC791",
+    "Eng": "Start"
+  },
+  {
+    "Id": 1015,
+    "Name": "1015",
+    "Kor": "\uC911\uC9C0",
+    "Eng": "Stop"
+  },
+  {
+    "Id": 1016,
+    "Name": "1016",
+    "Kor": "Setting",
+    "Eng": "Setting"
+  },
+  {
+    "Id": 1017,
+    "Name": "1017",
+    "Kor": "Diadem \uB9E4\uD06C\uB85C",
+    "Eng": "Diadem Macro"
+  },
+  {
+    "Id": 1018,
+    "Name": "1018",
+    "Kor": "\uC5B8\uC5B4",
+    "Eng": "Language"
+  },
+  {
+    "Id": 1019,
+    "Name": "1019",
+    "Kor": "\uC800\uC7A5 \uACBD\uB85C",
+    "Eng": "SavePath"
+  },
+  {
+    "Id": 1020,
+    "Name": "1020",
+    "Kor": "\uC804\uCCB4 \uD504\uB85C\uC138\uC2F1 \uC8FC\uAE30(ms)",
+    "Eng": "Period(ms)"
+  },
+  {
+    "Id": 1021,
+    "Name": "1021",
+    "Kor": "\uC544\uC774\uD15C \uB51C\uB808\uC774(ms)",
+    "Eng": "ItemDelay(ms)"
+  },
+  {
+    "Id": 1022,
+    "Name": "1022",
+    "Kor": "\uC720\uC0AC\uB3C4",
+    "Eng": "Similarity"
+  },
+  {
+    "Id": 1023,
+    "Name": "1023",
+    "Kor": "\uD6C4(\u5F8C) \uC791\uC5C5 \uB51C\uB808\uC774(ms)",
+    "Eng": "AfterDelay(ms)"
+  },
+  {
+    "Id": 1024,
+    "Name": "1024",
+    "Kor": "\uC774\uBBF8\uC9C0 \uAC80\uC0C9 \uACB0\uACFC \uD45C\uC2DC",
+    "Eng": "Display Search Result"
+  },
+  {
+    "Id": 1025,
+    "Name": "1025",
+    "Kor": "\uBC84\uC804 \uC815\uBCF4 \uD655\uC778",
+    "Eng": "VersionCheck"
+  },
+  {
+    "Id": 1026,
+    "Name": "1026",
+    "Kor": "\uACE0\uC815",
+    "Eng": "Fix"
+  },
+  {
+    "Id": 1027,
+    "Name": "1027",
+    "Kor": "\uC544\uC774\uD15C \uBC18\uBCF5",
+    "Eng": "Repeat Items"
+  },
+  {
+    "Id": 1028,
+    "Name": "Once",
+    "Kor": "\uD55C\uBC88",
+    "Eng": "Once"
+  },
+  {
+    "Id": 1029,
+    "Name": "Count",
+    "Kor": "\uD69F\uC218",
+    "Eng": "Count"
+  },
+  {
+    "Id": 1030,
+    "Name": "RepeatOnChildEvent",
+    "Kor": "\uC790\uC2DD \uC774\uBCA4\uD2B8 \uC2E4\uD589 \uC2DC \uBC18\uBCF5",
+    "Eng": "Repeat when child event runs"
+  },
+  {
+    "Id": 1031,
+    "Name": "StopOnParentImage",
+    "Kor": "\uBD80\uBAA8 \uC774\uBBF8\uC9C0 \uAC80\uC0C9 \uC2DC \uC885\uB8CC",
+    "Eng": "End when parent image is found"
+  },
+  {
+    "Id": 1032,
+    "Name": "1032",
+    "Kor": "\uCDE8\uC18C",
+    "Eng": "Cancel"
+  },
+  {
+    "Id": 1033,
+    "Name": "1033",
+    "Kor": "\uBC31\uC5C5 \uC911",
+    "Eng": "Backup"
+  },
+  {
+    "Id": 1034,
+    "Name": "1034",
+    "Kor": "\uBCC0\uACBD\uC744 \uB418\uB3CC\uB9AC\uB294 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Rollback is in progress."
+  },
+  {
+    "Id": 1035,
+    "Name": "1035",
+    "Kor": "\uB2E4\uC6B4\uB85C\uB4DC",
+    "Eng": "Download"
+  },
+  {
+    "Id": 1036,
+    "Name": "1036",
+    "Kor": "\uD328\uCE58 \uBAA9\uB85D \uAC80\uC0C9",
+    "Eng": "SearchPatchList"
+  },
+  {
+    "Id": 1037,
+    "Name": "1037",
+    "Kor": "\uD328\uCE58 \uC9C4\uD589",
+    "Eng": "Patch in progress"
+  },
+  {
+    "Id": 1038,
+    "Name": "1038",
+    "Kor": "\uB3D9\uC77C\uD55C \uB0B4\uC6A9 \uCD94\uAC00",
+    "Eng": "Add the same content"
+  },
+  {
+    "Id": 1039,
+    "Name": "1039",
+    "Kor": "\uBC14\uB85C \uC774\uB3D9",
+    "Eng": "ToNext"
+  },
+  {
+    "Id": 1040,
+    "Name": "1040",
+    "Kor": "\uD328\uCE58 \uC2E4\uD328",
+    "Eng": "FailedPatch"
+  },
+  {
+    "Id": 1041,
+    "Name": "1041",
+    "Kor": "\uC774\uC0C1",
+    "Eng": "Above"
+  },
+  {
+    "Id": 1042,
+    "Name": "1042",
+    "Kor": "\uC774\uD558",
+    "Eng": "Below"
+  },
+  {
+    "Id": 1043,
+    "Name": "1043",
+    "Kor": "\uC774\uBBF8\uC9C0 \uAC80\uC0C9 \uD544\uC218",
+    "Eng": "Image Search Required"
+  },
+  {
+    "Id": 1044,
+    "Name": "1044",
+    "Kor": "\uCD08\uAE30 \uD0ED",
+    "Eng": "Initial Tab"
+  },
+  {
+    "Id": 1045,
+    "Name": "1045",
+    "Kor": "\uAC19\uC740 \uC774\uBBF8\uC9C0 \uB4DC\uB798\uADF8",
+    "Eng": "Drag the same image"
+  },
+  {
+    "Id": 1046,
+    "Name": "1046",
+    "Kor": "\uAC19\uC740 \uC774\uBBF8\uC9C0 \uCC3E\uAE30 \uBC18\uBCF5",
+    "Eng": "Repeat finding the same image"
+  },
+  {
+    "Id": 1047,
+    "Name": "1047",
+    "Kor": "\uB4DC\uB798\uADF8 \uB51C\uB808\uC774",
+    "Eng": "Drag Delay"
+  },
+  {
+    "Id": 1048,
+    "Name": "1048",
+    "Kor": "\uBB3C\uB9AC \uD074\uB9AD",
+    "Eng": "Hard Click"
+  },
+  {
+    "Id": 1049,
+    "Name": "1049",
+    "Kor": "\uAD00\uC2EC\uC601\uC5ED \uC124\uC815",
+    "Eng": "Set ROI"
+  },
+  {
+    "Id": 1050,
+    "Name": "1050",
+    "Kor": "\uAD00\uC2EC\uC601\uC5ED \uC81C\uAC70",
+    "Eng": "Remove ROI"
+  },
+  {
+    "Id": 1051,
+    "Name": "1051",
+    "Kor": "\uC5F0\uACB0\uB41C \uD504\uB85C\uC138\uC2A4 \uC704\uCE58 \uC124\uC815",
+    "Eng": "Setting Process Location"
+  },
+  {
+    "Id": 1052,
+    "Name": "1052",
+    "Kor": "\uD504\uB85C\uC138\uC2A4 \uC704\uCE58 \uC774\uB3D9",
+    "Eng": "Process Location Movement"
+  },
+  {
+    "Id": 1053,
+    "Name": "1053",
+    "Kor": "\uD504\uB85C\uC138\uC2A4 \uC704\uCE58 \uBCF5\uAD6C",
+    "Eng": "Process Location Restoration"
+  },
+  {
+    "Id": 1054,
+    "Name": "1054",
+    "Kor": "\uC0C8\uB85C\uACE0\uCE68",
+    "Eng": "Refresh"
+  },
+  {
+    "Id": 1055,
+    "Name": "1055",
+    "Kor": "\uB3D9\uC77C\uD55C \uB0B4\uC6A9 \uCD94\uAC00",
+    "Eng": "Add the same content"
+  },
+  {
+    "Id": 1056,
+    "Name": "1056",
+    "Kor": "\uC77C\uBC18",
+    "Eng": "Common"
+  },
+  {
+    "Id": 1057,
+    "Name": "1057",
+    "Kor": "MacroMode",
+    "Eng": "MacroMode"
+  },
+  {
+    "Id": 1058,
+    "Name": "1058",
+    "Kor": "\uD0A4\uBCF4\uB4DC \uB51C\uB808\uC774(ms)",
+    "Eng": "KeyboardDelay(ms)"
+  },
+  {
+    "Id": 1059,
+    "Name": "1059",
+    "Kor": "\uCD94\uAC00",
+    "Eng": "Addition"
+  },
+  {
+    "Id": 1060,
+    "Name": "1060",
+    "Kor": "\uC81C\uAC70",
+    "Eng": "Removal"
+  },
+  {
+    "Id": 1061,
+    "Name": "1061",
+    "Kor": "\uBCF5\uC0AC",
+    "Eng": "Copy"
+  },
+  {
+    "Id": 1062,
+    "Name": "1062",
+    "Kor": "\uC54C\uB9BC",
+    "Eng": "Alert"
+  },
+  {
+    "Id": 1063,
+    "Name": "1063",
+    "Kor": "\uC635\uC158",
+    "Eng": "Option"
+  },
+  {
+    "Id": 1064,
+    "Name": "1064",
+    "Kor": "\uAD00\uC2EC\uC601\uC5ED",
+    "Eng": "Roi"
+  },
+  {
+    "Id": 1065,
+    "Name": "1065",
+    "Kor": "\uC774\uBBF8\uC9C0 \uBDF0\uC5B4 \uBCF4\uAE30",
+    "Eng": "Show Image Viewer"
+  },
+  {
+    "Id": 1066,
+    "Name": "1066",
+    "Kor": "\uD56D\uBAA9\uBCC4 \uC720\uC0AC\uB3C4",
+    "Eng": "Item Similarity"
+  },
+  {
+    "Id": 1067,
+    "Name": "RepositoryRoot",
+    "Kor": "\uC800\uC7A5\uC18C \uB8E8\uD2B8",
+    "Eng": "Repository root"
+  },
+  {
+    "Id": 1068,
+    "Name": "OpenRepositoryPrompt",
+    "Kor": "\uC800\uC7A5\uC18C\uB97C \uC5F4\uC5B4 \uC8FC\uC138\uC694",
+    "Eng": "Open a repository"
+  },
+  {
+    "Id": 1069,
+    "Name": "RepositorySidebarHint",
+    "Kor": "\uC67C\uCABD \uBAA9\uB85D\uC5D0\uC11C \uC800\uC7A5\uC18C\uB97C \uC120\uD0DD\uD558\uAC70\uB098 \uCD94\uAC00\uD558\uC138\uC694.",
+    "Eng": "Select or add a repository on the left."
+  },
+  {
+    "Id": 1070,
+    "Name": "SelectConflictFile",
+    "Kor": "\uCDA9\uB3CC \uD30C\uC77C\uC744 \uC120\uD0DD\uD558\uC138\uC694",
+    "Eng": "Select a conflicted file"
+  },
+  {
+    "Id": 1071,
+    "Name": "CurrentChange",
+    "Kor": "\uD604\uC7AC \uBCC0\uACBD",
+    "Eng": "Current change"
+  },
+  {
+    "Id": 1072,
+    "Name": "IncomingChange",
+    "Kor": "\uB4E4\uC5B4\uC624\uB294 \uBCC0\uACBD",
+    "Eng": "Incoming change"
+  },
+  {
+    "Id": 1073,
+    "Name": "OpenRepositoryToFindConflicts",
+    "Kor": "\uC800\uC7A5\uC18C\uB97C \uC5F4\uBA74 \uCDA9\uB3CC \uD30C\uC77C\uC744 \uC790\uB3D9\uC73C\uB85C \uCC3E\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Open a repository to find conflicted files."
+  },
+  {
+    "Id": 1074,
+    "Name": "NoChoiceYet",
+    "Kor": "\uC544\uC9C1 \uC120\uD0DD\uD558\uC9C0 \uC54A\uC74C",
+    "Eng": "No choice yet"
+  },
+  {
+    "Id": 1075,
+    "Name": "UseCurrentChange",
+    "Kor": "\uD604\uC7AC \uBCC0\uACBD \uC0AC\uC6A9",
+    "Eng": "Use current change"
+  },
+  {
+    "Id": 1076,
+    "Name": "UseIncomingChange",
+    "Kor": "\uB4E4\uC5B4\uC624\uB294 \uBCC0\uACBD \uC0AC\uC6A9",
+    "Eng": "Use incoming change"
+  },
+  {
+    "Id": 1077,
+    "Name": "UseBoth",
+    "Kor": "\uB458 \uB2E4 \uC0AC\uC6A9",
+    "Eng": "Use both"
+  },
+  {
+    "Id": 1078,
+    "Name": "RemoveBoth",
+    "Kor": "\uB458 \uB2E4 \uC81C\uAC70",
+    "Eng": "Remove both"
+  },
+  {
+    "Id": 1079,
+    "Name": "RefreshButton",
+    "Kor": "\uC0C8\uB85C\uACE0\uCE68",
+    "Eng": "Refresh"
+  },
+  {
+    "Id": 1080,
+    "Name": "RepositoriesHeading",
+    "Kor": "\uC800\uC7A5\uC18C",
+    "Eng": "Repositories"
+  },
+  {
+    "Id": 1081,
+    "Name": "AddButton",
+    "Kor": "\u002B \uCD94\uAC00",
+    "Eng": "\u002B Add"
+  },
+  {
+    "Id": 1082,
+    "Name": "AddRepositoryTooltip",
+    "Kor": "Git \uC800\uC7A5\uC18C \uCD94\uAC00",
+    "Eng": "Add Git repository"
+  },
+  {
+    "Id": 1083,
+    "Name": "RemoveFromListTooltip",
+    "Kor": "\uBAA9\uB85D\uC5D0\uC11C\uB9CC \uC81C\uAC70",
+    "Eng": "Remove from list only"
+  },
+  {
+    "Id": 1084,
+    "Name": "FilesToResolve",
+    "Kor": "\uD574\uACB0\uD560 \uD30C\uC77C",
+    "Eng": "Files to resolve"
+  },
+  {
+    "Id": 1085,
+    "Name": "PreviousButton",
+    "Kor": "\uC774\uC804",
+    "Eng": "Previous"
+  },
+  {
+    "Id": 1086,
+    "Name": "NextButton",
+    "Kor": "\uB2E4\uC74C",
+    "Eng": "Next"
+  },
+  {
+    "Id": 1087,
+    "Name": "FinalFile",
+    "Kor": "\uCD5C\uC885 \uD30C\uC77C",
+    "Eng": "Final file"
+  },
+  {
+    "Id": 1088,
+    "Name": "FinalFileHint",
+    "Kor": "\uC120\uD0DD \uACB0\uACFC\uAC00 \uC989\uC2DC \uBC18\uC601\uB418\uBA70 \uC9C1\uC811 \uD3B8\uC9D1\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Choices update the final file instantly. You can edit it directly."
+  },
+  {
+    "Id": 1089,
+    "Name": "SaveAndStage",
+    "Kor": "\uC800\uC7A5\uD558\uACE0 \uC2A4\uD14C\uC774\uC9D5",
+    "Eng": "Save and stage"
+  },
+  {
+    "Id": 1090,
+    "Name": "OpenGitRepository",
+    "Kor": "Git \uC800\uC7A5\uC18C \uC5F4\uAE30",
+    "Eng": "Open Git repository"
+  },
+  {
+    "Id": 1091,
+    "Name": "ConflictFileCount",
+    "Kor": "\uCDA9\uB3CC \uD30C\uC77C {0}\uAC1C",
+    "Eng": "{0} conflicted files"
+  },
+  {
+    "Id": 1092,
+    "Name": "NoConflictHunks",
+    "Kor": "\uCDA9\uB3CC \uAD6C\uAC04 \uC5C6\uC74C",
+    "Eng": "No conflict hunks"
+  },
+  {
+    "Id": 1093,
+    "Name": "ConflictHunkPosition",
+    "Kor": "\uCDA9\uB3CC {0} / {1} \u00B7 {2}\uD589",
+    "Eng": "Conflict {0} / {1} \u00B7 line {2}"
+  },
+  {
+    "Id": 1094,
+    "Name": "RepositoryListSaveFailed",
+    "Kor": "\uC800\uC7A5\uC18C \uBAA9\uB85D\uC744 \uC800\uC7A5\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4: {0}",
+    "Eng": "Could not save repository list: {0}"
+  },
+  {
+    "Id": 1095,
+    "Name": "RepositoryRemoved",
+    "Kor": "\uC800\uC7A5\uC18C \uBAA9\uB85D\uC5D0\uC11C \uC81C\uAC70\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Removed from repository list."
+  },
+  {
+    "Id": 1096,
+    "Name": "NoUnresolvedConflicts",
+    "Kor": "\uD574\uACB0\uB418\uC9C0 \uC54A\uC740 \uCDA9\uB3CC\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No unresolved conflicts."
+  },
+  {
+    "Id": 1097,
+    "Name": "ResolveConflictsPrompt",
+    "Kor": "{0}\uAC1C\uC758 \uCDA9\uB3CC \uAD6C\uAC04\uC744 \uC21C\uC11C\uB300\uB85C \uD574\uACB0\uD558\uC138\uC694.",
+    "Eng": "Resolve {0} conflict hunks in order."
+  },
+  {
+    "Id": 1098,
+    "Name": "ConflictsSelectedNotice",
+    "Kor": "{0}/{1}\uAC1C \uCDA9\uB3CC\uC744 \uC120\uD0DD\uD588\uC2B5\uB2C8\uB2E4. \uC120\uD0DD\uC744 \uBC14\uAFB8\uBA74 \uCD5C\uC885 \uD30C\uC77C\uC774 \uB2E4\uC2DC \uC0DD\uC131\uB429\uB2C8\uB2E4.",
+    "Eng": "{0}/{1} conflicts selected. Changing a choice rebuilds the final file."
+  },
+  {
+    "Id": 1099,
+    "Name": "IncompleteConflictMarkers",
+    "Kor": "\uCD5C\uC885 \uD30C\uC77C\uC5D0 \uC644\uC804\uD558\uC9C0 \uC54A\uC740 \uCDA9\uB3CC \uB9C8\uCEE4\uAC00 \uB0A8\uC544 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The final file still contains incomplete conflict markers."
+  },
+  {
+    "Id": 1100,
+    "Name": "UnresolvedConflictMarkers",
+    "Kor": "\uCD5C\uC885 \uD30C\uC77C\uC5D0 \uD574\uACB0\uB418\uC9C0 \uC54A\uC740 \uCDA9\uB3CC\uC774 \uB0A8\uC544 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The final file still contains unresolved conflicts."
+  },
+  {
+    "Id": 1101,
+    "Name": "FileStaged",
+    "Kor": "{0}\uC744 \uC800\uC7A5\uD558\uACE0 \uC2A4\uD14C\uC774\uC9D5\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Saved and staged {0}."
+  },
+  {
+    "Id": 1102,
+    "Name": "LocalChangesHeading",
+    "Kor": "\uB85C\uCEEC \uBCC0\uACBD",
+    "Eng": "Local Changes"
+  },
+  {
+    "Id": 1103,
+    "Name": "UnstagedHeading",
+    "Kor": "\uC2A4\uD14C\uC774\uC9D5\uB418\uC9C0 \uC54A\uC74C",
+    "Eng": "UNSTAGED"
+  },
+  {
+    "Id": 1104,
+    "Name": "StagedHeading",
+    "Kor": "\uC2A4\uD14C\uC774\uC9D5\uB428",
+    "Eng": "STAGED"
+  },
+  {
+    "Id": 1105,
+    "Name": "ConflictsHeading",
+    "Kor": "\uCDA9\uB3CC",
+    "Eng": "CONFLICTS"
+  },
+  {
+    "Id": 1106,
+    "Name": "StageSelected",
+    "Kor": "\uC120\uD0DD \uD30C\uC77C \uC2A4\uD14C\uC774\uC9D5",
+    "Eng": "Stage selected"
+  },
+  {
+    "Id": 1107,
+    "Name": "StageAll",
+    "Kor": "\uBAA8\uB450 \uC2A4\uD14C\uC774\uC9D5",
+    "Eng": "Stage all"
+  },
+  {
+    "Id": 1108,
+    "Name": "UnstageSelected",
+    "Kor": "\uC120\uD0DD \uD30C\uC77C \uC2A4\uD14C\uC774\uC9D5 \uD574\uC81C",
+    "Eng": "Unstage selected"
+  },
+  {
+    "Id": 1109,
+    "Name": "UnstageAll",
+    "Kor": "\uBAA8\uB450 \uC2A4\uD14C\uC774\uC9D5 \uD574\uC81C",
+    "Eng": "Unstage all"
+  },
+  {
+    "Id": 1110,
+    "Name": "OpenResolve",
+    "Kor": "\uCDA9\uB3CC \uD574\uACB0 \uC5F4\uAE30",
+    "Eng": "Open Resolve"
+  },
+  {
+    "Id": 1111,
+    "Name": "LocalPreviewPrompt",
+    "Kor": "\uD30C\uC77C\uC744 \uC120\uD0DD\uD558\uBA74 \uBCC0\uACBD \uB0B4\uC6A9\uC744 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Select a file to inspect its changes."
+  },
+  {
+    "Id": 1112,
+    "Name": "LocalPreviewLoading",
+    "Kor": "\uBCC0\uACBD \uB0B4\uC6A9 \uBD88\uB7EC\uC624\uB294 \uC911\u2026",
+    "Eng": "Loading preview\u2026"
+  },
+  {
+    "Id": 1113,
+    "Name": "LocalPreviewFailed",
+    "Kor": "\uBCC0\uACBD \uB0B4\uC6A9\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Preview could not be loaded."
+  },
+  {
+    "Id": 1114,
+    "Name": "CommitHeading",
+    "Kor": "\uCEE4\uBC0B",
+    "Eng": "COMMIT"
+  },
+  {
+    "Id": 1115,
+    "Name": "CommitMessageLabel",
+    "Kor": "\uCEE4\uBC0B \uBA54\uC2DC\uC9C0",
+    "Eng": "Commit message"
+  },
+  {
+    "Id": 1116,
+    "Name": "CommitMessagePlaceholder",
+    "Kor": "\uCCAB \uC904\uC5D0 \uC694\uC57D\uC744 \uC4F0\uACE0 \uBE48 \uC904 \uB4A4\uC5D0 \uC124\uBA85\uC744 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Summary on the first line; details after a blank line."
+  },
+  {
+    "Id": 1117,
+    "Name": "LoadingAmendMessage",
+    "Kor": "\uC774\uC804 \uCEE4\uBC0B \uBA54\uC2DC\uC9C0\uB97C \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Loading the previous commit message."
+  },
+  {
+    "Id": 1118,
+    "Name": "AmendPreviousCommit",
+    "Kor": "\uC774\uC804 \uCEE4\uBC0B \uC218\uC815",
+    "Eng": "Amend previous commit"
+  },
+  {
+    "Id": 1119,
+    "Name": "CommitButton",
+    "Kor": "\uCEE4\uBC0B",
+    "Eng": "COMMIT"
+  },
+  {
+    "Id": 1120,
+    "Name": "EnterCommitMessage",
+    "Kor": "\uCEE4\uBC0B \uBA54\uC2DC\uC9C0\uC758 \uCCAB \uC904\uC744 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter the first line of the commit message."
+  },
+  {
+    "Id": 1121,
+    "Name": "StageBeforeCommit",
+    "Kor": "\uCEE4\uBC0B \uC804\uC5D0 \uD30C\uC77C\uC744 \uC2A4\uD14C\uC774\uC9D5\uD558\uC138\uC694.",
+    "Eng": "Stage at least one file before committing."
+  },
+  {
+    "Id": 1122,
+    "Name": "ResolveBeforeCommit",
+    "Kor": "\uCEE4\uBC0B \uC804\uC5D0 \uCDA9\uB3CC\uC744 \uD574\uACB0\uD558\uC138\uC694.",
+    "Eng": "Resolve conflicts before committing."
+  },
+  {
+    "Id": 1123,
+    "Name": "LocalChangesStatusCount",
+    "Kor": "\uBBF8\uC2A4\uD14C\uC774\uC9D5 {0}\uAC1C \u00B7 \uC2A4\uD14C\uC774\uC9D5 {1}\uAC1C \u00B7 \uCDA9\uB3CC {2}\uAC1C",
+    "Eng": "{0} unstaged \u00B7 {1} staged \u00B7 {2} conflicts"
+  },
+  {
+    "Id": 1124,
+    "Name": "LocalCommittedNotice",
+    "Kor": "{0} \uCEE4\uBC0B\uC744 \uB9CC\uB4E4\uC5C8\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Committed {0}."
+  },
+  {
+    "Id": 1125,
+    "Name": "StashesHeading",
+    "Kor": "Stash \uBAA9\uB85D",
+    "Eng": "Stashes"
+  },
+  {
+    "Id": 1126,
+    "Name": "CreateStashHeading",
+    "Kor": "\uBCC0\uACBD \uBCF4\uAD00",
+    "Eng": "Save changes to stash"
+  },
+  {
+    "Id": 1127,
+    "Name": "StashMessageLabel",
+    "Kor": "\uBA54\uC2DC\uC9C0",
+    "Eng": "Message"
+  },
+  {
+    "Id": 1128,
+    "Name": "StashIncludeUntracked",
+    "Kor": "\uBBF8\uCD94\uC801 \uD30C\uC77C \uD3EC\uD568",
+    "Eng": "Include untracked files"
+  },
+  {
+    "Id": 1129,
+    "Name": "CreateStashButton",
+    "Kor": "\uBCC0\uACBD \uBCF4\uAD00",
+    "Eng": "Save stash"
+  },
+  {
+    "Id": 1130,
+    "Name": "ApplyStashButton",
+    "Kor": "\uC801\uC6A9 (\uD56D\uBAA9 \uC720\uC9C0)",
+    "Eng": "Apply (keep stash)"
+  },
+  {
+    "Id": 1131,
+    "Name": "PopStashButton",
+    "Kor": "\uC801\uC6A9 \uD6C4 \uD56D\uBAA9 \uC81C\uAC70",
+    "Eng": "Pop (apply and remove)"
+  },
+  {
+    "Id": 1132,
+    "Name": "RequestDropStashButton",
+    "Kor": "\uD56D\uBAA9 \uC0AD\uC81C\u2026",
+    "Eng": "Drop stash\u2026"
+  },
+  {
+    "Id": 1133,
+    "Name": "ConfirmDropStashButton",
+    "Kor": "\uC0AD\uC81C \uD655\uC778",
+    "Eng": "Confirm drop"
+  },
+  {
+    "Id": 1134,
+    "Name": "CancelDropStashButton",
+    "Kor": "\uCDE8\uC18C",
+    "Eng": "Cancel"
+  },
+  {
+    "Id": 1135,
+    "Name": "NoStashes",
+    "Kor": "\uBCF4\uAD00\uB41C \uBCC0\uACBD\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No stashes yet"
+  },
+  {
+    "Id": 1136,
+    "Name": "StashChangedFiles",
+    "Kor": "\uBCC0\uACBD \uD30C\uC77C",
+    "Eng": "Changed files"
+  },
+  {
+    "Id": 1137,
+    "Name": "StashDiffHeading",
+    "Kor": "\uBCC0\uACBD \uB0B4\uC6A9",
+    "Eng": "Diff"
+  },
+  {
+    "Id": 1138,
+    "Name": "StashTargetSummary",
+    "Kor": "{0}\uAC1C \uBCC0\uACBD\uC774 \uBCF4\uAD00 \uD6C4 \uC791\uC5C5 \uD2B8\uB9AC\uC5D0\uC11C \uC0AC\uB77C\uC9D1\uB2C8\uB2E4.",
+    "Eng": "{0} changes will leave the working tree after saving."
+  },
+  {
+    "Id": 1139,
+    "Name": "StashDropConfirmation",
+    "Kor": "{0} ({1}) \uD56D\uBAA9\uC744 \uC601\uAD6C \uC0AD\uC81C\uD558\uC2DC\uACA0\uC2B5\uB2C8\uAE4C?",
+    "Eng": "Permanently drop {0} ({1})?"
+  },
+  {
+    "Id": 1140,
+    "Name": "StashSavedNotice",
+    "Kor": "{0}\uC5D0 \uBCC0\uACBD\uC744 \uBCF4\uAD00\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Saved changes as {0}."
+  },
+  {
+    "Id": 1141,
+    "Name": "StashAppliedNotice",
+    "Kor": "{0}\uC744 \uC801\uC6A9\uD588\uC2B5\uB2C8\uB2E4. \uD56D\uBAA9\uC740 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "Applied {0}; the stash remains."
+  },
+  {
+    "Id": 1142,
+    "Name": "StashPoppedNotice",
+    "Kor": "{0}\uC744 \uC801\uC6A9\uD558\uACE0 \uC81C\uAC70\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Applied and removed {0}."
+  },
+  {
+    "Id": 1143,
+    "Name": "StashDroppedNotice",
+    "Kor": "{0}\uC744 \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Dropped {0}."
+  },
+  {
+    "Id": 1144,
+    "Name": "ReferenceBranchesHeading",
+    "Kor": "\uBE0C\uB79C\uCE58",
+    "Eng": "Branches"
+  },
+  {
+    "Id": 1145,
+    "Name": "ReferenceTagsHeading",
+    "Kor": "\uD0DC\uADF8",
+    "Eng": "Tags"
+  },
+  {
+    "Id": 1146,
+    "Name": "ReferenceRemotesHeading",
+    "Kor": "\uC6D0\uACA9",
+    "Eng": "Remotes"
+  },
+  {
+    "Id": 1147,
+    "Name": "ReferenceSubmodulesHeading",
+    "Kor": "\uC11C\uBE0C\uBAA8\uB4C8",
+    "Eng": "Submodules"
+  },
+  {
+    "Id": 1148,
+    "Name": "ReferenceNoBranches",
+    "Kor": "\uB85C\uCEEC \uBE0C\uB79C\uCE58 \uC5C6\uC74C",
+    "Eng": "No local branches"
+  },
+  {
+    "Id": 1149,
+    "Name": "ReferenceNoTags",
+    "Kor": "\uD0DC\uADF8 \uC5C6\uC74C",
+    "Eng": "No tags"
+  },
+  {
+    "Id": 1150,
+    "Name": "ReferenceNoRemotes",
+    "Kor": "\uC6D0\uACA9 \uC5C6\uC74C",
+    "Eng": "No remotes"
+  },
+  {
+    "Id": 1151,
+    "Name": "ReferenceNoTrackingBranches",
+    "Kor": "\uCD94\uC801 \uBE0C\uB79C\uCE58 \uC5C6\uC74C",
+    "Eng": "No tracking branches"
+  },
+  {
+    "Id": 1152,
+    "Name": "ReferenceCreateBranch",
+    "Kor": "\uBE0C\uB79C\uCE58 \uB9CC\uB4E4\uAE30...",
+    "Eng": "Create branch..."
+  },
+  {
+    "Id": 1153,
+    "Name": "ReferenceOpenStashes",
+    "Kor": "\uC2A4\uD0DC\uC2DC \uC5F4\uAE30",
+    "Eng": "Open stashes"
+  },
+  {
+    "Id": 1154,
+    "Name": "ReferenceSwitchBranch",
+    "Kor": "\uC774 \uBE0C\uB79C\uCE58\uB85C \uC804\uD658",
+    "Eng": "Switch to this branch"
+  },
+  {
+    "Id": 1155,
+    "Name": "ReferenceCreateFromBranch",
+    "Kor": "\uC5EC\uAE30\uC11C \uBE0C\uB79C\uCE58 \uB9CC\uB4E4\uAE30...",
+    "Eng": "Create branch from here..."
+  },
+  {
+    "Id": 1156,
+    "Name": "ReferenceCheckoutRemoteBranch",
+    "Kor": "\uC6D0\uACA9 \uBE0C\uB79C\uCE58 \uCCB4\uD06C\uC544\uC6C3...",
+    "Eng": "Check out remote branch..."
+  },
+  {
+    "Id": 1157,
+    "Name": "ReferenceCopyName",
+    "Kor": "\uC774\uB984 \uBCF5\uC0AC",
+    "Eng": "Copy name"
+  },
+  {
+    "Id": 1158,
+    "Name": "ReferenceCurrentBranch",
+    "Kor": "\uD604\uC7AC \uBE0C\uB79C\uCE58",
+    "Eng": "Current branch"
+  },
+  {
+    "Id": 1159,
+    "Name": "ReferenceCreateAndSwitch",
+    "Kor": "\uB9CC\uB4E4\uACE0 \uC804\uD658",
+    "Eng": "Create and switch"
+  },
+  {
+    "Id": 1160,
+    "Name": "ReferenceBranchName",
+    "Kor": "\uBE0C\uB79C\uCE58 \uC774\uB984",
+    "Eng": "Branch name"
+  },
+  {
+    "Id": 1161,
+    "Name": "ReferenceStartPoint",
+    "Kor": "\uC2DC\uC791\uC810 (HEAD \uB610\uB294 \uCEE4\uBC0B)",
+    "Eng": "Start point (HEAD or commit)"
+  },
+  {
+    "Id": 1162,
+    "Name": "ReferenceNewBranchDescription",
+    "Kor": "\uB85C\uCEEC \uBE0C\uB79C\uCE58\uB97C \uB9CC\uB4E4\uACE0 \uC804\uD658\uD569\uB2C8\uB2E4.",
+    "Eng": "Create and switch to a local branch."
+  },
+  {
+    "Id": 1163,
+    "Name": "ReferenceCancel",
+    "Kor": "\uCDE8\uC18C",
+    "Eng": "Cancel"
+  },
+  {
+    "Id": 1164,
+    "Name": "LargeStageTitle",
+    "Kor": "\uD070 \uD30C\uC77C \uC2A4\uD14C\uC774\uC9D5 \uD655\uC778",
+    "Eng": "Stage large files"
+  },
+  {
+    "Id": 1165,
+    "Name": "LargeStageDescription",
+    "Kor": "\uB2E4\uC74C \uC0C8 \uD30C\uC77C {0}\uAC1C\uB294 10 MiB \uC774\uC0C1\uC785\uB2C8\uB2E4. \uACC4\uC18D \uC2A4\uD14C\uC774\uC9D5\uD560\uAE4C\uC694?",
+    "Eng": "These {0} new files are at least 10 MiB. Continue staging?"
+  },
+  {
+    "Id": 1166,
+    "Name": "LargeStageContinue",
+    "Kor": "\uACC4\uC18D \uC2A4\uD14C\uC774\uC9D5",
+    "Eng": "Continue staging"
+  },
+  {
+    "Id": 1167,
+    "Name": "DiscardSelected",
+    "Kor": "\uBCC0\uACBD \uD3D0\uAE30\u2026",
+    "Eng": "Discard changes\u2026"
+  },
+  {
+    "Id": 1168,
+    "Name": "DiscardTitle",
+    "Kor": "\uC120\uD0DD \uD30C\uC77C \uBCC0\uACBD \uD3D0\uAE30",
+    "Eng": "Discard selected changes"
+  },
+  {
+    "Id": 1169,
+    "Name": "DiscardPathLabel",
+    "Kor": "\uC800\uC7A5\uC18C \uC0C1\uB300 \uACBD\uB85C",
+    "Eng": "Repository-relative path"
+  },
+  {
+    "Id": 1170,
+    "Name": "DiscardTrackedImpact",
+    "Kor": "\uCD94\uC801 \uD30C\uC77C {0}\uAC1C\uC758 \uC2A4\uD14C\uC774\uC9D5\uB418\uC9C0 \uC54A\uC740 \uBCC0\uACBD\uC744 \uBC84\uB9BD\uB2C8\uB2E4. \uC774\uB984 \uBCC0\uACBD {1}\uAC1C\uB294 \uC6D0\uB798 \uACBD\uB85C\uB85C \uB418\uB3CC\uB9BD\uB2C8\uB2E4. \uC774\uBBF8 \uC2A4\uD14C\uC774\uC9D5\uD55C \uBCC0\uACBD\uC740 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "Discard unstaged changes in {0} tracked files. Restore {1} renames to their original paths. Staged changes remain intact."
+  },
+  {
+    "Id": 1171,
+    "Name": "DiscardUntrackedImpact",
+    "Kor": "\uBBF8\uCD94\uC801 \uD30C\uC77C\uC744 \uC601\uAD6C \uC0AD\uC81C\uD569\uB2C8\uB2E4. Git\uC5D0\uC11C \uBCF5\uC6D0\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Permanently delete this untracked file. Git cannot restore it."
+  },
+  {
+    "Id": 1172,
+    "Name": "DiscardRenamedImpact",
+    "Kor": "\uC791\uC5C5 \uD2B8\uB9AC\uC758 \uC774\uB984 \uBCC0\uACBD\uC744 \uB418\uB3CC\uB9BD\uB2C8\uB2E4. \uC0C8 \uACBD\uB85C\uC758 \uD30C\uC77C\uC744 \uC0AD\uC81C\uD558\uACE0 \uC6D0\uB798 \uACBD\uB85C {0}\uC744(\uB97C) \uC778\uB371\uC2A4 \uC0C1\uD0DC\uB85C \uBCF5\uC6D0\uD569\uB2C8\uB2E4.",
+    "Eng": "Undo the working-tree rename. Delete the new-path file and restore the original path {0} from the index."
+  },
+  {
+    "Id": 1173,
+    "Name": "DiscardConfirmTracked",
+    "Kor": "\uBCC0\uACBD \uD3D0\uAE30",
+    "Eng": "Discard changes"
+  },
+  {
+    "Id": 1174,
+    "Name": "DiscardConfirmUntracked",
+    "Kor": "\uD30C\uC77C \uC0AD\uC81C",
+    "Eng": "Delete file"
+  },
+  {
+    "Id": 1175,
+    "Name": "RemoteCheckoutSourceLabel",
+    "Kor": "\uC6D0\uACA9 \uBE0C\uB79C\uCE58",
+    "Eng": "Remote branch"
+  },
+  {
+    "Id": 1176,
+    "Name": "RemoteCheckoutLocalName",
+    "Kor": "\uC0C8 \uB85C\uCEEC \uBE0C\uB79C\uCE58 \uC774\uB984",
+    "Eng": "New local branch name"
+  },
+  {
+    "Id": 1177,
+    "Name": "RemoteCheckoutAction",
+    "Kor": "\uCCB4\uD06C\uC544\uC6C3",
+    "Eng": "Checkout"
+  },
+  {
+    "Id": 1178,
+    "Name": "RemoteCheckoutDescription",
+    "Kor": "\uC6D0\uACA9 \uBE0C\uB79C\uCE58\uB97C \uCD94\uC801\uD560 \uC0C8 \uB85C\uCEEC \uBE0C\uB79C\uCE58\uB97C \uB9CC\uB4ED\uB2C8\uB2E4.",
+    "Eng": "Create a new local branch to track the remote branch."
+  },
+  {
+    "Id": 1179,
+    "Name": "RemoteCheckoutExistingLocal",
+    "Kor": "\uB85C\uCEEC \uBE0C\uB79C\uCE58 \u0027{0}\u0027\uC774(\uAC00) \uC774\uBBF8 \uC788\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uB9CC\uB4E4\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. Branches\uC5D0\uC11C \uAE30\uC874 \uBE0C\uB79C\uCE58\uB97C \uBA85\uC2DC\uC801\uC73C\uB85C \uC120\uD0DD\uD574 \uC804\uD658\uD558\uAC70\uB098 \uB2E4\uB978 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Local branch \u0027{0}\u0027 already exists. It will not be recreated. Select it in Branches to switch, or enter another name."
+  },
+  {
+    "Id": 1180,
+    "Name": "RemoteCheckoutMultipleTracking",
+    "Kor": "{0}\uC744(\uB97C) \uCD94\uC801\uD558\uB294 \uB85C\uCEEC \uBE0C\uB79C\uCE58\uAC00 \uC5EC\uB7EC \uAC1C \uC788\uC2B5\uB2C8\uB2E4: {1}. Branches\uC5D0\uC11C \uC804\uD658\uD560 \uBE0C\uB79C\uCE58\uB97C \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Multiple local branches track {0}: {1}. Select the branch to switch to in Branches."
+  },
+  {
+    "Id": 1181,
+    "Name": "RemoteCheckoutAlreadyCurrent",
+    "Kor": "\uB85C\uCEEC \uBE0C\uB79C\uCE58 \u0027{0}\u0027\uC774(\uAC00) \uC774\uBBF8 \uD604\uC7AC \uBE0C\uB79C\uCE58\uC785\uB2C8\uB2E4.",
+    "Eng": "Local branch \u0027{0}\u0027 is already the current branch."
+  },
+  {
+    "Id": 1182,
+    "Name": "GitHubPhotoLinkHeading",
+    "Kor": "GITHUB \uD504\uB85C\uD544 \uC0AC\uC9C4",
+    "Eng": "GITHUB PROFILE PHOTO"
+  },
+  {
+    "Id": 1183,
+    "Name": "GitHubPhotoLinkDescription",
+    "Kor": "\uC9C0\uC815\uD55C Git \uC791\uC131\uC790 \uC774\uBA54\uC77C\uC758 \uCEE4\uBC0B\uC5D0 GitHub \uD504\uB85C\uD544 \uC0AC\uC9C4\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4. GitHub \uB85C\uADF8\uC778\uC774\uB098 \uC778\uC99D \uC124\uC815\uC774 \uC544\uB2D9\uB2C8\uB2E4.",
+    "Eng": "Use the specified GitHub profile photo for commits with the matching Git author email. This is not GitHub login or authentication."
+  },
+  {
+    "Id": 1184,
+    "Name": "GitHubPhotoUserName",
+    "Kor": "GitHub \uC0AC\uC6A9\uC790\uBA85",
+    "Eng": "GitHub username"
+  },
+  {
+    "Id": 1185,
+    "Name": "GitHubPhotoAuthorEmail",
+    "Kor": "\uC5F0\uACB0\uD560 Git \uC791\uC131\uC790 \uC774\uBA54\uC77C",
+    "Eng": "Git author email to match"
+  },
+  {
+    "Id": 1186,
+    "Name": "GitHubPhotoSave",
+    "Kor": "\uC0AC\uC9C4 \uC5F0\uACB0 \uC800\uC7A5",
+    "Eng": "Save photo mapping"
+  },
+  {
+    "Id": 1187,
+    "Name": "GitHubPhotoClearHelp",
+    "Kor": "\uB450 \uCE78\uC744 \uBE44\uC6B0\uACE0 \uC800\uC7A5\uD558\uBA74 \uC774 \uC0AC\uC6A9\uC790 \uCEF4\uD4E8\uD130\uC758 \uC5F0\uACB0\uC744 \uC0AD\uC81C\uD569\uB2C8\uB2E4.",
+    "Eng": "Leave both fields empty and save to remove this mapping from this computer."
+  },
+  {
+    "Id": 1188,
+    "Name": "GitHubPhotoSaved",
+    "Kor": "\uC0AC\uC9C4 \uC5F0\uACB0\uC744 \uC0AC\uC6A9\uC790 \uB85C\uCEEC \uC124\uC815\uC5D0 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Photo mapping saved to local user settings."
+  },
+  {
+    "Id": 1189,
+    "Name": "GitHubPhotoCleared",
+    "Kor": "\uC0AC\uC9C4 \uC5F0\uACB0\uC744 \uC0AC\uC6A9\uC790 \uB85C\uCEEC \uC124\uC815\uC5D0\uC11C \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Photo mapping removed from local user settings."
+  },
+  {
+    "Id": 1190,
+    "Name": "AppearanceHeading",
+    "Kor": "\uD654\uBA74 \uBAA8\uC591",
+    "Eng": "APPEARANCE"
+  },
+  {
+    "Id": 1191,
+    "Name": "AppearanceDescription",
+    "Kor": "\uC571 \uD654\uBA74\uC5D0 \uC801\uC6A9\uD560 \uD14C\uB9C8\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4. Git \uC124\uC815\uC740 \uBC14\uB00C\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Choose the app theme. Git settings are unchanged."
+  },
+  {
+    "Id": 1192,
+    "Name": "AppearanceLight",
+    "Kor": "\uBC1D\uC74C",
+    "Eng": "Light"
+  },
+  {
+    "Id": 1193,
+    "Name": "AppearanceDark",
+    "Kor": "\uC5B4\uB450\uC6C0",
+    "Eng": "Dark"
+  },
+  {
+    "Id": 1194,
+    "Name": "AppearanceSystem",
+    "Kor": "\uC2DC\uC2A4\uD15C \uC124\uC815",
+    "Eng": "System setting"
+  },
+  {
+    "Id": 1195,
+    "Name": "ReferenceCreateTag",
+    "Kor": "\uD0DC\uADF8 \uB9CC\uB4E4\uAE30\u2026",
+    "Eng": "Create tag..."
+  },
+  {
+    "Id": 1196,
+    "Name": "ReferenceTagName",
+    "Kor": "\uD0DC\uADF8 \uC774\uB984",
+    "Eng": "Tag name"
+  },
+  {
+    "Id": 1197,
+    "Name": "ReferenceTagTarget",
+    "Kor": "\uB300\uC0C1 \uCEE4\uBC0B",
+    "Eng": "Target commit"
+  },
+  {
+    "Id": 1198,
+    "Name": "ReferenceTagAction",
+    "Kor": "\uD0DC\uADF8 \uB9CC\uB4E4\uAE30",
+    "Eng": "Create tag"
+  },
+  {
+    "Id": 1199,
+    "Name": "ReferenceLocalTagCreated",
+    "Kor": "\uB85C\uCEEC \uD0DC\uADF8 \u0027{0}\u0027 \uC0DD\uC131 \uC644\uB8CC. \uC6D0\uACA9\uC73C\uB85C \uBCF4\uB0B4\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Created local tag \u0027{0}\u0027. It was not pushed."
+  },
+  {
+    "Id": 1200,
+    "Name": "HistoryCreateTagHere",
+    "Kor": "\uC5EC\uAE30\uC5D0 \uD0DC\uADF8 \uB9CC\uB4E4\uAE30\u2026",
+    "Eng": "Create tag here..."
+  },
+  {
+    "Id": 1201,
+    "Name": "ReferenceBranchQueueProgress",
+    "Kor": "\uBE0C\uB79C\uCE58 \u0027{0}\u0027 \uC0DD\uC131 \uC911 \u00B7 \uB300\uAE30 {1}\uAC74",
+    "Eng": "Creating branch \u0027{0}\u0027 \u00B7 {1} queued"
+  },
+  {
+    "Id": 1202,
+    "Name": "ReferenceBranchQueueClosing",
+    "Kor": "\u0027{0}\u0027 \uC0DD\uC131 \uACB0\uACFC\uB97C \uAE30\uB2E4\uB9B0 \uB4A4 \uB2EB\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Waiting for \u0027{0}\u0027 to finish before closing."
+  },
+  {
+    "Id": 1203,
+    "Name": "ReferenceSwitchRepositoryRequired",
+    "Kor": "\uC800\uC7A5\uC18C\uB97C \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Select a repository."
+  },
+  {
+    "Id": 1204,
+    "Name": "ReferenceSwitchBranchRequired",
+    "Kor": "\uC804\uD658\uD560 \uBE0C\uB79C\uCE58\uAC00 \uC120\uD0DD\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Select a branch to switch to."
+  },
+  {
+    "Id": 1205,
+    "Name": "ReferenceSwitchMenuRepositoryChanged",
+    "Kor": "\uBA54\uB274\uB97C \uC5F0 \uC800\uC7A5\uC18C\uAC00 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The repository has changed since the menu opened."
+  },
+  {
+    "Id": 1206,
+    "Name": "ReferenceSwitchInProgress",
+    "Kor": "{0} \uBE0C\uB79C\uCE58\uB85C \uC804\uD658 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Switching to branch {0}..."
+  },
+  {
+    "Id": 1207,
+    "Name": "ReferenceSwitchPending",
+    "Kor": "\uB2E4\uC74C \uC804\uD658: {0} (\uD604\uC7AC {1} \uC791\uC5C5 \uC644\uB8CC \uD6C4)",
+    "Eng": "Next switch: {0} (after {1} finishes)."
+  },
+  {
+    "Id": 1208,
+    "Name": "ReferenceSwitchAlreadyCurrent",
+    "Kor": "\uC774\uBBF8 {0} \uBE0C\uB79C\uCE58\uC785\uB2C8\uB2E4.",
+    "Eng": "Already on branch {0}."
+  },
+  {
+    "Id": 1209,
+    "Name": "ReferenceSwitchSucceeded",
+    "Kor": "{0} \uBE0C\uB79C\uCE58\uB85C \uC804\uD658\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Switched to branch {0}."
+  },
+  {
+    "Id": 1210,
+    "Name": "ReferenceSwitchOperationBusy",
+    "Kor": "{0} \uBE0C\uB79C\uCE58 \uC791\uC5C5\uC744 \uC2DC\uC791\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uD604\uC7AC \uBE0C\uB79C\uCE58: {1}. \uB2E4\uB978 \uBE0C\uB79C\uCE58 \uC791\uC5C5\uC774 \uC9C4\uD589 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Cannot start the branch operation for {0}. Current branch: {1}. Another branch operation is in progress."
+  },
+  {
+    "Id": 1211,
+    "Name": "ReferenceSwitchOperationRunning",
+    "Kor": "{0} \uBE0C\uB79C\uCE58 \uC791\uC5C5\uC744 \uC2E4\uD589 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Running the branch operation for {0}..."
+  },
+  {
+    "Id": 1212,
+    "Name": "ReferenceSwitchUnexpectedCurrent",
+    "Kor": "\uBE0C\uB79C\uCE58 \uC791\uC5C5 \uB4A4 \uD604\uC7AC \uBE0C\uB79C\uCE58\uAC00 \uC608\uC0C1\uACFC \uB2E4\uB985\uB2C8\uB2E4: \uC694\uCCAD {0}, \uD604\uC7AC {1}",
+    "Eng": "Current branch after the operation differs from the requested branch: requested {0}, current {1}."
+  },
+  {
+    "Id": 1213,
+    "Name": "ReferenceSwitchRefreshFailed",
+    "Kor": "{0} \uBE0C\uB79C\uCE58\uB85C \uC804\uD658\uD588\uC9C0\uB9CC \uCC38\uC870 \uBAA9\uB85D\uC744 \uD655\uC778\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. {1}",
+    "Eng": "Switched to branch {0}, but could not refresh references. {1}"
+  },
+  {
+    "Id": 1214,
+    "Name": "ReferenceSwitchFailed",
+    "Kor": "{0} \uBE0C\uB79C\uCE58\uB85C \uC804\uD658\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uD604\uC7AC \uBE0C\uB79C\uCE58: {1}. \uC774\uC720: {2}",
+    "Eng": "Could not switch to branch {0}. Current branch: {1}. Reason: {2}"
+  },
+  {
+    "Id": 1215,
+    "Name": "ReferenceSwitchCurrentUnknown",
+    "Kor": "\uD655\uC778\uB418\uC9C0 \uC54A\uC74C",
+    "Eng": "Unknown"
+  },
+  {
+    "Id": 1400,
+    "Name": "LocalSelectedFileUnavailable",
+    "Kor": "\uC120\uD0DD\uD55C \uD30C\uC77C {0}\uC744(\uB97C) \uD604\uC7AC \uC791\uC5C5\uC5D0 \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The selected file is no longer available for this operation: {0}. Refresh and try again."
+  },
+  {
+    "Id": 1401,
+    "Name": "LocalResolveBeforeDiscard",
+    "Kor": "{0}\uC758 \uCDA9\uB3CC\uC744 \uD574\uACB0\uD55C \uB4A4 \uBCC0\uACBD\uC744 \uD3D0\uAE30\uD558\uC138\uC694.",
+    "Eng": "Resolve the conflict in {0} before discarding changes."
+  },
+  {
+    "Id": 1402,
+    "Name": "LocalDiscardRequiresConfirmation",
+    "Kor": "\uBCC0\uACBD\uC744 \uD3D0\uAE30\uD558\uB824\uBA74 \uD655\uC778\uC774 \uD544\uC694\uD569\uB2C8\uB2E4.",
+    "Eng": "Discarding changes requires confirmation."
+  },
+  {
+    "Id": 1403,
+    "Name": "LocalIgnoreRequiresConfirmation",
+    "Kor": "\uD30C\uC77C\uC744 \uBB34\uC2DC\uD558\uB824\uBA74 \uD655\uC778\uC774 \uD544\uC694\uD569\uB2C8\uB2E4.",
+    "Eng": "Ignoring files requires confirmation."
+  },
+  {
+    "Id": 1404,
+    "Name": "LocalLargeStageRequiresConfirmation",
+    "Kor": "\uC0C8 \uD070 \uD30C\uC77C\uC744 \uC2A4\uD14C\uC774\uC9D5\uD558\uB824\uBA74 \uD655\uC778\uC774 \uD544\uC694\uD569\uB2C8\uB2E4.",
+    "Eng": "Staging large new files requires confirmation."
+  },
+  {
+    "Id": 1405,
+    "Name": "LocalSelectionSetChanged",
+    "Kor": "\uC120\uD0DD\uD55C \uD30C\uC77C \uBAA9\uB85D\uC774 \uC791\uC5C5 \uC2DC\uC791 \uC804\uC5D0 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The selected file set changed before the operation started. Refresh and try again."
+  },
+  {
+    "Id": 1406,
+    "Name": "LocalSelectedFileChanged",
+    "Kor": "{0} \uD30C\uC77C\uC774 \uC791\uC5C5 \uC2DC\uC791 \uC804\uC5D0 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The selected file changed before the operation started: {0}. Refresh and try again."
+  },
+  {
+    "Id": 1407,
+    "Name": "LocalIndexChanged",
+    "Kor": "{0} \uD30C\uC77C\uC758 \uC778\uB371\uC2A4 \uC0C1\uD0DC\uAC00 \uC791\uC5C5 \uC2DC\uC791 \uC804\uC5D0 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The index state changed before the operation started: {0}. Refresh and try again."
+  },
+  {
+    "Id": 1408,
+    "Name": "LocalWorkingFileChanged",
+    "Kor": "{0} \uD30C\uC77C\uC758 \uC791\uC5C5 \uD2B8\uB9AC \uC0C1\uD0DC\uAC00 \uC791\uC5C5 \uC2DC\uC791 \uC804\uC5D0 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The working-tree state changed before the operation started: {0}. Refresh and try again."
+  },
+  {
+    "Id": 1409,
+    "Name": "StashTargetsUnavailable",
+    "Kor": "Stash\uC5D0 \uBCF4\uAD00\uD560 \uBCC0\uACBD \uBAA9\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The stash targets are no longer available. Refresh and try again."
+  },
+  {
+    "Id": 1410,
+    "Name": "StashTargetsChanged",
+    "Kor": "Stash \uBCF4\uAD00 \uB300\uC0C1\uC774 \uC791\uC5C5 \uC2DC\uC791 \uC804\uC5D0 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The stash targets changed before the operation started. Refresh and try again."
+  },
+  {
+    "Id": 1411,
+    "Name": "StashTargetChanged",
+    "Kor": "Stash \uBCF4\uAD00 \uB300\uC0C1 {0}\uC774(\uAC00) \uC791\uC5C5 \uC2DC\uC791 \uC804\uC5D0 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The stash target changed before the operation started: {0}. Refresh and try again."
+  },
+  {
+    "Id": 1412,
+    "Name": "StashTargetIndexChanged",
+    "Kor": "Stash \uBCF4\uAD00 \uB300\uC0C1 {0}\uC758 \uC778\uB371\uC2A4 \uC0C1\uD0DC\uAC00 \uC791\uC5C5 \uC2DC\uC791 \uC804\uC5D0 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The stash target index changed before the operation started: {0}. Refresh and try again."
+  },
+  {
+    "Id": 1300,
+    "Name": "ConflictStageUnavailable",
+    "Kor": "\uCDA9\uB3CC \uD30C\uC77C \uC800\uC7A5\uC744 \uC644\uB8CC\uD560 \uD654\uBA74 \uC5F0\uACB0\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The conflict save cannot be completed because its screen connection is unavailable."
+  },
+  {
+    "Id": 1301,
+    "Name": "ConflictStageCanceled",
+    "Kor": "\uB300\uAE30 \uC911\uC778 \uCDA9\uB3CC \uD30C\uC77C \uC800\uC7A5\uC774 \uCDE8\uC18C\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The pending conflict save was canceled."
+  },
+  {
+    "Id": 1302,
+    "Name": "ConflictStageNoLongerConflicted",
+    "Kor": "{0} \uD30C\uC77C\uC740 \uB354 \uC774\uC0C1 \uCDA9\uB3CC \uC0C1\uD0DC\uAC00 \uC544\uB2D9\uB2C8\uB2E4. \uC0C1\uD0DC\uB97C \uC0C8\uB85C \uACE0\uCE58\uC138\uC694.",
+    "Eng": "{0} is no longer conflicted. Refresh the repository state."
+  },
+  {
+    "Id": 1303,
+    "Name": "ConflictStageFileChanged",
+    "Kor": "{0} \uD30C\uC77C\uC774 \uC5F4\uB9B0 \uB4A4 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uBD88\uB7EC\uC628 \uD6C4 \uC800\uC7A5\uD558\uC138\uC694.",
+    "Eng": "{0} changed after it was opened. Reload it before saving."
+  },
+  {
+    "Id": 1304,
+    "Name": "ConflictStageRefreshFailed",
+    "Kor": "{0} \uD30C\uC77C\uC740 \uC800\uC7A5\uD558\uACE0 \uC2A4\uD14C\uC774\uC9D5\uD588\uC9C0\uB9CC \uD654\uBA74\uC744 \uC0C8\uB85C \uACE0\uCE58\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. {1}",
+    "Eng": "Saved and staged {0}, but could not refresh the screen. {1}"
+  },
+  {
+    "Id": 1500,
+    "Name": "RemoteQueueRepositoryUnavailable",
+    "Kor": "\uC6D0\uACA9 \uC791\uC5C5\uC744 \uC2E4\uD589\uD560 \uC800\uC7A5\uC18C\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The requested repository could not be loaded for the remote operation."
+  },
+  {
+    "Id": 1501,
+    "Name": "RemoteQueueRepositoryChanged",
+    "Kor": "\uC6D0\uACA9 \uC791\uC5C5\uC744 \uC2DC\uC791\uD558\uAE30 \uC804\uC5D0 \uC800\uC7A5\uC18C\uAC00 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The requested repository changed before the remote operation started."
+  },
+  {
+    "Id": 1502,
+    "Name": "RemoteQueueFetchRemoteChanged",
+    "Kor": "\uC6D0\uACA9 \uC791\uC5C5\uC744 \uC2DC\uC791\uD558\uAE30 \uC804\uC5D0 \uC120\uD0DD\uD55C Fetch \uC6D0\uACA9\uC774 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The selected Fetch remote changed before the operation started."
+  },
+  {
+    "Id": 1503,
+    "Name": "RemoteQueueFetchRemoteUnavailable",
+    "Kor": "\uC120\uD0DD\uD55C Fetch \uC6D0\uACA9\uC744 \uB354 \uC774\uC0C1 \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The selected Fetch remote is no longer available."
+  },
+  {
+    "Id": 1504,
+    "Name": "RemoteQueueFetchAllUnavailable",
+    "Kor": "\uBAA8\uB4E0 \uC6D0\uACA9 \uAC00\uC838\uC624\uAE30\uC5D0 \uC0AC\uC6A9\uD560 \uC6D0\uACA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No remote is available for Fetch all."
+  },
+  {
+    "Id": 1505,
+    "Name": "RemoteQueueBranchChanged",
+    "Kor": "\uC6D0\uACA9 \uC791\uC5C5\uC744 \uC2DC\uC791\uD558\uAE30 \uC804\uC5D0 \uD604\uC7AC \uBE0C\uB79C\uCE58\uAC00 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The current branch changed before the remote operation started."
+  },
+  {
+    "Id": 1600,
+    "Name": "CurrentRepositoryDetails",
+    "Kor": "\uD604\uC7AC \uC800\uC7A5\uC18C: {0} ({1})",
+    "Eng": "Current repository: {0} ({1})"
+  },
+  {
+    "Id": 1601,
+    "Name": "GcmLoginCompleted",
+    "Kor": "GitHub \uB85C\uADF8\uC778 \uC808\uCC28\uB97C \uB9C8\uCCE4\uC2B5\uB2C8\uB2E4. \uACC4\uC815 \uBAA9\uB85D\uC744 \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The GitHub sign-in flow finished. Check the account list."
+  },
+  {
+    "Id": 1602,
+    "Name": "GcmOperationInProgress",
+    "Kor": "\uACC4\uC815 \uC791\uC5C5\uC744 \uC9C4\uD589 \uC911\uC785\uB2C8\uB2E4\u2026",
+    "Eng": "Working on the account\u2026"
+  },
+  {
+    "Id": 1603,
+    "Name": "GitAuthorEmailMissing",
+    "Kor": "Git \uC791\uC131\uC790 \uC774\uBA54\uC77C\uC774 \uC124\uC815\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Git author email is not configured."
+  },
+  {
+    "Id": 1604,
+    "Name": "GitAuthorNameMissing",
+    "Kor": "Git \uC791\uC131\uC790 \uC774\uB984\uC774 \uC124\uC815\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Git author name is not configured."
+  },
+  {
+    "Id": 1605,
+    "Name": "GitAuthorSummary",
+    "Kor": "\uCEE4\uBC0B \uC791\uC131\uC790: {0} \u003C{1}\u003E",
+    "Eng": "Commit author: {0} \u003C{1}\u003E"
+  },
+  {
+    "Id": 1606,
+    "Name": "GitExecutablePickerTitle",
+    "Kor": "Git \uC2E4\uD589 \uD30C\uC77C \uC120\uD0DD",
+    "Eng": "Select Git executable"
+  },
+  {
+    "Id": 1607,
+    "Name": "GitHubAccountActionCanceled",
+    "Kor": "\uACC4\uC815 \uC791\uC5C5\uC774 \uCDE8\uC18C\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Account operation canceled."
+  },
+  {
+    "Id": 1608,
+    "Name": "GitHubAccountLookupCanceled",
+    "Kor": "\uACC4\uC815 \uC870\uD68C\uAC00 \uCDE8\uC18C\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Account lookup canceled."
+  },
+  {
+    "Id": 1609,
+    "Name": "GitHubAccountScopeHint",
+    "Kor": "\uACC4\uC815 \uC120\uD0DD\uC740 \uD604\uC7AC \uC800\uC7A5\uC18C\uC758 \uD574\uB2F9 GitHub HTTPS \uC6D0\uACA9\uC5D0\uB9CC \uC801\uC6A9\uB429\uB2C8\uB2E4.",
+    "Eng": "Account selection applies only to the chosen GitHub HTTPS remote in this repository."
+  },
+  {
+    "Id": 1610,
+    "Name": "GitHubAccountSelected",
+    "Kor": "{0} \uC6D0\uACA9\uC5D0 {1} \uACC4\uC815\uC744 \uC120\uD0DD\uD588\uC2B5\uB2C8\uB2E4. \uC778\uC99D\uC740 \uB2E4\uC74C \uC6D0\uACA9 \uC791\uC5C5\uC5D0\uC11C \uD655\uC778\uB429\uB2C8\uB2E4.",
+    "Eng": "Selected {1} for remote {0}. Authentication will be checked on the next remote operation."
+  },
+  {
+    "Id": 1611,
+    "Name": "GitHubAccountSelectionPreview",
+    "Kor": "\uC774 \uC800\uC7A5\uC18C\uC758 {0} \uC6D0\uACA9\uC5D0 {1} \uACC4\uC815\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4.",
+    "Eng": "Use {1} for remote {0} in this repository."
+  },
+  {
+    "Id": 1612,
+    "Name": "GitHubAccountsLoading",
+    "Kor": "GitHub \uACC4\uC815\uACFC \uC6D0\uACA9 \uC815\uBCF4\uB97C \uBD88\uB7EC\uC624\uB294 \uC911\u2026",
+    "Eng": "Loading GitHub accounts and remotes\u2026"
+  },
+  {
+    "Id": 1613,
+    "Name": "GitHubInheritedAccount",
+    "Kor": "\uC804\uC5ED \uC124\uC815\uC5D0\uC11C \uC0C1\uC18D\uD55C \uACC4\uC815: {0}",
+    "Eng": "Account inherited from global settings: {0}"
+  },
+  {
+    "Id": 1614,
+    "Name": "GitHubNoRemotes",
+    "Kor": "\uB4F1\uB85D\uB41C \uC6D0\uACA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No remotes are configured."
+  },
+  {
+    "Id": 1615,
+    "Name": "GitHubNoSelectedAccount",
+    "Kor": "\uC120\uD0DD\uB41C \uC778\uC99D \uACC4\uC815 \uC5C6\uC74C",
+    "Eng": "No authentication account selected"
+  },
+  {
+    "Id": 1616,
+    "Name": "GitHubSelectedAccount",
+    "Kor": "\uC774 \uC800\uC7A5\uC18C\uC5D0\uC11C \uC120\uD0DD\uD55C \uACC4\uC815: {0}",
+    "Eng": "Account selected for this repository: {0}"
+  },
+  {
+    "Id": 1617,
+    "Name": "GitHubSharedRemoteUrlUnsupported",
+    "Kor": "\uC5EC\uB7EC \uC6D0\uACA9\uC774 \uAC19\uC740 URL\uC744 \uC0AC\uC6A9\uD574 \uACC4\uC815\uC744 \uB530\uB85C \uC9C0\uC815\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Multiple remotes share this URL, so their accounts cannot be selected separately."
+  },
+  {
+    "Id": 1618,
+    "Name": "GitHubUserNameRequired",
+    "Kor": "GitHub \uC0AC\uC6A9\uC790\uBA85\uC744 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter a GitHub username."
+  },
+  {
+    "Id": 1619,
+    "Name": "GitPathSaved",
+    "Kor": "Git \uACBD\uB85C\uB97C \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4. \uBC84\uC804: {0}",
+    "Eng": "Git path saved. Version: {0}."
+  },
+  {
+    "Id": 1620,
+    "Name": "GitPathVerified",
+    "Kor": "Git \uC2E4\uD589\uC744 \uD655\uC778\uD588\uC2B5\uB2C8\uB2E4. \uBC84\uC804: {0}",
+    "Eng": "Git verified. Version: {0}."
+  },
+  {
+    "Id": 1621,
+    "Name": "GitSettingsHint",
+    "Kor": "Git \uC2E4\uD589 \uD30C\uC77C\uACFC \uC791\uC131\uC790 \uC124\uC815\uC744 \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "Review the Git executable and author settings."
+  },
+  {
+    "Id": 1622,
+    "Name": "GitSettingsRefreshed",
+    "Kor": "Git \uC124\uC815\uC744 \uC0C8\uB85C \uACE0\uCCE4\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Git settings refreshed."
+  },
+  {
+    "Id": 1623,
+    "Name": "NotConfigured",
+    "Kor": "\uC124\uC815\uB418\uC9C0 \uC54A\uC74C",
+    "Eng": "Not configured"
+  },
+  {
+    "Id": 1624,
+    "Name": "SelectRepositoryPrompt",
+    "Kor": "\uC800\uC7A5\uC18C\uB97C \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Select a repository."
+  },
+  {
+    "Id": 1625,
+    "Name": "GlobalAuthorSaved",
+    "Kor": "\uC804\uC5ED \uCEE4\uBC0B \uC791\uC131\uC790 \uC124\uC815\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Saved global commit author settings."
+  },
+  {
+    "Id": 1626,
+    "Name": "LocalAuthorSaved",
+    "Kor": "\uC774 \uC800\uC7A5\uC18C\uC758 \uCEE4\uBC0B \uC791\uC131\uC790 \uC124\uC815\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Saved commit author settings for this repository."
+  },
+  {
+    "Id": 1700,
+    "Name": "DiscardSelectionCount",
+    "Kor": "\uC120\uD0DD\uD55C {0}\uAC1C \uD30C\uC77C \uBCC0\uACBD \uD3D0\uAE30\u2026",
+    "Eng": "Discard changes in {0} selected files\u2026"
+  },
+  {
+    "Id": 1701,
+    "Name": "IgnoreMenu",
+    "Kor": "\uBB34\uC2DC",
+    "Eng": "Ignore"
+  },
+  {
+    "Id": 1702,
+    "Name": "IgnoreRepository",
+    "Kor": "\uC800\uC7A5\uC18C\uC5D0\uC11C \uBB34\uC2DC (.gitignore)",
+    "Eng": "Ignore in repository (.gitignore)"
+  },
+  {
+    "Id": 1703,
+    "Name": "IgnoreLocal",
+    "Kor": "\uC774 \uCEF4\uD4E8\uD130\uC5D0\uC11C\uB9CC \uBB34\uC2DC (.git/info/exclude)",
+    "Eng": "Ignore on this computer only (.git/info/exclude)"
+  },
+  {
+    "Id": 1704,
+    "Name": "IgnoreConfirmTitle",
+    "Kor": "\uC120\uD0DD \uD30C\uC77C \uBB34\uC2DC",
+    "Eng": "Ignore selected files"
+  },
+  {
+    "Id": 1705,
+    "Name": "IgnoreConfirmButton",
+    "Kor": "\uBB34\uC2DC \uADDC\uCE59 \uCD94\uAC00",
+    "Eng": "Add ignore rules"
+  },
+  {
+    "Id": 1706,
+    "Name": "IgnoreConfirmDescription",
+    "Kor": "\uB300\uC0C1: {1}. \uC120\uD0DD\uD55C \uD30C\uC77C {0}\uAC1C\uC758 \uC815\uD655\uD55C \uACBD\uB85C\uB97C \uBB34\uC2DC \uADDC\uCE59\uC5D0 \uCD94\uAC00\uD569\uB2C8\uB2E4. \uD30C\uC77C\uC740 \uC0AD\uC81C\uD558\uAC70\uB098 \uC2A4\uD14C\uC774\uC9D5\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Destination: {1}. Add exact-path ignore rules for {0} selected files. Files will not be deleted or staged."
+  },
+  {
+    "Id": 1707,
+    "Name": "DiscardBatchImpact",
+    "Kor": "\uCD94\uC801 \uD30C\uC77C {0}\uAC1C\uC758 \uC2A4\uD14C\uC774\uC9D5\uB418\uC9C0 \uC54A\uC740 \uBCC0\uACBD\uC744 \uBCF5\uC6D0\uD558\uACE0 \uBBF8\uCD94\uC801 \uD30C\uC77C {1}\uAC1C\uB97C \uC0AD\uC81C\uD569\uB2C8\uB2E4. \uC774\uB984 \uBCC0\uACBD {2}\uAC1C\uB294 \uC6D0\uB798 \uACBD\uB85C\uB85C \uBCF5\uC6D0\uD569\uB2C8\uB2E4. \uC774\uBBF8 \uC2A4\uD14C\uC774\uC9D5\uD55C \uBCC0\uACBD\uC740 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "Restore unstaged changes in {0} tracked files and delete {1} untracked files. Restore {2} renames to their original paths. Staged changes remain intact."
+  },
+  {
+    "Id": 1708,
+    "Name": "DiscardBatchPartialFailure",
+    "Kor": "\uC77C\uBD80 \uD30C\uC77C\uC758 \uBCC0\uACBD\uB9CC \uD3D0\uAE30\uD588\uC2B5\uB2C8\uB2E4. \uC644\uB8CC {0}\uAC1C:\n{1}\n\uBBF8\uC644\uB8CC {2}\uAC1C:\n{3}\n\uC624\uB958: {4}",
+    "Eng": "Only some changes were discarded. Completed ({0}):\n{1}\nNot completed ({2}):\n{3}\nError: {4}"
+  },
+  {
+    "Id": 1800,
+    "Name": "GitHubGcmUnavailable",
+    "Kor": "Git Credential Manager\uB97C \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Git Credential Manager is unavailable."
+  },
+  {
+    "Id": 1801,
+    "Name": "GitHubAccountListUnavailable",
+    "Kor": "GCM \uACC4\uC815 \uBAA9\uB85D\uC744 \uC77D\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC0AC\uC6A9\uC790\uBA85\uC744 \uC9C1\uC811 \uC785\uB825\uD558\uAC70\uB098 \uB85C\uADF8\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Could not read the GCM account list. You can enter a username or sign in."
+  },
+  {
+    "Id": 1802,
+    "Name": "GitHubLoginFailed",
+    "Kor": "GitHub \uB85C\uADF8\uC778\uC774 \uCDE8\uC18C\uB410\uAC70\uB098 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. GCM \uB85C\uADF8\uC778 \uCC3D\uC5D0\uC11C \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "GitHub sign-in was canceled or failed. Try again in the GCM sign-in window."
+  },
+  {
+    "Id": 1803,
+    "Name": "GitHubRemoteNameRequired",
+    "Kor": "\uC6D0\uACA9 \uC774\uB984\uC744 \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Select a remote name."
+  },
+  {
+    "Id": 1804,
+    "Name": "GitHubRemoteNotFound",
+    "Kor": "\uC6D0\uACA9\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4: {0}",
+    "Eng": "Remote not found: {0}"
+  },
+  {
+    "Id": 1805,
+    "Name": "GitHubRemoteUrlUnreadable",
+    "Kor": "\uC6D0\uACA9 URL\uC744 \uC77D\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Could not read the remote URL."
+  },
+  {
+    "Id": 1806,
+    "Name": "GitHubRemoteMultipleUrls",
+    "Kor": "URL\uC774 \uC5EC\uB7EC \uAC1C\uC778 \uC6D0\uACA9\uC740 \uACC4\uC815 \uC120\uD0DD\uC744 \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Account selection is unavailable for remotes with multiple URLs."
+  },
+  {
+    "Id": 1807,
+    "Name": "GitHubRemoteFetchPushMismatch",
+    "Kor": "\uAC00\uC838\uC624\uAE30\uC640 \uD478\uC2DC URL\uC774 \uB2E4\uB978 \uC6D0\uACA9\uC740 \uACC4\uC815 \uC120\uD0DD\uC744 \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Account selection is unavailable when fetch and push URLs differ."
+  },
+  {
+    "Id": 1808,
+    "Name": "GitHubRemoteGcmHelperRequired",
+    "Kor": "\uC774 \uC6D0\uACA9\uC758 credential.helper\uAC00 GCM manager\uAC00 \uC544\uB2D9\uB2C8\uB2E4.",
+    "Eng": "This remote does not use GCM manager as its credential.helper."
+  },
+  {
+    "Id": 1809,
+    "Name": "GitHubRemoteDefaultAccountUnreadable",
+    "Kor": "{0} \uC6D0\uACA9\uC758 \uAE30\uBCF8 \uACC4\uC815 \uC124\uC815\uC744 \uC77D\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Could not read the default account setting for remote {0}."
+  },
+  {
+    "Id": 1810,
+    "Name": "GitHubRemoteLocalAccountUnreadable",
+    "Kor": "{0} \uC6D0\uACA9\uC758 \uC800\uC7A5\uC18C \uACC4\uC815 \uC124\uC815\uC744 \uC77D\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Could not read the repository account setting for remote {0}."
+  },
+  {
+    "Id": 1811,
+    "Name": "GitHubRemoteHttpsRequired",
+    "Kor": "GitHub HTTPS \uC6D0\uACA9\uC774 \uC544\uB2D9\uB2C8\uB2E4. SSH \uC6D0\uACA9\uC740 SSH \uD0A4\uB85C \uC778\uC99D\uD569\uB2C8\uB2E4.",
+    "Eng": "This is not a GitHub HTTPS remote. SSH remotes use SSH keys for authentication."
+  },
+  {
+    "Id": 1812,
+    "Name": "GitHubRemoteHostUnsupported",
+    "Kor": "github.com HTTPS \uC6D0\uACA9\uB9CC \uC9C0\uC6D0\uD569\uB2C8\uB2E4.",
+    "Eng": "Only github.com HTTPS remotes are supported."
+  },
+  {
+    "Id": 1813,
+    "Name": "GitHubRemotePortUnsupported",
+    "Kor": "\uD45C\uC900 HTTPS \uD3EC\uD2B8\uC758 GitHub \uC6D0\uACA9\uB9CC \uC9C0\uC6D0\uD569\uB2C8\uB2E4.",
+    "Eng": "Only GitHub remotes on the standard HTTPS port are supported."
+  },
+  {
+    "Id": 1814,
+    "Name": "GitHubRemoteUserInfoUnsupported",
+    "Kor": "\uC0AC\uC6A9\uC790 \uC815\uBCF4\uAC00 \uD3EC\uD568\uB41C \uC6D0\uACA9 URL\uC740 \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Remote URLs containing user information are unsupported."
+  },
+  {
+    "Id": 1815,
+    "Name": "GitHubRemoteQueryUnsupported",
+    "Kor": "\uCFFC\uB9AC \uB610\uB294 \uD504\uB798\uADF8\uBA3C\uD2B8\uAC00 \uC788\uB294 \uC6D0\uACA9 URL\uC740 \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Remote URLs containing a query or fragment are unsupported."
+  },
+  {
+    "Id": 1816,
+    "Name": "GitHubRemotePathInvalid",
+    "Kor": "GitHub \uC800\uC7A5\uC18C URL \uD615\uC2DD\uC774 \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The GitHub repository URL has an invalid format."
+  },
+  {
+    "Id": 1817,
+    "Name": "GitHubRemoteUrlNeedsReview",
+    "Kor": "\uC6D0\uACA9 URL \uD655\uC778 \uD544\uC694",
+    "Eng": "Check remote URL"
+  },
+  {
+    "Id": 1818,
+    "Name": "GitHubUserNameInvalid",
+    "Kor": "GitHub \uC0AC\uC6A9\uC790\uBA85\uC740 \uC601\uBB38\uC790\u00B7\uC22B\uC790\u00B7\uD558\uC774\uD508 1~39\uC790\uB85C \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter a GitHub username of 1\u201339 letters, digits, or hyphens."
+  },
+  {
+    "Id": 1819,
+    "Name": "GitHubFetchUrlLabel",
+    "Kor": "\uAC00\uC838\uC624\uAE30: {0}",
+    "Eng": "Fetch: {0}"
+  },
+  {
+    "Id": 1820,
+    "Name": "GitHubPushUrlLabel",
+    "Kor": "\uD478\uC2DC: {0}",
+    "Eng": "Push: {0}"
+  },
+  {
+    "Id": 1821,
+    "Name": "GitSettingsHeading",
+    "Kor": "\uC124\uC815",
+    "Eng": "Settings"
+  },
+  {
+    "Id": 1822,
+    "Name": "GitExecutableHeading",
+    "Kor": "GIT \uC2E4\uD589 \uD30C\uC77C",
+    "Eng": "GIT EXECUTABLE"
+  },
+  {
+    "Id": 1823,
+    "Name": "GitPathHint",
+    "Kor": "\uACBD\uB85C\uB97C \uBE44\uC6CC \uB450\uBA74 PATH\uC5D0 \uB4F1\uB85D\uB41C Git\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4.",
+    "Eng": "Leave the path empty to use Git from PATH."
+  },
+  {
+    "Id": 1824,
+    "Name": "GitPathPlaceholder",
+    "Kor": "PATH\uC758 git \uB610\uB294 \uC808\uB300 \uACBD\uB85C",
+    "Eng": "git from PATH, or an absolute path"
+  },
+  {
+    "Id": 1825,
+    "Name": "BrowseGitLabel",
+    "Kor": "\uCC3E\uC544\uBCF4\uAE30",
+    "Eng": "Browse"
+  },
+  {
+    "Id": 1826,
+    "Name": "TestGitLabel",
+    "Kor": "Git \uD655\uC778",
+    "Eng": "Test Git"
+  },
+  {
+    "Id": 1827,
+    "Name": "SaveGitPathLabel",
+    "Kor": "Git \uACBD\uB85C \uC800\uC7A5",
+    "Eng": "Save Git path"
+  },
+  {
+    "Id": 1828,
+    "Name": "CommitAuthorHeading",
+    "Kor": "\uCEE4\uBC0B \uC791\uC131\uC790",
+    "Eng": "COMMIT AUTHOR"
+  },
+  {
+    "Id": 1829,
+    "Name": "LocalAuthorHeading",
+    "Kor": "\uC774 \uC800\uC7A5\uC18C (\uB85C\uCEEC)",
+    "Eng": "This repository (local)"
+  },
+  {
+    "Id": 1830,
+    "Name": "SaveLocalAuthorLabel",
+    "Kor": "\uC774 \uC800\uC7A5\uC18C\uC5D0 \uC800\uC7A5",
+    "Eng": "Save for this repository"
+  },
+  {
+    "Id": 1831,
+    "Name": "GlobalAuthorHeading",
+    "Kor": "\uBAA8\uB4E0 \uC800\uC7A5\uC18C (\uC804\uC5ED)",
+    "Eng": "All repositories (global)"
+  },
+  {
+    "Id": 1832,
+    "Name": "SaveGlobalAuthorLabel",
+    "Kor": "\uC804\uC5ED \uC124\uC815\uC5D0 \uC800\uC7A5",
+    "Eng": "Save globally"
+  },
+  {
+    "Id": 1833,
+    "Name": "GitHubAccountsHeading",
+    "Kor": "\uACC4\uC815 \uBC0F \uC778\uC99D",
+    "Eng": "ACCOUNTS AND AUTHENTICATION"
+  },
+  {
+    "Id": 1834,
+    "Name": "GitHubAccountsDescription",
+    "Kor": "Bough\uB294 HTTPS \uC778\uC99D\uC5D0 Git \uC790\uACA9 \uC99D\uBA85 \uB3C4\uC6B0\uBBF8\uB97C, SSH \uC778\uC99D\uC5D0 \uAE30\uC874 SSH \uC124\uC815\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4. \uBE44\uBC00\uBC88\uD638\uC640 \uD1A0\uD070\uC740 \uC5EC\uAE30\uC5D0 \uC800\uC7A5\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Bough uses Git credential helpers for HTTPS and your existing SSH setup. Passwords and tokens are not stored here."
+  },
+  {
+    "Id": 1835,
+    "Name": "GitHubAccountsPurpose",
+    "Kor": "Fetch / Pull / Push \uC778\uC99D\uC5D0\uB9CC \uC801\uC6A9\uB429\uB2C8\uB2E4. \uC704\uC758 \uCEE4\uBC0B \uC791\uC131\uC790\uC640 \uC544\uBC14\uD0C0 \uC124\uC815\uC740 \uBCC4\uAC1C\uC785\uB2C8\uB2E4.",
+    "Eng": "Fetch / Pull / Push authentication only. Commit author and avatar settings above are separate."
+  },
+  {
+    "Id": 1836,
+    "Name": "GitHubAccountsQueueHint",
+    "Kor": "\uD604\uC7AC \uC6D0\uACA9 \uC791\uC5C5\uC774 \uB05D\uB09C \uB4A4 \uACC4\uC815\uC744 \uC120\uD0DD\uD569\uB2C8\uB2E4.",
+    "Eng": "Account selection waits until the current remote operation completes."
+  },
+  {
+    "Id": 1837,
+    "Name": "GitHubExistingAccountPlaceholder",
+    "Kor": "\uAE30\uC874 GCM \uACC4\uC815",
+    "Eng": "Existing GCM account"
+  },
+  {
+    "Id": 1838,
+    "Name": "GitHubRemoteUserNameAutomationName",
+    "Kor": "\uC774 \uC6D0\uACA9\uC758 GitHub \uC0AC\uC6A9\uC790\uBA85",
+    "Eng": "GitHub username for this remote"
+  },
+  {
+    "Id": 1839,
+    "Name": "GitHubSelectAccountLabel",
+    "Kor": "\uC774 \uC6D0\uACA9\uC5D0 \uC0AC\uC6A9",
+    "Eng": "Use for this remote"
+  },
+  {
+    "Id": 1840,
+    "Name": "GitHubAddAccountLabel",
+    "Kor": "\uB2E4\uB978 GitHub \uACC4\uC815 \uCD94\uAC00\u2026",
+    "Eng": "Add another GitHub account\u2026"
+  },
+  {
+    "Id": 1841,
+    "Name": "CredentialHelperHeading",
+    "Kor": "\uC790\uACA9 \uC99D\uBA85 \uB3C4\uC6B0\uBBF8",
+    "Eng": "Credential helper"
+  },
+  {
+    "Id": 1842,
+    "Name": "RemoteUrlsHeading",
+    "Kor": "\uC6D0\uACA9 URL",
+    "Eng": "Remote URLs"
+  },
+  {
+    "Id": 1843,
+    "Name": "SettingsTitle",
+    "Kor": "\uC124\uC815",
+    "Eng": "Settings"
+  },
+  {
+    "Id": 2906,
+    "Name": "ReferenceDeleteLocalBranch",
+    "Kor": "\uB85C\uCEEC \uBE0C\uB79C\uCE58 \uC0AD\uC81C...",
+    "Eng": "Delete local branch..."
+  },
+  {
+    "Id": 2907,
+    "Name": "ReferenceDeleteRemoteBranch",
+    "Kor": "\uC6D0\uACA9 \uBE0C\uB79C\uCE58 \uC0AD\uC81C...",
+    "Eng": "Delete remote branch..."
+  },
+  {
+    "Id": 2908,
+    "Name": "ReferenceDeleteLocalBranchTitle",
+    "Kor": "\uB85C\uCEEC \uBE0C\uB79C\uCE58 \uC0AD\uC81C",
+    "Eng": "Delete local branch"
+  },
+  {
+    "Id": 2909,
+    "Name": "ReferenceDeleteRemoteBranchTitle",
+    "Kor": "\uC6D0\uACA9 \uBE0C\uB79C\uCE58 \uC0AD\uC81C",
+    "Eng": "Delete remote branch"
+  },
+  {
+    "Id": 2910,
+    "Name": "ReferenceDeleteLocalBranchConfirm",
+    "Kor": "{0} \uBE0C\uB79C\uCE58\uB97C \uC0AD\uC81C\uD558\uC2DC\uACA0\uC2B5\uB2C8\uAE4C? \uBCD1\uD569\uB418\uC9C0 \uC54A\uC740 \uCEE4\uBC0B\uC774 \uC788\uC73C\uBA74 \uC0AD\uC81C\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Delete local branch {0}? Git will keep it if it contains unmerged commits."
+  },
+  {
+    "Id": 2911,
+    "Name": "ReferenceDeleteRemoteBranchConfirm",
+    "Kor": "\uC6D0\uACA9 \uBE0C\uB79C\uCE58 {0}\uC744(\uB97C) \uC11C\uBC84\uC5D0\uC11C \uC0AD\uC81C\uD558\uC2DC\uACA0\uC2B5\uB2C8\uAE4C? \uB2E4\uB978 \uC0AC\uC6A9\uC790\uC5D0\uAC8C\uB3C4 \uC601\uD5A5\uC744 \uC8FC\uBA70 \uC571\uC5D0\uC11C \uB418\uB3CC\uB9B4 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Delete remote branch {0} from the server? This affects other users and cannot be undone from the app."
+  },
+  {
+    "Id": 2912,
+    "Name": "ReferenceDeleteBranchAction",
+    "Kor": "\uBE0C\uB79C\uCE58 \uC0AD\uC81C",
+    "Eng": "Delete branch"
+  },
+  {
+    "Id": 2913,
+    "Name": "ReferenceDeletingBranch",
+    "Kor": "{0} \uBE0C\uB79C\uCE58 \uC0AD\uC81C \uC911...",
+    "Eng": "Deleting branch {0}..."
+  },
+  {
+    "Id": 2914,
+    "Name": "ReferenceLocalBranchDeleted",
+    "Kor": "{0} \uB85C\uCEEC \uBE0C\uB79C\uCE58\uB97C \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Deleted local branch {0}."
+  },
+  {
+    "Id": 2915,
+    "Name": "ReferenceRemoteBranchDeleted",
+    "Kor": "{0} \uC6D0\uACA9 \uBE0C\uB79C\uCE58\uB97C \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Deleted remote branch {0}."
+  },
+  {
+    "Id": 2916,
+    "Name": "ReferenceBranchDeleteRefreshFailed",
+    "Kor": "{0} \uCC38\uC870 \uBAA9\uB85D \uC0C8\uB85C\uACE0\uCE68 \uC2E4\uD328: {1}",
+    "Eng": "{0} Could not refresh references: {1}"
+  },
+  {
+    "Id": 2917,
+    "Name": "ReferenceLocalBranchDeleteCurrent",
+    "Kor": "\uD604\uC7AC \uCCB4\uD06C\uC544\uC6C3\uB41C {0} \uBE0C\uB79C\uCE58\uB294 \uC0AD\uC81C\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Cannot delete the checked-out branch {0}."
+  },
+  {
+    "Id": 2918,
+    "Name": "ReferenceLocalBranchDeleteMissing",
+    "Kor": "{0} \uB85C\uCEEC \uBE0C\uB79C\uCE58\uB97C \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Local branch {0} no longer exists."
+  },
+  {
+    "Id": 2919,
+    "Name": "ReferenceLocalBranchDeleteChanged",
+    "Kor": "{0} \uBE0C\uB79C\uCE58\uAC00 \uD655\uC778 \uC774\uD6C4 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C\uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "Branch {0} changed after confirmation. Refresh and try again."
+  },
+  {
+    "Id": 2920,
+    "Name": "ReferenceLocalBranchDeleteFailed",
+    "Kor": "{0} \uB85C\uCEEC \uBE0C\uB79C\uCE58\uB97C \uC0AD\uC81C\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4: {1}",
+    "Eng": "Could not delete local branch {0}: {1}"
+  },
+  {
+    "Id": 2921,
+    "Name": "ReferenceLocalBranchDeleteFailedWithoutOutput",
+    "Kor": "{0} \uB85C\uCEEC \uBE0C\uB79C\uCE58\uB97C \uC0AD\uC81C\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4(\uC885\uB8CC \uCF54\uB4DC {1}).",
+    "Eng": "Could not delete local branch {0} (exit code {1})."
+  },
+  {
+    "Id": 2922,
+    "Name": "ReferenceRemoteBranchDeleteDefault",
+    "Kor": "{0}\uC740(\uB294) \uC6D0\uACA9\uC758 \uAE30\uBCF8 \uBE0C\uB79C\uCE58\uB77C \uC0AD\uC81C\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Cannot delete {0} because it is the remote\u0027s default branch."
+  },
+  {
+    "Id": 2923,
+    "Name": "ReferenceRemoteBranchDeleteMissing",
+    "Kor": "{0} \uC6D0\uACA9 \uBE0C\uB79C\uCE58\uB97C \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Remote branch {0} no longer exists."
+  },
+  {
+    "Id": 2924,
+    "Name": "ReferenceRemoteBranchDeleteChanged",
+    "Kor": "{0} \uC6D0\uACA9 \uBE0C\uB79C\uCE58\uAC00 \uD655\uC778 \uC774\uD6C4 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. Fetch\uD55C \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "Remote branch {0} changed after confirmation. Fetch and try again."
+  },
+  {
+    "Id": 2925,
+    "Name": "ReferenceRemoteBranchDeleteFailed",
+    "Kor": "{0} \uC6D0\uACA9 \uBE0C\uB79C\uCE58\uB97C \uC0AD\uC81C\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4: {1}",
+    "Eng": "Could not delete remote branch {0}: {1}"
+  },
+  {
+    "Id": 2926,
+    "Name": "ReferenceRemoteBranchDeleteFailedWithoutOutput",
+    "Kor": "{0} \uC6D0\uACA9 \uBE0C\uB79C\uCE58\uB97C \uC0AD\uC81C\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4(\uC885\uB8CC \uCF54\uB4DC {1}).",
+    "Eng": "Could not delete remote branch {0} (exit code {1})."
+  },
+  {
+    "Id": 2927,
+    "Name": "ConflictBatchCurrentFileLabel",
+    "Kor": "\uD604\uC7AC \uD30C\uC77C\uC758 \uB0A8\uC740 \uCDA9\uB3CC \uAD6C\uAC04 {0}\uAC1C",
+    "Eng": "{0} unresolved sections remaining in this file"
+  },
+  {
+    "Id": 2928,
+    "Name": "ConflictBatchTooltip",
+    "Kor": "\uC774\uBBF8 \uC120\uD0DD\uD55C \uAD6C\uAC04\uC740 \uC720\uC9C0\uD569\uB2C8\uB2E4. \uCD5C\uC885 \uD30C\uC77C \uBBF8\uB9AC\uBCF4\uAE30\uB9CC \uBC14\uB00C\uBA70 \uC800\uC7A5\u00B7\uC2A4\uD14C\uC774\uC9D5\uC740 \uBCC4\uB3C4\uB85C \uD574\uC57C \uD569\uB2C8\uB2E4.",
+    "Eng": "Previous choices stay unchanged. This updates only the final-file preview; save and stage separately."
+  },
+  {
+    "Id": 2929,
+    "Name": "ConflictBatchReplaceEditsTitle",
+    "Kor": "\uC9C1\uC811 \uD3B8\uC9D1\uD55C \uB0B4\uC6A9 \uBC14\uAFB8\uAE30",
+    "Eng": "Replace manual edits"
+  },
+  {
+    "Id": 2930,
+    "Name": "ConflictBatchReplaceEditsMessage",
+    "Kor": "\uCD5C\uC885 \uD30C\uC77C\uC744 \uC9C1\uC811 \uD3B8\uC9D1\uD588\uC2B5\uB2C8\uB2E4. \uB0A8\uC740 \uAD6C\uAC04\uC5D0 \uC77C\uAD04 \uC120\uD0DD\uC744 \uC801\uC6A9\uD558\uBA74 \uC9C1\uC811 \uD3B8\uC9D1\uD55C \uB0B4\uC6A9\uC774 \uC0AC\uB77C\uC9D1\uB2C8\uB2E4. \uACC4\uC18D\uD560\uAE4C\uC694?",
+    "Eng": "You edited the final file. Applying one choice to the remaining sections will replace those manual edits. Continue?"
+  },
+  {
+    "Id": 2931,
+    "Name": "ConflictBatchApplyButton",
+    "Kor": "\uC77C\uAD04 \uC801\uC6A9",
+    "Eng": "Apply to remaining"
+  },
+  {
+    "Id": 2932,
+    "Name": "RebaseTargetChange",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4 \uB300\uC0C1 \u00B7 \uC801\uC6A9\uB41C \uCEE4\uBC0B",
+    "Eng": "Rebase target \u00B7 applied commits"
+  },
+  {
+    "Id": 2933,
+    "Name": "RebaseReplayChange",
+    "Kor": "\uB2E4\uC2DC \uC801\uC6A9 \uC911\uC778 \uB0B4 \uCEE4\uBC0B",
+    "Eng": "My commit being replayed"
+  },
+  {
+    "Id": 2934,
+    "Name": "RebaseUseTarget",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4 \uB300\uC0C1 \uC0AC\uC6A9",
+    "Eng": "Use rebase target"
+  },
+  {
+    "Id": 2935,
+    "Name": "RebaseUseReplay",
+    "Kor": "\uB0B4 \uCEE4\uBC0B \uC0AC\uC6A9",
+    "Eng": "Use my commit"
+  },
+  {
+    "Id": 2936,
+    "Name": "RebaseTargetSource",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4 \uB300\uC0C1 HEAD",
+    "Eng": "Rebase target HEAD"
+  },
+  {
+    "Id": 2937,
+    "Name": "RebaseReplaySource",
+    "Kor": "\uB0B4 \uCEE4\uBC0B REBASE_HEAD",
+    "Eng": "My commit REBASE_HEAD"
+  },
+  {
+    "Id": 2938,
+    "Name": "RebaseBothOrderTip",
+    "Kor": "\uB458 \uB2E4 \uC0AC\uC6A9\uD558\uBA74 \uB9AC\uBCA0\uC774\uC2A4 \uB300\uC0C1 \uB0B4\uC6A9\uC744 \uBA3C\uC800, \uB2E4\uC2DC \uC801\uC6A9 \uC911\uC778 \uB0B4 \uCEE4\uBC0B \uB0B4\uC6A9\uC744 \uB4A4\uC5D0 \uB461\uB2C8\uB2E4.",
+    "Eng": "Use both places the rebase target content first, followed by my replayed commit."
+  },
+  {
+    "Id": 2939,
+    "Name": "RebaseProgressLabel",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4 \uC9C4\uD589 \uC911",
+    "Eng": "Rebase in progress"
+  },
+  {
+    "Id": 2940,
+    "Name": "RebaseResolveBeforeContinue",
+    "Kor": "\uB0A8\uC740 \uCDA9\uB3CC {0}\uAC74\uC744 \uD574\uACB0\u00B7\uC2A4\uD14C\uC774\uC9D5\uD558\uBA74 \uACC4\uC18D\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Resolve and stage {0} remaining conflicts to continue."
+  },
+  {
+    "Id": 2941,
+    "Name": "RebaseReadyToContinue",
+    "Kor": "\uBAA8\uB4E0 \uCDA9\uB3CC\uC744 \uC2A4\uD14C\uC774\uC9D5\uD588\uC2B5\uB2C8\uB2E4. \uACC4\uC18D\uC744 \uB20C\uB7EC \uB9AC\uBCA0\uC774\uC2A4\uB97C \uC9C4\uD589\uD558\uC138\uC694.",
+    "Eng": "All conflicts are staged. Select Continue rebase to proceed."
+  },
+  {
+    "Id": 2942,
+    "Name": "RebaseContinueAction",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4 \uACC4\uC18D",
+    "Eng": "Continue rebase"
+  },
+  {
+    "Id": 2943,
+    "Name": "RebaseNoLongerInProgress",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4\uAC00 \uB354 \uC774\uC0C1 \uC9C4\uD589 \uC911\uC774\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The rebase is no longer in progress."
+  },
+  {
+    "Id": 2944,
+    "Name": "RebaseUnresolvedConflicts",
+    "Kor": "\uBBF8\uD574\uACB0 \uCDA9\uB3CC {0}\uAC74\uC774 \uC788\uC5B4 \uB9AC\uBCA0\uC774\uC2A4\uB97C \uACC4\uC18D\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Cannot continue the rebase while {0} conflicts remain unresolved."
+  },
+  {
+    "Id": 2945,
+    "Name": "RebaseContinueFailed",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4 \uACC4\uC18D\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4(\uC885\uB8CC \uCF54\uB4DC {0}). {1}",
+    "Eng": "Could not continue the rebase (exit code {0}). {1}"
+  },
+  {
+    "Id": 2946,
+    "Name": "RebaseNextConflicts",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4\uC5D0\uC11C \uC0C8 \uCDA9\uB3CC {0}\uAC74\uC774 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4. \uD574\uACB0\u00B7\uC2A4\uD14C\uC774\uC9D5\uD55C \uB4A4 \uACC4\uC18D\uD558\uC138\uC694.",
+    "Eng": "The rebase has {0} new conflicts. Resolve and stage them, then continue."
+  },
+  {
+    "Id": 2947,
+    "Name": "RebaseContinueCompleted",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4\uB97C \uC644\uB8CC\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Rebase completed."
+  },
+  {
+    "Id": 2948,
+    "Name": "RebaseContinueStillInProgress",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4\uAC00 \uC544\uC9C1 \uC9C4\uD589 \uC911\uC785\uB2C8\uB2E4. Git \uC0C1\uD0DC\uB97C \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The rebase is still in progress. Check the Git state."
+  },
+  {
+    "Id": 2949,
+    "Name": "RebaseRepositoryChanged",
+    "Kor": "\uC800\uC7A5\uC18C \uB8E8\uD2B8\uAC00 \uBC14\uB00C\uC5B4 \uB9AC\uBCA0\uC774\uC2A4\uB97C \uACC4\uC18D\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4: {0}",
+    "Eng": "The repository root changed, so the rebase was not continued: {0}"
+  },
+  {
+    "Id": 2950,
+    "Name": "RebaseCheckingConflicts",
+    "Kor": "\uCDA9\uB3CC \uC0C1\uD0DC\uB97C \uD655\uC778\uD558\uB294 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Checking the conflict state."
+  },
+  {
+    "Id": 2951,
+    "Name": "DefaultPullStrategyHeading",
+    "Kor": "Bough \uAE30\uBCF8 Pull \uBC29\uC2DD",
+    "Eng": "Bough default Pull strategy"
+  },
+  {
+    "Id": 2952,
+    "Name": "DefaultPullStrategyDescription",
+    "Kor": "\uBAA8\uB4E0 \uC800\uC7A5\uC18C\uC5D0\uC11C Bough\uC758 \uAE30\uBCF8 Pull \uB3D9\uC791\uC5D0 \uC801\uC6A9\uB429\uB2C8\uB2E4. Git CLI\uC758 pull.rebase \uBC0F pull.ff \uC124\uC815\uC740 \uBCC0\uACBD\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Applies to Bough\u0027s default Pull action for every repository. Git CLI pull.rebase and pull.ff settings are not changed."
+  },
+  {
+    "Id": 2953,
+    "Name": "PullStrategyFastForwardOnly",
+    "Kor": "\uBE60\uB978 \uC804\uC9C4\uB9CC",
+    "Eng": "Fast-forward only"
+  },
+  {
+    "Id": 2954,
+    "Name": "PullStrategyMerge",
+    "Kor": "\uBCD1\uD569",
+    "Eng": "Merge"
+  },
+  {
+    "Id": 2955,
+    "Name": "PullStrategyRebase",
+    "Kor": "\uB9AC\uBCA0\uC774\uC2A4",
+    "Eng": "Rebase"
+  },
+  {
+    "Id": 2956,
+    "Name": "DefaultPullStrategySaved",
+    "Kor": "Bough \uAE30\uBCF8 Pull \uBC29\uC2DD \uC800\uC7A5: {0}",
+    "Eng": "Bough default Pull strategy saved: {0}"
+  },
+  {
+    "Id": 2957,
+    "Name": "RemotePullConfiguredDefaultTip",
+    "Kor": "\uAE30\uBCF8 Pull: {0}. upstream\uC774 \uC5C6\uC73C\uBA74 \uBC1B\uC744 \uC6D0\uACA9 \uBE0C\uB79C\uCE58\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4.",
+    "Eng": "Default Pull: {0}. Choose a remote branch if there is no upstream."
+  },
+  {
+    "Id": 2958,
+    "Name": "RemotePullConfiguredDefaultAutomation",
+    "Kor": "Pull (\uAE30\uBCF8 \uBC29\uC2DD: {0})",
+    "Eng": "Pull (default: {0})"
+  },
+  {
+    "Id": 2959,
+    "Name": "RemotePullStrategyMenuTip",
+    "Kor": "\uC774\uBC88 Pull\uC5D0 \uC0AC\uC6A9\uD560 \uBC29\uC2DD \uB610\uB294 \uBC1B\uC744 \uBE0C\uB79C\uCE58\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4. \uAE30\uBCF8 \uBC29\uC2DD: {0}",
+    "Eng": "Choose a strategy or source branch for this Pull. Default: {0}"
+  },
+  {
+    "Id": 2960,
+    "Name": "RemotePullChooseBranchDefaultTip",
+    "Kor": "\uBC1B\uC744 \uC6D0\uACA9 \uBE0C\uB79C\uCE58\uB97C \uACE0\uB978 \uB4A4 \uAE30\uBCF8 \uBC29\uC2DD({0})\uC73C\uB85C Pull\uC744 \uC2E4\uD589\uD569\uB2C8\uB2E4.",
+    "Eng": "Choose a remote branch, then Pull with the default strategy ({0})."
+  },
+  {
+    "Id": 2961,
+    "Name": "RemotePullFastForwardAction",
+    "Kor": "\uBE60\uB978 \uC804\uC9C4\uB9CC\uC73C\uB85C \uBC1B\uAE30",
+    "Eng": "Pull fast-forward only"
+  },
+  {
+    "Id": 2962,
+    "Name": "RemotePullDefaultSuffix",
+    "Kor": " (\uAE30\uBCF8)",
+    "Eng": " (default)"
+  },
+  {
+    "Id": 2963,
+    "Name": "RemotePullStrategyMenuAutomation",
+    "Kor": "Pull \uBC29\uC2DD \uBA54\uB274 (\uAE30\uBCF8: {0})",
+    "Eng": "Pull strategy menu (default: {0})"
+  },
+  {
+    "Id": 2964,
+    "Name": "RemotePullFastForwardTip",
+    "Kor": "\uD604\uC7AC upstream\uC5D0\uC11C \uBE60\uB978 \uC804\uC9C4\uB9CC\uC73C\uB85C \uD55C \uBC88 Pull\uD569\uB2C8\uB2E4. upstream\uC774 \uC5C6\uC73C\uBA74 \uBC1B\uC744 \uC6D0\uACA9 \uBE0C\uB79C\uCE58\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4.",
+    "Eng": "Pull once from the current upstream using fast-forward only. If there is no upstream, choose a remote branch."
+  },
+  {
+    "Id": 2965,
+    "Name": "DiscardTrackedSelectionCount",
+    "Kor": "\uC120\uD0DD\uD55C \uCD94\uC801 \uD30C\uC77C {0}\uAC1C\uC758 \uBCC0\uACBD \uBC84\uB9AC\uAE30",
+    "Eng": "Discard changes in {0} selected tracked files"
+  },
+  {
+    "Id": 2966,
+    "Name": "DeleteUntrackedSelectionCount",
+    "Kor": "\uC120\uD0DD\uD55C \uBBF8\uCD94\uC801 \uD30C\uC77C {0}\uAC1C \uC0AD\uC81C",
+    "Eng": "Delete {0} selected untracked files"
+  },
+  {
+    "Id": 2967,
+    "Name": "DiscardMixedSelectionCount",
+    "Kor": "\uBCC0\uACBD \uBC84\uB9AC\uAE30 {0}\uAC1C \u00B7 \uBBF8\uCD94\uC801 \uD30C\uC77C \uC0AD\uC81C {1}\uAC1C",
+    "Eng": "Discard changes in {0} tracked files \u00B7 delete {1} untracked files"
+  },
+  {
+    "Id": 2968,
+    "Name": "DiscardTrackedTitle",
+    "Kor": "\uCD94\uC801 \uD30C\uC77C \uBCC0\uACBD \uBC84\uB9AC\uAE30",
+    "Eng": "Discard tracked file changes"
+  },
+  {
+    "Id": 2969,
+    "Name": "DeleteUntrackedTitle",
+    "Kor": "\uBBF8\uCD94\uC801 \uD30C\uC77C \uC0AD\uC81C",
+    "Eng": "Delete untracked files"
+  },
+  {
+    "Id": 2970,
+    "Name": "DiscardMixedTitle",
+    "Kor": "\uBCC0\uACBD \uBC84\uB9AC\uAE30 \uBC0F \uBBF8\uCD94\uC801 \uD30C\uC77C \uC0AD\uC81C",
+    "Eng": "Discard changes and delete untracked files"
+  },
+  {
+    "Id": 2971,
+    "Name": "DeleteUntrackedImpact",
+    "Kor": "\uBBF8\uCD94\uC801 \uD30C\uC77C {0}\uAC1C\uB97C \uB514\uC2A4\uD06C\uC5D0\uC11C \uC601\uAD6C \uC0AD\uC81C\uD569\uB2C8\uB2E4.",
+    "Eng": "Permanently delete {0} untracked files from disk."
+  },
+  {
+    "Id": 2972,
+    "Name": "DiscardConfirmMixed",
+    "Kor": "\uBCC0\uACBD \uBC84\uB9AC\uAE30 \uBC0F \uD30C\uC77C \uC0AD\uC81C",
+    "Eng": "Discard changes and delete files"
+  },
+  {
+    "Id": 2973,
+    "Name": "StopTrackingSelectionCount",
+    "Kor": "\uC120\uD0DD\uD55C \uCD94\uC801 \uD30C\uC77C {0}\uAC1C \uCD94\uC801 \uC911\uC9C0",
+    "Eng": "Stop tracking {0} selected files"
+  },
+  {
+    "Id": 2974,
+    "Name": "StopTrackingTitle",
+    "Kor": "\uD30C\uC77C \uCD94\uC801 \uC911\uC9C0",
+    "Eng": "Stop tracking files"
+  },
+  {
+    "Id": 2975,
+    "Name": "StopTrackingDescription",
+    "Kor": "\uCD94\uC801 \uD30C\uC77C {0}\uAC1C\uB97C Git \uC778\uB371\uC2A4\uC5D0\uC11C\uB9CC \uC81C\uAC70\uD569\uB2C8\uB2E4. \uC791\uC5C5 \uD30C\uC77C\uC740 \uC0AD\uC81C\uD558\uC9C0 \uC54A\uC73C\uBA70, \uD30C\uC77C \uC0AD\uC81C\uAC00 \uC2A4\uD14C\uC774\uC9D5\uB41C \uBCC0\uACBD\uC73C\uB85C \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uACC4\uC18D \uCD94\uC801\uD558\uC9C0 \uC54A\uC73C\uB824\uBA74 \uC791\uC5C5 \uD6C4 \uBCC4\uB3C4\uB85C \uBB34\uC2DC \uADDC\uCE59\uC744 \uCD94\uAC00\uD558\uC138\uC694.",
+    "Eng": "Remove {0} tracked files from the Git index only. Working files are kept, and their deletion is staged. Add ignore rules separately afterward if they should remain untracked."
+  },
+  {
+    "Id": 2976,
+    "Name": "StopTrackingConfirm",
+    "Kor": "\uCD94\uC801 \uC911\uC9C0",
+    "Eng": "Stop tracking"
+  },
+  {
+    "Id": 2977,
+    "Name": "LocalStopTrackingRequiresConfirmation",
+    "Kor": "\uCD94\uC801 \uC911\uC9C0\uB97C \uD655\uC778\uD560 \uCC3D\uC744 \uC5F4 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The stop-tracking confirmation window is unavailable."
+  },
+  {
+    "Id": 2978,
+    "Name": "DiscardTrackedContextMenu",
+    "Kor": "\uBCC0\uACBD \uBC84\uB9AC\uAE30",
+    "Eng": "Discard changes"
+  },
+  {
+    "Id": 2979,
+    "Name": "DeleteUntrackedContextMenu",
+    "Kor": "\uD30C\uC77C \uC0AD\uC81C",
+    "Eng": "Delete files"
+  },
+  {
+    "Id": 2980,
+    "Name": "DiscardMixedContextMenu",
+    "Kor": "\uBCC0\uACBD \uBC84\uB9AC\uAE30 \uBC0F \uD30C\uC77C \uC0AD\uC81C",
+    "Eng": "Discard changes and delete files"
+  },
+  {
+    "Id": 2981,
+    "Name": "StopTrackingContextMenu",
+    "Kor": "\uCD94\uC801 \uC911\uC9C0",
+    "Eng": "Stop tracking"
+  },
+  {
+    "Id": 2982,
+    "Name": "CloneAction",
+    "Kor": "\uBCF5\uC81C",
+    "Eng": "Clone"
+  },
+  {
+    "Id": 2983,
+    "Name": "CloneTitle",
+    "Kor": "\uC800\uC7A5\uC18C \uBCF5\uC81C",
+    "Eng": "Clone repository"
+  },
+  {
+    "Id": 2984,
+    "Name": "CloneUrlLabel",
+    "Kor": "\uC6D0\uACA9 URL \uB610\uB294 \uB85C\uCEEC \uACBD\uB85C",
+    "Eng": "Remote URL or local path"
+  },
+  {
+    "Id": 2985,
+    "Name": "CloneParentLabel",
+    "Kor": "\uC800\uC7A5\uD560 \uC0C1\uC704 \uD3F4\uB354",
+    "Eng": "Parent folder"
+  },
+  {
+    "Id": 2986,
+    "Name": "CloneFolderLabel",
+    "Kor": "\uC0C8 \uD3F4\uB354 \uC774\uB984",
+    "Eng": "New folder name"
+  },
+  {
+    "Id": 2987,
+    "Name": "CloneBrowseParent",
+    "Kor": "\uCC3E\uC544\uBCF4\uAE30",
+    "Eng": "Browse"
+  },
+  {
+    "Id": 2988,
+    "Name": "ClonePickParentTitle",
+    "Kor": "\uBCF5\uC81C\uD560 \uC704\uCE58 \uC120\uD0DD",
+    "Eng": "Choose clone location"
+  },
+  {
+    "Id": 2989,
+    "Name": "CloneDestinationPreview",
+    "Kor": "\uC0DD\uC131 \uC704\uCE58: {0}",
+    "Eng": "Destination: {0}"
+  },
+  {
+    "Id": 2990,
+    "Name": "CloneUrlRequired",
+    "Kor": "\uC6D0\uACA9 \uC8FC\uC18C\uB97C \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter a remote address."
+  },
+  {
+    "Id": 2991,
+    "Name": "CloneUrlInvalid",
+    "Kor": "\uC9C0\uC6D0\uD558\uC9C0 \uC54A\uB294 \uC6D0\uACA9 \uC8FC\uC18C\uC785\uB2C8\uB2E4.",
+    "Eng": "The remote address is not supported."
+  },
+  {
+    "Id": 2992,
+    "Name": "CloneUrlContainsCredentials",
+    "Kor": "\uC8FC\uC18C\uC5D0 \uC0AC\uC6A9\uC790 \uC774\uB984\uC774\uB098 \uD1A0\uD070\uC744 \uD3EC\uD568\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. Git \uC778\uC99D \uB3C4\uC6B0\uBBF8\uB97C \uC0AC\uC6A9\uD558\uC138\uC694.",
+    "Eng": "Remove credentials from the address and use the Git credential helper."
+  },
+  {
+    "Id": 2993,
+    "Name": "CloneParentRequired",
+    "Kor": "\uC0C1\uC704 \uD3F4\uB354\uB97C \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Choose a parent folder."
+  },
+  {
+    "Id": 2994,
+    "Name": "CloneParentMissing",
+    "Kor": "\uC0C1\uC704 \uD3F4\uB354\uAC00 \uC874\uC7AC\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The parent folder does not exist."
+  },
+  {
+    "Id": 2995,
+    "Name": "CloneFolderRequired",
+    "Kor": "\uC0C8 \uD3F4\uB354 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter a new folder name."
+  },
+  {
+    "Id": 2996,
+    "Name": "CloneFolderInvalid",
+    "Kor": "\uC0AC\uC6A9\uD560 \uC218 \uC5C6\uB294 \uD3F4\uB354 \uC774\uB984\uC785\uB2C8\uB2E4.",
+    "Eng": "The folder name is invalid."
+  },
+  {
+    "Id": 2997,
+    "Name": "CloneDestinationOccupied",
+    "Kor": "\uC0DD\uC131 \uC704\uCE58\uAC00 \uC774\uBBF8 \uC874\uC7AC\uD569\uB2C8\uB2E4: {0}",
+    "Eng": "The destination already exists: {0}"
+  },
+  {
+    "Id": 2998,
+    "Name": "CloneQueued",
+    "Kor": "\uBCF5\uC81C \uB300\uAE30 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Waiting to clone."
+  },
+  {
+    "Id": 2999,
+    "Name": "CloneProgress",
+    "Kor": "Git \uC9C4\uD589 \uB2E8\uACC4: {0}%",
+    "Eng": "Git progress step: {0}%"
+  },
+  {
+    "Id": 3000,
+    "Name": "CloneRunning",
+    "Kor": "\uC800\uC7A5\uC18C\uB97C \uBCF5\uC81C\uD558\uB294 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Cloning the repository."
+  },
+  {
+    "Id": 3001,
+    "Name": "CloneSucceeded",
+    "Kor": "\uBCF5\uC81C\uAC00 \uC644\uB8CC\uB410\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Clone completed."
+  },
+  {
+    "Id": 3002,
+    "Name": "CloneCancelled",
+    "Kor": "\uBCF5\uC81C\uAC00 \uCDE8\uC18C\uB410\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Clone canceled."
+  },
+  {
+    "Id": 3003,
+    "Name": "CloneGitFailed",
+    "Kor": "Git \uBCF5\uC81C \uBA85\uB839\uC774 \uC885\uB8CC \uCF54\uB4DC {0}\uC73C\uB85C \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Git clone failed with exit code {0}."
+  },
+  {
+    "Id": 3004,
+    "Name": "CloneDestinationPreserved",
+    "Kor": "\uBCF5\uC81C \uC704\uCE58\uAC00 \uB0A8\uC544 \uC788\uC2B5\uB2C8\uB2E4: {0}. \uAE30\uC874 \uD3F4\uB354\uC77C \uC218\uB3C4 \uC788\uC73C\uBBC0\uB85C \uB0B4\uC6A9\uC744 \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The destination still exists at {0}. It may have existed before cloning; review it before reuse."
+  },
+  {
+    "Id": 3005,
+    "Name": "CloneDestinationAbsent",
+    "Kor": "\uBCF5\uC81C \uC704\uCE58\uC5D0 \uD3F4\uB354\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No destination folder exists."
+  },
+  {
+    "Id": 3006,
+    "Name": "CloneOpenFailed",
+    "Kor": "\uBCF5\uC81C\uB294 \uC644\uB8CC\uB410\uC9C0\uB9CC \uC800\uC7A5\uC18C\uB97C \uC5F4\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4: {0}",
+    "Eng": "Clone completed, but the repository could not be opened: {0}"
+  },
+  {
+    "Id": 3007,
+    "Name": "CloneStop",
+    "Kor": "\uC911\uB2E8",
+    "Eng": "Stop"
+  },
+  {
+    "Id": 3008,
+    "Name": "CloneClose",
+    "Kor": "\uB2EB\uAE30",
+    "Eng": "Close"
+  },
+  {
+    "Id": 3009,
+    "Name": "CloneDestinationLabel",
+    "Kor": "\uBCF5\uC81C\uD560 \uD3F4\uB354",
+    "Eng": "Clone destination folder"
+  },
+  {
+    "Id": 3010,
+    "Name": "CloneDestinationHint",
+    "Kor": "\uAE30\uC874 \uBE48 \uD3F4\uB354 \uB610\uB294 \uC0C8 \uD3F4\uB354\uC758 \uC808\uB300 \uACBD\uB85C\uB97C \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter an absolute path to an existing empty folder or a new folder."
+  },
+  {
+    "Id": 3011,
+    "Name": "CloneBrowseDestination",
+    "Kor": "\uCC3E\uC544\uBCF4\uAE30",
+    "Eng": "Browse"
+  },
+  {
+    "Id": 3012,
+    "Name": "ClonePickDestinationTitle",
+    "Kor": "\uBCF5\uC81C\uD560 \uD3F4\uB354 \uC120\uD0DD",
+    "Eng": "Choose a destination folder"
+  },
+  {
+    "Id": 3013,
+    "Name": "CloneDestinationRequired",
+    "Kor": "\uBCF5\uC81C\uD560 \uD3F4\uB354 \uACBD\uB85C\uB97C \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter a destination folder path."
+  },
+  {
+    "Id": 3014,
+    "Name": "CloneDestinationInvalid",
+    "Kor": "\uBCF5\uC81C\uD560 \uD3F4\uB354 \uACBD\uB85C\uAC00 \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The destination folder path is invalid."
+  },
+  {
+    "Id": 3015,
+    "Name": "CloneDestinationAbsoluteRequired",
+    "Kor": "\uBCF5\uC81C\uD560 \uD3F4\uB354\uC758 \uC808\uB300 \uACBD\uB85C\uB97C \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter an absolute destination folder path."
+  },
+  {
+    "Id": 3016,
+    "Name": "CloneDestinationRootForbidden",
+    "Kor": "\uB4DC\uB77C\uC774\uBE0C \uB610\uB294 \uD30C\uC77C \uC2DC\uC2A4\uD15C\uC758 \uB8E8\uD2B8 \uD3F4\uB354\uC5D0\uB294 \uBCF5\uC81C\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Cannot clone into a drive or file system root."
+  },
+  {
+    "Id": 3017,
+    "Name": "CloneDestinationParentMissing",
+    "Kor": "\uBCF5\uC81C\uD560 \uD3F4\uB354\uC758 \uC0C1\uC704 \uD3F4\uB354\uAC00 \uC874\uC7AC\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The parent folder of the destination does not exist."
+  },
+  {
+    "Id": 3018,
+    "Name": "CloneDestinationFileExists",
+    "Kor": "\uBCF5\uC81C\uD560 \uC704\uCE58\uC5D0 \uD30C\uC77C\uC774 \uC774\uBBF8 \uC874\uC7AC\uD569\uB2C8\uB2E4: {0}",
+    "Eng": "A file already exists at the destination: {0}"
+  },
+  {
+    "Id": 3019,
+    "Name": "CloneDestinationNotEmpty",
+    "Kor": "\uBCF5\uC81C\uD560 \uD3F4\uB354\uAC00 \uBE44\uC5B4 \uC788\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4: {0}",
+    "Eng": "The destination folder is not empty: {0}"
+  },
+  {
+    "Id": 3020,
+    "Name": "RepositoryActionsButtonText",
+    "Kor": "\u002B \uC800\uC7A5\uC18C",
+    "Eng": "\u002B Repository"
+  },
+  {
+    "Id": 3021,
+    "Name": "RepositoryActionsTooltip",
+    "Kor": "\uAE30\uC874 \uC800\uC7A5\uC18C\uB97C \uCD94\uAC00\uD558\uAC70\uB098 \uC0C8 \uC800\uC7A5\uC18C\uB97C \uBCF5\uC81C\uD569\uB2C8\uB2E4.",
+    "Eng": "Add an existing repository or clone a new one."
+  },
+  {
+    "Id": 3022,
+    "Name": "RepositoryAddExistingAction",
+    "Kor": "\uC800\uC7A5\uC18C \uC5F4\uAE30",
+    "Eng": "Open repository"
+  },
+  {
+    "Id": 2404,
+    "Name": "MainOpenIn",
+    "Kor": "\uC5F4\uAE30",
+    "Eng": "Open"
+  },
+  {
+    "Id": 3023,
+    "Name": "TagDeleteLocalMenu",
+    "Kor": "\uD0DC\uADF8 \uC0AD\uC81C",
+    "Eng": "Delete tag"
+  },
+  {
+    "Id": 3024,
+    "Name": "TagDeleteRemoteMenu",
+    "Kor": "\uC6D0\uACA9 \uD0DC\uADF8 \uC0AD\uC81C",
+    "Eng": "Delete remote tag"
+  },
+  {
+    "Id": 3025,
+    "Name": "TagDeleteLocalTitle",
+    "Kor": "\uB85C\uCEEC \uD0DC\uADF8 \uC0AD\uC81C",
+    "Eng": "Delete local tag"
+  },
+  {
+    "Id": 3026,
+    "Name": "TagDeleteLocalConfirm",
+    "Kor": "\uB85C\uCEEC \uD0DC\uADF8 \u0027{0}\u0027\uC744 \uC0AD\uC81C\uD569\uB2C8\uB2E4.\n\uD0DC\uADF8 \uAC1D\uCCB4: {1}\n\n\uB85C\uCEEC \uD0DC\uADF8 \uCC38\uC870\uB9CC \uC0AD\uC81C\uD569\uB2C8\uB2E4. \uC6D0\uACA9 \uD0DC\uADF8, \uAC19\uC740 \uC774\uB984\uC758 \uBE0C\uB79C\uCE58, \uC791\uC5C5 \uD30C\uC77C\uACFC \uCEE4\uBC0B\uC740 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "Delete local tag \u0027{0}\u0027.\nTag object: {1}\n\nOnly the local tag reference is deleted. Remote tags, branches with the same name, working files and commits are preserved."
+  },
+  {
+    "Id": 3027,
+    "Name": "TagDeleteRemoteTitle",
+    "Kor": "\uC6D0\uACA9 \uD0DC\uADF8 \uC0AD\uC81C",
+    "Eng": "Delete remote tag"
+  },
+  {
+    "Id": 3028,
+    "Name": "TagDeleteRemoteConfirm",
+    "Kor": "\uC6D0\uACA9 \u0027{0}\u0027\uC758 \uD0DC\uADF8 \u0027{1}\u0027\uC744 \uC0AD\uC81C\uD569\uB2C8\uB2E4.\n\uD0DC\uADF8 \uAC1D\uCCB4: {2}\n\n\uC11C\uBC84\uC758 \uD0DC\uADF8\uB97C \uC0AD\uC81C\uD558\uBA70 \uB2E4\uB978 \uC0AC\uC6A9\uC790\uC5D0\uAC8C \uC601\uD5A5\uC744 \uC90D\uB2C8\uB2E4. \uB85C\uCEEC \uD0DC\uADF8\uC640 \uAC19\uC740 \uC774\uB984\uC758 \uBE0C\uB79C\uCE58\uB294 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "Delete tag \u0027{1}\u0027 from remote \u0027{0}\u0027.\nTag object: {2}\n\nThis deletes the tag on the server and affects other users. The local tag and branches with the same name are preserved."
+  },
+  {
+    "Id": 3029,
+    "Name": "TagDeleteAction",
+    "Kor": "\uC0AD\uC81C",
+    "Eng": "Delete"
+  },
+  {
+    "Id": 3030,
+    "Name": "TagDeleteSelectRemoteTitle",
+    "Kor": "\uD0DC\uADF8\uB97C \uC0AD\uC81C\uD560 \uC6D0\uACA9 \uC120\uD0DD",
+    "Eng": "Select remote for tag deletion"
+  },
+  {
+    "Id": 3031,
+    "Name": "TagDeleteRemotePrompt",
+    "Kor": "\uD0DC\uADF8 \u0027{0}\u0027\uC744 \uC870\uD68C\uD560 \uB4F1\uB85D\uB41C \uC6D0\uACA9\uC744 \uC120\uD0DD\uD558\uC138\uC694. \uB2E4\uC74C \uD655\uC778 \uCC3D\uC5D0\uC11C \uC11C\uBC84 \uC0AD\uC81C \uB300\uC0C1\uC744 \uD655\uC778\uD569\uB2C8\uB2E4.",
+    "Eng": "Select a registered remote to inspect tag \u0027{0}\u0027. Confirm the server deletion target in the next dialog."
+  },
+  {
+    "Id": 3032,
+    "Name": "TagDeleteInspectRemoteAction",
+    "Kor": "\uB300\uC0C1 \uD655\uC778",
+    "Eng": "Inspect target"
+  },
+  {
+    "Id": 3033,
+    "Name": "TagDeleteLocalSucceeded",
+    "Kor": "\uB85C\uCEEC \uD0DC\uADF8 \u0027{0}\u0027\uC744 \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Deleted local tag \u0027{0}\u0027."
+  },
+  {
+    "Id": 3034,
+    "Name": "TagDeleteRemoteSucceeded",
+    "Kor": "\uC6D0\uACA9 \u0027{0}\u0027\uC758 \uD0DC\uADF8 \u0027{1}\u0027\uC744 \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4. \uB85C\uCEEC \uD0DC\uADF8\uB294 \uC720\uC9C0\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Deleted tag \u0027{1}\u0027 from remote \u0027{0}\u0027. The local tag was preserved."
+  },
+  {
+    "Id": 3035,
+    "Name": "TagDeleteRefreshFailed",
+    "Kor": "{0} \uCC38\uC870 \uAC31\uC2E0\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4: {1}",
+    "Eng": "{0} Reference refresh failed: {1}"
+  },
+  {
+    "Id": 3036,
+    "Name": "TagDeleteInvalidName",
+    "Kor": "\uC0AD\uC81C\uD560 \uD0DC\uADF8 \uC774\uB984\uC774 \uC720\uD6A8\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4: {0}",
+    "Eng": "The tag name is not valid for deletion: {0}"
+  },
+  {
+    "Id": 3037,
+    "Name": "TagDeleteInvalidObjectId",
+    "Kor": "\uD0DC\uADF8 \u0027{0}\u0027\uC758 \uD655\uC778\uD55C \uAC1D\uCCB4 OID\uAC00 \uC720\uD6A8\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. \uCC38\uC870 \uBAA9\uB85D\uC744 \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The confirmed object OID for tag \u0027{0}\u0027 is invalid. Refresh references and confirm again."
+  },
+  {
+    "Id": 3038,
+    "Name": "TagDeleteLocalMissing",
+    "Kor": "\uB85C\uCEEC \uD0DC\uADF8 \u0027{0}\u0027\uC774 \uB354 \uC774\uC0C1 \uC874\uC7AC\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Local tag \u0027{0}\u0027 no longer exists."
+  },
+  {
+    "Id": 3039,
+    "Name": "TagDeleteLocalChanged",
+    "Kor": "\uD655\uC778 \uC774\uD6C4 \uB85C\uCEEC \uD0DC\uADF8 \u0027{0}\u0027\uC774 \uBCC0\uACBD\uB418\uC5B4 \uC0AD\uC81C\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "Local tag \u0027{0}\u0027 changed after confirmation and was not deleted. Confirm again."
+  },
+  {
+    "Id": 3040,
+    "Name": "TagDeleteLocalFailed",
+    "Kor": "\uB85C\uCEEC \uD0DC\uADF8 \u0027{0}\u0027\uC744 \uC0AD\uC81C\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4: {1}",
+    "Eng": "Could not delete local tag \u0027{0}\u0027: {1}"
+  },
+  {
+    "Id": 3041,
+    "Name": "TagDeleteRemoteRequired",
+    "Kor": "\uC6D0\uACA9 \uD0DC\uADF8\uB97C \uC0AD\uC81C\uD558\uB824\uBA74 \uB4F1\uB85D\uB41C \uC6D0\uACA9\uC774 \uD544\uC694\uD569\uB2C8\uB2E4.",
+    "Eng": "A registered remote is required to delete a remote tag."
+  },
+  {
+    "Id": 3042,
+    "Name": "TagDeleteRemoteUnavailable",
+    "Kor": "\uC6D0\uACA9 \u0027{0}\u0027\uC758 Push \uC8FC\uC18C\uB97C \uD655\uC778\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Could not resolve the push URL for remote \u0027{0}\u0027."
+  },
+  {
+    "Id": 3043,
+    "Name": "TagDeleteRemoteMultiplePushUrls",
+    "Kor": "\uC6D0\uACA9 \u0027{0}\u0027\uC5D0 Push \uC8FC\uC18C\uAC00 \uC5EC\uB7EC \uAC1C\uB77C \uD0DC\uADF8 \uC0AD\uC81C\uB97C \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Tag deletion is not supported for remote \u0027{0}\u0027 because it has multiple push URLs."
+  },
+  {
+    "Id": 3044,
+    "Name": "TagDeleteRemoteTagMissing",
+    "Kor": "\uC6D0\uACA9 \u0027{0}\u0027\uC5D0 \uD0DC\uADF8 \u0027{1}\u0027\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Remote \u0027{0}\u0027 has no tag \u0027{1}\u0027."
+  },
+  {
+    "Id": 3045,
+    "Name": "TagDeleteRemoteLookupFailed",
+    "Kor": "\uC6D0\uACA9 \u0027{0}\u0027\uC758 \uD0DC\uADF8 \u0027{1}\u0027\uC744 \uC870\uD68C\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4: {2}",
+    "Eng": "Could not inspect tag \u0027{1}\u0027 on remote \u0027{0}\u0027: {2}"
+  },
+  {
+    "Id": 3046,
+    "Name": "TagDeleteRemoteChanged",
+    "Kor": "\uD655\uC778 \uC774\uD6C4 \uC6D0\uACA9 \u0027{0}\u0027\uC758 \uD0DC\uADF8 \u0027{1}\u0027\uC774 \uBCC0\uACBD\uB418\uC5B4 \uC0AD\uC81C\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "Tag \u0027{1}\u0027 on remote \u0027{0}\u0027 changed after confirmation and was not deleted. Confirm again."
+  },
+  {
+    "Id": 3047,
+    "Name": "TagDeleteRemoteUrlChanged",
+    "Kor": "\uD655\uC778 \uC774\uD6C4 \uC6D0\uACA9 \u0027{0}\u0027\uC758 Push \uC8FC\uC18C\uAC00 \uBCC0\uACBD\uB418\uC5B4 \uC0AD\uC81C\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The push URL for remote \u0027{0}\u0027 changed after confirmation. Nothing was deleted."
+  },
+  {
+    "Id": 3048,
+    "Name": "TagDeleteRemoteFailed",
+    "Kor": "\uC6D0\uACA9 \u0027{0}\u0027\uC758 \uD0DC\uADF8 \u0027{1}\u0027\uC744 \uC0AD\uC81C\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4: {2}",
+    "Eng": "Could not delete tag \u0027{1}\u0027 on remote \u0027{0}\u0027: {2}"
+  },
+  {
+    "Id": 3049,
+    "Name": "TagDeleteRepositoryChanged",
+    "Kor": "\uD0DC\uADF8 \uC0AD\uC81C\uB97C \uD655\uC778\uD55C \uC800\uC7A5\uC18C\uC640 \uC694\uCCAD\uD55C \uC800\uC7A5\uC18C\uAC00 \uB2E4\uB985\uB2C8\uB2E4.",
+    "Eng": "The requested repository differs from the repository confirmed for tag deletion."
+  },
+  {
+    "Id": 3050,
+    "Name": "ReferenceRenameBranchMenu",
+    "Kor": "\uBE0C\uB79C\uCE58 \uC774\uB984 \uBCC0\uACBD",
+    "Eng": "Rename branch"
+  },
+  {
+    "Id": 3051,
+    "Name": "ReferenceRenameTagMenu",
+    "Kor": "\uD0DC\uADF8 \uC774\uB984 \uBCC0\uACBD",
+    "Eng": "Rename tag"
+  },
+  {
+    "Id": 3052,
+    "Name": "ReferenceRenameOriginalName",
+    "Kor": "\uAE30\uC874 \uC774\uB984",
+    "Eng": "Current name"
+  },
+  {
+    "Id": 3053,
+    "Name": "ReferenceRenameNewName",
+    "Kor": "\uC0C8 \uC774\uB984",
+    "Eng": "New name"
+  },
+  {
+    "Id": 3054,
+    "Name": "ReferenceRenameLocalOnly",
+    "Kor": "\uB85C\uCEEC \uCC38\uC870\uB9CC \uBCC0\uACBD\uD569\uB2C8\uB2E4. \uC6D0\uACA9 \uBE0C\uB79C\uCE58\uC640 \uD0DC\uADF8\uB294 \uBCC0\uACBD\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Only the local reference is renamed. Remote branches and tags are not changed."
+  },
+  {
+    "Id": 3055,
+    "Name": "ReferenceRenameTagObjectsHint",
+    "Kor": "\uD0DC\uADF8 \uCC38\uC870 \uC774\uB984\uB9CC \uBCC0\uACBD\uD569\uB2C8\uB2E4. \uAC1D\uCCB4 \uB0B4\uBD80\uC758 \uAE30\uC874 \uC774\uB984\u00B7\uC8FC\uC11D\u00B7\uC11C\uBA85\uC740 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "Only the tag reference name changes. The original name, annotation and signature inside the tag object are preserved."
+  },
+  {
+    "Id": 3056,
+    "Name": "ReferenceRenameAction",
+    "Kor": "\uC774\uB984 \uBCC0\uACBD",
+    "Eng": "Rename"
+  },
+  {
+    "Id": 3057,
+    "Name": "ReferenceRenameBranchSucceeded",
+    "Kor": "\uB85C\uCEEC \uBE0C\uB79C\uCE58 \u0027{0}\u0027\uC758 \uC774\uB984\uC744 \u0027{1}\u0027\uB85C \uBCC0\uACBD\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Renamed local branch \u0027{0}\u0027 to \u0027{1}\u0027."
+  },
+  {
+    "Id": 3058,
+    "Name": "ReferenceRenameTagSucceeded",
+    "Kor": "\uB85C\uCEEC \uD0DC\uADF8 \u0027{0}\u0027\uC758 \uCC38\uC870 \uC774\uB984\uC744 \u0027{1}\u0027\uB85C \uBCC0\uACBD\uD588\uC2B5\uB2C8\uB2E4. \uD0DC\uADF8 \uAC1D\uCCB4\uB294 \uC720\uC9C0\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Renamed local tag reference \u0027{0}\u0027 to \u0027{1}\u0027. The tag object was preserved."
+  },
+  {
+    "Id": 3059,
+    "Name": "ReferenceRenameUnchanged",
+    "Kor": "\u0027{0}\u0027\uC740 \uAE30\uC874 \uC774\uB984\uACFC \uAC19\uC544 \uBCC0\uACBD\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.",
+    "Eng": "\u0027{0}\u0027 is the current name. Nothing was changed."
+  },
+  {
+    "Id": 3060,
+    "Name": "ReferenceRenameRepositoryChanged",
+    "Kor": "\uC774\uB984 \uBCC0\uACBD\uC744 \uD655\uC778\uD55C \uC800\uC7A5\uC18C\uC640 \uC2E4\uD589\uD560 \uC800\uC7A5\uC18C\uAC00 \uB2E4\uB985\uB2C8\uB2E4.",
+    "Eng": "The execution repository differs from the repository confirmed for renaming."
+  },
+  {
+    "Id": 3061,
+    "Name": "ReferenceRenameSourceInvalid",
+    "Kor": "\uC774\uB984 \uBCC0\uACBD \uB300\uC0C1 \uB85C\uCEEC \uCC38\uC870\uAC00 \uC720\uD6A8\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4: {0}",
+    "Eng": "The local reference to rename is invalid: {0}"
+  },
+  {
+    "Id": 3062,
+    "Name": "ReferenceRenameSourceMissing",
+    "Kor": "\uC774\uB984 \uBCC0\uACBD \uB300\uC0C1 \uCC38\uC870 \u0027{0}\u0027\uC774 \uB354 \uC774\uC0C1 \uC874\uC7AC\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Reference \u0027{0}\u0027 no longer exists and cannot be renamed."
+  },
+  {
+    "Id": 3063,
+    "Name": "ReferenceRenameSourceChanged",
+    "Kor": "\uD655\uC778 \uC774\uD6C4 \uCC38\uC870 \u0027{0}\u0027\uC774 \uBCC0\uACBD\uB418\uC5B4 \uC774\uB984\uC744 \uBC14\uAFB8\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "Reference \u0027{0}\u0027 changed after confirmation and was not renamed. Confirm again."
+  },
+  {
+    "Id": 3064,
+    "Name": "ReferenceRenameInvalidObjectId",
+    "Kor": "\uCC38\uC870 \u0027{0}\u0027\uC758 \uD655\uC778\uD55C \uAC1D\uCCB4 OID\uAC00 \uC720\uD6A8\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. \uBAA9\uB85D\uC744 \uC0C8\uB85C \uACE0\uCE5C \uB4A4 \uB2E4\uC2DC \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The confirmed object OID for reference \u0027{0}\u0027 is invalid. Refresh references and confirm again."
+  },
+  {
+    "Id": 3065,
+    "Name": "ReferenceRenameNameRequired",
+    "Kor": "\uC0C8 \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter a new name."
+  },
+  {
+    "Id": 3066,
+    "Name": "ReferenceRenameNameInvalid",
+    "Kor": "\uC0C8 \uC774\uB984\uC774 \uC720\uD6A8\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4: {0}",
+    "Eng": "The new name is invalid: {0}"
+  },
+  {
+    "Id": 3067,
+    "Name": "ReferenceRenameDestinationExists",
+    "Kor": "\uBAA9\uC801\uC9C0 \uCC38\uC870 \u0027{0}\u0027\uC774 \uC774\uBBF8 \uC874\uC7AC\uD569\uB2C8\uB2E4. \uB36E\uC5B4\uC4F0\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Destination reference \u0027{0}\u0027 already exists. It will not be overwritten."
+  },
+  {
+    "Id": 3068,
+    "Name": "ReferenceRenameLookupFailed",
+    "Kor": "\uCC38\uC870 \u0027{0}\u0027\uC744 \uD655\uC778\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4: {1}",
+    "Eng": "Could not inspect reference \u0027{0}\u0027: {1}"
+  },
+  {
+    "Id": 3069,
+    "Name": "ReferenceRenameFailed",
+    "Kor": "\uCC38\uC870 \u0027{0}\u0027\uC744 \u0027{1}\u0027\uB85C \uBCC0\uACBD\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4: {2}",
+    "Eng": "Could not rename reference \u0027{0}\u0027 to \u0027{1}\u0027: {2}"
+  },
+  {
+    "Id": 3070,
+    "Name": "ReferenceRenameRefreshFailed",
+    "Kor": "{0} \uC0C1\uD0DC \uAC31\uC2E0\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4: {1}",
+    "Eng": "{0} State refresh failed: {1}"
+  },
+  {
+    "Id": 3071,
+    "Name": "ReferenceRenameStateReadFailed",
+    "Kor": "\u0027{0}\u0027\uC5D0\uC11C \u0027{1}\u0027\uB85C \uC774\uB984 \uBCC0\uACBD\uC740 \uBC18\uC601\uB418\uC5C8\uC9C0\uB9CC \uC800\uC7A5\uC18C \uC0C1\uD0DC\uB97C \uC77D\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C \uACE0\uCE68\uD558\uC138\uC694.",
+    "Eng": "The rename from \u0027{0}\u0027 to \u0027{1}\u0027 was applied, but repository state could not be read. Refresh the repository."
+  },
+  {
+    "Id": 3072,
+    "Name": "ReferenceRenameQueueProgress",
+    "Kor": "\u0027{0}\u0027\uC73C\uB85C \uC774\uB984 \uBCC0\uACBD \uC911 \u00B7 \uB300\uAE30 {1}\uAC74",
+    "Eng": "Renaming to \u0027{0}\u0027 \u00B7 {1} queued"
+  },
+  {
+    "Id": 3073,
+    "Name": "ReferenceRenameQueueClosing",
+    "Kor": "\u0027{0}\u0027\uC73C\uB85C \uC774\uB984 \uBCC0\uACBD \uACB0\uACFC\uB97C \uAE30\uB2E4\uB9B0 \uB4A4 \uB2EB\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Waiting for rename to \u0027{0}\u0027 to finish before closing."
+  },
+  {
+    "Id": 3074,
+    "Name": "TagDeleteDialogLocalScope",
+    "Kor": "\uB85C\uCEEC \uD0DC\uADF8",
+    "Eng": "Local tag"
+  },
+  {
+    "Id": 3075,
+    "Name": "TagDeleteDialogRemoteScope",
+    "Kor": "\uC6D0\uACA9 \uD0DC\uADF8",
+    "Eng": "Remote tag"
+  },
+  {
+    "Id": 3076,
+    "Name": "TagDeleteDialogRemoteHint",
+    "Kor": "\uC120\uD0DD\uD55C \uC6D0\uACA9 \uC11C\uBC84\uC758 \uD0DC\uADF8\uB9CC \uC0AD\uC81C\uD569\uB2C8\uB2E4. \uB2E4\uB978 \uC0AC\uC6A9\uC790\uC5D0\uAC8C \uC601\uD5A5\uC744 \uC8FC\uBA70 \uB85C\uCEEC \uD0DC\uADF8\uC640 \uBE0C\uB79C\uCE58\uB294 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "Only the tag on the selected remote server is deleted. This affects other users. Local tags and branches are preserved."
+  },
+  {
+    "Id": 3077,
+    "Name": "TagDeleteDialogLoading",
+    "Kor": "\uC6D0\uACA9 \u0027{0}\u0027\uC758 \uD0DC\uADF8 \u0027{1}\u0027\uC744 \uC870\uD68C\uD558\uB294 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Inspecting tag \u0027{1}\u0027 on remote \u0027{0}\u0027."
+  },
+  {
+    "Id": 3078,
+    "Name": "TagDeleteDialogConfirmRemote",
+    "Kor": "\uC6D0\uACA9 \u0027{0}\u0027\uC758 \uD0DC\uADF8 \u0027{1}\u0027\uC744 \uC11C\uBC84\uC5D0\uC11C \uC0AD\uC81C\uD558\uB294 \uC601\uD5A5\uC744 \uD655\uC778\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "I confirm the impact of deleting tag \u0027{1}\u0027 from remote \u0027{0}\u0027 on the server."
+  },
+  {
+    "Id": 3079,
+    "Name": "TagDeleteDialogDeleting",
+    "Kor": "\uD0DC\uADF8 \uC0AD\uC81C \uACB0\uACFC\uB97C \uAE30\uB2E4\uB9AC\uB294 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Waiting for the tag deletion result."
+  },
+  {
+    "Id": 3080,
+    "Name": "TagDeleteDialogReload",
+    "Kor": "\uB300\uC0C1 \uB2E4\uC2DC \uC870\uD68C",
+    "Eng": "Reload target"
+  },
+  {
+    "Id": 3081,
+    "Name": "EidolonText001",
+    "Kor": "\uB9CC\uB4E4\uACE0 \uC2F6\uC740 \uC774\uBBF8\uC9C0\uB97C \uD504\uB86C\uD504\uD2B8\uB85C \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Describe the image you want to create."
+  },
+  {
+    "Id": 3082,
+    "Name": "EidolonText002",
+    "Kor": "\uC120\uD0DD\uD55C \uC790\uC0B0\uC774 LoRA\uAC00 \uC544\uB2D9\uB2C8\uB2E4.",
+    "Eng": "The selected asset is not a LoRA."
+  },
+  {
+    "Id": 3083,
+    "Name": "EidolonText003",
+    "Kor": "\uAE30\uBCF8 \uBAA8\uB378\uACFC LoRA\uC758 \uACC4\uC5F4\uC774 \uB2E4\uB985\uB2C8\uB2E4.",
+    "Eng": "The base model and LoRA belong to different model families."
+  },
+  {
+    "Id": 3084,
+    "Name": "EidolonText004",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC0DD\uC131 \uC644\uB8CC",
+    "Eng": "Image generated"
+  },
+  {
+    "Id": 3085,
+    "Name": "EidolonText005",
+    "Kor": "\uD559\uC2B5 \uC774\uBBF8\uC9C0 \uD3F4\uB354\uB97C \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Select a folder containing training images."
+  },
+  {
+    "Id": 3086,
+    "Name": "EidolonText006",
+    "Kor": "\uD559\uC2B5\uD560 LoRA \uC774\uB984\uC744 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter a name for the LoRA."
+  },
+  {
+    "Id": 3087,
+    "Name": "EidolonText007",
+    "Kor": "\uC0DD\uC131\uC5D0 \uC0AC\uC6A9\uD560 \uD2B8\uB9AC\uAC70 \uB2E8\uC5B4\uB97C \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter a trigger word to use during generation."
+  },
+  {
+    "Id": 3088,
+    "Name": "EidolonText008",
+    "Kor": "\uD2B8\uB9AC\uAC70\uB294 \uACF5\uBC31\u00B7\uC27C\uD45C\uAC00 \uC5C6\uB294 \uD558\uB098\uC758 \uB2E8\uC5B4\uB85C \uC785\uB825\uD558\uC138\uC694. \uC608: eidolon_style",
+    "Eng": "Use one trigger word without spaces or commas, for example: eidolon_style"
+  },
+  {
+    "Id": 3089,
+    "Name": "EidolonText009",
+    "Kor": "\uD559\uC2B5\uC744 \uC704\uD574 \uC0DD\uC131 \uC5D4\uC9C4 \uBA54\uBAA8\uB9AC \uD574\uC81C \uC911",
+    "Eng": "Releasing generation engine memory for training"
+  },
+  {
+    "Id": 3090,
+    "Name": "EidolonText010",
+    "Kor": "\uD559\uC2B5\uB41C LoRA\uB97C \uC0DD\uC131 \uB77C\uC774\uBE0C\uB7EC\uB9AC\uC5D0 \uB4F1\uB85D \uC911",
+    "Eng": "Registering the trained LoRA in the generation library"
+  },
+  {
+    "Id": 3091,
+    "Name": "EidolonText011",
+    "Kor": "\uD559\uC2B5\uC740 \uC644\uB8CC\uB410\uC9C0\uB9CC \uBAA8\uB378 \uB4F1\uB85D\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. \uC774\uB825\uC758 \uACB0\uACFC \uD30C\uC77C\uC744 \uBAA8\uB378 \uD654\uBA74\uC5D0\uC11C \uAC00\uC838\uC624\uC138\uC694. {0}",
+    "Eng": "Training finished, but model registration failed. Import the result from the job folder in Models. {0}"
+  },
+  {
+    "Id": 3092,
+    "Name": "EidolonText012",
+    "Kor": "\uD559\uC2B5 \uC644\uB8CC \u00B7 \uC0DD\uC131 \uD654\uBA74\uC5D0\uC11C LoRA\uB97C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Training complete. The LoRA is ready to use in Generate."
+  },
+  {
+    "Id": 3093,
+    "Name": "EidolonText013",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC0DD\uC131\uC5D0\uC11C \uAE30\uBCF8 \uBAA8\uB378\uC744 \uC9C0\uC815\uD558\uAC70\uB098 \uBAA8\uB378\uC744 \uAC00\uC838\uC624\uC138\uC694.",
+    "Eng": "Choose a default model or import a model."
+  },
+  {
+    "Id": 3094,
+    "Name": "EidolonText014",
+    "Kor": "\uAE30\uBCF8 \uBAA8\uB378\uC740 \uCCB4\uD06C\uD3EC\uC778\uD2B8\uC5EC\uC57C \uD569\uB2C8\uB2E4.",
+    "Eng": "The base model must be a checkpoint."
+  },
+  {
+    "Id": 3095,
+    "Name": "EidolonText015",
+    "Kor": "\uBAA8\uB378 \uD654\uBA74\uC5D0\uC11C \uAE30\uBCF8 \uBAA8\uB378\uC758 \uACC4\uC5F4\uC744 \uC9C0\uC815\uD558\uC138\uC694.",
+    "Eng": "Choose the base model family in Models."
+  },
+  {
+    "Id": 3096,
+    "Name": "EidolonText016",
+    "Kor": "\uD604\uC7AC \uC124\uCE58 \uACBD\uB85C\uC5D0 \uB4F1\uB85D\uB41C \uBAA8\uB378\uC744 \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Select a model registered in the current installation."
+  },
+  {
+    "Id": 3097,
+    "Name": "EidolonText017",
+    "Kor": "\uBAA8\uB378 \uD30C\uC77C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uBAA8\uB378 \uD654\uBA74\uC5D0\uC11C \uB2E4\uC2DC \uAC00\uC838\uC624\uC138\uC694.",
+    "Eng": "The model file is missing. Import it again in Models."
+  },
+  {
+    "Id": 3098,
+    "Name": "EidolonText018",
+    "Kor": "\uC0AC\uC6A9\uC790\uAC00 \uC791\uC5C5\uC744 \uCDE8\uC18C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The user cancelled the job."
+  },
+  {
+    "Id": 3099,
+    "Name": "EidolonText019",
+    "Kor": "\uC9C0\uC6D0\uD558\uC9C0 \uC54A\uB294 \uD654\uBA74 \uC5B8\uC5B4\uC785\uB2C8\uB2E4.",
+    "Eng": "The selected interface language is not supported."
+  },
+  {
+    "Id": 3100,
+    "Name": "EidolonText020",
+    "Kor": "\uC9C0\uC6D0\uD558\uC9C0 \uC54A\uB294 \uD654\uBA74 \uD14C\uB9C8\uC785\uB2C8\uB2E4.",
+    "Eng": "The selected theme is not supported."
+  },
+  {
+    "Id": 3101,
+    "Name": "EidolonText021",
+    "Kor": "\uC0DD\uC131 \uC5D4\uC9C4 \uD3EC\uD2B8\uB294 1024~65535\uC5EC\uC57C \uD569\uB2C8\uB2E4.",
+    "Eng": "The generation engine port must be between 1024 and 65535."
+  },
+  {
+    "Id": 3102,
+    "Name": "EidolonText022",
+    "Kor": "\uC124\uCE58 \uACBD\uB85C\uB294 \uC804\uCCB4 \uACBD\uB85C\uB85C \uC9C0\uC815\uD558\uC138\uC694.",
+    "Eng": "Choose an absolute installation path."
+  },
+  {
+    "Id": 3103,
+    "Name": "EidolonText023",
+    "Kor": "\uC124\uC815 \uD30C\uC77C\uC758 \uD504\uB86C\uD504\uD2B8\u00B7\uAE30\uBCF8 \uBAA8\uB378 \uAC12\uC774 \uC190\uC0C1\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The prompt or default model values in the settings file are damaged."
+  },
+  {
+    "Id": 3104,
+    "Name": "EidolonText024",
+    "Kor": "\uAE30\uBCF8 \uBAA8\uB378\uC758 \uACC4\uC5F4\uC744 SD 1.5 \uB610\uB294 SDXL\uB85C \uC9C0\uC815\uD558\uC138\uC694.",
+    "Eng": "Choose SD 1.5 or SDXL as the base model family."
+  },
+  {
+    "Id": 3105,
+    "Name": "EidolonText025",
+    "Kor": ".safetensors \uBAA8\uB378 \uD30C\uC77C\uC744 \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Select a .safetensors model file."
+  },
+  {
+    "Id": 3106,
+    "Name": "EidolonText026",
+    "Kor": "\uC120\uD0DD\uD55C \uBAA8\uB378 \uACC4\uC5F4\uC774 \uAC00\uC911\uCE58\uC5D0\uC11C \uD655\uC778\uD55C \uACC4\uC5F4\uACFC \uB2E4\uB985\uB2C8\uB2E4.",
+    "Eng": "The selected model family does not match the weights."
+  },
+  {
+    "Id": 3107,
+    "Name": "EidolonText027",
+    "Kor": "\uBAA8\uB378 \uD655\uC778: {0}",
+    "Eng": "Checking model: {0}"
+  },
+  {
+    "Id": 3108,
+    "Name": "EidolonText028",
+    "Kor": "\uBAA8\uB378 \uACC4\uC5F4\uC744 \uC9C0\uC815\uD558\uC138\uC694.",
+    "Eng": "Choose a model family."
+  },
+  {
+    "Id": 3109,
+    "Name": "EidolonText029",
+    "Kor": "\uAC00\uC911\uCE58\uC5D0\uC11C \uD655\uC778\uD55C \uBAA8\uB378 \uACC4\uC5F4\uACFC \uB2E4\uB974\uAC8C \uC9C0\uC815\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The model family must match the weights."
+  },
+  {
+    "Id": 3110,
+    "Name": "EidolonText030",
+    "Kor": "\uBAA8\uB378 \uBAA9\uB85D \uD30C\uC77C\uC758 \uBC84\uC804\uC744 \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The model library file version is not supported."
+  },
+  {
+    "Id": 3111,
+    "Name": "EidolonText031",
+    "Kor": "\uBAA8\uB378 \uBAA9\uB85D \uD30C\uC77C\uC774 \uC190\uC0C1\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The model library file is damaged."
+  },
+  {
+    "Id": 3112,
+    "Name": "EidolonText032",
+    "Kor": "\uD3EC\uD2B8 {0}\uB97C \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uAC70\uB098 \uD574\uB2F9 \uD3EC\uD2B8\uC758 \uC11C\uBC84\uAC00 ComfyUI\uAC00 \uC544\uB2D9\uB2C8\uB2E4. \uC11C\uBC84 \uC8FC\uC18C\uC758 \uD3EC\uD2B8\uB97C \uBCC0\uACBD\uD558\uC138\uC694.",
+    "Eng": "Port {0} is unavailable, or the server on this port is not ComfyUI. Change the port in the server address."
+  },
+  {
+    "Id": 3113,
+    "Name": "EidolonText033",
+    "Kor": "\uC0DD\uC131 \uC5D4\uC9C4 \uC2DC\uC791 \uC911",
+    "Eng": "Starting the generation engine"
+  },
+  {
+    "Id": 3114,
+    "Name": "EidolonText034",
+    "Kor": "\uC0DD\uC131 \uC5D4\uC9C4\uC774 \uC2DC\uC791 \uC911 \uC885\uB8CC\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC124\uCE58 \uD3F4\uB354\uC758 Logs/Engine.log\uB97C \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The generation engine exited during startup. Check Logs/Engine.log in the installation folder."
+  },
+  {
+    "Id": 3115,
+    "Name": "EidolonText035",
+    "Kor": "\uC0DD\uC131 \uC5D4\uC9C4 \uC900\uBE44 \uC644\uB8CC",
+    "Eng": "Generation engine ready"
+  },
+  {
+    "Id": 3116,
+    "Name": "EidolonText036",
+    "Kor": "\uC0DD\uC131 \uC5D4\uC9C4\uC774 3\uBD84 \uC548\uC5D0 \uC900\uBE44\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. Logs/Engine.log\uB97C \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The generation engine did not start within 3 minutes. Check Logs/Engine.log."
+  },
+  {
+    "Id": 3117,
+    "Name": "EidolonText037",
+    "Kor": "\uC9C4\uD589 \uC5F0\uACB0 \uC5C6\uC774 \uACB0\uACFC\uB97C \uD655\uC778\uD569\uB2C8\uB2E4.",
+    "Eng": "Checking results without a live progress connection."
+  },
+  {
+    "Id": 3118,
+    "Name": "EidolonText038",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC0DD\uC131 \uB300\uAE30 \uC911",
+    "Eng": "Waiting for image generation"
+  },
+  {
+    "Id": 3119,
+    "Name": "EidolonText039",
+    "Kor": "\uC0DD\uC131 \uC5D4\uC9C4\uC5D0\uC11C \uC774\uBBF8\uC9C0 \uC0DD\uC131\uC774 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. {0}",
+    "Eng": "The generation engine could not generate the image. {0}"
+  },
+  {
+    "Id": 3120,
+    "Name": "EidolonText040",
+    "Kor": "\uC0DD\uC131\uC774 \uC885\uB8CC\uB410\uC9C0\uB9CC \uACB0\uACFC \uC774\uBBF8\uC9C0\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Generation finished, but no output image was found."
+  },
+  {
+    "Id": 3121,
+    "Name": "EidolonText041",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC0DD\uC131\uC774 30\uBD84 \uC548\uC5D0 \uC644\uB8CC\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Image generation did not finish within 30 minutes."
+  },
+  {
+    "Id": 3122,
+    "Name": "EidolonText042",
+    "Kor": "\uC5D4\uC9C4 \uC791\uC5C5 \uCDE8\uC18C \uC2E4\uD328: {0} \u00B7 \uC5D4\uC9C4\uC744 \uC885\uB8CC\uD569\uB2C8\uB2E4.",
+    "Eng": "Could not cancel the engine job: {0} \u00B7 Stopping the engine."
+  },
+  {
+    "Id": 3123,
+    "Name": "EidolonText043",
+    "Kor": " \u00B7 \uC5D4\uC9C4\uC744 \uC885\uB8CC\uD569\uB2C8\uB2E4.",
+    "Eng": " \u00B7 Stopping the engine."
+  },
+  {
+    "Id": 3124,
+    "Name": "EidolonText044",
+    "Kor": "\uC9C4\uD589 \uBA54\uC2DC\uC9C0\uAC00 \uB108\uBB34 \uD07D\uB2C8\uB2E4.",
+    "Eng": "The progress message is too large."
+  },
+  {
+    "Id": 3125,
+    "Name": "EidolonText045",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC0DD\uC131 \uC911 \u00B7 {0}/{1}",
+    "Eng": "Generating image \u00B7 {0}/{1}"
+  },
+  {
+    "Id": 3126,
+    "Name": "EidolonText046",
+    "Kor": "\uBAA8\uB378 \uCC98\uB9AC \uC911",
+    "Eng": "Processing model"
+  },
+  {
+    "Id": 3127,
+    "Name": "EidolonText047",
+    "Kor": "\uC0DD\uC131 \uC5D4\uC9C4 \uC694\uCCAD \uC2E4\uD328 ({0}): {1}",
+    "Eng": "Generation engine request failed ({0}): {1}"
+  },
+  {
+    "Id": 3128,
+    "Name": "EidolonText048",
+    "Kor": "\uBBF8\uC644\uB8CC \uB2E4\uC6B4\uB85C\uB4DC \uD30C\uC77C\uC774 \uC788\uC2B5\uB2C8\uB2E4. \uC124\uCE58 \uD3F4\uB354\uC758 Downloads\uC5D0\uC11C \uD574\uB2F9 .part \uD30C\uC77C\uC744 \uC9C0\uC6B4 \uB4A4 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "An incomplete download remains. Remove its .part file from Downloads in the installation folder, then try again."
+  },
+  {
+    "Id": 3129,
+    "Name": "EidolonText049",
+    "Kor": "\uB2E4\uC6B4\uB85C\uB4DC \uC11C\uBC84\uAC00 \uC798\uBABB\uB41C \uC774\uC5B4\uBC1B\uAE30 \uBC94\uC704\uB97C \uBC18\uD658\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The download server returned an invalid resume range."
+  },
+  {
+    "Id": 3130,
+    "Name": "EidolonText050",
+    "Kor": "{0} \uB2E4\uC6B4\uB85C\uB4DC \u00B7 {1} MB",
+    "Eng": "Downloading {0} \u00B7 {1} MB"
+  },
+  {
+    "Id": 3131,
+    "Name": "EidolonText051",
+    "Kor": "\uB2E4\uC6B4\uB85C\uB4DC\uAC00 \uB05D\uB098\uAE30 \uC804\uC5D0 \uC5F0\uACB0\uC774 \uB04A\uC5B4\uC84C\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uBA74 \uC774\uC5B4\uBC1B\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The connection closed before the download finished. Try again to resume."
+  },
+  {
+    "Id": 3132,
+    "Name": "EidolonText052",
+    "Kor": "\uB2E4\uC6B4\uB85C\uB4DC \uD30C\uC77C \uD655\uC778 \uC911",
+    "Eng": "Verifying the downloaded file"
+  },
+  {
+    "Id": 3133,
+    "Name": "EidolonText053",
+    "Kor": "{0} \uB2E4\uC6B4\uB85C\uB4DC \uD30C\uC77C\uC758 SHA-256\uC774 \uC77C\uCE58\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The SHA-256 checksum of {0} does not match."
+  },
+  {
+    "Id": 3134,
+    "Name": "EidolonText054",
+    "Kor": "LoRA \uD559\uC2B5\uC5D0\uB294 NVIDIA GPU \uD658\uACBD\uC774 \uD544\uC694\uD569\uB2C8\uB2E4. \uC5D4\uC9C4\uC5D0\uC11C GPU \uD658\uACBD\uC744 \uC124\uCE58\uD558\uC138\uC694.",
+    "Eng": "LoRA training requires an NVIDIA GPU. Install a GPU environment in Engine."
+  },
+  {
+    "Id": 3135,
+    "Name": "EidolonText055",
+    "Kor": "\uD559\uC2B5 \uAE30\uBC18 \uBAA8\uB378 \uD30C\uC77C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uBAA8\uB378\uC744 \uB2E4\uC2DC \uAC00\uC838\uC624\uC138\uC694.",
+    "Eng": "The training model file is missing. Import the model again."
+  },
+  {
+    "Id": 3136,
+    "Name": "EidolonText056",
+    "Kor": "\uC120\uD0DD\uD55C \uD3F4\uB354\uC5D0 PNG\u00B7JPG\u00B7BMP \uD559\uC2B5 \uC774\uBBF8\uC9C0\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No PNG, JPG or BMP training images were found in the selected folder."
+  },
+  {
+    "Id": 3137,
+    "Name": "EidolonText057",
+    "Kor": "\uD559\uC2B5 \uB370\uC774\uD130 \uC900\uBE44 \u00B7 {0}/{1}",
+    "Eng": "Preparing training data \u00B7 {0}/{1}"
+  },
+  {
+    "Id": 3138,
+    "Name": "EidolonText058",
+    "Kor": "GPU\uC640 \uC774\uBBF8\uC9C0 \uB370\uC774\uD130 \uD655\uC778 \uC911",
+    "Eng": "Checking GPU and image data"
+  },
+  {
+    "Id": 3139,
+    "Name": "EidolonText059",
+    "Kor": "LoRA \uD559\uC2B5 \uC2DC\uC791",
+    "Eng": "Starting LoRA training"
+  },
+  {
+    "Id": 3140,
+    "Name": "EidolonText060",
+    "Kor": "LoRA \uD559\uC2B5 \uC911 \u00B7 {0}/{1}",
+    "Eng": "Training LoRA \u00B7 {0}/{1}"
+  },
+  {
+    "Id": 3141,
+    "Name": "EidolonText061",
+    "Kor": "LoRA \uD559\uC2B5 \uC911",
+    "Eng": "Training LoRA"
+  },
+  {
+    "Id": 3142,
+    "Name": "EidolonText062",
+    "Kor": "\uD559\uC2B5\uC740 \uC885\uB8CC\uB410\uC9C0\uB9CC LoRA \uACB0\uACFC \uD30C\uC77C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. Training.log\uB97C \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "Training finished, but no LoRA output was found. Check Training.log."
+  },
+  {
+    "Id": 3143,
+    "Name": "EidolonText063",
+    "Kor": "\uC2E4\uD589 \uD658\uACBD \uD504\uB85C\uC138\uC2A4\uB97C \uC2DC\uC791\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Could not start the runtime process."
+  },
+  {
+    "Id": 3144,
+    "Name": "EidolonText064",
+    "Kor": "\uC2E4\uD589 \uD658\uACBD \uC791\uC5C5\uC774 \uC885\uB8CC \uCF54\uB4DC {0}\uB85C \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. \uB85C\uADF8: {1}",
+    "Eng": "The runtime process failed with exit code {0}. Log: {1}"
+  },
+  {
+    "Id": 3145,
+    "Name": "EidolonText065",
+    "Kor": "\uC790\uB3D9 \uC124\uCE58\uB294 Windows x64 \uD658\uACBD\uC744 \uC9C0\uC6D0\uD569\uB2C8\uB2E4.",
+    "Eng": "Automatic installation supports Windows x64."
+  },
+  {
+    "Id": 3146,
+    "Name": "EidolonText066",
+    "Kor": "\uC120\uD0DD\uD55C \uACBD\uB85C\uC758 EidolonRuntime \uD3F4\uB354\uC5D0 \uB2E4\uB978 \uD30C\uC77C\uC774 \uC788\uC2B5\uB2C8\uB2E4. \uB2E4\uB978 \uC124\uCE58 \uACBD\uB85C\uB97C \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "The EidolonRuntime folder contains other files. Choose another installation folder."
+  },
+  {
+    "Id": 3147,
+    "Name": "EidolonText067",
+    "Kor": "\uB2E4\uB978 \uD504\uB85C\uADF8\uB7A8 \uB610\uB294 \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uB294 \uBC84\uC804\uC758 \uC124\uCE58 \uD3F4\uB354\uC785\uB2C8\uB2E4.",
+    "Eng": "This installation belongs to another application or an unsupported version."
+  },
+  {
+    "Id": 3148,
+    "Name": "EidolonText068",
+    "Kor": "1/6 \u00B7 \uC124\uCE58 \uB3C4\uAD6C \uB2E4\uC6B4\uB85C\uB4DC",
+    "Eng": "1/6 \u00B7 Downloading installation tools"
+  },
+  {
+    "Id": 3149,
+    "Name": "EidolonText069",
+    "Kor": "2/6 \u00B7 Python \uC124\uCE58",
+    "Eng": "2/6 \u00B7 Installing Python"
+  },
+  {
+    "Id": 3150,
+    "Name": "EidolonText070",
+    "Kor": "3/6 \u00B7 \uC0DD\uC131\u00B7\uD559\uC2B5 \uC5D4\uC9C4 \uB2E4\uC6B4\uB85C\uB4DC",
+    "Eng": "3/6 \u00B7 Downloading generation and training engines"
+  },
+  {
+    "Id": 3151,
+    "Name": "EidolonText071",
+    "Kor": "4/6 \u00B7 \uB3C5\uB9BD Python \uD658\uACBD \uC900\uBE44",
+    "Eng": "4/6 \u00B7 Preparing isolated Python environments"
+  },
+  {
+    "Id": 3152,
+    "Name": "EidolonText072",
+    "Kor": "5/6 \u00B7 \uC2E4\uD589 \uB77C\uC774\uBE0C\uB7EC\uB9AC \uC124\uCE58 ({0}/2)",
+    "Eng": "5/6 \u00B7 Installing runtime libraries ({0}/2)"
+  },
+  {
+    "Id": 3153,
+    "Name": "EidolonText073",
+    "Kor": "6/6 \u00B7 \uBAA8\uB378 \uD3F4\uB354 \uC5F0\uACB0",
+    "Eng": "6/6 \u00B7 Connecting model folders"
+  },
+  {
+    "Id": 3154,
+    "Name": "EidolonText074",
+    "Kor": "\uC2E4\uD589 \uD658\uACBD \uC124\uCE58 \uC644\uB8CC",
+    "Eng": "Runtime installation complete"
+  },
+  {
+    "Id": 3155,
+    "Name": "EidolonText075",
+    "Kor": "\uC2E4\uD589 \uD658\uACBD \uC555\uCD95 \uD30C\uC77C\uC758 \uD06C\uAE30\uAC00 \uD5C8\uC6A9 \uBC94\uC704\uB97C \uCD08\uACFC\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The runtime archive exceeds the allowed size."
+  },
+  {
+    "Id": 3156,
+    "Name": "EidolonText076",
+    "Kor": "\uC2E4\uD589 \uD658\uACBD \uC555\uCD95 \uD30C\uC77C\uC5D0 \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uB294 \uC2EC\uBCFC\uB9AD \uB9C1\uD06C\uAC00 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The runtime archive contains an unsupported symbolic link."
+  },
+  {
+    "Id": 3157,
+    "Name": "EidolonText077",
+    "Kor": "\uC555\uCD95 \uD30C\uC77C\uC5D0 \uC124\uCE58 \uD3F4\uB354\uB97C \uBC97\uC5B4\uB098\uB294 \uACBD\uB85C\uAC00 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The archive contains a path outside the installation folder."
+  },
+  {
+    "Id": 3158,
+    "Name": "EidolonText078",
+    "Kor": "\uC5D4\uC9C4\uC5D0\uC11C \uC124\uCE58 \uACBD\uB85C\uB97C \uC120\uD0DD\uD558\uACE0 \uC2E4\uD589 \uD658\uACBD\uC744 \uC124\uCE58\uD558\uC138\uC694.",
+    "Eng": "Choose an installation folder and install the runtime in Engine."
+  },
+  {
+    "Id": 3159,
+    "Name": "EidolonText079",
+    "Kor": "\uC124\uCE58 \uACBD\uB85C\uB294 \uC804\uCCB4 \uACBD\uB85C\uC5EC\uC57C \uD569\uB2C8\uB2E4.",
+    "Eng": "The installation path must be absolute."
+  },
+  {
+    "Id": 3160,
+    "Name": "EidolonText080",
+    "Kor": "\uBAA8\uB378\uC758 \uC0C1\uB300 \uACBD\uB85C\uAC00 \uBAA8\uB378 \uD3F4\uB354\uB97C \uBC97\uC5B4\uB0A9\uB2C8\uB2E4.",
+    "Eng": "The model path points outside the model folder."
+  },
+  {
+    "Id": 3161,
+    "Name": "EidolonText081",
+    "Kor": "\uC2E4\uD589 \uD658\uACBD \uC790\uB3D9 \uC124\uCE58\uB294 \uD604\uC7AC Windows x64\uB97C \uC9C0\uC6D0\uD569\uB2C8\uB2E4.",
+    "Eng": "Automatic runtime installation currently supports Windows x64."
+  },
+  {
+    "Id": 3162,
+    "Name": "EidolonText082",
+    "Kor": "\uC5D4\uC9C4\uC5D0\uC11C \uC2E4\uD589 \uD658\uACBD \uC124\uCE58\uB97C \uC644\uB8CC\uD558\uC138\uC694.",
+    "Eng": "Complete the runtime installation in Engine."
+  },
+  {
+    "Id": 3163,
+    "Name": "EidolonText083",
+    "Kor": "\uC2E4\uD589 \uD658\uACBD \uC124\uCE58\uAC00 \uC644\uB8CC\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uAC19\uC740 \uACBD\uB85C\uC5D0\uC11C \uC124\uCE58\uB97C \uB2E4\uC2DC \uC2E4\uD589\uD558\uC138\uC694.",
+    "Eng": "The runtime installation is incomplete. Run installation again at the same path."
+  },
+  {
+    "Id": 3164,
+    "Name": "EidolonText084",
+    "Kor": "\uC2E4\uD589 \uD658\uACBD \uC124\uCE58 \uAE30\uB85D\uC758 \uBC84\uC804\uC744 \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The runtime installation record version is not supported."
+  },
+  {
+    "Id": 3165,
+    "Name": "EidolonText085",
+    "Kor": "\uD604\uC7AC \uC571\uACFC \uC2E4\uD589 \uD658\uACBD \uBC84\uC804\uC774 \uB2E4\uB985\uB2C8\uB2E4. \uC5D4\uC9C4\uC5D0\uC11C \uC124\uCE58\u00B7\uBCF5\uAD6C\uB97C \uC2E4\uD589\uD558\uC138\uC694.",
+    "Eng": "The app and runtime versions differ. Run install or repair in Engine."
+  },
+  {
+    "Id": 3166,
+    "Name": "EidolonText086",
+    "Kor": "\uC0DD\uC131 \uD658\uACBD \uD30C\uC77C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uC5D4\uC9C4\uC5D0\uC11C \uC2E4\uD589 \uD658\uACBD\uC744 \uBCF5\uAD6C\uD558\uC138\uC694.",
+    "Eng": "Generation environment files are missing. Repair the runtime in Engine."
+  },
+  {
+    "Id": 3167,
+    "Name": "EidolonText087",
+    "Kor": "LoRA \uD559\uC2B5 \uD658\uACBD\uC744 \uC5D4\uC9C4\uC5D0\uC11C \uC124\uCE58\uD558\uC138\uC694.",
+    "Eng": "Install the LoRA training environment in Engine."
+  },
+  {
+    "Id": 3168,
+    "Name": "EidolonText088",
+    "Kor": "safetensors \uD5E4\uB354 \uD06C\uAE30\uAC00 \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The safetensors header size is invalid."
+  },
+  {
+    "Id": 3169,
+    "Name": "EidolonText089",
+    "Kor": "safetensors \uD30C\uC77C\uC774 \uBD88\uC644\uC804\uD569\uB2C8\uB2E4.",
+    "Eng": "The safetensors file is incomplete."
+  },
+  {
+    "Id": 3170,
+    "Name": "EidolonText090",
+    "Kor": "safetensors \uD150\uC11C \uBC94\uC704\uAC00 \uD30C\uC77C \uD06C\uAE30\uC640 \uC77C\uCE58\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The safetensors tensor range does not match the file size."
+  },
+  {
+    "Id": 3171,
+    "Name": "EidolonText091",
+    "Kor": "\uD604\uC7AC SD 1.5\uC640 SDXL \uC790\uC0B0\uB9CC \uC9C0\uC6D0\uD569\uB2C8\uB2E4.",
+    "Eng": "Only SD 1.5 and SDXL assets are currently supported."
+  },
+  {
+    "Id": 3172,
+    "Name": "EidolonText092",
+    "Kor": "inpainting \uB4F1 \uC804\uC6A9 \uCCB4\uD06C\uD3EC\uC778\uD2B8\uB294 \uD604\uC7AC \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Special checkpoints such as inpainting models are not currently supported."
+  },
+  {
+    "Id": 3173,
+    "Name": "EidolonText093",
+    "Kor": "safetensors\uC5D0 \uBAA8\uB378 \uD150\uC11C\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The safetensors file contains no model tensors."
+  },
+  {
+    "Id": 3174,
+    "Name": "EidolonText094",
+    "Kor": "LoRA \uAC00\uC911\uCE58\uAC00 \uC544\uB2D9\uB2C8\uB2E4. \uC790\uC0B0 \uC885\uB958\uB97C \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "These weights are not a LoRA. Check the asset type."
+  },
+  {
+    "Id": 3175,
+    "Name": "EidolonText095",
+    "Kor": "\uCCB4\uD06C\uD3EC\uC778\uD2B8\uAC00 \uC544\uB2CC LoRA \uAC00\uC911\uCE58\uC785\uB2C8\uB2E4.",
+    "Eng": "These are LoRA weights, not a checkpoint."
+  },
+  {
+    "Id": 3176,
+    "Name": "EidolonText096",
+    "Kor": "SDXL refiner \uC804\uC6A9 \uAC00\uC911\uCE58\uB294 \uD604\uC7AC \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "SDXL refiner weights are not currently supported."
+  },
+  {
+    "Id": 3177,
+    "Name": "EidolonText097",
+    "Kor": "\uC774 \uAC00\uC911\uCE58\uC758 \uBAA8\uB378 \uACC4\uC5F4\uC740 \uD604\uC7AC \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The model family of these weights is not supported."
+  },
+  {
+    "Id": 3178,
+    "Name": "EidolonText098",
+    "Kor": "\uBE48 JSON \uBB38\uC11C\uC785\uB2C8\uB2E4.",
+    "Eng": "The JSON document is empty."
+  },
+  {
+    "Id": 3179,
+    "Name": "EidolonText099",
+    "Kor": "{0} \uD30C\uC77C\uC744 \uC77D\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. .bak \uBC31\uC5C5\uC744 \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "Could not read {0}. Check the .bak backup."
+  },
+  {
+    "Id": 3180,
+    "Name": "EidolonText100",
+    "Kor": "\uC124\uC815 \uD30C\uC77C\uC758 \uBC84\uC804\uC744 \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The settings file version is not supported."
+  },
+  {
+    "Id": 3181,
+    "Name": "EidolonText101",
+    "Kor": "\uC791\uC5C5 ID\uAC00 \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The job ID is invalid."
+  },
+  {
+    "Id": 3182,
+    "Name": "EidolonText102",
+    "Kor": "\uC791\uC5C5 \uC774\uB825\uC758 \uBC84\uC804\uC744 \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The job history version is not supported."
+  },
+  {
+    "Id": 3183,
+    "Name": "EidolonText103",
+    "Kor": "\uC791\uC5C5 \uD3F4\uB354\uC640 \uC791\uC5C5 ID\uAC00 \uC77C\uCE58\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The job folder and job ID do not match."
+  },
+  {
+    "Id": 3184,
+    "Name": "EidolonText104",
+    "Kor": "\uC774\uC804 \uC2E4\uD589 \uC911 \uC571\uC774 \uC885\uB8CC\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC2E4\uD589 \uD658\uACBD\uC744 \uC7AC\uC2DC\uC791\uD55C \uB4A4 \uB2E4\uC2DC \uC791\uC5C5\uD558\uC138\uC694.",
+    "Eng": "The app closed during the previous job. Restart the runtime before trying again."
+  },
+  {
+    "Id": 3185,
+    "Name": "EidolonText105",
+    "Kor": "\uACB0\uACFC \uC774\uBBF8\uC9C0 \uACBD\uB85C\uAC00 \uC791\uC5C5 \uD3F4\uB354\uB97C \uBC97\uC5B4\uB0A9\uB2C8\uB2E4.",
+    "Eng": "The output image path points outside the job folder."
+  },
+  {
+    "Id": 3186,
+    "Name": "EidolonText106",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC0DD\uC131",
+    "Eng": "Generate"
+  },
+  {
+    "Id": 3187,
+    "Name": "EidolonText107",
+    "Kor": "\uBAA8\uB378 \u00B7 LoRA",
+    "Eng": "Models \u00B7 LoRA"
+  },
+  {
+    "Id": 3188,
+    "Name": "EidolonText108",
+    "Kor": "LoRA \uD559\uC2B5",
+    "Eng": "LoRA training"
+  },
+  {
+    "Id": 3189,
+    "Name": "EidolonText109",
+    "Kor": "\uC5D4\uC9C4",
+    "Eng": "Engine"
+  },
+  {
+    "Id": 3190,
+    "Name": "EidolonText110",
+    "Kor": "\uC124\uC815",
+    "Eng": "Settings"
+  },
+  {
+    "Id": 3191,
+    "Name": "EidolonText111",
+    "Kor": "\uC0AC\uC6A9\uBC95",
+    "Eng": "Help"
+  },
+  {
+    "Id": 3192,
+    "Name": "EidolonText112",
+    "Kor": "\uBB34\uC5C7\uC744 \uB9CC\uB4E4\uAE4C\uC694?",
+    "Eng": "What would you like to create?"
+  },
+  {
+    "Id": 3193,
+    "Name": "EidolonText113",
+    "Kor": "\uC6D0\uD558\uB294 \uC7A5\uBA74\uC744 \uC124\uBA85\uD574 \uC8FC\uC138\uC694. \uB098\uBA38\uC9C0\uB294 Eidolon\uC774 \uCC98\uB9AC\uD569\uB2C8\uB2E4.",
+    "Eng": "Describe your scene. Eidolon handles the rest."
+  },
+  {
+    "Id": 3194,
+    "Name": "EidolonText114",
+    "Kor": "\uC608: \uD587\uBE5B\uC774 \uC2A4\uBA70\uB4DC\uB294 \uC232\uC18D\uC758 \uC791\uC740 \uC9D1, \uC218\uCC44\uD654 \uC2A4\uD0C0\uC77C",
+    "Eng": "Example: a small house in a sunlit forest, watercolor style"
+  },
+  {
+    "Id": 3195,
+    "Name": "EidolonText115",
+    "Kor": "\uC0AC\uC6A9\uD560 \uBAA8\uB378",
+    "Eng": "Model"
+  },
+  {
+    "Id": 3196,
+    "Name": "EidolonText116",
+    "Kor": "\uAE30\uBCF8 \uBAA8\uB378\uB85C \uC124\uC815",
+    "Eng": "Set as default model"
+  },
+  {
+    "Id": 3197,
+    "Name": "EidolonText117",
+    "Kor": "\uC120\uD0DD\uD55C \uBAA8\uB378\uACFC \uAC19\uC740 \uACC4\uC5F4\uC758 LoRA\uB97C \uC801\uC6A9\uD569\uB2C8\uB2E4.",
+    "Eng": "Apply LoRAs from the same family as the selected model."
+  },
+  {
+    "Id": 3198,
+    "Name": "EidolonText118",
+    "Kor": "\uC0C1\uC0C1\uC5D0\uC11C \uC2DC\uC791\uD558\uC138\uC694",
+    "Eng": "Start with your imagination"
+  },
+  {
+    "Id": 3199,
+    "Name": "EidolonText119",
+    "Kor": "\uC0DD\uC131\uD55C \uC774\uBBF8\uC9C0\uAC00 \uC5EC\uAE30\uC5D0 \uB098\uD0C0\uB0A9\uB2C8\uB2E4.",
+    "Eng": "Your generated image will appear here."
+  },
+  {
+    "Id": 3200,
+    "Name": "EidolonText120",
+    "Kor": "\uC0DD\uC131 \uAE30\uB85D",
+    "Eng": "Generation history"
+  },
+  {
+    "Id": 3201,
+    "Name": "EidolonText121",
+    "Kor": "\uD504\uB86C\uD504\uD2B8 \uB2E4\uC2DC \uC0AC\uC6A9",
+    "Eng": "Reuse prompt"
+  },
+  {
+    "Id": 3202,
+    "Name": "EidolonText122",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC800\uC7A5",
+    "Eng": "Save image"
+  },
+  {
+    "Id": 3203,
+    "Name": "EidolonText123",
+    "Kor": "\uBAA8\uB378 \uB77C\uC774\uBE0C\uB7EC\uB9AC",
+    "Eng": "Model library"
+  },
+  {
+    "Id": 3204,
+    "Name": "EidolonText124",
+    "Kor": "\uD604\uC7AC \uC2E4\uD589 \uD658\uACBD\uC5D0 \uC124\uCE58\uB41C \uAE30\uBCF8 \uBAA8\uB378\uACFC LoRA\uB9CC \uD45C\uC2DC\uD569\uB2C8\uB2E4.",
+    "Eng": "Show only base models and LoRAs installed in the current runtime."
+  },
+  {
+    "Id": 3205,
+    "Name": "EidolonText125",
+    "Kor": "\uBAA8\uB378 \uBAA9\uB85D \uC0C8\uB85C\uACE0\uCE68",
+    "Eng": "Refresh model list"
+  },
+  {
+    "Id": 3206,
+    "Name": "EidolonText126",
+    "Kor": "\uAE30\uBCF8 SDXL \uBAA8\uB378 \uBC1B\uAE30",
+    "Eng": "Download SDXL model"
+  },
+  {
+    "Id": 3207,
+    "Name": "EidolonText127",
+    "Kor": "\uC790\uC0B0 \uAC00\uC838\uC624\uAE30 \u00B7 \uC815\uBCF4",
+    "Eng": "Import and asset details"
+  },
+  {
+    "Id": 3208,
+    "Name": "EidolonText128",
+    "Kor": "\uC885\uB958",
+    "Eng": "Type"
+  },
+  {
+    "Id": 3209,
+    "Name": "EidolonText129",
+    "Kor": "\uC124\uCE58\uB41C \uBAA8\uB378 \uACC4\uC5F4",
+    "Eng": "Installed model families"
+  },
+  {
+    "Id": 3210,
+    "Name": "EidolonText130",
+    "Kor": "LoRA \uD2B8\uB9AC\uAC70 (\uC120\uD0DD)",
+    "Eng": "LoRA trigger (optional)"
+  },
+  {
+    "Id": 3211,
+    "Name": "EidolonText131",
+    "Kor": "\uC608: eidolon_style",
+    "Eng": "Example: eidolon_style"
+  },
+  {
+    "Id": 3212,
+    "Name": "EidolonText132",
+    "Kor": "\uD2B8\uB9AC\uAC70\uB294 \uC774\uBBF8\uC9C0 \uC0DD\uC131 \uD504\uB86C\uD504\uD2B8\uC5D0 \uC790\uB3D9\uC73C\uB85C \uCD94\uAC00\uB429\uB2C8\uB2E4.",
+    "Eng": "The trigger is automatically added to the generation prompt."
+  },
+  {
+    "Id": 3213,
+    "Name": "EidolonText133",
+    "Kor": ".safetensors \uD30C\uC77C \uAC00\uC838\uC624\uAE30",
+    "Eng": "Import .safetensors file"
+  },
+  {
+    "Id": 3214,
+    "Name": "EidolonText134",
+    "Kor": "\uC120\uD0DD\uD55C \uC790\uC0B0 \uC815\uBCF4 \uC800\uC7A5",
+    "Eng": "Save selected asset details"
+  },
+  {
+    "Id": 3215,
+    "Name": "EidolonText135",
+    "Kor": "\uC120\uD0DD\uD55C \uC790\uC0B0 \uB4F1\uB85D \uD574\uC81C",
+    "Eng": "Unregister selected asset"
+  },
+  {
+    "Id": 3216,
+    "Name": "EidolonText136",
+    "Kor": "\uAC00\uC911\uCE58\uB97C \uD655\uC778\uD574 \uACC4\uC5F4\uC744 \uC790\uB3D9 \uD310\uBCC4\uD569\uB2C8\uB2E4. \uD655\uC778\uD560 \uC218 \uC5C6\uB294 \uBAA8\uB378\uC740 \uACC4\uC5F4\uC744 \uC9C0\uC815\uD574 \uC8FC\uC138\uC694. \uB4F1\uB85D\uC744 \uD574\uC81C\uD574\uB3C4 \uBAA8\uB378 \uD30C\uC77C\uC740 \uBCF4\uC874\uB429\uB2C8\uB2E4.",
+    "Eng": "The model family is detected from its weights. Choose a family if detection is unavailable. Unregistering preserves the model file."
+  },
+  {
+    "Id": 3217,
+    "Name": "EidolonText137",
+    "Kor": "\uB098\uB9CC\uC758 LoRA",
+    "Eng": "Your own LoRA"
+  },
+  {
+    "Id": 3218,
+    "Name": "EidolonText138",
+    "Kor": "\uC900\uBE44\uD55C \uC774\uBBF8\uC9C0\uB85C \uC2A4\uD0C0\uC77C\uC774\uB098 \uB300\uC0C1\uC744 \uD559\uC2B5\uD569\uB2C8\uB2E4. \uC644\uB8CC\uB41C LoRA\uB294 \uC0DD\uC131 \uD654\uBA74\uC5D0 \uC5F0\uACB0\uB429\uB2C8\uB2E4.",
+    "Eng": "Train a style or subject using your images. Completed LoRAs become available in Generate."
+  },
+  {
+    "Id": 3219,
+    "Name": "EidolonText139",
+    "Kor": "\uD559\uC2B5 \uAE30\uBC18 \uBAA8\uB378",
+    "Eng": "Training base model"
+  },
+  {
+    "Id": 3220,
+    "Name": "EidolonText140",
+    "Kor": "\uC774\uBBF8\uC9C0 \uD3F4\uB354",
+    "Eng": "Image folder"
+  },
+  {
+    "Id": 3221,
+    "Name": "EidolonText141",
+    "Kor": "PNG, JPG, BMP \uC774\uBBF8\uC9C0\uAC00 \uC788\uB294 \uD3F4\uB354",
+    "Eng": "A folder containing PNG, JPG or BMP images"
+  },
+  {
+    "Id": 3222,
+    "Name": "EidolonText142",
+    "Kor": "\uC120\uD0DD",
+    "Eng": "Browse"
+  },
+  {
+    "Id": 3223,
+    "Name": "EidolonText143",
+    "Kor": "LoRA \uC774\uB984",
+    "Eng": "LoRA name"
+  },
+  {
+    "Id": 3224,
+    "Name": "EidolonText144",
+    "Kor": "\uC608: \uB098\uC758 \uC218\uCC44\uD654 \uC2A4\uD0C0\uC77C",
+    "Eng": "Example: My watercolor style"
+  },
+  {
+    "Id": 3225,
+    "Name": "EidolonText145",
+    "Kor": "\uD2B8\uB9AC\uAC70 \uB2E8\uC5B4",
+    "Eng": "Trigger word"
+  },
+  {
+    "Id": 3226,
+    "Name": "EidolonText146",
+    "Kor": "\uC608: eidolon_watercolor",
+    "Eng": "Example: eidolon_watercolor"
+  },
+  {
+    "Id": 3227,
+    "Name": "EidolonText147",
+    "Kor": "\uC774\uBBF8\uC9C0 \uACF5\uD1B5 \uC124\uBA85 (\uC120\uD0DD)",
+    "Eng": "Shared image caption (optional)"
+  },
+  {
+    "Id": 3228,
+    "Name": "EidolonText148",
+    "Kor": "\uC608: a watercolor painting",
+    "Eng": "Example: a watercolor painting"
+  },
+  {
+    "Id": 3229,
+    "Name": "EidolonText149",
+    "Kor": "\uC774\uBBF8\uC9C0\uBCC4 .txt \uC124\uBA85\uC774 \uC788\uC73C\uBA74 \uC0AC\uC6A9\uD569\uB2C8\uB2E4. \uC5C6\uC73C\uBA74 \uACF5\uD1B5 \uC124\uBA85\uACFC \uD2B8\uB9AC\uAC70\uB85C \uD559\uC2B5\uD569\uB2C8\uB2E4. \uC6D0\uBCF8 \uC774\uBBF8\uC9C0\uC640 \uC124\uBA85\uC740 \uADF8\uB300\uB85C \uBCF4\uC874\uD569\uB2C8\uB2E4. NVIDIA GPU\uAC00 \uD544\uC694\uD569\uB2C8\uB2E4.",
+    "Eng": "Matching .txt captions are used when available. Otherwise, training uses the shared caption and trigger. Original images and captions are preserved. An NVIDIA GPU is required."
+  },
+  {
+    "Id": 3230,
+    "Name": "EidolonText150",
+    "Kor": "\uD559\uC2B5 \uAE30\uB85D",
+    "Eng": "Training history"
+  },
+  {
+    "Id": 3231,
+    "Name": "EidolonText151",
+    "Kor": "\uC791\uC5C5 \uD3F4\uB354\uC5D0\uC11C \uD559\uC2B5 \uB85C\uADF8\uC640 \uACB0\uACFC \uAC00\uC911\uCE58\uB97C \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Open a job folder to find its training log and output weights."
+  },
+  {
+    "Id": 3232,
+    "Name": "EidolonText152",
+    "Kor": "\uC5D4\uC9C4 \uC124\uCE58",
+    "Eng": "Install engine"
+  },
+  {
+    "Id": 3233,
+    "Name": "EidolonText153",
+    "Kor": "\uC124\uCE58\uD560 \uD3F4\uB354\uB97C \uC120\uD0DD\uD558\uC138\uC694. Python, \uC774\uBBF8\uC9C0 \uC0DD\uC131 \uC5D4\uC9C4, LoRA \uD559\uC2B5 \uB3C4\uAD6C\uB97C \uD568\uAED8 \uC900\uBE44\uD569\uB2C8\uB2E4.",
+    "Eng": "Choose a folder. Python, the generation engine and LoRA training tools will be installed together."
+  },
+  {
+    "Id": 3234,
+    "Name": "EidolonText154",
+    "Kor": "\uC124\uCE58 \uACBD\uB85C",
+    "Eng": "Installation path"
+  },
+  {
+    "Id": 3235,
+    "Name": "EidolonText155",
+    "Kor": "\uC608: D:\\AI",
+    "Eng": "Example: D:\\AI"
+  },
+  {
+    "Id": 3236,
+    "Name": "EidolonText156",
+    "Kor": "\uC120\uD0DD\uD55C \uD3F4\uB354 \uC544\uB798 EidolonRuntime\uC5D0 \uC124\uCE58\uD569\uB2C8\uB2E4.",
+    "Eng": "Installs into EidolonRuntime inside the selected folder."
+  },
+  {
+    "Id": 3237,
+    "Name": "EidolonText157",
+    "Kor": "CPU \uD658\uACBD\uC73C\uB85C \uC124\uCE58 (\uC774\uBBF8\uC9C0 \uC0DD\uC131\uB9CC \uC9C0\uC6D0)",
+    "Eng": "Install CPU environment (image generation only)"
+  },
+  {
+    "Id": 3238,
+    "Name": "EidolonText158",
+    "Kor": "\uAE30\uBCF8 \uC124\uCE58\uB294 NVIDIA GPU\uC6A9\uC785\uB2C8\uB2E4. NVIDIA \uB4DC\uB77C\uC774\uBC84\uAC00 \uD544\uC694\uD558\uBA70 \uC0DD\uC131\u00B7\uD559\uC2B5 \uB77C\uC774\uBE0C\uB7EC\uB9AC\uB97C \uC5EC\uB7EC GB \uB0B4\uB824\uBC1B\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The default installation uses an NVIDIA GPU. An NVIDIA driver is required. Generation and training libraries require several GB of downloads."
+  },
+  {
+    "Id": 3239,
+    "Name": "EidolonText159",
+    "Kor": "\uAE30\uBCF8 SDXL \uBAA8\uB378\uB3C4 \uB2E4\uC6B4\uB85C\uB4DC (6.94 GB)",
+    "Eng": "Download the default SDXL model (6.94 GB)"
+  },
+  {
+    "Id": 3240,
+    "Name": "EidolonText160",
+    "Kor": "\uAE30\uBCF8 \uBAA8\uB378 \uB77C\uC774\uC120\uC2A4 \uBCF4\uAE30",
+    "Eng": "View default model license"
+  },
+  {
+    "Id": 3241,
+    "Name": "EidolonText161",
+    "Kor": "\uC120\uD0DD\uD55C \uACBD\uB85C\uC5D0 \uC124\uCE58 \u00B7 \uBCF5\uAD6C",
+    "Eng": "Install or repair at selected path"
+  },
+  {
+    "Id": 3242,
+    "Name": "EidolonText162",
+    "Kor": "\uC124\uCE58 \uD3F4\uB354 \uC5F4\uAE30",
+    "Eng": "Open installation folder"
+  },
+  {
+    "Id": 3243,
+    "Name": "EidolonText163",
+    "Kor": "\uC778\uD130\uB137 \uC5F0\uACB0\uACFC \uCDA9\uBD84\uD55C \uB514\uC2A4\uD06C \uACF5\uAC04\uC774 \uD544\uC694\uD569\uB2C8\uB2E4. \uC2E4\uD328\uD558\uBA74 \uAC19\uC740 \uACBD\uB85C\uC5D0\uC11C \uB2E4\uC2DC \uC2E4\uD589\uD558\uC138\uC694. \uC644\uB8CC\uD55C \uB2E4\uC6B4\uB85C\uB4DC\uB294 \uC7AC\uC0AC\uC6A9\uD569\uB2C8\uB2E4.",
+    "Eng": "Internet access and sufficient disk space are required. If installation fails, retry at the same path. Completed downloads are reused."
+  },
+  {
+    "Id": 3244,
+    "Name": "EidolonText164",
+    "Kor": "\uC5D4\uC9C4 \uC124\uC815",
+    "Eng": "Engine settings"
+  },
+  {
+    "Id": 3245,
+    "Name": "EidolonText165",
+    "Kor": "\uC0DD\uC131\uACFC \uD559\uC2B5\uC5D0 \uC0AC\uC6A9\uD560 \uC2E4\uD589 \uD658\uACBD\uC744 \uAD00\uB9AC\uD569\uB2C8\uB2E4.",
+    "Eng": "Manage the runtime used for generation and training."
+  },
+  {
+    "Id": 3246,
+    "Name": "EidolonText166",
+    "Kor": "\uB85C\uCEEC \uC0DD\uC131 \uC5D4\uC9C4 \uD3EC\uD2B8",
+    "Eng": "Local generation engine port"
+  },
+  {
+    "Id": 3247,
+    "Name": "EidolonText167",
+    "Kor": "\uC800\uC7A5 \uBC0F \uC5F0\uACB0",
+    "Eng": "Save and connect"
+  },
+  {
+    "Id": 3248,
+    "Name": "EidolonText168",
+    "Kor": "CPU\u00B7GPU \uC124\uCE58 \uC635\uC158\uC744 \uBCC0\uACBD\uD558\uBA74 \uC124\uCE58\u00B7\uBCF5\uAD6C\uB97C \uB2E4\uC2DC \uC2E4\uD589\uD558\uC138\uC694.",
+    "Eng": "Run install or repair again after changing the CPU or GPU installation option."
+  },
+  {
+    "Id": 3249,
+    "Name": "EidolonText169",
+    "Kor": "\uC124\uCE58\u00B7\uC0DD\uC131 \uC5D4\uC9C4 \uB85C\uADF8\uB294 \uC124\uCE58 \uD3F4\uB354\uC758 Logs\uC5D0, \uD559\uC2B5 \uB85C\uADF8\uB294 \uD574\uB2F9 \uC791\uC5C5 \uD3F4\uB354\uC5D0 \uAE30\uB85D\uD569\uB2C8\uB2E4.",
+    "Eng": "Installation and generation logs are in Logs under the installation folder. Training logs are in each job folder."
+  },
+  {
+    "Id": 3250,
+    "Name": "EidolonText170",
+    "Kor": "\uD654\uBA74 \uC124\uC815",
+    "Eng": "Appearance"
+  },
+  {
+    "Id": 3251,
+    "Name": "EidolonText171",
+    "Kor": "\uD14C\uB9C8",
+    "Eng": "Theme"
+  },
+  {
+    "Id": 3252,
+    "Name": "EidolonText172",
+    "Kor": "\uC5B8\uC5B4",
+    "Eng": "Language"
+  },
+  {
+    "Id": 3253,
+    "Name": "EidolonText173",
+    "Kor": "\uD14C\uB9C8\uC640 \uC5B8\uC5B4\uB294 \uC120\uD0DD \uC989\uC2DC \uC801\uC6A9\uB429\uB2C8\uB2E4. \uC124\uC815\uC744 \uC800\uC7A5\uD558\uBA74 \uB2E4\uC74C \uC2E4\uD589\uC5D0\uB3C4 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "Theme and language changes apply immediately. Save settings to keep them for the next launch."
+  },
+  {
+    "Id": 3254,
+    "Name": "EidolonText174",
+    "Kor": "\uB85C\uADF8 \uD3F4\uB354 \uC5F4\uAE30",
+    "Eng": "Open log folder"
+  },
+  {
+    "Id": 3255,
+    "Name": "EidolonText175",
+    "Kor": "\uC0AC\uC6A9\uC790 \uB370\uC774\uD130 \uD3F4\uB354",
+    "Eng": "User data folder"
+  },
+  {
+    "Id": 3256,
+    "Name": "EidolonText176",
+    "Kor": "\uACF5\uC6A9 \uD504\uB86C\uD504\uD2B8",
+    "Eng": "Shared prompts"
+  },
+  {
+    "Id": 3257,
+    "Name": "EidolonText177",
+    "Kor": "\uBAA8\uB4E0 \uC774\uBBF8\uC9C0\uC5D0 \uC0AC\uC6A9\uD560 \uD45C\uD604\uC744 \uD55C \uBC88 \uC124\uC815\uD558\uC138\uC694.",
+    "Eng": "Set expressions you want to include in every image."
+  },
+  {
+    "Id": 3258,
+    "Name": "EidolonText178",
+    "Kor": "\uAE0D\uC815 \uD504\uB86C\uD504\uD2B8",
+    "Eng": "Positive prompt"
+  },
+  {
+    "Id": 3259,
+    "Name": "EidolonText179",
+    "Kor": "\uBAA8\uB4E0 \uC0DD\uC131\uC5D0 \uB354\uD560 \uC2A4\uD0C0\uC77C\u00B7\uD45C\uD604",
+    "Eng": "Styles or expressions to add to every generation"
+  },
+  {
+    "Id": 3260,
+    "Name": "EidolonText180",
+    "Kor": "\uBD80\uC815 \uD504\uB86C\uD504\uD2B8",
+    "Eng": "Negative prompt"
+  },
+  {
+    "Id": 3261,
+    "Name": "EidolonText181",
+    "Kor": "\uC608: blurry, low quality",
+    "Eng": "Example: blurry, low quality"
+  },
+  {
+    "Id": 3262,
+    "Name": "EidolonText182",
+    "Kor": "\uC124\uC815 \uC800\uC7A5",
+    "Eng": "Save settings"
+  },
+  {
+    "Id": 3263,
+    "Name": "EidolonText183",
+    "Kor": "\uAE30\uBCF8 \uBAA8\uB378\uC740 \uC0DD\uC131 \uD654\uBA74\uC5D0\uC11C \uC9C0\uC815\uD569\uB2C8\uB2E4. \uACF5\uC6A9 \uD504\uB86C\uD504\uD2B8 \uBCC0\uACBD\uC740 \uC800\uC7A5\uD55C \uB2E4\uC74C \uC0DD\uC131\uBD80\uD130 \uC801\uC6A9\uB429\uB2C8\uB2E4.",
+    "Eng": "Choose the default model in Generate. Saved shared prompts apply to subsequent generations."
+  },
+  {
+    "Id": 3264,
+    "Name": "EidolonText184",
+    "Kor": "Eidolon \uC0AC\uC6A9\uBC95",
+    "Eng": "Using Eidolon"
+  },
+  {
+    "Id": 3265,
+    "Name": "EidolonText185",
+    "Kor": "1. \uC5D4\uC9C4\uACFC \uBAA8\uB378 \uC900\uBE44",
+    "Eng": "1. Prepare the engine and model"
+  },
+  {
+    "Id": 3266,
+    "Name": "EidolonText186",
+    "Kor": "\uC5D4\uC9C4 \uD0ED\uC5D0\uC11C \uC124\uCE58 \uD3F4\uB354\uB97C \uC120\uD0DD\uD558\uACE0 \uC124\uCE58\u00B7\uBCF5\uAD6C\uB97C \uC2E4\uD589\uD569\uB2C8\uB2E4. NVIDIA GPU\uAC00 \uC788\uC73C\uBA74 \uAE30\uBCF8 \uC635\uC158\uC744 \uC720\uC9C0\uD558\uACE0, GPU\uAC00 \uC5C6\uC73C\uBA74 CPU \uD658\uACBD\uC744 \uC120\uD0DD\uD558\uC138\uC694. CPU\uB294 \uC774\uBBF8\uC9C0 \uC0DD\uC131\uB9CC \uC9C0\uC6D0\uD569\uB2C8\uB2E4.",
+    "Eng": "In Engine, choose an installation folder and run install or repair. Keep the default options for an NVIDIA GPU, or select CPU if you have no GPU. CPU supports image generation only."
+  },
+  {
+    "Id": 3267,
+    "Name": "EidolonText187",
+    "Kor": "\uAE30\uBCF8 SDXL Base 1.0 \uBAA8\uB378 \uB2E4\uC6B4\uB85C\uB4DC\uB97C \uC120\uD0DD\uD558\uAC70\uB098 \uBAA8\uB378\u00B7LoRA \uD0ED\uC5D0\uC11C .safetensors \uD30C\uC77C\uC744 \uAC00\uC838\uC635\uB2C8\uB2E4. \uC124\uCE58\uB41C \uBAA8\uB378\uB9CC \uD45C\uC2DC\uD558\uBA70 SDXL\uC744 \uAE30\uBCF8\uC73C\uB85C \uC120\uD0DD\uD569\uB2C8\uB2E4. \uCD5C\uCD08 \uC124\uCE58\uC5D0\uB294 \uC778\uD130\uB137 \uC5F0\uACB0\uACFC \uC5EC\uB7EC GB\uC758 \uC5EC\uC720 \uACF5\uAC04\uC774 \uD544\uC694\uD569\uB2C8\uB2E4.",
+    "Eng": "Download the default SDXL Base 1.0 model, or import a .safetensors file in Models and LoRAs. Only installed models are shown, with SDXL selected by default. Initial setup requires internet access and several GB of free space."
+  },
+  {
+    "Id": 3268,
+    "Name": "EidolonText188",
+    "Kor": "\uC5D4\uC9C4 \uD0ED\uC5D0\uB294 ComfyUI \uC11C\uBC84 \uC8FC\uC18C\uB9CC \uC785\uB825\uD569\uB2C8\uB2E4. \uC2E4\uD589 \uC911\uC778 \uC11C\uBC84\uAC00 \uC788\uC73C\uBA74 \uC5F0\uACB0\uD558\uACE0 \uB85C\uCEEC \uC8FC\uC18C\uC5D0 \uC11C\uBC84\uAC00 \uC5C6\uC73C\uBA74 \uC124\uCE58\uD55C \uC5D4\uC9C4\uC744 \uC2E4\uD589\uD569\uB2C8\uB2E4. \uC571\uC774 \uC2DC\uC791\uD55C \uC11C\uBC84\uB294 \uC885\uB8CC \uC2DC \uD568\uAED8 \uC885\uB8CC\uD558\uBA70 \uAE30\uC874 \uC11C\uBC84\uB294 \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+    "Eng": "Enter the ComfyUI server address in Engine. Connect to an existing server, or start the installed engine if no server is running at a local address. Servers started by this app stop when it closes; existing servers keep running."
+  },
+  {
+    "Id": 3269,
+    "Name": "EidolonText189",
+    "Kor": "\uC0DD\uC131 \uD0ED\uC5D0\uC11C \uB9CC\uB4E4\uACE0 \uC2F6\uC740 \uC7A5\uBA74\uC744 \uC785\uB825\uD558\uACE0 \uB300\uAE30\uC5F4\uC5D0 \uCD94\uAC00\uB97C \uB204\uB985\uB2C8\uB2E4. \uC124\uCE58\uB41C \uBAA8\uB378\uB9CC \uC120\uD0DD \uBAA9\uB85D\uC5D0 \uD45C\uC2DC\uD569\uB2C8\uB2E4. \uAE30\uBCF8 \uBAA8\uB378\uC744 \uC120\uD0DD\uD55C \uB4A4\uC5D0\uB294 \uD504\uB86C\uD504\uD2B8\uB9CC \uC785\uB825\uD558\uBA74 \uB429\uB2C8\uB2E4. \uC2E4\uD589 \uC911\uC5D0\uB3C4 \uB2E4\uC74C \uC694\uCCAD\uC744 \uCD94\uAC00\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "In Generate, describe your scene and press Add to queue. Only installed models appear in the selector. After choosing a default model, enter just a prompt. You can add more requests while a job is running."
+  },
+  {
+    "Id": 3270,
+    "Name": "EidolonText190",
+    "Kor": "\uC124\uC815\uC758 \uACF5\uC6A9 \uAE0D\uC815 \uD504\uB86C\uD504\uD2B8\uC5D0\uB294 \uBC18\uBCF5\uD560 \uC2A4\uD0C0\uC77C\uC744, \uBD80\uC815 \uD504\uB86C\uD504\uD2B8\uC5D0\uB294 \uD53C\uD560 \uD45C\uD604\uC744 \uC785\uB825\uD558\uC138\uC694. \uC800\uC7A5\uD55C \uB0B4\uC6A9\uC740 \uC774\uD6C4 \uC0DD\uC131\uC5D0 \uC801\uC6A9\uB429\uB2C8\uB2E4. \uC0DD\uC131 \uC774\uB825\uC744 \uC120\uD0DD\uD558\uBA74 \uD504\uB86C\uD504\uD2B8\uB97C \uB2E4\uC2DC \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Use the shared positive prompt in Settings for recurring styles, and the negative prompt for things to avoid. Saved prompts apply to later generations. Select a generation history entry to reuse its prompt."
+  },
+  {
+    "Id": 3271,
+    "Name": "EidolonText191",
+    "Kor": "3. \uB0B4 \uC774\uBBF8\uC9C0\uB85C LoRA \uD559\uC2B5",
+    "Eng": "3. Train a LoRA with your images"
+  },
+  {
+    "Id": 3272,
+    "Name": "EidolonText192",
+    "Kor": "LoRA \uD559\uC2B5 \uD0ED\uC5D0\uC11C \uAE30\uBC18 \uBAA8\uB378, \uC774\uBBF8\uC9C0 \uD3F4\uB354, \uC774\uB984\uACFC \uD2B8\uB9AC\uAC70\uB97C \uC9C0\uC815\uD558\uACE0 \uB300\uAE30\uC5F4\uC5D0 \uCD94\uAC00\uB97C \uB204\uB985\uB2C8\uB2E4. PNG\u00B7JPG\u00B7BMP\uC640 \uD558\uC704 \uD3F4\uB354, \uAC19\uC740 \uC774\uB984\uC758 .txt \uCEA1\uC158\uC744 \uC9C0\uC6D0\uD569\uB2C8\uB2E4. \uAE30\uC874 LoRA \uC774\uC5B4 \uD559\uC2B5\uC744 \uCF1C\uBA74 \uC800\uC7A5\uB41C \uAC00\uC911\uCE58\uC640 rank\uBD80\uD130 \uCD94\uAC00 \uD559\uC2B5\uD569\uB2C8\uB2E4. optimizer\uC640 \uC2A4\uCF00\uC904\uC740 \uC0C8\uB85C \uC2DC\uC791\uD558\uBA70 \uACB0\uACFC\uB294 \uC0C8 LoRA\uB85C \uC800\uC7A5\uD569\uB2C8\uB2E4. \uC6D0\uBCF8 \uC774\uBBF8\uC9C0\uC640 LoRA\uB294 \uBCF4\uC874\uD569\uB2C8\uB2E4.",
+    "Eng": "In LoRA training, select a base model and image folder, enter a name and trigger, then add to queue. PNG, JPG, BMP, subfolders and matching .txt captions are supported. Enable Continue training an existing LoRA to start from its weights and rank. The opti"
+  },
+  {
+    "Id": 3273,
+    "Name": "EidolonText193",
+    "Kor": "\uD559\uC2B5\uC5D0\uB294 NVIDIA GPU \uD658\uACBD\uC774 \uD544\uC694\uD569\uB2C8\uB2E4. \uD2B8\uB9AC\uAC70\uB294 \uACF5\uBC31\uACFC \uC27C\uD45C\uAC00 \uC5C6\uB294 \uB2E8\uC5B4\uB97C \uC0AC\uC6A9\uD558\uC138\uC694. \uC644\uB8CC\uD55C LoRA\uB294 \uC790\uB3D9\uC73C\uB85C \uB4F1\uB85D\uB418\uBA70 \uC774\uBBF8\uC9C0 \uC0DD\uC131 \uD0ED\uC5D0\uC11C \uC120\uD0DD\uD574 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uAE30\uBCF8 \uBAA8\uB378\uACFC \uAC19\uC740 \uACC4\uC5F4\uC758 LoRA\uB9CC \uD45C\uC2DC\uD569\uB2C8\uB2E4.",
+    "Eng": "Training requires an NVIDIA GPU environment. Use a trigger word without spaces or commas. Completed LoRAs are registered automatically and can be selected in Generate. Only LoRAs matching the base model family are shown."
+  },
+  {
+    "Id": 3274,
+    "Name": "EidolonText194",
+    "Kor": "\uC791\uC5C5 \uC0C1\uD0DC\uC640 \uBB38\uC81C \uD574\uACB0",
+    "Eng": "Job status and troubleshooting"
+  },
+  {
+    "Id": 3275,
+    "Name": "EidolonText195",
+    "Kor": "\uCC3D \uD558\uB2E8\uC5D0\uC11C \uD604\uC7AC \uC0C1\uD0DC, \uC9C4\uD589\uB960\uACFC \uB300\uAE30 \uAC74\uC218\uB97C \uD655\uC778\uD569\uB2C8\uB2E4. \uC791\uC5C5 \uCDE8\uC18C\uB294 \uC2E4\uD589 \uC911\uC778 \uC694\uCCAD\uB9CC \uCDE8\uC18C\uD558\uBA70 \uB2E4\uC74C \uC694\uCCAD\uC740 \uACC4\uC18D \uC2E4\uD589\uD569\uB2C8\uB2E4. \uB300\uAE30 \uC791\uC5C5 \uBE44\uC6B0\uAE30\uB294 \uC544\uC9C1 \uC2DC\uC791\uD558\uC9C0 \uC54A\uC740 \uC694\uCCAD\uC744 \uCDE8\uC18C\uD569\uB2C8\uB2E4. \uC571\uC744 \uC885\uB8CC\uD558\uBA74 \uC2E4\uD589 \uC911\uC778 \uC791\uC5C5\uACFC \uB300\uAE30 \uC694\uCCAD\uC744 \uCDE8\uC18C\uD569\uB2C8\uB2E4. \uB2E4\uC6B4\uB85C\uB4DC\uAC00 \uC911\uB2E8\uB418\uBA74 \uAC19\uC740 \uACBD\uB85C\uC5D0 \uC124\uCE58\u00B7\uBCF5\uAD6C\uB97C \uB2E4\uC2DC \uC2E4\uD589\uD558\uC138\uC694.",
+    "Eng": "Check the current status, progress and pending count at the bottom of the window. Cancel job cancels the running request and the next request continues. Clear pending jobs cancels requests that have not started. Closing the app cancels running and pending"
+  },
+  {
+    "Id": 3276,
+    "Name": "EidolonText196",
+    "Kor": "\uC624\uB958\uAC00 \uBC1C\uC0DD\uD558\uBA74 \uC571 \uB85C\uADF8, \uC124\uCE58 \uD3F4\uB354\uC758 Logs, \uD574\uB2F9 \uD559\uC2B5 \uC791\uC5C5\uC758 Training.log\uB97C \uD655\uC778\uD558\uC138\uC694. \uBAA8\uB378 \uB4F1\uB85D \uD574\uC81C\uB294 \uAC00\uC911\uCE58 \uD30C\uC77C\uC744 \uC0AD\uC81C\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. \uC124\uC815 \uD30C\uC77C\uC774 \uC190\uC0C1\uB418\uBA74 \uC0AC\uC6A9\uC790 \uB370\uC774\uD130 \uD3F4\uB354\uC758 .bak \uD30C\uC77C\uB85C \uBCF5\uC6D0\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "If an error occurs, check the app log, the installation folder\u0027s Logs, or Training.log in the training job folder. Unregistering a model preserves its weights. Restore a damaged settings file from its .bak backup in the user data folder."
+  },
+  {
+    "Id": 3277,
+    "Name": "EidolonText197",
+    "Kor": "\uC791\uC5C5 \uCDE8\uC18C",
+    "Eng": "Cancel job"
+  },
+  {
+    "Id": 3278,
+    "Name": "EidolonText198",
+    "Kor": "\uC791\uC5C5 \uC815\uBCF4",
+    "Eng": "Job details"
+  },
+  {
+    "Id": 3279,
+    "Name": "EidolonText199",
+    "Kor": "\uC120\uD0DD\uD55C \uC791\uC5C5 \uD3F4\uB354",
+    "Eng": "Selected job folder"
+  },
+  {
+    "Id": 3280,
+    "Name": "EidolonText200",
+    "Kor": "\uB2E4\uC2DC \uBD88\uB7EC\uC624\uAE30",
+    "Eng": "Reload"
+  },
+  {
+    "Id": 3281,
+    "Name": "EidolonText201",
+    "Kor": "Eidolon \u00B7 \uC791\uC5C5\uC744 \uC815\uB9AC\uD558\uB294 \uC911",
+    "Eng": "Eidolon \u00B7 Finishing active work"
+  },
+  {
+    "Id": 3282,
+    "Name": "EidolonText202",
+    "Kor": "\uB85C\uCEEC \uD3F4\uB354\uB97C \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Choose a local folder."
+  },
+  {
+    "Id": 3283,
+    "Name": "EidolonText203",
+    "Kor": "\uBAA8\uB378 \uB610\uB294 LoRA \uAC00\uC838\uC624\uAE30",
+    "Eng": "Import a model or LoRA"
+  },
+  {
+    "Id": 3284,
+    "Name": "EidolonText204",
+    "Kor": "\uB85C\uCEEC \uBAA8\uB378 \uD30C\uC77C\uC744 \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Choose a local model file."
+  },
+  {
+    "Id": 3285,
+    "Name": "EidolonText205",
+    "Kor": "\uC0DD\uC131 \uC774\uBBF8\uC9C0 \uC800\uC7A5",
+    "Eng": "Save generated image"
+  },
+  {
+    "Id": 3286,
+    "Name": "EidolonText206",
+    "Kor": "\uD3F4\uB354\uB97C \uC5F4 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Could not open the folder."
+  },
+  {
+    "Id": 3287,
+    "Name": "EidolonText207",
+    "Kor": "\uB9C1\uD06C\uB97C \uC5F4 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Could not open the link."
+  },
+  {
+    "Id": 3288,
+    "Name": "EidolonText208",
+    "Kor": "\uAE30\uBCF8 \uBAA8\uB378",
+    "Eng": "Base model"
+  },
+  {
+    "Id": 3289,
+    "Name": "EidolonText209",
+    "Kor": "\uACC4\uC5F4 \uD655\uC778 \uD544\uC694",
+    "Eng": "Model family required"
+  },
+  {
+    "Id": 3290,
+    "Name": "EidolonText210",
+    "Kor": "\uC644\uB8CC",
+    "Eng": "Completed"
+  },
+  {
+    "Id": 3291,
+    "Name": "EidolonText211",
+    "Kor": "\uCDE8\uC18C",
+    "Eng": "Cancelled"
+  },
+  {
+    "Id": 3292,
+    "Name": "EidolonText212",
+    "Kor": "\uC911\uB2E8",
+    "Eng": "Interrupted"
+  },
+  {
+    "Id": 3293,
+    "Name": "EidolonText213",
+    "Kor": "\uD559\uC2B5 \uC644\uB8CC / \uB4F1\uB85D \uC2E4\uD328",
+    "Eng": "Trained / registration failed"
+  },
+  {
+    "Id": 3294,
+    "Name": "EidolonText214",
+    "Kor": "\uC900\uBE44 \uC911",
+    "Eng": "Preparing"
+  },
+  {
+    "Id": 3295,
+    "Name": "EidolonText215",
+    "Kor": "\uC2E4\uD589 \uC911",
+    "Eng": "Running"
+  },
+  {
+    "Id": 3296,
+    "Name": "EidolonText216",
+    "Kor": "\uC2E4\uD328",
+    "Eng": "Failed"
+  },
+  {
+    "Id": 3297,
+    "Name": "EidolonText217",
+    "Kor": "\n{0} \u00D7 {1} \u00B7 seed {2}\n\uAE0D\uC815: {3}\n\uBD80\uC815: {4}",
+    "Eng": "\n{0} \u00D7 {1} \u00B7 seed {2}\nPositive: {3}\nNegative: {4}"
+  },
+  {
+    "Id": 3298,
+    "Name": "EidolonText218",
+    "Kor": "\n\uD559\uC2B5 \uC774\uBBF8\uC9C0 {0}\uC7A5 \u00B7 \uD2B8\uB9AC\uAC70 {1}",
+    "Eng": "\nTraining images: {0} \u00B7 Trigger: {1}"
+  },
+  {
+    "Id": 3299,
+    "Name": "EidolonText219",
+    "Kor": "\uC790\uB3D9 \uD655\uC778 / \uBBF8\uC9C0\uC815",
+    "Eng": "Auto-detect / unspecified"
+  },
+  {
+    "Id": 3300,
+    "Name": "EidolonText220",
+    "Kor": "\uB77C\uC774\uD2B8",
+    "Eng": "Light"
+  },
+  {
+    "Id": 3301,
+    "Name": "EidolonText221",
+    "Kor": "\uBE14\uB799",
+    "Eng": "Black"
+  },
+  {
+    "Id": 3302,
+    "Name": "EidolonText222",
+    "Kor": "\uD55C\uAD6D\uC5B4",
+    "Eng": "\uD55C\uAD6D\uC5B4"
+  },
+  {
+    "Id": 3303,
+    "Name": "EidolonText223",
+    "Kor": "\uBAA8\uB378 \uD3F4\uB354 \uD655\uC778 \uC644\uB8CC",
+    "Eng": "Model folder scan complete"
+  },
+  {
+    "Id": 3304,
+    "Name": "EidolonText224",
+    "Kor": "\uC900\uBE44\uB428",
+    "Eng": "Ready"
+  },
+  {
+    "Id": 3305,
+    "Name": "EidolonText225",
+    "Kor": "\uBA3C\uC800 \uC124\uCE58 \uACBD\uB85C\uB97C \uC120\uD0DD\uD558\uACE0 \uC2E4\uD589 \uD658\uACBD\uC744 \uC124\uCE58\uD558\uC138\uC694.",
+    "Eng": "Choose an installation folder and install the runtime first."
+  },
+  {
+    "Id": 3306,
+    "Name": "EidolonText226",
+    "Kor": "\uC0AC\uC6A9\uC790 \uB370\uC774\uD130\uB97C \uC77D\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC0AC\uC6A9\uC790 \uB370\uC774\uD130 \uD3F4\uB354\uC758 \uBC31\uC5C5\uC744 \uD655\uC778\uD55C \uB4A4 \uB2E4\uC2DC \uBD88\uB7EC\uC624\uC138\uC694. ",
+    "Eng": "Could not read user data. Check the backup in the user data folder, then reload. "
+  },
+  {
+    "Id": 3307,
+    "Name": "EidolonText227",
+    "Kor": "\uC791\uC5C5 \uC900\uBE44 \uC911",
+    "Eng": "Preparing job"
+  },
+  {
+    "Id": 3308,
+    "Name": "EidolonText228",
+    "Kor": "\uC791\uC5C5\uC744 \uCDE8\uC18C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The job was cancelled."
+  },
+  {
+    "Id": 3309,
+    "Name": "EidolonText229",
+    "Kor": "\uC791\uC5C5\uC744 \uC644\uB8CC\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The job could not be completed."
+  },
+  {
+    "Id": 3310,
+    "Name": "EidolonText230",
+    "Kor": "\uC2E4\uD589 \uD658\uACBD \uC124\uCE58 \uC644\uB8CC. \uBAA8\uB378\uC744 \uAC00\uC838\uC624\uAC70\uB098 \uAE30\uBCF8 SDXL \uBAA8\uB378\uC744 \uB2E4\uC6B4\uB85C\uB4DC\uD558\uC138\uC694.",
+    "Eng": "Runtime installed. Import a model or download the default SDXL model."
+  },
+  {
+    "Id": 3311,
+    "Name": "EidolonText231",
+    "Kor": "\uC124\uCE58 \uC644\uB8CC. \uC0DD\uC131 \uD654\uBA74\uC5D0\uC11C \uD504\uB86C\uD504\uD2B8\uB97C \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Installation complete. Enter a prompt in Generate."
+  },
+  {
+    "Id": 3312,
+    "Name": "EidolonText232",
+    "Kor": "\uAE30\uBCF8 SDXL \uBAA8\uB378 \uC900\uBE44 \uC644\uB8CC",
+    "Eng": "Default SDXL model ready"
+  },
+  {
+    "Id": 3313,
+    "Name": "EidolonText233",
+    "Kor": "\uC2E4\uD589 \uD658\uACBD\uC744 \uC124\uCE58\uD560 \uD3F4\uB354 \uC120\uD0DD",
+    "Eng": "Choose the runtime installation folder"
+  },
+  {
+    "Id": 3314,
+    "Name": "EidolonText234",
+    "Kor": "LoRA \uD559\uC2B5 \uC774\uBBF8\uC9C0 \uD3F4\uB354 \uC120\uD0DD",
+    "Eng": "Choose the LoRA training image folder"
+  },
+  {
+    "Id": 3315,
+    "Name": "EidolonText235",
+    "Kor": "\uC124\uC815\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Settings saved."
+  },
+  {
+    "Id": 3316,
+    "Name": "EidolonText236",
+    "Kor": "\uC5D4\uC9C4 \uC124\uC815\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Engine settings saved."
+  },
+  {
+    "Id": 3317,
+    "Name": "EidolonText237",
+    "Kor": "\uBAA8\uB378\uC744 \uD655\uC778\uD558\uACE0 \uAC00\uC838\uC624\uB294 \uC911",
+    "Eng": "Checking and importing the model"
+  },
+  {
+    "Id": 3318,
+    "Name": "EidolonText238",
+    "Kor": "\uBAA8\uB378\uC744 \uAC00\uC838\uC654\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Model imported."
+  },
+  {
+    "Id": 3319,
+    "Name": "EidolonText239",
+    "Kor": "\uBAA8\uB378 \uC815\uBCF4\uB97C \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Model details saved."
+  },
+  {
+    "Id": 3320,
+    "Name": "EidolonText240",
+    "Kor": "\uB4F1\uB85D\uC744 \uD574\uC81C\uD588\uC2B5\uB2C8\uB2E4. \uBAA8\uB378 \uD30C\uC77C\uC740 \uC124\uCE58 \uD3F4\uB354\uC5D0 \uBCF4\uC874\uB429\uB2C8\uB2E4.",
+    "Eng": "Asset unregistered. The model file remains in the installation folder."
+  },
+  {
+    "Id": 3321,
+    "Name": "EidolonText241",
+    "Kor": "\uBA3C\uC800 \uBAA8\uB378 \uACC4\uC5F4\uC744 \uC9C0\uC815\uD558\uC138\uC694.",
+    "Eng": "Choose a model family first."
+  },
+  {
+    "Id": 3322,
+    "Name": "EidolonText242",
+    "Kor": "\uD604\uC7AC \uBAA8\uB378\uC744 \uAE30\uBCF8 \uBAA8\uB378\uB85C \uC9C0\uC815\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The current model is now the default."
+  },
+  {
+    "Id": 3323,
+    "Name": "EidolonText243",
+    "Kor": "\uC791\uC5C5 \uCDE8\uC18C \uC911",
+    "Eng": "Cancelling job"
+  },
+  {
+    "Id": 3324,
+    "Name": "EidolonText244",
+    "Kor": "\uACB0\uACFC \uC774\uBBF8\uC9C0\uB97C \uC5F4\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. ",
+    "Eng": "Could not open the output image. "
+  },
+  {
+    "Id": 3325,
+    "Name": "EidolonText245",
+    "Kor": "{0}\uAC1C \uC791\uC5C5 \uB300\uAE30",
+    "Eng": "{0} jobs queued"
+  },
+  {
+    "Id": 3326,
+    "Name": "EidolonText246",
+    "Kor": "\uB300\uAE30 \uC791\uC5C5 \uBE44\uC6B0\uAE30",
+    "Eng": "Clear pending jobs"
+  },
+  {
+    "Id": 3327,
+    "Name": "EidolonText247",
+    "Kor": "\uC694\uCCAD\uC744 \uB300\uAE30\uC5F4\uC5D0 \uCD94\uAC00\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Request added to queue."
+  },
+  {
+    "Id": 3328,
+    "Name": "EidolonText248",
+    "Kor": "\uC0DD\uC131\u00B7\uD559\uC2B5 \uC694\uCCAD\uC740 \uC21C\uC11C\uB300\uB85C \uC2E4\uD589\uB429\uB2C8\uB2E4. \uC2E4\uD589 \uC911\uC5D0\uB3C4 \uB2E4\uC74C \uC694\uCCAD\uC744 \uCD94\uAC00\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Generation and training requests run in order. You can add another request while a job is running."
+  },
+  {
+    "Id": 3329,
+    "Name": "EidolonText249",
+    "Kor": "\uC791\uC5C5 \uB300\uAE30\uC5F4",
+    "Eng": "Work queue"
+  },
+  {
+    "Id": 3330,
+    "Name": "EidolonText250",
+    "Kor": "\uB300\uAE30\uC5F4\uC5D0 \uCD94\uAC00",
+    "Eng": "Add to queue"
+  },
+  {
+    "Id": 3331,
+    "Name": "EidolonText251",
+    "Kor": "\uC2E4\uD589 \uC911\uC778 \uC678\uBD80 ComfyUI \uC0AC\uC6A9",
+    "Eng": "Use a running external ComfyUI"
+  },
+  {
+    "Id": 3332,
+    "Name": "EidolonText252",
+    "Kor": "\uC11C\uBC84 \uC8FC\uC18C",
+    "Eng": "Server address"
+  },
+  {
+    "Id": 3333,
+    "Name": "EidolonText253",
+    "Kor": "\uC8FC\uC18C \uBCC0\uACBD\uC740 \uC790\uB3D9 \uC801\uC6A9\uD558\uBA70 \uC791\uC5C5 \uC911\uC5D0\uB294 \uB300\uAE30\uC5F4\uC774 \uB05D\uB09C \uB4A4 \uC801\uC6A9\uD569\uB2C8\uB2E4. \uC571\uC774 \uC2E4\uD589\uD55C \uC11C\uBC84\uB9CC \uC885\uB8CC\uD558\uACE0 \uAE30\uC874 \uC11C\uBC84\uB294 \uC5F0\uACB0\uC744 \uB04A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Address changes apply automatically, or once queued work finishes. Stop servers started by this app; disconnect from existing servers."
+  },
+  {
+    "Id": 3334,
+    "Name": "EidolonText254",
+    "Kor": "\uC11C\uBC84 \uC8FC\uC18C\uB97C http:// \uB610\uB294 https://\uB85C \uC785\uB825\uD558\uC138\uC694. \uC0AC\uC6A9\uC790 \uC815\uBCF4\u00B7\uCFFC\uB9AC\u00B7\uD504\uB798\uADF8\uBA3C\uD2B8\uB294 \uD3EC\uD568\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Enter an http:// or https:// server address without user information, a query or a fragment."
+  },
+  {
+    "Id": 3335,
+    "Name": "EidolonText255",
+    "Kor": "ComfyUI \uC11C\uBC84\uC5D0 \uC5F0\uACB0\uD558\uB294 \uC911",
+    "Eng": "Connecting to the ComfyUI server"
+  },
+  {
+    "Id": 3336,
+    "Name": "EidolonText256",
+    "Kor": "ComfyUI \uC11C\uBC84\uC5D0 \uC5F0\uACB0\uB428",
+    "Eng": "Connected to the ComfyUI server"
+  },
+  {
+    "Id": 3337,
+    "Name": "EidolonText257",
+    "Kor": "\uC678\uBD80 \uC11C\uBC84\uC758 \uC694\uCCAD\uC744 \uAC1C\uBCC4 \uCDE8\uC18C\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC11C\uBC84\uC758 \uC791\uC5C5 \uC0C1\uD0DC\uB97C \uD655\uC778\uD558\uC138\uC694. {0}",
+    "Eng": "Could not cancel this request on the external server. Check its job status. {0}"
+  },
+  {
+    "Id": 3338,
+    "Name": "EidolonText258",
+    "Kor": "\uC678\uBD80 \uC11C\uBC84\uC758 \uBAA8\uB378 \uD30C\uC77C\uC740 \uD574\uB2F9 ComfyUI\uC5D0\uC11C \uAD00\uB9AC\uD558\uC138\uC694.",
+    "Eng": "Manage external model files in that ComfyUI installation."
+  },
+  {
+    "Id": 3339,
+    "Name": "EidolonText259",
+    "Kor": "\uAE30\uC874 LoRA \uC774\uC5B4 \uD559\uC2B5",
+    "Eng": "Continue training an existing LoRA"
+  },
+  {
+    "Id": 3340,
+    "Name": "EidolonText260",
+    "Kor": "\uC774\uC5B4 \uD559\uC2B5\uD560 LoRA\uB97C \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Select the LoRA to continue training."
+  },
+  {
+    "Id": 3341,
+    "Name": "EidolonText261",
+    "Kor": "LoRA \uD559\uC2B5\uC740 \uC571\uC774 \uC2DC\uC791\uD55C \uB85C\uCEEC \uC5D4\uC9C4\uACFC \uBAA8\uB378\uC774 \uD544\uC694\uD569\uB2C8\uB2E4. \uAE30\uC874 \uC11C\uBC84\uB294 \uD574\uB2F9 \uD504\uB85C\uADF8\uB7A8\uC5D0\uC11C \uC885\uB8CC\uD558\uACE0, Eidolon\uC5D0 \uB85C\uCEEC \uC11C\uBC84 \uC8FC\uC18C\uB97C \uC785\uB825\uD574 \uC5D4\uC9C4\uC744 \uCF1C \uC8FC\uC138\uC694.",
+    "Eng": "LoRA training requires a local engine started by this app and a local model. Stop the existing server in its own app, then enter a local server address in Eidolon and start the engine."
+  },
+  {
+    "Id": 3342,
+    "Name": "EidolonText262",
+    "Kor": "\uC774\uC5B4 \uD559\uC2B5\uD560 LoRA",
+    "Eng": "LoRA to continue training"
+  },
+  {
+    "Id": 3343,
+    "Name": "EidolonText263",
+    "Kor": "\uAE30\uC874 \uAC00\uC911\uCE58\uC640 rank\uB97C \uBD88\uB7EC\uC640 \uD604\uC7AC \uB370\uC774\uD130\uB85C \uCD94\uAC00 \uD559\uC2B5\uD569\uB2C8\uB2E4. optimizer\uC640 \uD559\uC2B5 \uC2A4\uCF00\uC904\uC740 \uC0C8\uB85C \uC2DC\uC791\uD558\uBA70 \uACB0\uACFC\uB294 \uC0C8 LoRA\uB85C \uC800\uC7A5\uD569\uB2C8\uB2E4.",
+    "Eng": "Load the existing weights and rank, then train further on the current dataset. The optimizer and training schedule start fresh. The result is saved as a new LoRA."
+  },
+  {
+    "Id": 3344,
+    "Name": "EidolonText264",
+    "Kor": "\uC2E4\uD589 \uC911\uC778 ComfyUI\uC5D0 \uC5F0\uACB0\uD569\uB2C8\uB2E4. \uB85C\uCEEC \uC8FC\uC18C\uC5D0 \uC11C\uBC84\uAC00 \uC5C6\uC73C\uBA74 \uC124\uCE58\uB41C \uC5D4\uC9C4\uC744 \uC2E4\uD589\uD569\uB2C8\uB2E4.",
+    "Eng": "Connect to a running ComfyUI. If no server is running at a local address, start the installed engine."
+  },
+  {
+    "Id": 3345,
+    "Name": "EidolonText265",
+    "Kor": "\uC5D4\uC9C4 \uCF1C\uAE30",
+    "Eng": "Start engine"
+  },
+  {
+    "Id": 3346,
+    "Name": "EidolonText266",
+    "Kor": "\uC5D4\uC9C4 \uC815\uC9C0",
+    "Eng": "Stop engine"
+  },
+  {
+    "Id": 3347,
+    "Name": "EidolonText267",
+    "Kor": "\uC5F0\uACB0 \uB04A\uAE30",
+    "Eng": "Disconnect"
+  },
+  {
+    "Id": 3348,
+    "Name": "EidolonText268",
+    "Kor": "{0}\uC5D0 \uC5F0\uACB0\uB428",
+    "Eng": "Connected to {0}"
+  },
+  {
+    "Id": 3349,
+    "Name": "EidolonText269",
+    "Kor": "\uC5D4\uC9C4 \uC5F0\uACB0 \uC5C6\uC74C",
+    "Eng": "Engine disconnected"
+  },
+  {
+    "Id": 3350,
+    "Name": "EidolonText270",
+    "Kor": "\uD574\uB2F9 \uC8FC\uC18C\uC5D0\uC11C ComfyUI \uC11C\uBC84\uB97C \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No ComfyUI server was found at this address."
+  },
+  {
+    "Id": 3351,
+    "Name": "EidolonText271",
+    "Kor": "\uC11C\uBC84 \uC5F0\uACB0",
+    "Eng": "Connect to server"
+  }
+]

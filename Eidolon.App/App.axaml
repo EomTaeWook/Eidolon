@@ -1,0 +1,141 @@
+<Application xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="Eidolon.App.App" RequestedThemeVariant="Dark">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="WindowBrush" Color="#F7FAFC" />
+          <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="HeaderBrush" Color="#A7C6DB" />
+          <SolidColorBrush x:Key="FooterBrush" Color="#F0F6FA" />
+          <SolidColorBrush x:Key="BorderBrush" Color="#C7D7E3" />
+          <SolidColorBrush x:Key="TextBrush" Color="#1D3447" />
+          <SolidColorBrush x:Key="MutedBrush" Color="#425B70" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#285F88" />
+          <SolidColorBrush x:Key="AccentHoverBrush" Color="#216B9D" />
+          <SolidColorBrush x:Key="AccentTextBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="BadgeBrush" Color="#D7E8F5" />
+          <SolidColorBrush x:Key="ButtonBrush" Color="#F0F6FA" />
+          <SolidColorBrush x:Key="DisabledBrush" Color="#E6EDF2" />
+          <SolidColorBrush x:Key="DisabledTextBrush" Color="#536B7F" />
+          <SolidColorBrush x:Key="ErrorSurfaceBrush" Color="#FDECEE" />
+          <SolidColorBrush x:Key="ErrorTextBrush" Color="#A72F37" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="WindowBrush" Color="#000000" />
+          <SolidColorBrush x:Key="SurfaceBrush" Color="#151515" />
+          <SolidColorBrush x:Key="HeaderBrush" Color="#0D0D0D" />
+          <SolidColorBrush x:Key="FooterBrush" Color="#0D0D0D" />
+          <SolidColorBrush x:Key="BorderBrush" Color="#333333" />
+          <SolidColorBrush x:Key="TextBrush" Color="#F0F0F0" />
+          <SolidColorBrush x:Key="MutedBrush" Color="#A6A6A6" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#89DECD" />
+          <SolidColorBrush x:Key="AccentHoverBrush" Color="#AEEDDF" />
+          <SolidColorBrush x:Key="AccentTextBrush" Color="#102C28" />
+          <SolidColorBrush x:Key="BadgeBrush" Color="#182B26" />
+          <SolidColorBrush x:Key="ButtonBrush" Color="#242424" />
+          <SolidColorBrush x:Key="DisabledBrush" Color="#202020" />
+          <SolidColorBrush x:Key="DisabledTextBrush" Color="#777777" />
+          <SolidColorBrush x:Key="ErrorSurfaceBrush" Color="#38252A" />
+          <SolidColorBrush x:Key="ErrorTextBrush" Color="#FFB8B8" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+      <StreamGeometry x:Key="EidolonIconImage">M2,2 H18 V18 H2 Z M2,13 L7,8 L11,12 L14,9 L18,13 M13,6 A1,1 0 1 0 15,6 A1,1 0 1 0 13,6</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconLibrary">M2,2 H8 V8 H2 Z M12,2 H18 V8 H12 Z M2,12 H8 V18 H2 Z M12,12 H18 V18 H12 Z</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconTraining">M10,1 L12.5,7.5 L19,10 L12.5,12.5 L10,19 L7.5,12.5 L1,10 L7.5,7.5 Z</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconEngine">M5,5 H15 V15 H5 Z M8,8 H12 V12 H8 Z M7,1 V5 M13,1 V5 M7,15 V19 M13,15 V19 M1,7 H5 M1,13 H5 M15,7 H19 M15,13 H19</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconSettings">M3,4 H17 M3,10 H17 M3,16 H17 M7,2 V6 M13,8 V12 M9,14 V18</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconHelp">M10,1 A9,9 0 1 0 10,19 A9,9 0 1 0 10,1 M7,7 A3,3 0 1 1 11,10 L10,12 M10,14 V16</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconPlay">M5,2 L17,10 L5,18 Z</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconStop">M4,4 H16 V16 H4 Z</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconSave">M3,2 H15 L18,5 V18 H3 Z M6,2 V8 H14 V2 M6,18 V12 H15 V18</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconDownload">M10,1 V13 M5,8 L10,13 L15,8 M3,13 V18 H17 V13</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconFolder">M2,5 H8 L10,7 H18 V17 H2 Z</StreamGeometry>
+    </ResourceDictionary>
+  </Application.Resources>
+  <Application.Styles>
+    <FluentTheme />
+    <Style Selector="Window">
+      <Setter Property="FontFamily" Value="Segoe UI, Malgun Gothic" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    </Style>
+    <Style Selector="TextBlock.title">
+      <Setter Property="FontSize" Value="26" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.muted">
+      <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Margin" Value="0,6,0,4" />
+    </Style>
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="22" />
+    </Style>
+    <Style Selector="Button">
+      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="CornerRadius" Value="7" />
+      <Setter Property="Padding" Value="16,10" />
+    </Style>
+    <Style Selector="Button:disabled">
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+    </Style>
+    <Style Selector="Button TextBlock">
+      <Setter Property="Foreground" Value="{ReflectionBinding $parent[Button].Foreground}" />
+    </Style>
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+    </Style>
+    <Style Selector="Button.primary:disabled">
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+    </Style>
+    <Style Selector="Button.navigation">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="12,7" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.navigation.active">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,0,2" />
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="CornerRadius" Value="7" />
+      <Setter Property="Padding" Value="12,10" />
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="CornerRadius" Value="7" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="TabItem">
+      <Setter Property="Padding" Value="24,14" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+  </Application.Styles>
+</Application>

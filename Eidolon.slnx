@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Eidolon.Core/Eidolon.Core.csproj" />
+  <Folder Name="/Shared/">
+    <Project Path="DataContainer/DataContainer.csproj" />
+  </Folder>
+  <Project Path="Eidolon.App/Eidolon.App.csproj" />
+</Solution>
