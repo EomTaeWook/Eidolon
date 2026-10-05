@@ -1,17 +1,21 @@
+using Dignus.Collections;
 using Dignus.Log;
 
 namespace Eidolon.Core.Application
 {
     public class StudioWorkQueue : IAsyncDisposable
     {
-        private readonly object _gate = new object();
-        private readonly Queue<WorkRequest> _requests = new Queue<WorkRequest>();
+        private const int ClosingFlag = int.MinValue;
+
+        private readonly SynchronizedArrayQueue<WorkRequest> _requests = new SynchronizedArrayQueue<WorkRequest>();
         private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
         private readonly CancellationTokenSource _lifetime = new CancellationTokenSource();
+        private readonly TaskCompletionSource _enqueueDrained = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource _disposed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly Task _worker;
-        private CancellationTokenSource _currentLifetime;
-        private string _currentTitle = string.Empty;
-        private bool _accepting = true;
+        private WorkRequest _currentRequest;
+        private int _enqueueState;
+        private int _processing;
 
         public event Action Changed;
 
@@ -19,10 +23,7 @@ namespace Eidolon.Core.Application
         {
             get
             {
-                lock (_gate)
-                {
-                    return _requests.Count == 0 && _currentLifetime == null;
-                }
+                return _requests.Count == 0 && Volatile.Read(ref _processing) == 0;
             }
         }
 
@@ -30,10 +31,12 @@ namespace Eidolon.Core.Application
         {
             get
             {
-                lock (_gate)
+                WorkRequest request = Volatile.Read(ref _currentRequest);
+                if (request == null)
                 {
-                    return _currentTitle;
+                    return string.Empty;
                 }
+                return request.Title;
             }
         }
 
@@ -44,45 +47,57 @@ namespace Eidolon.Core.Application
 
         public IReadOnlyList<string> GetPendingTitles()
         {
-            lock (_gate)
-            {
-                return _requests.Select(request => request.Title).ToArray();
-            }
+            return _requests.Select(request => request.Title).ToArray();
         }
 
         public void Enqueue(string title, Func<CancellationToken, Task> execute)
         {
             ArgumentNullException.ThrowIfNull(execute);
-            lock (_gate)
+            EnterEnqueue();
+            try
             {
-                if (_accepting == false)
-                {
-                    throw new ObjectDisposedException(nameof(StudioWorkQueue));
-                }
-                _requests.Enqueue(new WorkRequest(title, execute));
+                _requests.Add(new WorkRequest(title, execute));
                 _signal.Release();
+            }
+            finally
+            {
+                if (Interlocked.Decrement(ref _enqueueState) == ClosingFlag)
+                {
+                    _enqueueDrained.TrySetResult();
+                }
             }
             Changed?.Invoke();
         }
 
+        private void EnterEnqueue()
+        {
+            while (true)
+            {
+                int state = Volatile.Read(ref _enqueueState);
+                if (state < 0)
+                {
+                    throw new ObjectDisposedException(nameof(StudioWorkQueue));
+                }
+                if (Interlocked.CompareExchange(ref _enqueueState, state + 1, state) == state)
+                {
+                    return;
+                }
+            }
+        }
+
         public Task CancelCurrentAsync()
         {
-            lock (_gate)
+            WorkRequest request = Volatile.Read(ref _currentRequest);
+            if (request == null)
             {
-                if (_currentLifetime != null)
-                {
-                    return _currentLifetime.CancelAsync();
-                }
                 return Task.CompletedTask;
             }
+            return request.CancelAsync();
         }
 
         public void ClearPending()
         {
-            lock (_gate)
-            {
-                _requests.Clear();
-            }
+            _requests.Clear();
             Changed?.Invoke();
         }
 
@@ -93,22 +108,19 @@ namespace Eidolon.Core.Application
                 while (true)
                 {
                     await _signal.WaitAsync(_lifetime.Token).ConfigureAwait(false);
-                    WorkRequest request;
-                    CancellationTokenSource currentLifetime;
-                    lock (_gate)
+                    Volatile.Write(ref _processing, 1);
+                    if (_requests.TryRead(out WorkRequest request) == false)
                     {
-                        if (_requests.Count == 0)
-                        {
-                            continue;
-                        }
-                        request = _requests.Dequeue();
-                        currentLifetime = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
-                        _currentLifetime = currentLifetime;
-                        _currentTitle = request.Title;
+                        Volatile.Write(ref _processing, 0);
+                        Changed?.Invoke();
+                        continue;
                     }
-                    Changed?.Invoke();
+                    using CancellationTokenSource currentLifetime = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
+                    request.StartCancellation(currentLifetime);
+                    Volatile.Write(ref _currentRequest, request);
                     try
                     {
+                        Changed?.Invoke();
                         currentLifetime.Token.ThrowIfCancellationRequested();
                         await request.Execute(currentLifetime.Token).ConfigureAwait(false);
                     }
@@ -121,12 +133,16 @@ namespace Eidolon.Core.Application
                     }
                     finally
                     {
-                        lock (_gate)
+                        try
                         {
-                            _currentLifetime = null;
-                            _currentTitle = string.Empty;
-                            currentLifetime.Dispose();
+                            await request.FinishAsync().ConfigureAwait(false);
                         }
+                        catch (Exception error)
+                        {
+                            LogHelper.Error(error);
+                        }
+                        Volatile.Write(ref _currentRequest, null);
+                        Volatile.Write(ref _processing, 0);
                         Changed?.Invoke();
                     }
                 }
@@ -138,23 +154,49 @@ namespace Eidolon.Core.Application
 
         public async ValueTask DisposeAsync()
         {
-            lock (_gate)
+            int state = Interlocked.Or(ref _enqueueState, ClosingFlag);
+            if (state < 0)
             {
-                if (_accepting == false)
-                {
-                    return;
-                }
-                _accepting = false;
-                _requests.Clear();
+                await _disposed.Task.ConfigureAwait(false);
+                return;
             }
-            _lifetime.Cancel();
-            await _worker.ConfigureAwait(false);
-            _signal.Dispose();
-            _lifetime.Dispose();
+            try
+            {
+                if (state > 0)
+                {
+                    await _enqueueDrained.Task.ConfigureAwait(false);
+                }
+                _requests.Clear();
+                try
+                {
+                    await _lifetime.CancelAsync().ConfigureAwait(false);
+                }
+                finally
+                {
+                    try
+                    {
+                        await _worker.ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        _signal.Dispose();
+                        _lifetime.Dispose();
+                    }
+                }
+                _disposed.TrySetResult();
+            }
+            catch (Exception error)
+            {
+                _disposed.TrySetException(error);
+                throw;
+            }
         }
 
         private class WorkRequest
         {
+            private readonly TaskCompletionSource<bool> _cancelRequested = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            private Task _cancellation = Task.CompletedTask;
+
             public string Title { get; }
             public Func<CancellationToken, Task> Execute { get; }
 
@@ -162,6 +204,31 @@ namespace Eidolon.Core.Application
             {
                 Title = title;
                 Execute = execute;
+            }
+
+            public void StartCancellation(CancellationTokenSource lifetime)
+            {
+                _cancellation = WaitForCancellationAsync(lifetime);
+            }
+
+            public Task CancelAsync()
+            {
+                _cancelRequested.TrySetResult(true);
+                return _cancellation;
+            }
+
+            public async Task FinishAsync()
+            {
+                _cancelRequested.TrySetResult(false);
+                await _cancellation.ConfigureAwait(false);
+            }
+
+            private async Task WaitForCancellationAsync(CancellationTokenSource lifetime)
+            {
+                if (await _cancelRequested.Task.ConfigureAwait(false) == true)
+                {
+                    await lifetime.CancelAsync().ConfigureAwait(false);
+                }
             }
         }
     }

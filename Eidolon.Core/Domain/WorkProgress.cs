@@ -6,6 +6,8 @@ namespace Eidolon.Core.Domain
         public object[] Arguments { get; private set; }
         public double Percent { get; private set; }
         public bool IsIndeterminate { get; private set; }
+        public bool HasEstimatedRemainingTime { get; set; }
+        public TimeSpan EstimatedRemainingTime { get; set; }
 
         public WorkProgress(StudioMessageCode code, double percent = 0, bool isIndeterminate = true, params object[] arguments)
         {

@@ -17,12 +17,12 @@ namespace Eidolon.Core.Infrastructure
             _time = time;
         }
 
-        public async Task DownloadAsync(string url, string destination, string expectedSha256,
+        public async Task DownloadAsync(string url, string destination, string expectedChecksum,
             IProgress<WorkProgress> progress, CancellationToken cancellationToken)
         {
             if (File.Exists(destination) == true)
             {
-                await VerifyAsync(destination, expectedSha256, cancellationToken).ConfigureAwait(false);
+                await VerifyAsync(destination, expectedChecksum, cancellationToken).ConfigureAwait(false);
                 return;
             }
             Directory.CreateDirectory(Path.GetDirectoryName(destination));
@@ -41,11 +41,19 @@ namespace Eidolon.Core.Infrastructure
                 HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             if (response.StatusCode == HttpStatusCode.RequestedRangeNotSatisfiable && offset > 0)
             {
-                if (string.IsNullOrEmpty(expectedSha256) == true)
+                if (string.IsNullOrEmpty(expectedChecksum) == true)
                 {
                     throw new StudioException(StudioMessageCode.IncompleteDownload);
                 }
-                await VerifyAsync(partial, expectedSha256, cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    await VerifyAsync(partial, expectedChecksum, cancellationToken).ConfigureAwait(false);
+                }
+                catch (StudioException error) when (error.Code == StudioMessageCode.DownloadChecksumMismatch)
+                {
+                    File.Delete(partial);
+                    throw;
+                }
                 File.Move(partial, destination);
                 return;
             }
@@ -103,9 +111,9 @@ namespace Eidolon.Core.Infrastructure
             progress.Report(new WorkProgress(StudioMessageCode.VerifyingDownload));
             try
             {
-                await VerifyAsync(partial, expectedSha256, cancellationToken).ConfigureAwait(false);
+                await VerifyAsync(partial, expectedChecksum, cancellationToken).ConfigureAwait(false);
             }
-            catch (InvalidDataException)
+            catch (StudioException error) when (error.Code == StudioMessageCode.DownloadChecksumMismatch)
             {
                 File.Delete(partial);
                 throw;
@@ -114,15 +122,24 @@ namespace Eidolon.Core.Infrastructure
             File.Move(partial, destination);
         }
 
-        private async Task VerifyAsync(string path, string expectedSha256, CancellationToken cancellationToken)
+        private async Task VerifyAsync(string path, string expectedChecksum, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(expectedSha256) == true)
+            if (string.IsNullOrWhiteSpace(expectedChecksum) == true)
             {
                 return;
             }
             await using FileStream stream = File.OpenRead(path);
-            byte[] hash = await SHA256.HashDataAsync(stream, cancellationToken).ConfigureAwait(false);
-            if (Convert.ToHexString(hash).Equals(expectedSha256, StringComparison.OrdinalIgnoreCase) == false)
+            byte[] hash;
+            if (expectedChecksum.StartsWith("md5:", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                hash = await MD5.HashDataAsync(stream, cancellationToken).ConfigureAwait(false);
+                expectedChecksum = expectedChecksum.Substring(4);
+            }
+            else
+            {
+                hash = await SHA256.HashDataAsync(stream, cancellationToken).ConfigureAwait(false);
+            }
+            if (Convert.ToHexString(hash).Equals(expectedChecksum, StringComparison.OrdinalIgnoreCase) == false)
             {
                 throw new StudioException(StudioMessageCode.DownloadChecksumMismatch, Path.GetFileName(path));
             }

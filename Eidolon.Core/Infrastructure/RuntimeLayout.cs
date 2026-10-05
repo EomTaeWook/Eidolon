@@ -11,10 +11,13 @@ namespace Eidolon.Core.Infrastructure
         public const string PythonVersion = "3.11.17";
         public const string TorchVersion = "2.10.0";
         public const string VisionVersion = "0.25.0";
+        public const string OutlineNodeName = "comfyui_controlnet_aux";
+        public const string OutlineNodeRevision = "59b1fc411ede8623b2997855b8018f0b3b6cf49f";
 
         public string Root { get; private set; }
         public string ComfyDirectory { get; private set; }
         public string TrainingDirectory { get; private set; }
+        public string OutlineNodesDirectory { get; private set; }
         public string ComfyPython { get; private set; }
         public string TrainingPython { get; private set; }
         public string ModelsDirectory { get; private set; }
@@ -35,6 +38,7 @@ namespace Eidolon.Core.Infrastructure
             Root = Path.Combine(Path.GetFullPath(installDirectory), "EidolonRuntime");
             ComfyDirectory = Path.Combine(Root, "Packages", "ComfyUI-" + ComfyVersion);
             TrainingDirectory = Path.Combine(Root, "Packages", "SdScripts-" + TrainingVersion);
+            OutlineNodesDirectory = Path.Combine(ComfyDirectory, "custom_nodes", OutlineNodeName);
             ComfyPython = Path.Combine(Root, "Environments", "ComfyUI", "Scripts", "python.exe");
             TrainingPython = Path.Combine(Root, "Environments", "Training", "Scripts", "python.exe");
             ModelsDirectory = Path.Combine(Root, "Models", "checkpoints");

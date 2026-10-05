@@ -21,7 +21,7 @@ namespace Eidolon.Core.Infrastructure
             _time = time;
         }
 
-        public async Task<string> TrainAsync(StudioSettings settings, JobRecord job, string imageDirectory,
+        public async Task<string> TrainAsync(StudioSettings settings, JobRecord job, TrainingInput training,
             IProgress<WorkProgress> progress, CancellationToken cancellationToken)
         {
             RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
@@ -39,8 +39,23 @@ namespace Eidolon.Core.Infrastructure
             string datasetDirectory = Path.Combine(jobDirectory, "Dataset");
             Directory.CreateDirectory(datasetDirectory);
             string[] extensions = { ".png", ".jpg", ".jpeg", ".bmp" };
-            List<string> images = Directory.EnumerateFiles(imageDirectory, "*", SearchOption.AllDirectories)
-                .Where(path => extensions.Contains(Path.GetExtension(path).ToLowerInvariant())).OrderBy(path => path).ToList();
+            List<string> images;
+            if (training.ImageFiles.Count > 0)
+            {
+                images = training.ImageFiles.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                foreach (string image in images)
+                {
+                    if (File.Exists(image) == false || extensions.Contains(Path.GetExtension(image).ToLowerInvariant()) == false)
+                    {
+                        throw new StudioException(StudioMessageCode.TrainingImagesMissing);
+                    }
+                }
+            }
+            else
+            {
+                images = Directory.EnumerateFiles(training.ImageDirectory, "*", SearchOption.AllDirectories)
+                    .Where(path => extensions.Contains(Path.GetExtension(path).ToLowerInvariant())).OrderBy(path => path).ToList();
+            }
             if (images.Count == 0)
             {
                 throw new StudioException(StudioMessageCode.TrainingImagesMissing);
@@ -117,7 +132,7 @@ namespace Eidolon.Core.Infrastructure
                 "--save_model_as", "safetensors", "--network_module", "networks.lora",
                 "--network_dim", TrainingPreset.NetworkDimension.ToString(CultureInfo.InvariantCulture),
                 "--network_alpha", TrainingPreset.NetworkAlpha.ToString(CultureInfo.InvariantCulture),
-                "--max_train_steps", TrainingPreset.MaxSteps.ToString(CultureInfo.InvariantCulture),
+                "--max_train_steps", job.Steps.ToString(CultureInfo.InvariantCulture),
                 "--learning_rate", TrainingPreset.LearningRate, "--optimizer_type", TrainingPreset.Optimizer,
                 "--mixed_precision", TrainingPreset.Precision, "--save_precision", TrainingPreset.Precision,
                 "--seed", job.Seed.ToString(CultureInfo.InvariantCulture), "--cache_latents", "--gradient_checkpointing",
@@ -158,10 +173,19 @@ namespace Eidolon.Core.Infrastructure
                         {
                             int step = int.Parse(match.Groups["step"].Value, CultureInfo.InvariantCulture);
                             int total = int.Parse(match.Groups["total"].Value, CultureInfo.InvariantCulture);
-                            if (total == TrainingPreset.MaxSteps)
+                            if (total == job.Steps)
                             {
                                 hasStepProgress = true;
-                                progress.Report(new WorkProgress(StudioMessageCode.TrainingProgress, step * 100.0 / total, false, step, total));
+                                WorkProgress stepProgress = new WorkProgress(StudioMessageCode.TrainingProgress,
+                                    step * 100.0 / total, false, step, total);
+                                Match remaining = Regex.Match(line, @"\[[\d:]+<(?<remaining>\d+(?::\d+){1,2})[,\]]");
+                                if (remaining.Success == true && TryParseRemainingTime(remaining.Groups["remaining"].Value,
+                                    out TimeSpan remainingTime) == true)
+                                {
+                                    stepProgress.HasEstimatedRemainingTime = true;
+                                    stepProgress.EstimatedRemainingTime = remainingTime;
+                                }
+                                progress.Report(stepProgress);
                                 lastReportAtUtc = now;
                                 return;
                             }
@@ -179,6 +203,27 @@ namespace Eidolon.Core.Infrastructure
                 throw new StudioException(StudioMessageCode.TrainingOutputMissing);
             }
             return trainedPath;
+        }
+
+        private bool TryParseRemainingTime(string value, out TimeSpan remainingTime)
+        {
+            remainingTime = TimeSpan.Zero;
+            string[] parts = value.Split(':');
+            if (parts.Length != 2 && parts.Length != 3)
+            {
+                return false;
+            }
+            double seconds = 0;
+            foreach (string part in parts)
+            {
+                if (int.TryParse(part, NumberStyles.None, CultureInfo.InvariantCulture, out int component) == false)
+                {
+                    return false;
+                }
+                seconds = seconds * 60 + component;
+            }
+            remainingTime = TimeSpan.FromSeconds(seconds);
+            return true;
         }
 
         private string QuoteToml(string value)

@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.PendingWorkView" x:DataType="vm:StudioViewModel" IsVisible="{Binding HasPendingRequests}">
+  <Expander Header="{Binding QueueSummary}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+    <StackPanel Spacing="10" Margin="0,10,0,0">
+      <ScrollViewer MaxHeight="120" HorizontalScrollBarVisibility="Disabled">
+        <ItemsControl ItemsSource="{Binding PendingRequests}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:QueuedWorkItem">
+              <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Title}" Margin="0,4" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+      <Button Content="{DynamicResource EidolonText246}" Command="{Binding ClearPendingCommand}" HorizontalAlignment="Right" Padding="12,6" />
+    </StackPanel>
+  </Expander>
+</UserControl>

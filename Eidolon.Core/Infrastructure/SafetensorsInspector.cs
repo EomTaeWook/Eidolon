@@ -12,6 +12,20 @@ namespace Eidolon.Core.Infrastructure
         }
         public ModelFamily Inspect(string path, AssetKind kind)
         {
+            ModelFamily family = Inspect(path, out AssetKind detectedKind);
+            if (kind == AssetKind.Lora && detectedKind != AssetKind.Lora)
+            {
+                throw new StudioException(StudioMessageCode.InvalidLoraWeights);
+            }
+            if (kind == AssetKind.Checkpoint && detectedKind != AssetKind.Checkpoint)
+            {
+                throw new StudioException(StudioMessageCode.InvalidCheckpointWeights);
+            }
+            return family;
+        }
+
+        public ModelFamily Inspect(string path, out AssetKind kind)
+        {
             using FileStream stream = File.OpenRead(path);
             byte[] prefix = new byte[8];
             stream.ReadExactly(prefix);
@@ -30,6 +44,7 @@ namespace Eidolon.Core.Infrastructure
             long payloadLength = stream.Length - headerLength - 8;
             int tensorCount = 0;
             bool isLora = false;
+            bool specialCheckpoint = false;
             ModelFamily detected = ModelFamily.Unknown;
             foreach (JsonProperty tensor in document.RootElement.EnumerateObject())
             {
@@ -71,12 +86,12 @@ namespace Eidolon.Core.Infrastructure
                         detected = ModelFamily.Sdxl;
                     }
                 }
-                if (kind == AssetKind.Checkpoint && tensor.Name.EndsWith("input_blocks.0.0.weight", StringComparison.Ordinal) == true)
+                if (tensor.Name.EndsWith("input_blocks.0.0.weight", StringComparison.Ordinal) == true)
                 {
                     JsonElement shape = tensor.Value.GetProperty("shape");
                     if (shape.GetArrayLength() == 4 && shape[1].GetInt32() != 4)
                     {
-                        throw new StudioException(StudioMessageCode.SpecialCheckpointUnsupported);
+                        specialCheckpoint = true;
                     }
                 }
             }
@@ -84,13 +99,9 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.ModelTensorsMissing);
             }
-            if (kind == AssetKind.Lora && isLora == false)
+            if (isLora == false && specialCheckpoint == true)
             {
-                throw new StudioException(StudioMessageCode.InvalidLoraWeights);
-            }
-            if (kind == AssetKind.Checkpoint && isLora == true)
-            {
-                throw new StudioException(StudioMessageCode.InvalidCheckpointWeights);
+                throw new StudioException(StudioMessageCode.SpecialCheckpointUnsupported);
             }
             if (document.RootElement.TryGetProperty("__metadata__", out JsonElement metadata) == true)
             {
@@ -119,6 +130,11 @@ namespace Eidolon.Core.Infrastructure
                         }
                     }
                 }
+            }
+            kind = AssetKind.Checkpoint;
+            if (isLora == true)
+            {
+                kind = AssetKind.Lora;
             }
             return detected;
         }

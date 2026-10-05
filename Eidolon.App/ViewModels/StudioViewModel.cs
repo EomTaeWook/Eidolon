@@ -32,6 +32,7 @@ namespace Eidolon.App.ViewModels
         private bool _initialized;
         private bool _closing;
         private string _prompt = string.Empty;
+        private bool _removeBackground;
         private string _status = string.Empty;
         private string _error = string.Empty;
         private double _percent;
@@ -40,46 +41,69 @@ namespace Eidolon.App.ViewModels
         private AssetItem _selectedAsset;
         private JobItem _selectedJob;
         private JobItem _selectedGeneration;
-        private JobItem _selectedTraining;
         private Bitmap _preview;
         private string _previewPath = string.Empty;
+        private string _selectedImageFile = string.Empty;
         private string _datasetDirectory = string.Empty;
+        private readonly List<string> _trainingImages = new List<string>();
         private string _trainingName = string.Empty;
         private string _trainingTrigger = string.Empty;
         private string _trainingDescription = string.Empty;
         private string _assetTrigger = string.Empty;
         private int _selectedTab;
+        private int _selectedEngineTab;
         private FamilyChoice _selectedFamily;
-        private KindChoice _selectedKind;
         private ThemeChoice _selectedTheme;
         private LanguageChoice _selectedLanguage;
         private bool _downloadStarter = true;
         private bool _continueTraining;
+        private decimal _trainingSteps = TrainingPreset.MaxSteps;
+        private bool _trainingActive;
+        private bool _trainingCancellationRequested;
+        private bool _trainingRegistering;
+        private bool _hasTrainingRemainingTime;
+        private TimeSpan _trainingRemainingTime;
         private AssetItem _selectedResumeLora;
+        private int _runtimeModulesRequest;
+        private Exception _runtimeModulesFailure;
 
         public ObservableCollection<AssetItem> Models { get; private set; } = new ObservableCollection<AssetItem>();
         public ObservableCollection<AssetItem> Library { get; private set; } = new ObservableCollection<AssetItem>();
         public ObservableCollection<AssetItem> Loras { get; private set; } = new ObservableCollection<AssetItem>();
+        public bool HasAvailableLoras
+        {
+            get
+            {
+                return Loras.Count > 0;
+            }
+        }
         public ObservableCollection<JobItem> Generations { get; private set; } = new ObservableCollection<JobItem>();
-        public ObservableCollection<JobItem> Trainings { get; private set; } = new ObservableCollection<JobItem>();
+        public ObservableCollection<string> ResultImageFiles { get; private set; } = new ObservableCollection<string>();
         public ObservableCollection<QueuedWorkItem> PendingRequests { get; private set; } = new ObservableCollection<QueuedWorkItem>();
+        public ObservableCollection<RuntimeModuleItem> RuntimeModules { get; private set; } = new ObservableCollection<RuntimeModuleItem>();
+        public ObservableCollection<RuntimeModuleItem> CustomNodes { get; private set; } = new ObservableCollection<RuntimeModuleItem>();
         public List<FamilyChoice> Families { get; private set; }
         public ObservableCollection<FamilyChoice> AvailableFamilies { get; private set; } = new ObservableCollection<FamilyChoice>();
-        public List<KindChoice> Kinds { get; private set; }
         public List<ThemeChoice> Themes { get; private set; }
         public List<LanguageChoice> Languages { get; private set; }
 
         public AsyncCommand GenerateCommand { get; private set; }
         public AsyncCommand TrainCommand { get; private set; }
+        public AsyncCommand QuickTrainingCommand { get; private set; }
+        public AsyncCommand StandardTrainingCommand { get; private set; }
+        public AsyncCommand CancelTrainingCommand { get; private set; }
         public AsyncCommand InstallCommand { get; private set; }
         public AsyncCommand PickInstallCommand { get; private set; }
         public AsyncCommand PickDatasetCommand { get; private set; }
+        public AsyncCommand OpenDatasetFolderCommand { get; private set; }
+        public AsyncCommand PickGenerationDirectoryCommand { get; private set; }
+        public AsyncCommand OpenGenerationDirectoryCommand { get; private set; }
         public AsyncCommand SaveSettingsCommand { get; private set; }
         public AsyncCommand StartEngineCommand { get; private set; }
         public AsyncCommand StopEngineCommand { get; private set; }
         public AsyncCommand OpenLogsCommand { get; private set; }
         public AsyncCommand ShowGenerationCommand { get; private set; }
-        public AsyncCommand ShowLibraryCommand { get; private set; }
+        public AsyncCommand ShowResultsCommand { get; private set; }
         public AsyncCommand ShowTrainingCommand { get; private set; }
         public AsyncCommand ShowEngineCommand { get; private set; }
         public AsyncCommand ShowSettingsCommand { get; private set; }
@@ -89,15 +113,63 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand DownloadModelCommand { get; private set; }
         public AsyncCommand UpdateAssetCommand { get; private set; }
         public AsyncCommand RemoveAssetCommand { get; private set; }
-        public AsyncCommand SetDefaultCommand { get; private set; }
         public AsyncCommand ExportCommand { get; private set; }
+        public AsyncCommand DeleteGenerationCommand { get; private set; }
+        public AsyncCommand DeleteAllGenerationsCommand { get; private set; }
         public AsyncCommand ReusePromptCommand { get; private set; }
-        public AsyncCommand OpenJobCommand { get; private set; }
+        public AsyncCommand UseResultForTrainingCommand { get; private set; }
+        public AsyncCommand OpenImageFolderCommand { get; private set; }
         public AsyncCommand OpenDataCommand { get; private set; }
         public AsyncCommand OpenRuntimeCommand { get; private set; }
-        public AsyncCommand CancelCommand { get; private set; }
         public AsyncCommand ClearPendingCommand { get; private set; }
-        public AsyncCommand ReloadCommand { get; private set; }
+        public AsyncCommand RefreshRuntimeModulesCommand { get; private set; }
+
+        public bool HasRuntimeModules
+        {
+            get
+            {
+                return RuntimeModules.Count > 0;
+            }
+        }
+        public bool HasCustomNodes
+        {
+            get
+            {
+                return CustomNodes.Count > 0;
+            }
+        }
+        public bool HasRuntimeModulesError
+        {
+            get
+            {
+                return _runtimeModulesFailure != null;
+            }
+        }
+        public bool ShowRuntimeModulesEmpty
+        {
+            get
+            {
+                return HasRuntimeModules == false && HasRuntimeModulesError == false;
+            }
+        }
+        public bool ShowCustomNodesEmpty
+        {
+            get
+            {
+                return HasRuntimeModules == true && HasCustomNodes == false && HasRuntimeModulesError == false;
+            }
+        }
+        public string RuntimeModulesError
+        {
+            get
+            {
+                if (_runtimeModulesFailure == null)
+                {
+                    return string.Empty;
+                }
+                return _strings.Format("EidolonText286", _strings.GetExceptionMessage(_runtimeModulesFailure));
+            }
+        }
 
         public DesktopSettings SettingsDraft { get; private set; } = new DesktopSettings();
         public string InstallDirectory
@@ -119,6 +191,155 @@ namespace Eidolon.App.ViewModels
                 SettingsDraft.InstallDirectory = value;
                 Raise();
                 RefreshCommands();
+                if (_initialized == true && _closing == false)
+                {
+                    _ = RefreshRuntimeModulesAsync(_appLifetime.Token);
+                }
+            }
+        }
+        public decimal TrainingSteps
+        {
+            get
+            {
+                return _trainingSteps;
+            }
+            set
+            {
+                Set(ref _trainingSteps, value);
+                RefreshTrainingSetup();
+            }
+        }
+
+        public bool CanQueueTraining
+        {
+            get
+            {
+                return CanQueue == true && TrainingInputIssue() == StudioMessageCode.None;
+            }
+        }
+
+        public string TrainingSetupHint
+        {
+            get
+            {
+                StudioMessageCode issue = TrainingInputIssue();
+                if (issue == StudioMessageCode.None)
+                {
+                    return _strings.GetString("EidolonText248");
+                }
+                if (issue == StudioMessageCode.InvalidTrainingSteps)
+                {
+                    return _strings.Format(issue, TrainingPreset.MinimumSteps, TrainingPreset.MaximumSteps);
+                }
+                if (issue == StudioMessageCode.LoraRequired)
+                {
+                    return _strings.GetString("EidolonText260");
+                }
+                return _strings.Format(issue);
+            }
+        }
+
+        public decimal MinimumTrainingSteps
+        {
+            get
+            {
+                return TrainingPreset.MinimumSteps;
+            }
+        }
+
+        public decimal MaximumTrainingSteps
+        {
+            get
+            {
+                return TrainingPreset.MaximumSteps;
+            }
+        }
+
+        public bool IsTrainingActive
+        {
+            get
+            {
+                return _trainingActive;
+            }
+        }
+
+        public string TrainingSpeedDescription
+        {
+            get
+            {
+                return _strings.Format("EidolonText331", TrainingPreset.QuickMaxSteps, TrainingPreset.MaxSteps);
+            }
+        }
+
+        public bool CanCancelTraining
+        {
+            get
+            {
+                return _closing == false && _trainingActive == true && _trainingCancellationRequested == false &&
+                    _trainingRegistering == false;
+            }
+        }
+
+        public bool ShowTrainingCancel
+        {
+            get
+            {
+                return _trainingActive == true && _trainingRegistering == false;
+            }
+        }
+
+        public bool ShowTrainingRemainingTime
+        {
+            get
+            {
+                return _trainingActive == true && _trainingCancellationRequested == false && _trainingRegistering == false;
+            }
+        }
+
+        public string TrainingRemainingText
+        {
+            get
+            {
+                if (_hasTrainingRemainingTime == false)
+                {
+                    return _strings.GetString("EidolonText330");
+                }
+                long seconds = (long)Math.Ceiling(_trainingRemainingTime.TotalSeconds);
+                string duration = (seconds / 3600).ToString("D2") + ":" +
+                    (seconds / 60 % 60).ToString("D2") + ":" + (seconds % 60).ToString("D2");
+                return _strings.Format("EidolonText329", duration);
+            }
+        }
+
+        public string CancelTrainingCaption
+        {
+            get
+            {
+                if (_trainingCancellationRequested == true)
+                {
+                    return _strings.GetString("EidolonText328");
+                }
+                return _strings.GetString("EidolonText327");
+            }
+        }
+
+        public string GenerationDirectory
+        {
+            get
+            {
+                return SettingsDraft.GenerationDirectory;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    value = string.Empty;
+                }
+                if (SettingsDraft.GenerationDirectory != value)
+                {
+                    SettingsDraft.GenerationDirectory = value;
+                    Raise();
+                }
             }
         }
         public bool IsBusy
@@ -212,6 +433,7 @@ namespace Eidolon.App.ViewModels
             set
             {
                 Set(ref _continueTraining, value);
+                RefreshTrainingSetup();
             }
         }
         public AssetItem SelectedResumeLora
@@ -226,6 +448,7 @@ namespace Eidolon.App.ViewModels
                 {
                     return;
                 }
+                RefreshTrainingSetup();
                 if (value == null)
                 {
                     return;
@@ -273,6 +496,31 @@ namespace Eidolon.App.ViewModels
             get
             {
                 return _work.CurrentTitle;
+            }
+        }
+        public string CommonPositivePrompt
+        {
+            get
+            {
+                return _settings.PositivePrompt;
+            }
+        }
+        public string CommonNegativePrompt
+        {
+            get
+            {
+                return _settings.NegativePrompt;
+            }
+        }
+        public bool RemoveBackground
+        {
+            get
+            {
+                return _removeBackground;
+            }
+            set
+            {
+                Set(ref _removeBackground, value);
             }
         }
         public string Prompt
@@ -352,18 +600,14 @@ namespace Eidolon.App.ViewModels
                 if (Set(ref _selectedTab, value) == true)
                 {
                     Raise(nameof(IsGenerationView));
-                    Raise(nameof(IsLibraryView));
+                    Raise(nameof(IsResultsView));
                     Raise(nameof(IsTrainingView));
                     Raise(nameof(IsEngineView));
                     Raise(nameof(IsSettingsView));
                     Raise(nameof(IsHelpView));
-                    if (value == 0)
+                    if (value == 0 || value == 6)
                     {
                         SelectedJob = SelectedGeneration;
-                    }
-                    if (value == 2)
-                    {
-                        SelectedJob = SelectedTraining;
                     }
                 }
             }
@@ -375,11 +619,22 @@ namespace Eidolon.App.ViewModels
                 return SelectedTab == 0;
             }
         }
-        public bool IsLibraryView
+        public bool IsResultsView
         {
             get
             {
-                return SelectedTab == 1;
+                return SelectedTab == 6;
+            }
+        }
+        public int SelectedEngineTab
+        {
+            get
+            {
+                return _selectedEngineTab;
+            }
+            set
+            {
+                Set(ref _selectedEngineTab, value);
             }
         }
         public bool IsTrainingView
@@ -445,23 +700,29 @@ namespace Eidolon.App.ViewModels
                     {
                         family.Localize(_strings);
                     }
-                    foreach (KindChoice kind in Kinds)
-                    {
-                        kind.Localize(_strings);
-                    }
                     foreach (AssetItem item in Library.Concat(Loras))
                     {
                         item.Localize();
                     }
-                    foreach (JobItem item in Generations.Concat(Trainings))
+                    foreach (JobItem item in Generations)
                     {
                         item.Localize();
                     }
+                    foreach (RuntimeModuleItem item in RuntimeModules.Concat(CustomNodes))
+                    {
+                        item.Localize();
+                    }
+                    Raise(nameof(RuntimeModulesError));
                     Status = _strings.TranslateMessage(Status);
                     Raise(nameof(QueueSummary));
                     Raise(nameof(EngineStatus));
                     Raise(nameof(StopEngineCaption));
                     Raise(nameof(StartEngineCaption));
+                    Raise(nameof(TrainingSpeedDescription));
+                    Raise(nameof(TrainingRemainingText));
+                    Raise(nameof(CancelTrainingCaption));
+                    Raise(nameof(PickDatasetCaption));
+                    Raise(nameof(TrainingSetupHint));
                 }
             }
         }
@@ -484,7 +745,17 @@ namespace Eidolon.App.ViewModels
             }
             set
             {
+                _trainingImages.Clear();
                 Set(ref _datasetDirectory, value);
+                RefreshTrainingSource();
+                RefreshTrainingSetup();
+            }
+        }
+        public bool HasSelectedTrainingImage
+        {
+            get
+            {
+                return _trainingImages.Count > 0;
             }
         }
         public string TrainingName
@@ -496,6 +767,7 @@ namespace Eidolon.App.ViewModels
             set
             {
                 Set(ref _trainingName, value);
+                RefreshTrainingSetup();
             }
         }
         public string TrainingTrigger
@@ -507,6 +779,7 @@ namespace Eidolon.App.ViewModels
             set
             {
                 Set(ref _trainingTrigger, value);
+                RefreshTrainingSetup();
             }
         }
         public string TrainingDescription
@@ -542,17 +815,6 @@ namespace Eidolon.App.ViewModels
                 Set(ref _selectedFamily, value);
             }
         }
-        public KindChoice SelectedKind
-        {
-            get
-            {
-                return _selectedKind;
-            }
-            set
-            {
-                Set(ref _selectedKind, value);
-            }
-        }
         public AssetItem SelectedModel
         {
             get
@@ -564,6 +826,7 @@ namespace Eidolon.App.ViewModels
                 if (Set(ref _selectedModel, value) == true)
                 {
                     RebuildLoras();
+                    RefreshTrainingSetup();
                 }
             }
         }
@@ -581,7 +844,6 @@ namespace Eidolon.App.ViewModels
                     if (value != null)
                     {
                         SelectedFamily = Families.First(family => family.Value == value.Asset.Family);
-                        SelectedKind = Kinds.First(kind => kind.Value == value.Asset.Kind);
                         AssetTrigger = value.Asset.TriggerWord;
                     }
                     RefreshCommands();
@@ -599,17 +861,30 @@ namespace Eidolon.App.ViewModels
                 if (Set(ref _selectedJob, value) == true)
                 {
                     Raise(nameof(HasSelectedJob));
+                    string previousImageFile = _selectedImageFile;
+                    ResultImageFiles.Clear();
+                    string selectedImageFile = string.Empty;
                     if (value != null)
                     {
                         if (value.Job.Kind == JobKind.Generation)
                         {
                             Set(ref _selectedGeneration, value, nameof(SelectedGeneration));
-                        }
-                        else
-                        {
-                            Set(ref _selectedTraining, value, nameof(SelectedTraining));
+                            foreach (string imageFile in value.Job.ImageFiles)
+                            {
+                                ResultImageFiles.Add(imageFile);
+                            }
+                            if (value.Job.ImageFiles.Contains(previousImageFile) == true)
+                            {
+                                selectedImageFile = previousImageFile;
+                            }
+                            else if (value.Job.ImageFiles.Count > 0)
+                            {
+                                selectedImageFile = value.Job.ImageFiles[0];
+                            }
                         }
                     }
+                    Set(ref _selectedImageFile, selectedImageFile, nameof(SelectedImageFile));
+                    Raise(nameof(HasMultipleResultImages));
                     ShowPreview(value);
                     RefreshCommands();
                 }
@@ -630,24 +905,43 @@ namespace Eidolon.App.ViewModels
             }
             set
             {
-                if (Set(ref _selectedGeneration, value) == true && IsGenerationView == true)
+                if (Set(ref _selectedGeneration, value) == true && (IsGenerationView == true || IsResultsView == true))
                 {
                     SelectedJob = value;
                 }
             }
         }
-        public JobItem SelectedTraining
+        public string SelectedImageFile
         {
             get
             {
-                return _selectedTraining;
+                return _selectedImageFile;
             }
             set
             {
-                if (Set(ref _selectedTraining, value) == true && IsTrainingView == true)
+                if (value == null)
                 {
-                    SelectedJob = value;
+                    value = string.Empty;
                 }
+                if (Set(ref _selectedImageFile, value) == true)
+                {
+                    ShowPreview(SelectedJob);
+                    RefreshCommands();
+                }
+            }
+        }
+        public bool HasMultipleResultImages
+        {
+            get
+            {
+                return ResultImageFiles.Count > 1;
+            }
+        }
+        public bool HasGenerations
+        {
+            get
+            {
+                return Generations.Count > 0;
             }
         }
         public Bitmap Preview
@@ -699,14 +993,8 @@ namespace Eidolon.App.ViewModels
                 new FamilyChoice(ModelFamily.StableDiffusion15, "Stable Diffusion 1.5"),
                 new FamilyChoice(ModelFamily.Sdxl, "SDXL")
             };
-            Kinds = new List<KindChoice>
-            {
-                new KindChoice(AssetKind.Checkpoint, _strings.GetString("EidolonText208")),
-                new KindChoice(AssetKind.Lora, "LoRA")
-            };
             _selectedFamily = Families[0];
             AvailableFamilies.Add(Families[0]);
-            _selectedKind = Kinds[0];
             Themes = new List<ThemeChoice>
             {
                 new ThemeChoice(AppTheme.Light, _strings.GetString("EidolonText220")),
@@ -718,10 +1006,17 @@ namespace Eidolon.App.ViewModels
                 new LanguageChoice(AppLanguage.English, "English")
             };
             GenerateCommand = Command(QueueGenerationAsync, () => CanQueue == true);
-            TrainCommand = Command(QueueTrainingAsync, () => CanQueue == true);
+            TrainCommand = Command(QueueTrainingAsync, () => CanQueueTraining == true);
+            QuickTrainingCommand = Command(() => SetTrainingStepsAsync(TrainingPreset.QuickMaxSteps), () => CanQueue == true);
+            StandardTrainingCommand = Command(() => SetTrainingStepsAsync(TrainingPreset.MaxSteps), () => CanQueue == true);
+            CancelTrainingCommand = Command(CancelTrainingAsync, () => CanCancelTraining == true);
             InstallCommand = Command(() => WorkAsync(InstallAsync), () => CanInstallEngine == true);
             PickInstallCommand = Command(PickInstallAsync);
             PickDatasetCommand = Command(PickDatasetAsync, () => CanQueue == true);
+            OpenDatasetFolderCommand = Command(() => _dialogs.OpenFolderAsync(DatasetDirectory.Trim()),
+                () => _closing == false && string.IsNullOrWhiteSpace(DatasetDirectory) == false);
+            PickGenerationDirectoryCommand = Command(PickGenerationDirectoryAsync, () => _closing == false);
+            OpenGenerationDirectoryCommand = Command(OpenGenerationDirectoryAsync, () => _closing == false);
             SaveSettingsCommand = Command(() => WorkAsync(SaveSettingsAsync));
             StartEngineCommand = Command(() =>
             {
@@ -735,7 +1030,7 @@ namespace Eidolon.App.ViewModels
             }, () => IsIdle == true && _engine.Connection != null);
             OpenLogsCommand = Command(() => _dialogs.OpenFolderAsync(Path.Combine(_dataDirectory, "Logs")), () => true);
             ShowGenerationCommand = Command(() => NavigateAsync(0), () => true);
-            ShowLibraryCommand = Command(() => NavigateAsync(1), () => true);
+            ShowResultsCommand = Command(() => NavigateAsync(6), () => true);
             ShowTrainingCommand = Command(() => NavigateAsync(2), () => true);
             ShowEngineCommand = Command(() => NavigateAsync(3), () => true);
             ShowSettingsCommand = Command(() => NavigateAsync(4), () => true);
@@ -760,16 +1055,21 @@ namespace Eidolon.App.ViewModels
             DownloadModelCommand = Command(() => WorkAsync(DownloadModelAsync), () => IsIdle == true && ComfyServerAddress.UsesServerAssets(CreateActiveSettings(_settings)) == false);
             UpdateAssetCommand = Command(() => WorkAsync(UpdateAssetAsync), () => IsIdle == true && SelectedAsset != null);
             RemoveAssetCommand = Command(() => WorkAsync(RemoveAssetAsync), () => IsIdle == true && SelectedAsset != null);
-            SetDefaultCommand = Command(() => WorkAsync(SetDefaultAsync), () => IsIdle == true && SelectedModel != null);
-            ExportCommand = Command(() => _dialogs.ExportImageAsync(_previewPath), () => IsIdle == true && HasPreview == true);
-            ReusePromptCommand = Command(ReusePromptAsync, () => IsIdle == true && SelectedJob != null && SelectedJob.Job.Kind == JobKind.Generation);
-            OpenJobCommand = Command(() => _dialogs.OpenFolderAsync(_jobs.DirectoryFor(SelectedJob.Job.Id)), () => SelectedJob != null);
+            ExportCommand = Command(() => _dialogs.ExportImageAsync(_previewPath), () => _closing == false && HasPreview == true);
+            DeleteGenerationCommand = Command(() => DeleteGenerationsAsync(false),
+                () => IsIdle == true && SelectedGeneration != null);
+            DeleteAllGenerationsCommand = Command(() => DeleteGenerationsAsync(true),
+                () => IsIdle == true && HasGenerations == true);
+            ReusePromptCommand = Command(ReusePromptAsync,
+                () => _closing == false && SelectedJob != null && SelectedJob.Job.Kind == JobKind.Generation);
+            UseResultForTrainingCommand = Command(UseResultForTrainingAsync,
+                () => CanQueue == true && HasPreview == true && SelectedJob != null && SelectedJob.Job.Kind == JobKind.Generation);
+            OpenImageFolderCommand = Command(OpenImageFolderAsync, () => _closing == false);
             OpenDataCommand = Command(() => _dialogs.OpenFolderAsync(_dataDirectory), () => true);
             OpenRuntimeCommand = Command(() => _dialogs.OpenFolderAsync(new RuntimeLayout(InstallDirectory).Root),
                 () => IsIdle == true && string.IsNullOrWhiteSpace(InstallDirectory) == false);
-            CancelCommand = Command(CancelAsync, () => IsBusy == true);
             ClearPendingCommand = Command(ClearPendingAsync, () => CanQueue == true && HasPendingRequests == true);
-            ReloadCommand = Command(InitializeAsync, () => IsBusy == false && _work.IsIdle == true && _closing == false);
+            RefreshRuntimeModulesCommand = Command(() => WorkAsync(RefreshRuntimeModulesAsync));
         }
 
         private AsyncCommand Command(Func<Task> action, Func<bool> canExecute = null)
@@ -802,13 +1102,17 @@ namespace Eidolon.App.ViewModels
             try
             {
                 _settings = _settingsStore.Load();
+                Raise(nameof(CommonPositivePrompt));
+                Raise(nameof(CommonNegativePrompt));
                 SettingsDraft = _settings.Copy();
                 Raise(nameof(SettingsDraft));
                 Raise(nameof(InstallDirectory));
+                Raise(nameof(GenerationDirectory));
                 Raise(nameof(ServerAddress));
                 Raise(nameof(StartEngineCaption));
                 SelectedTheme = Themes.First(theme => theme.Value == _settings.Theme);
                 SelectedLanguage = Languages.First(language => language.Value == _settings.Language);
+                await RefreshRuntimeModulesAsync(_appLifetime.Token);
                 await RefreshAssetsAsync();
                 if (_closing == true)
                 {
@@ -910,6 +1214,71 @@ namespace Eidolon.App.ViewModels
             Status = _strings.Format(progress.Code, progress.Arguments);
             Percent = progress.Percent;
             Indeterminate = progress.IsIndeterminate;
+            if (_trainingActive == true)
+            {
+                if (_trainingCancellationRequested == true)
+                {
+                    Status = _strings.GetString("EidolonText328");
+                }
+                if (progress.HasEstimatedRemainingTime == true)
+                {
+                    _hasTrainingRemainingTime = true;
+                    _trainingRemainingTime = progress.EstimatedRemainingTime;
+                    Raise(nameof(TrainingRemainingText));
+                }
+                if (progress.Code == StudioMessageCode.RegisteringTrainedLora || progress.Code == StudioMessageCode.TrainingCompleted)
+                {
+                    _trainingRegistering = true;
+                    RefreshTrainingState();
+                }
+            }
+        }
+
+        public string SelectedTrainingImagePath
+        {
+            get
+            {
+                if (_trainingImages.Count == 0)
+                {
+                    return string.Empty;
+                }
+                return _trainingImages[0];
+            }
+        }
+
+        public string PickDatasetCaption
+        {
+            get
+            {
+                if (HasSelectedTrainingImage == true)
+                {
+                    return _strings.GetString("EidolonText333");
+                }
+                return _strings.GetString("EidolonText142");
+            }
+        }
+
+        private void RefreshTrainingState()
+        {
+            Raise(nameof(IsTrainingActive));
+            Raise(nameof(CanCancelTraining));
+            Raise(nameof(ShowTrainingCancel));
+            Raise(nameof(ShowTrainingRemainingTime));
+            Raise(nameof(TrainingRemainingText));
+            Raise(nameof(CancelTrainingCaption));
+            RefreshCommands();
+        }
+
+        private async Task CancelTrainingAsync()
+        {
+            if (CanCancelTraining == false)
+            {
+                return;
+            }
+            _trainingCancellationRequested = true;
+            Status = _strings.GetString("EidolonText328");
+            RefreshTrainingState();
+            await _work.CancelCurrentAsync();
         }
 
         private void OnWorkFinished(StudioWorkState state, Exception failure)
@@ -954,24 +1323,81 @@ namespace Eidolon.App.ViewModels
             }
             DesktopSettings settings = CreateActiveSettings(_settings);
             string prompt = Prompt;
+            bool removeBackground = RemoveBackground;
             List<ModelAsset> loras = Loras.Where(lora => lora.IsSelected == true).Select(lora => lora.Asset.Copy()).ToList();
             _work.Enqueue(_strings.GetString("EidolonText106") + " · " + prompt,
-                token => GenerateAsync(settings, prompt, model, loras, token));
+                token => GenerateAsync(settings, prompt, model, loras, removeBackground, token));
             return Task.CompletedTask;
         }
 
         private async Task GenerateAsync(DesktopSettings settings, string prompt, ModelAsset model,
-            List<ModelAsset> loras, CancellationToken token)
+            List<ModelAsset> loras, bool removeBackground, CancellationToken token)
         {
-            JobRecord job = await _studio.GenerateAsync(settings, prompt, model, loras, _work.Progress, token);
+            JobRecord job = await _studio.GenerateAsync(settings, prompt, model, loras, removeBackground, _work.Progress, token);
             RefreshJobs();
-            SelectedGeneration = Generations.First(item => item.Job.Id == job.Id);
+            if (IsResultsView == false)
+            {
+                SelectedGeneration = Generations.First(item => item.Job.Id == job.Id);
+            }
             Status = _strings.GetString("EidolonText004");
             Percent = 100;
         }
 
+        private StudioMessageCode TrainingInputIssue()
+        {
+            if (ContinueTraining == true && SelectedResumeLora == null)
+            {
+                return StudioMessageCode.LoraRequired;
+            }
+            if (SelectedModel == null)
+            {
+                return StudioMessageCode.ModelRequired;
+            }
+            if (string.IsNullOrWhiteSpace(DatasetDirectory) == true)
+            {
+                return StudioMessageCode.DatasetRequired;
+            }
+            if (string.IsNullOrWhiteSpace(TrainingName) == true)
+            {
+                return StudioMessageCode.LoraNameRequired;
+            }
+            if (string.IsNullOrWhiteSpace(TrainingTrigger) == true)
+            {
+                return StudioMessageCode.TriggerRequired;
+            }
+            if (TrainingTrigger.Any(character => char.IsWhiteSpace(character) || character == ',') == true)
+            {
+                return StudioMessageCode.InvalidTrigger;
+            }
+            if (TrainingSteps != decimal.Truncate(TrainingSteps) || TrainingSteps < TrainingPreset.MinimumSteps ||
+                TrainingSteps > TrainingPreset.MaximumSteps)
+            {
+                return StudioMessageCode.InvalidTrainingSteps;
+            }
+            return StudioMessageCode.None;
+        }
+
+        private void RefreshTrainingSetup()
+        {
+            Raise(nameof(CanQueueTraining));
+            Raise(nameof(TrainingSetupHint));
+            RefreshCommands();
+        }
+
+        private Task SetTrainingStepsAsync(int steps)
+        {
+            TrainingSteps = steps;
+            return Task.CompletedTask;
+        }
+
         private Task QueueTrainingAsync()
         {
+            if (TrainingSteps != decimal.Truncate(TrainingSteps) || TrainingSteps < TrainingPreset.MinimumSteps ||
+                TrainingSteps > TrainingPreset.MaximumSteps)
+            {
+                throw new StudioException(StudioMessageCode.InvalidTrainingSteps,
+                    TrainingPreset.MinimumSteps, TrainingPreset.MaximumSteps);
+            }
             if (ContinueTraining == true && SelectedResumeLora == null)
             {
                 throw new InvalidOperationException(_strings.GetString("EidolonText260"));
@@ -985,9 +1411,11 @@ namespace Eidolon.App.ViewModels
             {
                 Model = model,
                 ImageDirectory = DatasetDirectory,
+                ImageFiles = _trainingImages.ToList(),
                 Name = TrainingName,
                 TriggerWord = TrainingTrigger,
-                Description = TrainingDescription
+                Description = TrainingDescription,
+                Steps = decimal.ToInt32(TrainingSteps)
             };
             if (ContinueTraining == true)
             {
@@ -1000,6 +1428,11 @@ namespace Eidolon.App.ViewModels
 
         private async Task TrainAsync(DesktopSettings settings, TrainingInput input, CancellationToken token)
         {
+            _trainingActive = true;
+            _trainingCancellationRequested = false;
+            _trainingRegistering = false;
+            _hasTrainingRemainingTime = false;
+            RefreshTrainingState();
             try
             {
                 ModelAsset asset = await _studio.TrainAsync(settings, input, _work.Progress, token);
@@ -1014,6 +1447,9 @@ namespace Eidolon.App.ViewModels
             }
             finally
             {
+                _trainingActive = false;
+                _hasTrainingRemainingTime = false;
+                RefreshTrainingState();
                 if (_closing == false && ComfyServerAddress.UsesServerAssets(settings) == false)
                 {
                     try
@@ -1124,19 +1560,80 @@ namespace Eidolon.App.ViewModels
             await _engine.StopAsync();
             _settingsStore.Save(settings);
             _settings = settings;
-            await _installer.InstallAsync(settings, _work.Progress, token);
-            await StartEngineAsync(settings, token);
-            if (DownloadStarter == true && ComfyServerAddress.UsesServerAssets(CreateActiveSettings(settings)) == false)
+            try
             {
-                await DownloadModelAsync(token);
+                await _installer.InstallAsync(settings, _work.Progress, token);
+                await StartEngineAsync(settings, token);
+                if (DownloadStarter == true && ComfyServerAddress.UsesServerAssets(CreateActiveSettings(settings)) == false)
+                {
+                    await DownloadModelAsync(token);
+                }
+                await RefreshAssetsAsync();
+                Status = _strings.GetString("EidolonText230");
+                if (Models.Count > 0)
+                {
+                    Status = _strings.GetString("EidolonText231");
+                    SelectedTab = 0;
+                }
             }
-            await RefreshAssetsAsync();
-            Status = _strings.GetString("EidolonText230");
-            if (Models.Count > 0)
+            finally
             {
-                Status = _strings.GetString("EidolonText231");
-                SelectedTab = 0;
+                await RefreshRuntimeModulesAsync(_appLifetime.Token);
             }
+        }
+
+        private async Task RefreshRuntimeModulesAsync(CancellationToken token)
+        {
+            int request = ++_runtimeModulesRequest;
+            string directory = InstallDirectory.Trim();
+            try
+            {
+                IReadOnlyList<RuntimeModule> modules = Array.Empty<RuntimeModule>();
+                if (Path.IsPathFullyQualified(directory) == true)
+                {
+                    modules = await Task.Run(() => _installer.ReadModules(directory, token), token);
+                }
+                if (_closing == true || request != _runtimeModulesRequest)
+                {
+                    return;
+                }
+                RuntimeModules.Clear();
+                CustomNodes.Clear();
+                foreach (RuntimeModule module in modules)
+                {
+                    RuntimeModuleItem item = new RuntimeModuleItem(module, _strings);
+                    if (module.Kind == RuntimeModuleKind.CustomNode)
+                    {
+                        CustomNodes.Add(item);
+                    }
+                    else
+                    {
+                        RuntimeModules.Add(item);
+                    }
+                }
+                _runtimeModulesFailure = null;
+            }
+            catch (OperationCanceledException) when (token.IsCancellationRequested == true)
+            {
+                return;
+            }
+            catch (Exception error)
+            {
+                LogHelper.Error(error);
+                if (_closing == true || request != _runtimeModulesRequest)
+                {
+                    return;
+                }
+                RuntimeModules.Clear();
+                CustomNodes.Clear();
+                _runtimeModulesFailure = error;
+            }
+            Raise(nameof(HasRuntimeModules));
+            Raise(nameof(HasCustomNodes));
+            Raise(nameof(HasRuntimeModulesError));
+            Raise(nameof(ShowRuntimeModulesEmpty));
+            Raise(nameof(ShowCustomNodesEmpty));
+            Raise(nameof(RuntimeModulesError));
         }
 
         private async Task DownloadModelAsync(CancellationToken token)
@@ -1167,6 +1664,15 @@ namespace Eidolon.App.ViewModels
             }
         }
 
+        private async Task PickGenerationDirectoryAsync()
+        {
+            string path = await _dialogs.PickFolderAsync(_strings.GetString("EidolonText299"));
+            if (string.IsNullOrEmpty(path) == false)
+            {
+                GenerationDirectory = path;
+            }
+        }
+
         private async Task SaveSettingsAsync(CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
@@ -1175,8 +1681,12 @@ namespace Eidolon.App.ViewModels
             settings.Language = SettingsDraft.Language;
             settings.PositivePrompt = SettingsDraft.PositivePrompt;
             settings.NegativePrompt = SettingsDraft.NegativePrompt;
+            settings.GenerationDirectory = GenerationDirectory.Trim();
             _settingsStore.Save(settings);
             _settings = settings;
+            GenerationDirectory = settings.GenerationDirectory;
+            Raise(nameof(CommonPositivePrompt));
+            Raise(nameof(CommonNegativePrompt));
             await RefreshAssetsAsync();
             Status = _strings.GetString("EidolonText235");
         }
@@ -1224,7 +1734,7 @@ namespace Eidolon.App.ViewModels
                 return;
             }
             Status = _strings.GetString("EidolonText237");
-            ModelAsset asset = await _assets.ImportAsync(_settings, path, SelectedKind.Value, SelectedFamily.Value, AssetTrigger, token);
+            ModelAsset asset = await _assets.ImportAsync(_settings, path, SelectedFamily.Value, AssetTrigger, token);
             if (asset.Kind == AssetKind.Checkpoint && string.IsNullOrEmpty(_settings.DefaultModelId) == true)
             {
                 _settings.DefaultModelId = asset.Id;
@@ -1259,23 +1769,10 @@ namespace Eidolon.App.ViewModels
             Status = _strings.GetString("EidolonText240");
         }
 
-        private Task SetDefaultAsync(CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-            if (SelectedModel.Asset.Family == ModelFamily.Unknown)
-            {
-                throw new InvalidOperationException(_strings.GetString("EidolonText241"));
-            }
-            _settings.DefaultModelId = SelectedModel.Asset.Id;
-            SettingsDraft.DefaultModelId = SelectedModel.Asset.Id;
-            _settingsStore.Save(_settings);
-            Status = _strings.GetString("EidolonText242");
-            return Task.CompletedTask;
-        }
-
         private Task ReusePromptAsync()
         {
             Prompt = SelectedJob.Job.UserPrompt;
+            RemoveBackground = SelectedJob.Job.RemoveBackground;
             SelectedModel = Models.FirstOrDefault(item => item.Asset.Id == SelectedJob.Job.Model.Id);
             foreach (AssetItem lora in Loras)
             {
@@ -1285,10 +1782,93 @@ namespace Eidolon.App.ViewModels
             return Task.CompletedTask;
         }
 
-        private async Task CancelAsync()
+        private async Task DeleteGenerationsAsync(bool all)
         {
-            Status = _strings.GetString("EidolonText243");
-            await _work.CancelCurrentAsync();
+            List<string> ids = new List<string>();
+            string message = _strings.GetString("EidolonText319");
+            if (all == true)
+            {
+                ids.AddRange(Generations.Select(item => item.Job.Id));
+                message = _strings.Format("EidolonText320", ids.Count);
+            }
+            else
+            {
+                ids.Add(SelectedGeneration.Job.Id);
+            }
+            if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText318"), message) == false)
+            {
+                return;
+            }
+            await WorkAsync(async token =>
+            {
+                token.ThrowIfCancellationRequested();
+                try
+                {
+                    await Task.Run(() => _jobs.DeleteGenerations(ids), token);
+                }
+                finally
+                {
+                    RefreshJobs();
+                }
+                Status = _strings.Format("EidolonText323", ids.Count);
+            });
+        }
+
+        private Task UseResultForTrainingAsync()
+        {
+            JobRecord job = SelectedJob.Job;
+            AssetItem model = Models.FirstOrDefault(item => item.Asset.Id == job.Model.Id);
+            if (model == null)
+            {
+                model = Models.FirstOrDefault(item => item.Asset.EngineName == job.Model.EngineName &&
+                    string.Equals(item.Asset.RuntimeRoot, job.Model.RuntimeRoot, StringComparison.OrdinalIgnoreCase) == true);
+            }
+            SelectedModel = model;
+            DatasetDirectory = Path.GetDirectoryName(_previewPath);
+            _trainingImages.Add(_previewPath);
+            RefreshTrainingSource();
+            TrainingDescription = job.PositivePrompt;
+            ContinueTraining = false;
+            SelectedResumeLora = null;
+            TrainingName = string.Empty;
+            TrainingTrigger = string.Empty;
+            SelectedTab = 2;
+            Status = _strings.GetString("EidolonText302");
+            if (model == null)
+            {
+                Status = _strings.GetString("EidolonText301");
+            }
+            return Task.CompletedTask;
+        }
+
+        private void RefreshTrainingSource()
+        {
+            Raise(nameof(HasSelectedTrainingImage));
+            Raise(nameof(SelectedTrainingImagePath));
+            Raise(nameof(PickDatasetCaption));
+        }
+
+        private Task OpenGenerationDirectoryAsync()
+        {
+            string directory = GenerationDirectory.Trim();
+            if (string.IsNullOrWhiteSpace(directory) == true)
+            {
+                directory = DesktopSettings.DefaultGenerationDirectory;
+            }
+            return _dialogs.OpenFolderAsync(directory);
+        }
+
+        private Task OpenImageFolderAsync()
+        {
+            if (HasPreview == true)
+            {
+                return _dialogs.OpenFolderAsync(Path.GetDirectoryName(_previewPath));
+            }
+            if (string.IsNullOrWhiteSpace(_settings.GenerationDirectory) == false)
+            {
+                return _dialogs.OpenFolderAsync(_settings.GenerationDirectory);
+            }
+            return _dialogs.OpenFolderAsync(Path.Combine(_dataDirectory, "Images"));
         }
 
         private async Task RefreshAssetsAsync()
@@ -1352,6 +1932,7 @@ namespace Eidolon.App.ViewModels
             if (SelectedModel == null)
             {
                 SelectedResumeLora = null;
+                Raise(nameof(HasAvailableLoras));
                 return;
             }
             foreach (AssetItem item in Library)
@@ -1362,6 +1943,7 @@ namespace Eidolon.App.ViewModels
                 }
             }
             SelectedResumeLora = Loras.FirstOrDefault(item => item.Asset.Id == resumeId);
+            Raise(nameof(HasAvailableLoras));
         }
 
         private void RefreshAvailableFamilies()
@@ -1390,28 +1972,18 @@ namespace Eidolon.App.ViewModels
 
         private void RefreshJobs(bool markInterrupted = false)
         {
+            string selectedImageFile = SelectedImageFile;
             string generationId = string.Empty;
-            string trainingId = string.Empty;
             if (SelectedGeneration != null)
             {
                 generationId = SelectedGeneration.Job.Id;
             }
-            if (SelectedTraining != null)
-            {
-                trainingId = SelectedTraining.Job.Id;
-            }
             Generations.Clear();
-            Trainings.Clear();
             foreach (JobRecord job in _jobs.LoadAll(markInterrupted))
             {
-                JobItem item = new JobItem(job, _strings);
                 if (job.Kind == JobKind.Generation)
                 {
-                    Generations.Add(item);
-                }
-                else
-                {
-                    Trainings.Add(item);
+                    Generations.Add(new JobItem(job, _strings));
                 }
             }
             JobItem generation = Generations.FirstOrDefault(item => item.Job.Id == generationId);
@@ -1419,20 +1991,12 @@ namespace Eidolon.App.ViewModels
             {
                 generation = Generations.FirstOrDefault(item => item.Job.ImageFiles.Count > 0);
             }
-            JobItem training = Trainings.FirstOrDefault(item => item.Job.Id == trainingId);
-            if (training == null)
-            {
-                training = Trainings.FirstOrDefault();
-            }
             SelectedGeneration = generation;
-            SelectedTraining = training;
-            if (IsTrainingView == true)
+            Raise(nameof(HasGenerations));
+            SelectedJob = generation;
+            if (ResultImageFiles.Contains(selectedImageFile) == true)
             {
-                SelectedJob = training;
-            }
-            else
-            {
-                SelectedJob = generation;
+                SelectedImageFile = selectedImageFile;
             }
         }
 
@@ -1446,7 +2010,12 @@ namespace Eidolon.App.ViewModels
             }
             try
             {
-                _previewPath = _jobs.ImagePath(item.Job, item.Job.ImageFiles[0]);
+                string imageFile = item.Job.ImageFiles[0];
+                if (item.Job.ImageFiles.Contains(SelectedImageFile) == true)
+                {
+                    imageFile = SelectedImageFile;
+                }
+                _previewPath = _jobs.ImagePath(item.Job, imageFile);
                 using FileStream stream = File.OpenRead(_previewPath);
                 Preview = new Bitmap(stream);
             }

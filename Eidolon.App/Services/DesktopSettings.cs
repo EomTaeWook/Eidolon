@@ -14,10 +14,19 @@ namespace Eidolon.App.Services
 
         public DesktopSettings()
         {
+            GenerationDirectory = DefaultGenerationDirectory;
             Language = AppLanguage.English;
             if (System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ko")
             {
                 Language = AppLanguage.Korean;
+            }
+        }
+
+        public static string DefaultGenerationDirectory
+        {
+            get
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Eidolon", "Images");
             }
         }
 
@@ -29,6 +38,7 @@ namespace Eidolon.App.Services
                 Theme = Theme,
                 Language = Language,
                 InstallDirectory = InstallDirectory,
+                GenerationDirectory = GenerationDirectory,
                 UseCpu = UseCpu,
                 ServerAddress = ServerAddress,
                 UseServerAssets = UseServerAssets,

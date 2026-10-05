@@ -10,6 +10,20 @@ namespace Eidolon.App.ViewModels
         public string Label { get; private set; }
         public string Detail { get; private set; }
         public string Description { get; private set; }
+        public string AppliedLoras
+        {
+            get
+            {
+                return string.Join(", ", Job.Loras.Select(lora => lora.Name));
+            }
+        }
+        public bool HasAppliedLoras
+        {
+            get
+            {
+                return Job.Loras.Count > 0;
+            }
+        }
 
         public JobItem(JobRecord job, StringHelper strings)
         {

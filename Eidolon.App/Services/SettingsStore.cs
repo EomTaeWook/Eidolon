@@ -34,6 +34,7 @@ namespace Eidolon.App.Services
                     throw new InvalidDataException(_strings.GetString("EidolonText100"));
                 }
                 MigrateServerAddress(settings);
+                NormalizeGenerationDirectory(settings);
                 settings.Validate();
                 return settings;
             }
@@ -41,10 +42,19 @@ namespace Eidolon.App.Services
 
         public void Save(DesktopSettings settings)
         {
+            NormalizeGenerationDirectory(settings);
             settings.Validate();
             lock (_gate)
             {
                 _json.Write(_path, settings);
+            }
+        }
+
+        private void NormalizeGenerationDirectory(DesktopSettings settings)
+        {
+            if (string.IsNullOrWhiteSpace(settings.GenerationDirectory) == true)
+            {
+                settings.GenerationDirectory = DesktopSettings.DefaultGenerationDirectory;
             }
         }
 

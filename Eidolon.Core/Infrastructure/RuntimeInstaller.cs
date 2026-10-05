@@ -11,12 +11,30 @@ namespace Eidolon.Core.Infrastructure
         private readonly FileDownloader _downloader;
         private readonly ProcessRunner _processes;
         private readonly AtomicJsonFile _json;
+        private readonly RuntimeModuleReader _modules;
 
-        public RuntimeInstaller(FileDownloader downloader, ProcessRunner processes, AtomicJsonFile json)
+        public RuntimeInstaller(FileDownloader downloader, ProcessRunner processes, AtomicJsonFile json, RuntimeModuleReader modules)
         {
             _downloader = downloader;
             _processes = processes;
             _json = json;
+            _modules = modules;
+        }
+
+        public IReadOnlyList<RuntimeModule> ReadModules(string installDirectory, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            if (string.IsNullOrWhiteSpace(installDirectory) == true)
+            {
+                return Array.Empty<RuntimeModule>();
+            }
+            RuntimeLayout layout = new RuntimeLayout(installDirectory);
+            RuntimeManifest manifest = _json.Read<RuntimeManifest>(Path.Combine(layout.Root, "Runtime.json"));
+            if (manifest != null && (manifest.Owner != "Eidolon" || manifest.SchemaVersion != 1))
+            {
+                throw new StudioException(StudioMessageCode.InvalidInstallationOwner);
+            }
+            return _modules.Read(layout, manifest, token);
         }
 
         public async Task InstallAsync(StudioSettings settings, IProgress<WorkProgress> progress,
@@ -68,6 +86,21 @@ namespace Eidolon.Core.Infrastructure
                 progress.Report(new WorkProgress(StudioMessageCode.DownloadingEngines));
                 await InstallSourceAsync("Comfy-Org/ComfyUI", RuntimeLayout.ComfyVersion, layout.ComfyDirectory).ConfigureAwait(false);
                 await InstallSourceAsync("kohya-ss/sd-scripts", RuntimeLayout.TrainingVersion, layout.TrainingDirectory).ConfigureAwait(false);
+                progress.Report(new WorkProgress(StudioMessageCode.DownloadingOutlineNodes));
+                string outlineDirectory = layout.OutlineNodesDirectory;
+                if (Directory.Exists(outlineDirectory) == false && Directory.Exists(outlineDirectory + ".disabled") == true)
+                {
+                    outlineDirectory += ".disabled";
+                }
+                await InstallSourceAsync("Fannovel16/comfyui_controlnet_aux", RuntimeLayout.OutlineNodeRevision,
+                    outlineDirectory, false).ConfigureAwait(false);
+                foreach (string name in new[] { "__init__.py", "requirements.txt" })
+                {
+                    if (File.Exists(Path.Combine(outlineDirectory, name)) == false)
+                    {
+                        throw new StudioException(StudioMessageCode.CustomNodeFileMissing, Path.Combine(outlineDirectory, name));
+                    }
+                }
                 progress.Report(new WorkProgress(StudioMessageCode.PreparingPythonEnvironments));
                 foreach (string name in new[] { "ComfyUI", "Training" })
                 {
@@ -113,6 +146,10 @@ namespace Eidolon.Core.Infrastructure
                         new[] { "-c", "import torch, safetensors, PIL; print('Python dependencies ready; CUDA:', torch.cuda.is_available())" },
                         entry.Value, installLog, cancellationToken, environment).ConfigureAwait(false);
                 }
+                progress.Report(new WorkProgress(StudioMessageCode.InstallingOutlineDependencies));
+                await _processes.RunAsync(layout.UvExecutable,
+                    new[] { "pip", "install", "--python", layout.ComfyPython, "--constraint", constraint, "-r", "requirements.txt" },
+                    outlineDirectory, installLog, cancellationToken, environment).ConfigureAwait(false);
                 progress.Report(new WorkProgress(StudioMessageCode.ConnectingModelDirectories));
                 Directory.CreateDirectory(layout.ModelsDirectory);
                 Directory.CreateDirectory(layout.LorasDirectory);
@@ -135,14 +172,21 @@ namespace Eidolon.Core.Infrastructure
                 throw;
             }
 
-            async Task InstallSourceAsync(string repository, string version, string destination)
+            async Task InstallSourceAsync(string repository, string version, string destination, bool useTag = true)
             {
                 if (Directory.Exists(destination) == true)
                 {
                     return;
                 }
-                string archivePath = Path.Combine(layout.Root, "Downloads", Path.GetFileName(destination) + ".zip");
-                await _downloader.DownloadAsync("https://github.com/" + repository + "/archive/refs/tags/" + version + ".zip",
+                string reference = "refs/tags/" + version;
+                string archiveName = Path.GetFileName(destination);
+                if (useTag == false)
+                {
+                    reference = version;
+                    archiveName += "-" + version;
+                }
+                string archivePath = Path.Combine(layout.Root, "Downloads", archiveName + ".zip");
+                await _downloader.DownloadAsync("https://github.com/" + repository + "/archive/" + reference + ".zip",
                     archivePath, string.Empty, progress, cancellationToken).ConfigureAwait(false);
                 await ExtractAsync(archivePath, destination, true, cancellationToken).ConfigureAwait(false);
             }

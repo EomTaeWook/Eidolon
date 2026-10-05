@@ -8,6 +8,28 @@ namespace Eidolon.App.Localization
         {
             switch (code)
             {
+                case StudioMessageCode.InvalidTrainingSteps:
+                    return "EidolonText338";
+                case StudioMessageCode.BackgroundModelDownloading:
+                    return "EidolonText310";
+                case StudioMessageCode.BackgroundRemoving:
+                    return "EidolonText311";
+                case StudioMessageCode.BackgroundRemoved:
+                    return "EidolonText312";
+                case StudioMessageCode.InvalidGenerationRecord:
+                    return "EidolonText313";
+                case StudioMessageCode.GenerationRecordBusy:
+                    return "EidolonText314";
+                case StudioMessageCode.BackgroundRemovalFailed:
+                    return "EidolonText315";
+                case StudioMessageCode.InvalidGenerationDirectory:
+                    return "EidolonText300";
+                case StudioMessageCode.DownloadingOutlineNodes:
+                    return "EidolonText287";
+                case StudioMessageCode.InstallingOutlineDependencies:
+                    return "EidolonText288";
+                case StudioMessageCode.CustomNodeFileMissing:
+                    return "EidolonText289";
                 case StudioMessageCode.InvalidComfyServer:
                     return "EidolonText270";
                 case StudioMessageCode.PromptRequired:

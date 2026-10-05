@@ -110,6 +110,17 @@ namespace Eidolon.Core.Domain
         ExternalCancellationFailed,
         ExternalAssetImportUnsupported,
         LocalTrainingRuntimeRequired,
-        InvalidComfyServer
+        InvalidComfyServer,
+        DownloadingOutlineNodes,
+        InstallingOutlineDependencies,
+        CustomNodeFileMissing,
+        InvalidGenerationDirectory,
+        InvalidGenerationRecord,
+        GenerationRecordBusy,
+        BackgroundModelDownloading,
+        BackgroundRemoving,
+        BackgroundRemoved,
+        BackgroundRemovalFailed,
+        InvalidTrainingSteps
     }
 }

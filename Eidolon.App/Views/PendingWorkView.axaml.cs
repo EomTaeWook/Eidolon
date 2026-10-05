@@ -3,9 +3,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Eidolon.App.Views
 {
-    public partial class JobDetailsView : UserControl
+    public partial class PendingWorkView : UserControl
     {
-        public JobDetailsView()
+        public PendingWorkView()
         {
             AvaloniaXamlLoader.Load(this);
         }

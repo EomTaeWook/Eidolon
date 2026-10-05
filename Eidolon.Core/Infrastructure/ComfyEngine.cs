@@ -226,19 +226,18 @@ namespace Eidolon.Core.Infrastructure
                         }
                         if (completed["outputs"]?["7"]?["images"] is JsonArray images && images.Count > 0)
                         {
-                            int index = 0;
                             foreach (JsonNode image in images)
                             {
-                                index++;
-                                string relative = Path.Combine("Images", index.ToString("D2") + ".png");
+                                string relative = Path.Combine("Originals", Guid.NewGuid().ToString("N") + ".png");
+                                string destination = jobs.WorkingImagePath(job, relative);
                                 string filename = image["filename"].GetValue<string>();
                                 string subfolder = image["subfolder"]?.GetValue<string>() ?? string.Empty;
                                 string type = image["type"]?.GetValue<string>() ?? "output";
                                 string url = Address(settings, "view?filename=" + Uri.EscapeDataString(filename) +
                                     "&subfolder=" + Uri.EscapeDataString(subfolder) + "&type=" + Uri.EscapeDataString(type));
-                                await _downloader.DownloadAsync(url, jobs.ImagePath(job, relative), string.Empty,
+                                await _downloader.DownloadAsync(url, destination, string.Empty,
                                     progress, cancellationToken).ConfigureAwait(false);
-                                job.ImageFiles.Add(relative);
+                                job.OriginalImageFiles.Add(relative);
                                 jobs.Save(job);
                             }
                             return;

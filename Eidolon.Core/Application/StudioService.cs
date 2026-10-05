@@ -1,5 +1,6 @@
 using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
+using System.Text.RegularExpressions;
 
 namespace Eidolon.Core.Application
 {
@@ -11,10 +12,11 @@ namespace Eidolon.Core.Application
         private readonly LoraTrainer _trainer;
         private readonly TimeProvider _time;
         private readonly ISeedProvider _seeds;
+        private readonly BackgroundRemovalService _backgroundRemoval;
         private readonly SemaphoreSlim _gpuGate = new SemaphoreSlim(1, 1);
 
         public StudioService(AssetLibrary assets, JobStore jobs, ComfyEngine engine,
-            LoraTrainer trainer, TimeProvider time, ISeedProvider seeds)
+            LoraTrainer trainer, TimeProvider time, ISeedProvider seeds, BackgroundRemovalService backgroundRemoval)
         {
             _assets = assets;
             _jobs = jobs;
@@ -22,10 +24,11 @@ namespace Eidolon.Core.Application
             _trainer = trainer;
             _time = time;
             _seeds = seeds;
+            _backgroundRemoval = backgroundRemoval;
         }
 
         public async Task<JobRecord> GenerateAsync(StudioSettings settings, string prompt, ModelAsset model,
-            IReadOnlyList<ModelAsset> loras, IProgress<WorkProgress> progress, CancellationToken token)
+            IReadOnlyList<ModelAsset> loras, bool removeBackground, IProgress<WorkProgress> progress, CancellationToken token)
         {
             if (string.IsNullOrWhiteSpace(prompt) == true)
             {
@@ -52,6 +55,7 @@ namespace Eidolon.Core.Application
                 UserPrompt = prompt.Trim(),
                 PositivePrompt = ComposePrompt(settings.PositivePrompt, prompt, loras),
                 NegativePrompt = settings.NegativePrompt.Trim(),
+                RemoveBackground = removeBackground,
                 Model = model.Copy(),
                 Loras = loras.Select(lora => lora.Copy()).ToList(),
                 Seed = _seeds.Next(),
@@ -63,11 +67,16 @@ namespace Eidolon.Core.Application
                 Scheduler = preset.Scheduler,
                 StartedAtUtc = _time.GetUtcNow()
             };
+            _jobs.SetOutputDirectory(job, settings.GenerationDirectory);
             await _gpuGate.WaitAsync(token).ConfigureAwait(false);
             try
             {
                 _jobs.Save(job);
                 await _engine.GenerateAsync(settings.Copy(), job, _jobs, progress, token).ConfigureAwait(false);
+                foreach (string imageFile in job.OriginalImageFiles)
+                {
+                    await PublishImageAsync(job, imageFile, progress, token).ConfigureAwait(false);
+                }
                 job.State = JobState.Completed;
                 job.FinishedAtUtc = _time.GetUtcNow();
                 _jobs.Save(job);
@@ -122,6 +131,11 @@ namespace Eidolon.Core.Application
             {
                 throw new StudioException(StudioMessageCode.InvalidTrigger);
             }
+            if (input.Steps < TrainingPreset.MinimumSteps || input.Steps > TrainingPreset.MaximumSteps)
+            {
+                throw new StudioException(StudioMessageCode.InvalidTrainingSteps,
+                    TrainingPreset.MinimumSteps, TrainingPreset.MaximumSteps);
+            }
             JobRecord job = new JobRecord
             {
                 Kind = JobKind.Training,
@@ -129,8 +143,9 @@ namespace Eidolon.Core.Application
                 Model = input.Model.Copy(),
                 TriggerWord = input.TriggerWord.Trim(),
                 DatasetDescription = input.Description.Trim(),
+                QuickTraining = input.Steps == TrainingPreset.QuickMaxSteps,
                 Seed = _seeds.Next(),
-                Steps = TrainingPreset.MaxSteps,
+                Steps = input.Steps,
                 StartedAtUtc = _time.GetUtcNow()
             };
             if (input.ResumeLora != null)
@@ -143,8 +158,9 @@ namespace Eidolon.Core.Application
                 _jobs.Save(job);
                 progress.Report(new WorkProgress(StudioMessageCode.ReleasingEngineMemory));
                 await _engine.StopAsync().ConfigureAwait(false);
-                string trainedPath = await _trainer.TrainAsync(settings.Copy(), job, input.ImageDirectory,
+                string trainedPath = await _trainer.TrainAsync(settings.Copy(), job, input,
                     progress, token).ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
                 job.TrainedFile = Path.GetRelativePath(_jobs.DirectoryFor(job.Id), trainedPath);
                 _jobs.Save(job);
                 progress.Report(new WorkProgress(StudioMessageCode.RegisteringTrainedLora));
@@ -184,6 +200,21 @@ namespace Eidolon.Core.Application
             {
                 _gpuGate.Release();
             }
+        }
+
+        private async Task PublishImageAsync(JobRecord job, string imageFile,
+            IProgress<WorkProgress> progress, CancellationToken token)
+        {
+            bool removeWorkingFile = false;
+            string workingFile = imageFile;
+            if (job.RemoveBackground == true)
+            {
+                workingFile = Path.Combine("Processed", Guid.NewGuid().ToString("N") + ".png");
+                await _backgroundRemoval.RemoveAsync(_jobs.WorkingImagePath(job, imageFile),
+                    _jobs.WorkingImagePath(job, workingFile), progress, token).ConfigureAwait(false);
+                removeWorkingFile = true;
+            }
+            await _jobs.PublishImageAsync(job, workingFile, removeWorkingFile, token).ConfigureAwait(false);
         }
 
         private void ValidateModel(StudioSettings settings, ModelAsset model)
@@ -238,7 +269,16 @@ namespace Eidolon.Core.Application
             {
                 if (string.IsNullOrWhiteSpace(lora.TriggerWord) == false)
                 {
-                    parts.Add(lora.TriggerWord.Trim());
+                    foreach (string trigger in lora.TriggerWord.Split(',',
+                        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                    {
+                        string combined = string.Join(", ", parts);
+                        string pattern = @"(?<![\p{L}\p{N}_])" + Regex.Escape(trigger) + @"(?![\p{L}\p{N}_])";
+                        if (Regex.IsMatch(combined, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) == false)
+                        {
+                            parts.Add(trigger);
+                        }
+                    }
                 }
             }
             return string.Join(", ", parts);

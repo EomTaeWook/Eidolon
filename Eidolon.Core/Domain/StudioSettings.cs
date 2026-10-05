@@ -7,6 +7,7 @@ namespace Eidolon.Core.Domain
         public const string DefaultServerAddress = "http://127.0.0.1:8189";
         public int SchemaVersion { get; set; } = 1;
         public string InstallDirectory { get; set; } = string.Empty;
+        public string GenerationDirectory { get; set; } = string.Empty;
         public bool UseCpu { get; set; }
         public string ServerAddress { get; set; } = DefaultServerAddress;
         [JsonIgnore]
@@ -24,6 +25,7 @@ namespace Eidolon.Core.Domain
             return new StudioSettings
             {
                 InstallDirectory = InstallDirectory,
+                GenerationDirectory = GenerationDirectory,
                 UseCpu = UseCpu,
                 ServerAddress = ServerAddress,
                 UseServerAssets = UseServerAssets,
@@ -53,6 +55,14 @@ namespace Eidolon.Core.Domain
                 {
                     throw new StudioException(StudioMessageCode.AbsoluteInstallPathRequired);
                 }
+            }
+            if (GenerationDirectory == null)
+            {
+                throw new StudioException(StudioMessageCode.InvalidGenerationDirectory);
+            }
+            if (string.IsNullOrWhiteSpace(GenerationDirectory) == false && Path.IsPathFullyQualified(GenerationDirectory) == false)
+            {
+                throw new StudioException(StudioMessageCode.InvalidGenerationDirectory);
             }
             if (PositivePrompt == null || NegativePrompt == null || DefaultModelId == null)
             {

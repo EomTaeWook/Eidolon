@@ -7,6 +7,9 @@ namespace Eidolon.Core.Domain
         }
 
         public const int MaxSteps = 1000;
+        public const int QuickMaxSteps = 300;
+        public const int MinimumSteps = 1;
+        public const int MaximumSteps = 100000;
         public const int NetworkDimension = 16;
         public const int NetworkAlpha = 16;
         public const int Repeats = 10;

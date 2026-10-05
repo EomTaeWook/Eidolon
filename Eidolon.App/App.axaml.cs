@@ -68,6 +68,7 @@ namespace Eidolon.App
             _serviceContainer.RegisterType(new StringLanguageSelection(new DesktopSettings().Language));
             _serviceContainer.RegisterType<AtomicJsonFile, AtomicJsonFile>(LifeScope.Singleton);
             _serviceContainer.RegisterType<ProcessRunner, ProcessRunner>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<RuntimeModuleReader, RuntimeModuleReader>(LifeScope.Singleton);
             _serviceContainer.RegisterType<RuntimeInstaller, RuntimeInstaller>(LifeScope.Singleton);
             _serviceContainer.RegisterType<SafetensorsInspector, SafetensorsInspector>(LifeScope.Singleton);
             _serviceContainer.RegisterType<ComfyWorkflowBuilder, ComfyWorkflowBuilder>(LifeScope.Singleton);
@@ -80,6 +81,8 @@ namespace Eidolon.App
             _serviceContainer.RegisterType<MainWindow, MainWindow>(LifeScope.Singleton);
             _serviceContainer.RegisterType<FileDownloader>(provider => new FileDownloader(
                 _downloadsHttp, provider.GetService<TimeProvider>()), LifeScope.Singleton);
+            _serviceContainer.RegisterType<BackgroundRemovalService>(provider => new BackgroundRemovalService(
+                provider.GetService<FileDownloader>(), Path.Combine(dataDirectory, "Models", "BackgroundRemoval")), LifeScope.Singleton);
             _serviceContainer.RegisterType<SettingsStore>(provider => new SettingsStore(
                 dataDirectory, provider.GetService<AtomicJsonFile>(), provider.GetService<StringHelper>()), LifeScope.Singleton);
             _serviceContainer.RegisterType<JobStore>(provider => new JobStore(

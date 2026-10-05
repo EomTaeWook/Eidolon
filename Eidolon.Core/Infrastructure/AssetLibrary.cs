@@ -49,8 +49,20 @@ namespace Eidolon.Core.Infrastructure
             }
         }
 
-        public async Task<ModelAsset> ImportAsync(StudioSettings settings, string sourcePath, AssetKind kind,
+        public Task<ModelAsset> ImportAsync(StudioSettings settings, string sourcePath,
             ModelFamily family, string triggerWord, CancellationToken cancellationToken)
+        {
+            return ImportAsync(settings, sourcePath, AssetKind.Checkpoint, false, family, triggerWord, cancellationToken);
+        }
+
+        public Task<ModelAsset> ImportAsync(StudioSettings settings, string sourcePath, AssetKind kind,
+            ModelFamily family, string triggerWord, CancellationToken cancellationToken)
+        {
+            return ImportAsync(settings, sourcePath, kind, true, family, triggerWord, cancellationToken);
+        }
+
+        private async Task<ModelAsset> ImportAsync(StudioSettings settings, string sourcePath, AssetKind kind,
+            bool requireKind, ModelFamily family, string triggerWord, CancellationToken cancellationToken)
         {
             if (ComfyServerAddress.UsesServerAssets(settings) == true)
             {
@@ -62,7 +74,14 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.SafetensorsRequired);
             }
-            ModelFamily detected = await Task.Run(() => _inspector.Inspect(sourcePath, kind), cancellationToken).ConfigureAwait(false);
+            ModelFamily detected = await Task.Run(() =>
+            {
+                if (requireKind == true)
+                {
+                    return _inspector.Inspect(sourcePath, kind);
+                }
+                return _inspector.Inspect(sourcePath, out kind);
+            }, cancellationToken).ConfigureAwait(false);
             if (detected != ModelFamily.Unknown)
             {
                 if (family != ModelFamily.Unknown && detected != family)

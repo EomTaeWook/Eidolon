@@ -14,6 +14,7 @@ namespace Eidolon.Core.Domain
         public string UserPrompt { get; set; } = string.Empty;
         public string PositivePrompt { get; set; } = string.Empty;
         public string NegativePrompt { get; set; } = string.Empty;
+        public bool RemoveBackground { get; set; }
         public ModelAsset Model { get; set; } = new ModelAsset();
         public List<ModelAsset> Loras { get; set; } = new List<ModelAsset>();
         public long Seed { get; set; }
@@ -27,7 +28,10 @@ namespace Eidolon.Core.Domain
         public string TriggerWord { get; set; } = string.Empty;
         public string DatasetDescription { get; set; } = string.Empty;
         public int DatasetImageCount { get; set; }
+        public bool QuickTraining { get; set; }
         public List<string> ImageFiles { get; set; } = new List<string>();
+        public List<string> OriginalImageFiles { get; set; } = new List<string>();
+        public string OutputDirectory { get; set; } = string.Empty;
         public string TrainedFile { get; set; } = string.Empty;
         public string Error { get; set; } = string.Empty;
         public StudioMessageCode ErrorCode { get; set; }

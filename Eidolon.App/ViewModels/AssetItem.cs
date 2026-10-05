@@ -10,6 +10,21 @@ namespace Eidolon.App.ViewModels
         public ModelAsset Asset { get; private set; }
         public string Label { get; private set; }
         public string Detail { get; private set; }
+        public bool HasTriggerWord
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(Asset.TriggerWord) == false;
+            }
+        }
+
+        public string TriggerCaption
+        {
+            get
+            {
+                return _strings.Format("EidolonText340", Asset.TriggerWord);
+            }
+        }
         public bool IsSelected
         {
             get
@@ -53,6 +68,8 @@ namespace Eidolon.App.ViewModels
                 Detail += " · " + asset.TriggerWord;
             }
             Raise(nameof(Detail));
+            Raise(nameof(HasTriggerWord));
+            Raise(nameof(TriggerCaption));
         }
     }
 }

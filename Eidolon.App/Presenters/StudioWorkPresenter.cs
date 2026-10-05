@@ -81,11 +81,6 @@ namespace Eidolon.App.Presenters
             LogHelper.Info(_strings.GetString("EidolonText247") + " " + title);
         }
 
-        public Task CancelCurrentAsync()
-        {
-            return _queue.CancelCurrentAsync();
-        }
-
         public void ScheduleWhenIdle(string title, Func<CancellationToken, Task> action)
         {
             CancelScheduled();
@@ -165,6 +160,11 @@ namespace Eidolon.App.Presenters
         {
             _queue.ClearPending();
             QueueChanged?.Invoke();
+        }
+
+        public Task CancelCurrentAsync()
+        {
+            return _queue.CancelCurrentAsync();
         }
 
         private void OnQueueChanged()

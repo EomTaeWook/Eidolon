@@ -13,10 +13,10 @@
               <TextBlock Text="{DynamicResource EidolonText106}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Command="{Binding ShowLibraryCommand}" Classes="navigation" Classes.active="{Binding IsLibraryView}">
+          <Button Command="{Binding ShowResultsCommand}" Classes="navigation" Classes.active="{Binding IsResultsView}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-              <Path Data="{StaticResource EidolonIconLibrary}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
-              <TextBlock Text="{DynamicResource EidolonText107}" VerticalAlignment="Center" />
+              <Path Data="{StaticResource EidolonIconResults}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
+              <TextBlock Text="{DynamicResource EidolonText291}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
           <Button Command="{Binding ShowTrainingCommand}" Classes="navigation" Classes.active="{Binding IsTrainingView}">
@@ -56,6 +56,7 @@
                   <TextBlock Text="{DynamicResource EidolonText112}" Classes="title" FontSize="24" />
                   <TextBlock Text="{DynamicResource EidolonText113}" Classes="muted" />
                   <TextBox Text="{Binding Prompt}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="210" PlaceholderText="{DynamicResource EidolonText114}" />
+                  <CheckBox IsChecked="{Binding RemoveBackground}" Content="{DynamicResource EidolonText308}" ToolTip.Tip="{DynamicResource EidolonText309}" />
                   <Button Classes="primary" Command="{Binding GenerateCommand}" HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                       <Path Data="{StaticResource EidolonIconPlay}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
@@ -63,7 +64,19 @@
                     </StackPanel>
                   </Button>
                   <TextBlock Text="{DynamicResource EidolonText248}" Classes="muted" FontSize="12" />
+                  <views:PendingWorkView />
                 </StackPanel>
+              </Border>
+              <Border Classes="card">
+                <ScrollViewer MaxHeight="180" HorizontalScrollBarVisibility="Disabled">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="{DynamicResource EidolonText176}" FontWeight="SemiBold" />
+                    <TextBlock Text="{DynamicResource EidolonText178}" Classes="label" />
+                    <SelectableTextBlock Text="{Binding CommonPositivePrompt}" TextWrapping="Wrap" />
+                    <TextBlock Text="{DynamicResource EidolonText180}" Classes="label" />
+                    <SelectableTextBlock Text="{Binding CommonNegativePrompt}" TextWrapping="Wrap" />
+                  </StackPanel>
+                </ScrollViewer>
               </Border>
               <Border Classes="card">
                 <StackPanel Spacing="10">
@@ -75,24 +88,40 @@
                       </DataTemplate>
                     </ComboBox.ItemTemplate>
                   </ComboBox>
-                  <Button Content="{DynamicResource EidolonText116}" Command="{Binding SetDefaultCommand}" />
                   <TextBlock Text="LoRA" Classes="label" />
                   <TextBlock Text="{DynamicResource EidolonText117}" Classes="muted" FontSize="12" />
-                  <ItemsControl ItemsSource="{Binding Loras}">
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate x:DataType="vm:AssetItem">
-                        <CheckBox IsChecked="{Binding IsSelected}" Content="{Binding Label}" Margin="0,3" />
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
+                  <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Background="{DynamicResource SurfaceBrush}" ClipToBounds="True" IsVisible="{Binding HasAvailableLoras}">
+                    <ScrollViewer MaxHeight="220" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                      <ItemsControl ItemsSource="{Binding Loras}">
+                        <ItemsControl.Styles>
+                          <Style Selector="Border.loraRow.selected">
+                            <Setter Property="Background" Value="{DynamicResource HeaderBrush}" />
+                          </Style>
+                        </ItemsControl.Styles>
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="vm:AssetItem">
+                            <Border Classes="loraRow" Classes.selected="{Binding IsSelected}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+                              <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch" Padding="12,10">
+                                <StackPanel Spacing="4">
+                                  <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
+                                  <TextBlock Text="{Binding TriggerCaption}" IsVisible="{Binding HasTriggerWord}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+                                </StackPanel>
+                              </CheckBox>
+                            </Border>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                    </ScrollViewer>
+                  </Border>
+                  <TextBlock Text="{DynamicResource EidolonText341}" IsVisible="{Binding !HasAvailableLoras}" Classes="muted" FontSize="12" />
                 </StackPanel>
               </Border>
             </StackPanel>
           </ScrollViewer>
-          <Grid Grid.Column="2" RowDefinitions="*,Auto,160,Auto">
-            <views:JobDetailsView Grid.Row="3" Margin="0,10,0,0" />
+          <Grid Grid.Column="2" RowDefinitions="*,Auto,Auto">
             <Border Classes="card" Padding="14" MinHeight="260">
               <Grid>
+                <views:TransparencyBackground IsVisible="{Binding HasPreview}" />
                 <StackPanel IsVisible="{Binding !HasPreview}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
                   <TextBlock Text="{DynamicResource EidolonText118}" FontSize="24" HorizontalAlignment="Center" Foreground="{DynamicResource TextBrush}" />
                   <TextBlock Text="{DynamicResource EidolonText119}" Classes="muted" HorizontalAlignment="Center" />
@@ -100,163 +129,30 @@
                 <Image Source="{Binding Preview}" IsVisible="{Binding HasPreview}" Stretch="Uniform" />
               </Grid>
             </Border>
-            <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" Margin="0,12">
-              <TextBlock Text="{DynamicResource EidolonText120}" FontWeight="SemiBold" VerticalAlignment="Center" />
-              <Button Grid.Column="1" Content="{DynamicResource EidolonText121}" Command="{Binding ReusePromptCommand}" Margin="0,0,8,0" />
-              <Button Grid.Column="2" Command="{Binding ExportCommand}">
-                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                  <Path Data="{StaticResource EidolonIconSave}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
-                  <TextBlock Text="{DynamicResource EidolonText122}" VerticalAlignment="Center" />
-                </StackPanel>
-              </Button>
+            <Border Grid.Row="1" Classes="card" Padding="18" MaxHeight="200" Margin="0,12,0,0" IsVisible="{Binding HasPreview}">
+              <ScrollViewer MaxHeight="164" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <views:PromptDetailsView DataContext="{Binding SelectedGeneration}" />
+              </ScrollViewer>
+            </Border>
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,12,0,0">
+              <TextBlock Text="{DynamicResource EidolonText303}" Classes="muted" VerticalAlignment="Center" Margin="0,0,12,0" />
+              <Button Grid.Column="1" Content="{DynamicResource EidolonText291}" Command="{Binding ShowResultsCommand}" />
             </Grid>
-            <ListBox Grid.Row="2" ItemsSource="{Binding Generations}" SelectedItem="{Binding SelectedGeneration}" Background="{DynamicResource SurfaceBrush}" CornerRadius="10">
-              <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="vm:JobItem">
-                  <StackPanel Spacing="4" Margin="4,6">
-                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
-                    <TextBlock Text="{Binding Detail}" Classes="muted" FontSize="12" />
-                  </StackPanel>
-                </DataTemplate>
-              </ListBox.ItemTemplate>
-            </ListBox>
           </Grid>
         </Grid>
       </Border>
-      <Border IsVisible="{Binding IsLibraryView}">
-        <Grid ColumnDefinitions="*,20,350" Margin="0,18,0,0">
-          <Grid RowDefinitions="Auto,*" IsEnabled="{Binding IsIdle}">
-            <StackPanel Spacing="8" Margin="8,0,0,18">
-              <TextBlock Text="{DynamicResource EidolonText123}" Classes="title" />
-              <TextBlock Text="{DynamicResource EidolonText124}" Classes="muted" />
-              <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
-                <Button Content="{DynamicResource EidolonText125}" Command="{Binding ScanCommand}" />
-                <Button Content="{DynamicResource EidolonText126}" Command="{Binding DownloadModelCommand}" />
-              </StackPanel>
-            </StackPanel>
-            <ListBox Grid.Row="1" ItemsSource="{Binding Library}" SelectedItem="{Binding SelectedAsset}" Background="{DynamicResource SurfaceBrush}" CornerRadius="12">
-              <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="vm:AssetItem">
-                  <StackPanel Spacing="6" Margin="8,12">
-                    <TextBlock Text="{Binding Label}" FontSize="17" FontWeight="SemiBold" />
-                    <TextBlock Text="{Binding Detail}" Classes="muted" />
-                  </StackPanel>
-                </DataTemplate>
-              </ListBox.ItemTemplate>
-            </ListBox>
-          </Grid>
-          <ScrollViewer Grid.Column="2">
-            <Border Classes="card" IsEnabled="{Binding IsIdle}">
-              <StackPanel Spacing="12">
-                <TextBlock Text="{DynamicResource EidolonText127}" FontSize="20" FontWeight="SemiBold" />
-                <TextBlock Text="{DynamicResource EidolonText128}" Classes="label" />
-                <ComboBox ItemsSource="{Binding Kinds}" SelectedItem="{Binding SelectedKind}">
-                  <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="vm:KindChoice">
-                      <TextBlock Text="{Binding Label}" />
-                    </DataTemplate>
-                  </ComboBox.ItemTemplate>
-                </ComboBox>
-                <TextBlock Text="{DynamicResource EidolonText129}" Classes="label" />
-                <ComboBox ItemsSource="{Binding AvailableFamilies}" SelectedItem="{Binding SelectedFamily}">
-                  <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="vm:FamilyChoice">
-                      <TextBlock Text="{Binding Label}" />
-                    </DataTemplate>
-                  </ComboBox.ItemTemplate>
-                </ComboBox>
-                <TextBlock Text="{DynamicResource EidolonText130}" Classes="label" />
-                <TextBox Text="{Binding AssetTrigger}" PlaceholderText="{DynamicResource EidolonText131}" />
-                <TextBlock Text="{DynamicResource EidolonText132}" Classes="muted" FontSize="12" />
-                <Button Classes="primary" Command="{Binding ImportCommand}" HorizontalAlignment="Stretch">
-                  <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Path Data="{StaticResource EidolonIconDownload}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
-                    <TextBlock Text="{DynamicResource EidolonText133}" VerticalAlignment="Center" />
-                  </StackPanel>
-                </Button>
-                <Button Content="{DynamicResource EidolonText134}" Command="{Binding UpdateAssetCommand}" HorizontalAlignment="Stretch" />
-                <Button Content="{DynamicResource EidolonText135}" Command="{Binding RemoveAssetCommand}" HorizontalAlignment="Stretch" />
-                <TextBlock Text="{DynamicResource EidolonText136}" Classes="muted" FontSize="12" />
-              </StackPanel>
-            </Border>
-          </ScrollViewer>
-        </Grid>
-      </Border>
-      <Border IsVisible="{Binding IsTrainingView}">
-        <Grid ColumnDefinitions="*,20,*" Margin="0,18,0,0">
-          <ScrollViewer>
-            <Border Classes="card" IsEnabled="{Binding CanQueue}">
-              <StackPanel Spacing="12">
-                <TextBlock Text="{DynamicResource EidolonText137}" Classes="title" />
-                <TextBlock Text="{DynamicResource EidolonText138}" Classes="muted" />
-                <TextBlock Text="{DynamicResource EidolonText139}" Classes="label" />
-                <ComboBox ItemsSource="{Binding Models}" SelectedItem="{Binding SelectedModel}">
-                  <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="vm:AssetItem">
-                      <TextBlock Text="{Binding Label}" />
-                    </DataTemplate>
-                  </ComboBox.ItemTemplate>
-                </ComboBox>
-                <CheckBox IsChecked="{Binding ContinueTraining}" Content="{DynamicResource EidolonText259}" />
-                <StackPanel Spacing="8" IsVisible="{Binding ContinueTraining}">
-                  <TextBlock Text="{DynamicResource EidolonText262}" Classes="label" />
-                  <ComboBox ItemsSource="{Binding Loras}" SelectedItem="{Binding SelectedResumeLora}">
-                    <ComboBox.ItemTemplate>
-                      <DataTemplate x:DataType="vm:AssetItem">
-                        <TextBlock Text="{Binding Label}" />
-                      </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                  </ComboBox>
-                  <TextBlock Text="{DynamicResource EidolonText263}" Classes="muted" FontSize="12" />
-                </StackPanel>
-                <TextBlock Text="{DynamicResource EidolonText140}" Classes="label" />
-                <Grid ColumnDefinitions="*,Auto">
-                  <TextBox Text="{Binding DatasetDirectory}" PlaceholderText="{DynamicResource EidolonText141}" />
-                  <Button Grid.Column="1" Content="{DynamicResource EidolonText142}" Command="{Binding PickDatasetCommand}" Margin="8,0,0,0" />
-                </Grid>
-                <TextBlock Text="{DynamicResource EidolonText143}" Classes="label" />
-                <TextBox Text="{Binding TrainingName}" PlaceholderText="{DynamicResource EidolonText144}" />
-                <TextBlock Text="{DynamicResource EidolonText145}" Classes="label" />
-                <TextBox Text="{Binding TrainingTrigger}" PlaceholderText="{DynamicResource EidolonText146}" />
-                <TextBlock Text="{DynamicResource EidolonText147}" Classes="label" />
-                <TextBox Text="{Binding TrainingDescription}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80" PlaceholderText="{DynamicResource EidolonText148}" />
-                <TextBlock Text="{DynamicResource EidolonText149}" Classes="muted" FontSize="12" />
-                <Button Classes="primary" Command="{Binding TrainCommand}" HorizontalAlignment="Stretch">
-                  <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Path Data="{StaticResource EidolonIconTraining}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
-                    <TextBlock Text="{DynamicResource EidolonText250}" VerticalAlignment="Center" />
-                  </StackPanel>
-                </Button>
-                <TextBlock Text="{DynamicResource EidolonText248}" Classes="muted" FontSize="12" />
-              </StackPanel>
-            </Border>
-          </ScrollViewer>
-          <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto">
-            <views:JobDetailsView Grid.Row="2" Margin="0,10,0,0" />
-            <StackPanel Spacing="8" Margin="8,0,0,18">
-              <TextBlock Text="{DynamicResource EidolonText150}" Classes="title" />
-              <TextBlock Text="{DynamicResource EidolonText151}" Classes="muted" />
-            </StackPanel>
-            <ListBox Grid.Row="1" ItemsSource="{Binding Trainings}" SelectedItem="{Binding SelectedTraining}" Background="{DynamicResource SurfaceBrush}" CornerRadius="12">
-              <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="vm:JobItem">
-                  <StackPanel Spacing="6" Margin="8,10">
-                    <TextBlock Text="{Binding Label}" FontSize="17" FontWeight="SemiBold" />
-                    <TextBlock Text="{Binding Detail}" Classes="muted" />
-                  </StackPanel>
-                </DataTemplate>
-              </ListBox.ItemTemplate>
-            </ListBox>
-          </Grid>
-        </Grid>
-      </Border>
+      <views:ResultsView IsVisible="{Binding IsResultsView}" Margin="0,18,0,0" />
+      <views:TrainingView IsVisible="{Binding IsTrainingView}" Margin="0,18,0,0" />
       <Border IsVisible="{Binding IsEngineView}">
-        <ScrollViewer Margin="0,18,0,0">
-          <Grid ColumnDefinitions="*,20,*">
+        <TabControl SelectedIndex="{Binding SelectedEngineTab}" Margin="0,12,0,0">
+          <TabItem Header="{DynamicResource EidolonText152}">
+            <ScrollViewer Margin="0,18,0,0">
+          <Grid ColumnDefinitions="*,20,*" RowDefinitions="Auto,20,Auto">
             <Border Classes="card" VerticalAlignment="Top" IsEnabled="{Binding CanInstallEngine}">
               <StackPanel Spacing="12">
                 <TextBlock Text="{DynamicResource EidolonText152}" Classes="title" />
                 <TextBlock Text="{DynamicResource EidolonText153}" Classes="muted" />
+                <TextBlock Text="{DynamicResource EidolonText290}" Classes="muted" FontSize="12" />
                 <TextBlock Text="{DynamicResource EidolonText154}" Classes="label" />
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBox Text="{Binding InstallDirectory, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText155}" />
@@ -301,12 +197,73 @@
                 <TextBlock Text="{DynamicResource EidolonText253}" Classes="muted" FontSize="12" />
               </StackPanel>
             </Border>
+            <Border Grid.Row="2" Grid.ColumnSpan="3" Classes="card">
+              <StackPanel Spacing="14">
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="{DynamicResource EidolonText272}" Classes="title" FontSize="21" VerticalAlignment="Center" />
+                  <Button Grid.Column="1" Content="{DynamicResource EidolonText273}" Command="{Binding RefreshRuntimeModulesCommand}" Margin="12,0,0,0" />
+                </Grid>
+                <TextBlock Text="{DynamicResource EidolonText284}" Classes="muted" FontSize="12" />
+                <TextBlock Text="{Binding RuntimeModulesError}" TextWrapping="Wrap" Foreground="{DynamicResource ErrorTextBrush}" IsVisible="{Binding HasRuntimeModulesError}" />
+                <Grid ColumnDefinitions="*,24,*">
+                  <StackPanel Spacing="10">
+                    <TextBlock Text="{DynamicResource EidolonText274}" Classes="label" />
+                    <TextBlock Text="{DynamicResource EidolonText280}" Classes="muted" IsVisible="{Binding ShowRuntimeModulesEmpty}" />
+                    <ItemsControl ItemsSource="{Binding RuntimeModules}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:RuntimeModuleItem">
+                          <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,10">
+                            <StackPanel Spacing="5">
+                              <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                  <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                  <TextBlock Text="{Binding Version}" Classes="muted" FontSize="12" IsVisible="{Binding HasVersion}" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding Status}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                              </Grid>
+                              <TextBlock Text="{Binding Location}" Classes="muted" FontSize="11" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Location}" />
+                            </StackPanel>
+                          </Border>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+                  <StackPanel Grid.Column="2" Spacing="10">
+                    <TextBlock Text="{DynamicResource EidolonText275}" Classes="label" />
+                    <TextBlock Text="{DynamicResource EidolonText281}" Classes="muted" IsVisible="{Binding ShowCustomNodesEmpty}" />
+                    <ItemsControl ItemsSource="{Binding CustomNodes}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:RuntimeModuleItem">
+                          <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,10">
+                            <StackPanel Spacing="5">
+                              <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                  <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                  <TextBlock Text="{Binding Version}" Classes="muted" FontSize="12" IsVisible="{Binding HasVersion}" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding Status}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                              </Grid>
+                              <TextBlock Text="{Binding Location}" Classes="muted" FontSize="11" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Location}" />
+                            </StackPanel>
+                          </Border>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+                </Grid>
+              </StackPanel>
+            </Border>
           </Grid>
         </ScrollViewer>
+          </TabItem>
+          <TabItem Header="{DynamicResource EidolonText107}">
+            <views:ModelsView />
+          </TabItem>
+        </TabControl>
       </Border>
       <Border IsVisible="{Binding IsSettingsView}">
         <ScrollViewer Margin="0,18,0,0">
-          <Grid ColumnDefinitions="*,20,*" IsEnabled="{Binding IsIdle}">
+          <Grid ColumnDefinitions="*,20,*">
             <Border Classes="card" VerticalAlignment="Top">
               <StackPanel Spacing="12">
                 <TextBlock Text="{DynamicResource EidolonText170}" Classes="title" />
@@ -344,7 +301,20 @@
                 <TextBox Text="{Binding SettingsDraft.PositivePrompt}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="110" PlaceholderText="{DynamicResource EidolonText179}" />
                 <TextBlock Text="{DynamicResource EidolonText180}" Classes="label" />
                 <TextBox Text="{Binding SettingsDraft.NegativePrompt}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="110" PlaceholderText="{DynamicResource EidolonText181}" />
+                <TextBlock Text="{DynamicResource EidolonText297}" Classes="label" />
+                <Grid ColumnDefinitions="*,Auto,Auto">
+                  <TextBox Text="{Binding GenerationDirectory, Mode=TwoWay}" />
+                  <Button Grid.Column="1" Content="{DynamicResource EidolonText142}" Command="{Binding PickGenerationDirectoryCommand}" Margin="8,0,0,0" />
+                  <Button Grid.Column="2" Command="{Binding OpenGenerationDirectoryCommand}" Margin="8,0,0,0" ToolTip.Tip="{DynamicResource EidolonText296}" AutomationProperties.Name="{DynamicResource EidolonText296}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <Path Data="{StaticResource EidolonIconFolder}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
+                      <TextBlock Text="{DynamicResource EidolonText332}" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </Button>
+                </Grid>
+                <TextBlock Text="{DynamicResource EidolonText298}" Classes="muted" FontSize="12" />
                 <Button Content="{DynamicResource EidolonText182}" Command="{Binding SaveSettingsCommand}" Classes="primary" HorizontalAlignment="Stretch" />
+                <TextBlock Text="{DynamicResource EidolonText342}" Classes="muted" FontSize="12" IsVisible="{Binding !IsIdle}" />
                 <TextBlock Text="{DynamicResource EidolonText183}" Classes="muted" FontSize="12" />
               </StackPanel>
             </Border>
@@ -352,7 +322,7 @@
         </ScrollViewer>
       </Border>
       <Border IsVisible="{Binding IsHelpView}">
-        <ScrollViewer Margin="0,18,0,0">
+        <ScrollViewer Margin="0,18,0,0" HorizontalScrollBarVisibility="Disabled">
           <StackPanel Spacing="16" MaxWidth="1000" HorizontalAlignment="Stretch">
             <TextBlock Text="{DynamicResource EidolonText184}" Classes="title" />
             <Border Classes="card">
@@ -360,6 +330,7 @@
                 <TextBlock Text="{DynamicResource EidolonText185}" Classes="title" FontSize="21" />
                 <TextBlock Text="{DynamicResource EidolonText186}" TextWrapping="Wrap" />
                 <TextBlock Text="{DynamicResource EidolonText187}" Classes="muted" />
+                <TextBlock Text="{DynamicResource EidolonText285}" Classes="muted" />
                 <Button Command="{Binding ShowEngineCommand}" HorizontalAlignment="Left">
                   <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Path Data="{StaticResource EidolonIconEngine}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
@@ -373,6 +344,8 @@
                 <TextBlock Text="{DynamicResource EidolonText188}" Classes="title" FontSize="21" />
                 <TextBlock Text="{DynamicResource EidolonText189}" TextWrapping="Wrap" />
                 <TextBlock Text="{DynamicResource EidolonText190}" Classes="muted" />
+                <TextBlock Text="{DynamicResource EidolonText303}" Classes="muted" />
+                <TextBlock Text="{DynamicResource EidolonText305}" Classes="muted" />
               </StackPanel>
             </Border>
             <Border Classes="card">
@@ -401,27 +374,11 @@
     </Grid>
     <Border Grid.Row="2" Background="{DynamicResource FooterBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="28,14">
       <StackPanel Spacing="8">
-        <Grid ColumnDefinitions="*,Auto">
-          <TextBlock Text="{Binding Status}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0,0,20,0" />
-          <Button Grid.Column="1" Content="{DynamicResource EidolonText197}" Command="{Binding CancelCommand}" IsVisible="{Binding IsBusy}" Padding="15,6" />
-        </Grid>
+        <TextBlock Text="{Binding Status}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Status}" VerticalAlignment="Center" />
         <ProgressBar Value="{Binding Percent}" IsIndeterminate="{Binding Indeterminate}" IsVisible="{Binding IsBusy}" Height="4" Foreground="{DynamicResource AccentBrush}" />
-        <TextBlock Text="{Binding ActiveRequestTitle}" IsVisible="{Binding IsBusy}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
-        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasPendingRequests}">
-          <TextBlock Text="{Binding QueueSummary}" VerticalAlignment="Center" />
-          <Button Grid.Column="1" Content="{DynamicResource EidolonText246}" Command="{Binding ClearPendingCommand}" Padding="12,6" />
-        </Grid>
-        <Expander Header="{DynamicResource EidolonText249}" IsVisible="{Binding HasPendingRequests}" MaxHeight="150">
-          <ScrollViewer MaxHeight="100">
-            <ItemsControl ItemsSource="{Binding PendingRequests}">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="vm:QueuedWorkItem">
-                  <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" Margin="0,4" />
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </ScrollViewer>
-        </Expander>
+        <TextBlock Text="{Binding ActiveRequestTitle}" IsVisible="{Binding IsBusy}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ActiveRequestTitle}" TextWrapping="NoWrap" />
+        <TextBlock Text="{Binding TrainingRemainingText}" IsVisible="{Binding ShowTrainingRemainingTime}" Classes="muted" FontSize="12" />
+        <TextBlock Text="{Binding QueueSummary}" IsVisible="{Binding HasPendingRequests}" Classes="muted" FontSize="12" />
         <Border IsVisible="{Binding HasError}" Background="{DynamicResource ErrorSurfaceBrush}" CornerRadius="7" Padding="12">
           <TextBlock Text="{Binding Error}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" MaxHeight="100" />
         </Border>
