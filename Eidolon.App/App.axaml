@@ -1,4 +1,4 @@
-<Application xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="Eidolon.App.App" RequestedThemeVariant="Dark">
+<Application xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="Eidolon.App.App" RequestedThemeVariant="Light">
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.ThemeDictionaries>
@@ -47,6 +47,7 @@
       <StreamGeometry x:Key="EidolonIconSettings">M3,4 H17 M3,10 H17 M3,16 H17 M7,2 V6 M13,8 V12 M9,14 V18</StreamGeometry>
       <StreamGeometry x:Key="EidolonIconHelp">M10,1 A9,9 0 1 0 10,19 A9,9 0 1 0 10,1 M7,7 A3,3 0 1 1 11,10 L10,12 M10,14 V16</StreamGeometry>
       <StreamGeometry x:Key="EidolonIconPlay">M5,2 L17,10 L5,18 Z</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconEdit">M3,14 L13,4 L17,8 L7,18 L2,19 Z M11,6 L15,10 M13,4 L15,2 L19,6 L17,8</StreamGeometry>
       <StreamGeometry x:Key="EidolonIconStop">M4,4 H16 V16 H4 Z</StreamGeometry>
       <StreamGeometry x:Key="EidolonIconSave">M3,2 H15 L18,5 V18 H3 Z M6,2 V8 H14 V2 M6,18 V12 H15 V18</StreamGeometry>
       <StreamGeometry x:Key="EidolonIconDownload">M10,1 V13 M5,8 L10,13 L15,8 M3,13 V18 H17 V13</StreamGeometry>
@@ -95,6 +96,16 @@
     <Style Selector="Button TextBlock">
       <Setter Property="Foreground" Value="{ReflectionBinding $parent[Button].Foreground}" />
     </Style>
+    <Style Selector="Button.folderAction">
+      <Setter Property="Height" Value="42" />
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBox.folderPath">
+      <Setter Property="MinHeight" Value="42" />
+      <Setter Property="FontSize" Value="13" />
+    </Style>
     <Style Selector="Button.primary">
       <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
@@ -120,6 +131,35 @@
       <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
       <Setter Property="BorderThickness" Value="0,0,0,2" />
+    </Style>
+    <Style Selector="ToggleButton.disclosure">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0,10" />
+      <Setter Property="MinHeight" Value="40" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector="ToggleButton.disclosure:checked /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.disclosure:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.disclosure:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.disclosure:checked Path">
+      <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+      <Setter Property="RenderTransform">
+        <RotateTransform Angle="180" />
+      </Setter>
     </Style>
     <Style Selector="TextBox">
       <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />

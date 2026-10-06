@@ -7,7 +7,7 @@ namespace Eidolon.App.Services
 {
     public class DesktopSettings : StudioSettings
     {
-        public AppTheme Theme { get; set; } = AppTheme.Black;
+        public AppTheme Theme { get; set; } = AppTheme.Light;
         public AppLanguage Language { get; set; }
         [JsonExtensionData]
         public Dictionary<string, JsonElement> AdditionalSettings { get; set; } = new Dictionary<string, JsonElement>();

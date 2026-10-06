@@ -42,6 +42,16 @@ namespace Eidolon.Core.Infrastructure
 
         public void Write<T>(string path, T value)
         {
+            Write(path, value, true);
+        }
+
+        public void WriteNew<T>(string path, T value)
+        {
+            Write(path, value, false);
+        }
+
+        private void Write<T>(string path, T value, bool overwrite)
+        {
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
             string temporaryPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
@@ -51,7 +61,7 @@ namespace Eidolon.Core.Infrastructure
                     JsonSerializer.Serialize(stream, value, _options);
                     stream.Flush(true);
                 }
-                if (File.Exists(path) == true)
+                if (overwrite == true && File.Exists(path) == true)
                 {
                     File.Replace(temporaryPath, path, path + ".bak");
                 }

@@ -12,7 +12,7 @@ namespace Eidolon.App.Views
         public TransparencyBackground()
         {
             _light = new SolidColorBrush(Color.Parse("#FFFFFF"));
-            _dark = new SolidColorBrush(Color.Parse("#DCE2E8"));
+            _dark = new SolidColorBrush(Color.Parse("#EDF0F3"));
             IsHitTestVisible = false;
         }
 

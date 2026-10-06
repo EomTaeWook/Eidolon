@@ -1,6 +1,7 @@
 using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
 using System.Text.RegularExpressions;
+using SkiaSharp;
 
 namespace Eidolon.Core.Application
 {
@@ -28,11 +29,35 @@ namespace Eidolon.Core.Application
         }
 
         public async Task<JobRecord> GenerateAsync(StudioSettings settings, string prompt, ModelAsset model,
-            IReadOnlyList<ModelAsset> loras, bool removeBackground, IProgress<WorkProgress> progress, CancellationToken token)
+            IReadOnlyList<ModelAsset> loras, bool removeBackground, long seed, IProgress<WorkProgress> progress, CancellationToken token)
+        {
+            return await GenerateAsync(settings, prompt, model, loras, removeBackground, seed, null, progress, token).ConfigureAwait(false);
+        }
+
+        public async Task<JobRecord> GenerateAsync(StudioSettings settings, string prompt, ModelAsset model,
+            IReadOnlyList<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference,
+            IProgress<WorkProgress> progress, CancellationToken token)
         {
             if (string.IsNullOrWhiteSpace(prompt) == true)
             {
                 throw new StudioException(StudioMessageCode.PromptRequired);
+            }
+            if (seed < 0)
+            {
+                throw new StudioException(StudioMessageCode.InvalidGenerationSeed, 0, long.MaxValue);
+            }
+            if (reference != null)
+            {
+                if (reference.Mode != GenerationReferenceMode.Reimagine && reference.Mode != GenerationReferenceMode.Restyle
+                    || double.IsFinite(reference.ChangeStrength) == false || reference.ChangeStrength < 0.05 || reference.ChangeStrength > 0.95)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                }
+                if (reference.ImageData == null || reference.ImageData.Length == 0
+                    || reference.ImageData.Length > GenerationReferenceInput.MaximumImageBytes)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
             }
             ValidateModel(settings, model);
             foreach (ModelAsset lora in loras)
@@ -53,12 +78,14 @@ namespace Eidolon.Core.Application
                 Kind = JobKind.Generation,
                 Title = prompt.Trim(),
                 UserPrompt = prompt.Trim(),
+                BasePositivePrompt = settings.PositivePrompt.Trim(),
+                HasBasePositivePrompt = true,
                 PositivePrompt = ComposePrompt(settings.PositivePrompt, prompt, loras),
                 NegativePrompt = settings.NegativePrompt.Trim(),
                 RemoveBackground = removeBackground,
                 Model = model.Copy(),
                 Loras = loras.Select(lora => lora.Copy()).ToList(),
-                Seed = _seeds.Next(),
+                Seed = seed,
                 Width = preset.Resolution,
                 Height = preset.Resolution,
                 Steps = preset.Steps,
@@ -72,6 +99,12 @@ namespace Eidolon.Core.Application
             try
             {
                 _jobs.Save(job);
+                if (reference != null)
+                {
+                    progress.Report(new WorkProgress(StudioMessageCode.PreparingReferenceImage));
+                    await PrepareReferenceImageAsync(job, reference, preset, token).ConfigureAwait(false);
+                    _jobs.Save(job);
+                }
                 await _engine.GenerateAsync(settings.Copy(), job, _jobs, progress, token).ConfigureAwait(false);
                 foreach (string imageFile in job.OriginalImageFiles)
                 {
@@ -92,6 +125,122 @@ namespace Eidolon.Core.Application
             {
                 _gpuGate.Release();
             }
+        }
+
+        private async Task PrepareReferenceImageAsync(JobRecord job, GenerationReferenceInput reference,
+            GenerationPreset preset, CancellationToken token)
+        {
+            await Task.Run(() =>
+            {
+                token.ThrowIfCancellationRequested();
+                using SKMemoryStream input = new SKMemoryStream(reference.ImageData);
+                using SKCodec codec = SKCodec.Create(input);
+                if (codec == null || codec.Info.Width < 1 || codec.Info.Height < 1
+                    || (long)codec.Info.Width * codec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                using SKBitmap source = SKBitmap.Decode(codec);
+                if (source == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                int sourceWidth = source.Width;
+                int sourceHeight = source.Height;
+                if (codec.EncodedOrigin == SKEncodedOrigin.LeftTop || codec.EncodedOrigin == SKEncodedOrigin.RightTop
+                    || codec.EncodedOrigin == SKEncodedOrigin.RightBottom || codec.EncodedOrigin == SKEncodedOrigin.LeftBottom)
+                {
+                    sourceWidth = source.Height;
+                    sourceHeight = source.Width;
+                }
+                double scale = (double)preset.Resolution / Math.Max(sourceWidth, sourceHeight);
+                job.Width = Math.Max(64, (int)Math.Round(sourceWidth * scale / 8) * 8);
+                job.Height = Math.Max(64, (int)Math.Round(sourceHeight * scale / 8) * 8);
+                using SKBitmap prepared = new SKBitmap(job.Width, job.Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+                using (SKCanvas canvas = new SKCanvas(prepared))
+                {
+                    canvas.Clear(SKColors.White);
+                    canvas.Scale((float)job.Width / sourceWidth, (float)job.Height / sourceHeight);
+                    switch (codec.EncodedOrigin)
+                    {
+                        case SKEncodedOrigin.TopRight:
+                            canvas.Translate(source.Width, 0);
+                            canvas.Scale(-1, 1);
+                            break;
+                        case SKEncodedOrigin.BottomRight:
+                            canvas.Translate(source.Width, source.Height);
+                            canvas.RotateDegrees(180);
+                            break;
+                        case SKEncodedOrigin.BottomLeft:
+                            canvas.Translate(0, source.Height);
+                            canvas.Scale(1, -1);
+                            break;
+                        case SKEncodedOrigin.LeftTop:
+                            canvas.RotateDegrees(90);
+                            canvas.Scale(1, -1);
+                            break;
+                        case SKEncodedOrigin.RightTop:
+                            canvas.Translate(source.Height, 0);
+                            canvas.RotateDegrees(90);
+                            break;
+                        case SKEncodedOrigin.RightBottom:
+                            canvas.Translate(source.Height, source.Width);
+                            canvas.RotateDegrees(90);
+                            canvas.Scale(-1, 1);
+                            break;
+                        case SKEncodedOrigin.LeftBottom:
+                            canvas.Translate(0, source.Width);
+                            canvas.RotateDegrees(270);
+                            break;
+                    }
+                    using SKImage image = SKImage.FromBitmap(source);
+                    canvas.DrawImage(image, 0, 0, new SKSamplingOptions(SKFilterMode.Linear));
+                }
+                token.ThrowIfCancellationRequested();
+                string destination = _jobs.WorkingImagePath(job, Path.Combine("Inputs", "Reference.png"));
+                Directory.CreateDirectory(Path.GetDirectoryName(destination));
+                using SKImage output = SKImage.FromBitmap(prepared);
+                using SKData encoded = output.Encode(SKEncodedImageFormat.Png, 100);
+                if (encoded == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                using (FileStream stream = new FileStream(destination, FileMode.CreateNew, FileAccess.Write))
+                {
+                    encoded.SaveTo(stream);
+                }
+                job.ReferenceMode = reference.Mode;
+                job.ReferenceImageName = reference.ImageName;
+                job.ReferenceImagePath = destination;
+                job.Denoise = reference.ChangeStrength;
+                token.ThrowIfCancellationRequested();
+            }, token).ConfigureAwait(false);
+        }
+
+        public async Task<string> PrepareTrainingDatasetAsync(TrainingInput input, string parentDirectory,
+            IProgress<WorkProgress> progress, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            if (input.Images.Count == 0)
+            {
+                throw new StudioException(StudioMessageCode.TrainingImagesMissing);
+            }
+            if (Directory.Exists(parentDirectory) == false)
+            {
+                throw new StudioException(StudioMessageCode.DatasetRequired);
+            }
+            foreach (TrainingImageInput image in input.Images)
+            {
+                if (Enum.IsDefined(typeof(TrainingBackground), image.Background) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidTrainingBackground);
+                }
+            }
+            string name = "Eidolon-Training-" + _time.GetUtcNow().ToString("yyyyMMdd_HHmmss", System.Globalization.CultureInfo.InvariantCulture) + "-" +
+                Guid.NewGuid().ToString("N").Substring(0, 8);
+            string directory = Path.Combine(Path.GetFullPath(parentDirectory), name);
+            await _trainer.PrepareDatasetAsync(input, directory, progress, token).ConfigureAwait(false);
+            return directory;
         }
 
         public async Task<ModelAsset> TrainAsync(StudioSettings settings, TrainingInput input,
@@ -115,7 +264,21 @@ namespace Eidolon.Core.Application
                 }
                 ValidateFile(settings, input.ResumeLora);
             }
-            if (Directory.Exists(input.ImageDirectory) == false)
+            if (input.Images.Count > 0)
+            {
+                foreach (TrainingImageInput image in input.Images)
+                {
+                    if (File.Exists(image.FilePath) == false)
+                    {
+                        throw new StudioException(StudioMessageCode.TrainingImagesMissing);
+                    }
+                    if (Enum.IsDefined(typeof(TrainingBackground), image.Background) == false)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidTrainingBackground);
+                    }
+                }
+            }
+            else if (Directory.Exists(input.ImageDirectory) == false)
             {
                 throw new StudioException(StudioMessageCode.DatasetRequired);
             }
@@ -136,6 +299,10 @@ namespace Eidolon.Core.Application
                 throw new StudioException(StudioMessageCode.InvalidTrainingSteps,
                     TrainingPreset.MinimumSteps, TrainingPreset.MaximumSteps);
             }
+            if (Enum.IsDefined(typeof(TrainingBackground), input.Background) == false)
+            {
+                throw new StudioException(StudioMessageCode.InvalidTrainingBackground);
+            }
             JobRecord job = new JobRecord
             {
                 Kind = JobKind.Training,
@@ -143,6 +310,8 @@ namespace Eidolon.Core.Application
                 Model = input.Model.Copy(),
                 TriggerWord = input.TriggerWord.Trim(),
                 DatasetDescription = input.Description.Trim(),
+                DatasetBackground = input.Background,
+                DatasetImages = input.Images.Select(image => image.Copy()).ToList(),
                 QuickTraining = input.Steps == TrainingPreset.QuickMaxSteps,
                 Seed = _seeds.Next(),
                 Steps = input.Steps,
@@ -214,7 +383,7 @@ namespace Eidolon.Core.Application
                     _jobs.WorkingImagePath(job, workingFile), progress, token).ConfigureAwait(false);
                 removeWorkingFile = true;
             }
-            await _jobs.PublishImageAsync(job, workingFile, removeWorkingFile, token).ConfigureAwait(false);
+            await _jobs.PublishImageAsync(job, workingFile, removeWorkingFile, _time.GetUtcNow(), token).ConfigureAwait(false);
         }
 
         private void ValidateModel(StudioSettings settings, ModelAsset model)
@@ -257,14 +426,66 @@ namespace Eidolon.Core.Application
             }
         }
 
+        public string GetBasePositivePrompt(GenerationMetadata job)
+        {
+            if (job.HasBasePositivePrompt == true)
+            {
+                return job.BasePositivePrompt;
+            }
+            if (string.IsNullOrWhiteSpace(job.UserPrompt) == true)
+            {
+                throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+            }
+            int start = 0;
+            while (start < job.PositivePrompt.Length)
+            {
+                int index = job.PositivePrompt.IndexOf(job.UserPrompt, start, StringComparison.Ordinal);
+                if (index < 0)
+                {
+                    break;
+                }
+                string positive = string.Empty;
+                bool hasBoundary = index == 0;
+                if (index >= 2 && job.PositivePrompt.Substring(index - 2, 2) == ", ")
+                {
+                    positive = job.PositivePrompt.Substring(0, index - 2);
+                    hasBoundary = true;
+                }
+                if (hasBoundary == true)
+                {
+                    List<string> parts = new List<string>();
+                    if (string.IsNullOrWhiteSpace(positive) == false)
+                    {
+                        parts.Add(positive.Trim());
+                    }
+                    parts.Add(job.UserPrompt.Trim());
+                    AppendLoraTriggers(parts, job.Loras);
+                    if (string.Join(", ", parts) == job.PositivePrompt)
+                    {
+                        return positive;
+                    }
+                }
+                start = index + 1;
+            }
+            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+        }
+
         private string ComposePrompt(string positive, string prompt, IReadOnlyList<ModelAsset> loras)
         {
-            List<string> parts = new List<string>();
+            List<string> description = new List<string>();
+            description.Add(prompt.Trim());
             if (string.IsNullOrWhiteSpace(positive) == false)
             {
-                parts.Add(positive.Trim());
+                description.Add(positive.Trim());
             }
-            parts.Add(prompt.Trim());
+            List<string> parts = new List<string>();
+            AppendLoraTriggers(parts, loras, string.Join(", ", description));
+            parts.AddRange(description);
+            return string.Join(", ", parts);
+        }
+
+        private void AppendLoraTriggers(List<string> parts, IReadOnlyList<ModelAsset> loras, string existingPrompt = "")
+        {
             foreach (ModelAsset lora in loras)
             {
                 if (string.IsNullOrWhiteSpace(lora.TriggerWord) == false)
@@ -273,6 +494,10 @@ namespace Eidolon.Core.Application
                         StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                     {
                         string combined = string.Join(", ", parts);
+                        if (string.IsNullOrWhiteSpace(existingPrompt) == false)
+                        {
+                            combined += ", " + existingPrompt;
+                        }
                         string pattern = @"(?<![\p{L}\p{N}_])" + Regex.Escape(trigger) + @"(?![\p{L}\p{N}_])";
                         if (Regex.IsMatch(combined, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) == false)
                         {
@@ -281,7 +506,6 @@ namespace Eidolon.Core.Application
                     }
                 }
             }
-            return string.Join(", ", parts);
         }
 
         private void FinishFailure(JobRecord job, Exception error)

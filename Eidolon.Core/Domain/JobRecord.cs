@@ -12,9 +12,15 @@ namespace Eidolon.Core.Domain
         public JobState State { get; set; } = JobState.Preparing;
         public string Title { get; set; } = string.Empty;
         public string UserPrompt { get; set; } = string.Empty;
+        public string BasePositivePrompt { get; set; } = string.Empty;
+        public bool HasBasePositivePrompt { get; set; }
         public string PositivePrompt { get; set; } = string.Empty;
         public string NegativePrompt { get; set; } = string.Empty;
         public bool RemoveBackground { get; set; }
+        public GenerationReferenceMode ReferenceMode { get; set; } = GenerationReferenceMode.None;
+        public string ReferenceImageName { get; set; } = string.Empty;
+        public string ReferenceImagePath { get; set; } = string.Empty;
+        public double Denoise { get; set; } = 1.0;
         public ModelAsset Model { get; set; } = new ModelAsset();
         public List<ModelAsset> Loras { get; set; } = new List<ModelAsset>();
         public long Seed { get; set; }
@@ -27,11 +33,14 @@ namespace Eidolon.Core.Domain
         public string EnginePromptId { get; set; } = string.Empty;
         public string TriggerWord { get; set; } = string.Empty;
         public string DatasetDescription { get; set; } = string.Empty;
+        public TrainingBackground DatasetBackground { get; set; } = TrainingBackground.Original;
         public int DatasetImageCount { get; set; }
+        public List<TrainingImageInput> DatasetImages { get; set; } = new List<TrainingImageInput>();
         public bool QuickTraining { get; set; }
         public List<string> ImageFiles { get; set; } = new List<string>();
         public List<string> OriginalImageFiles { get; set; } = new List<string>();
         public string OutputDirectory { get; set; } = string.Empty;
+        public bool HasImageMetadata { get; set; }
         public string TrainedFile { get; set; } = string.Empty;
         public string Error { get; set; } = string.Empty;
         public StudioMessageCode ErrorCode { get; set; }

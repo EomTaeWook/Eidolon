@@ -8,6 +8,12 @@ namespace Eidolon.App.Localization
         {
             switch (code)
             {
+                case StudioMessageCode.InvalidTrainingBackground:
+                    return "EidolonText430";
+                case StudioMessageCode.TrainingImageProcessingFailed:
+                    return "EidolonText431";
+                case StudioMessageCode.InvalidGenerationSeed:
+                    return "EidolonText421";
                 case StudioMessageCode.InvalidTrainingSteps:
                     return "EidolonText338";
                 case StudioMessageCode.BackgroundModelDownloading:
@@ -22,6 +28,8 @@ namespace Eidolon.App.Localization
                     return "EidolonText314";
                 case StudioMessageCode.BackgroundRemovalFailed:
                     return "EidolonText315";
+                case StudioMessageCode.BackgroundSubjectNotFound:
+                    return "EidolonText482";
                 case StudioMessageCode.InvalidGenerationDirectory:
                     return "EidolonText300";
                 case StudioMessageCode.DownloadingOutlineNodes:
@@ -246,6 +254,14 @@ namespace Eidolon.App.Localization
                     return "EidolonText258";
                 case StudioMessageCode.LocalTrainingRuntimeRequired:
                     return "EidolonText261";
+                case StudioMessageCode.InvalidReferenceImage:
+                    return "EidolonText450";
+                case StudioMessageCode.InvalidReferenceOptions:
+                    return "EidolonText451";
+                case StudioMessageCode.PreparingReferenceImage:
+                    return "EidolonText452";
+                case StudioMessageCode.ReferenceImageUploading:
+                    return "EidolonText453";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(code), code, null);
             }

@@ -121,6 +121,14 @@ namespace Eidolon.Core.Domain
         BackgroundRemoving,
         BackgroundRemoved,
         BackgroundRemovalFailed,
-        InvalidTrainingSteps
+        InvalidTrainingSteps,
+        InvalidGenerationSeed,
+        InvalidTrainingBackground,
+        TrainingImageProcessingFailed,
+        InvalidReferenceImage,
+        InvalidReferenceOptions,
+        PreparingReferenceImage,
+        ReferenceImageUploading,
+        BackgroundSubjectNotFound
     }
 }

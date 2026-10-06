@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using Dignus.DependencyInjection.Attributes;
+using Eidolon.Core.Application;
+using Eidolon.Core.Domain;
 
 namespace Eidolon.App.Services
 {
@@ -52,6 +54,53 @@ namespace Eidolon.App.Services
                 throw new InvalidOperationException(_strings.GetString("EidolonText204"));
             }
             return path;
+        }
+
+        public async Task<string> PickReferenceImageAsync()
+        {
+            IReadOnlyList<IStorageFile> files = await _desktop.MainWindow.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = _strings.GetString("EidolonText440"),
+                AllowMultiple = false,
+                FileTypeFilter = new[] { new FilePickerFileType(_strings.GetString("EidolonText440"))
+                {
+                    Patterns = new[] { "*.png", "*.jpg", "*.jpeg", "*.webp" }
+                } }
+            });
+            if (files.Count == 0)
+            {
+                return string.Empty;
+            }
+            string path = files[0].TryGetLocalPath();
+            if (string.IsNullOrEmpty(path) == true)
+            {
+                throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+            }
+            return path;
+        }
+
+        public async Task<IReadOnlyList<string>> PickTrainingImagesAsync(string title)
+        {
+            IReadOnlyList<IStorageFile> files = await _desktop.MainWindow.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = title,
+                AllowMultiple = true,
+                FileTypeFilter = new[] { new FilePickerFileType(_strings.GetString("EidolonText140"))
+                {
+                    Patterns = new[] { "*.png", "*.jpg", "*.jpeg", "*.bmp" }
+                } }
+            });
+            List<string> paths = new List<string>();
+            foreach (IStorageFile file in files)
+            {
+                string path = file.TryGetLocalPath();
+                if (string.IsNullOrEmpty(path) == true)
+                {
+                    throw new StudioException(StudioMessageCode.TrainingImagesMissing);
+                }
+                paths.Add(path);
+            }
+            return paths;
         }
 
         public async Task ExportImageAsync(string source)

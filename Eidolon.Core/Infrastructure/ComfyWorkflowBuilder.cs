@@ -11,6 +11,11 @@ namespace Eidolon.Core.Infrastructure
 
         public JsonObject Build(JobRecord job)
         {
+            return Build(job, string.Empty);
+        }
+
+        public JsonObject Build(JobRecord job, string referenceImage)
+        {
             JsonObject workflow = new JsonObject();
             Add("1", "CheckpointLoaderSimple", new JsonObject { ["ckpt_name"] = job.Model.EngineName });
             string modelNode = "1";
@@ -35,7 +40,19 @@ namespace Eidolon.Core.Infrastructure
             }
             Add("2", "CLIPTextEncode", new JsonObject { ["text"] = job.PositivePrompt, ["clip"] = Link(clipNode, clipSlot) });
             Add("3", "CLIPTextEncode", new JsonObject { ["text"] = job.NegativePrompt, ["clip"] = Link(clipNode, clipSlot) });
-            Add("4", "EmptyLatentImage", new JsonObject { ["width"] = job.Width, ["height"] = job.Height, ["batch_size"] = 1 });
+            if (job.ReferenceMode == GenerationReferenceMode.None)
+            {
+                Add("4", "EmptyLatentImage", new JsonObject { ["width"] = job.Width, ["height"] = job.Height, ["batch_size"] = 1 });
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(referenceImage) == true)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                Add("8", "LoadImage", new JsonObject { ["image"] = referenceImage });
+                Add("4", "VAEEncode", new JsonObject { ["pixels"] = Link("8", 0), ["vae"] = Link("1", 2) });
+            }
             Add("5", "KSampler", new JsonObject
             {
                 ["model"] = Link(modelNode, 0),
@@ -47,7 +64,7 @@ namespace Eidolon.Core.Infrastructure
                 ["positive"] = Link("2", 0),
                 ["negative"] = Link("3", 0),
                 ["latent_image"] = Link("4", 0),
-                ["denoise"] = 1.0
+                ["denoise"] = job.Denoise
             });
             Add("6", "VAEDecode", new JsonObject { ["samples"] = Link("5", 0), ["vae"] = Link("1", 2) });
             Add("7", "SaveImage", new JsonObject { ["images"] = Link("6", 0), ["filename_prefix"] = "Eidolon/" + job.Id });

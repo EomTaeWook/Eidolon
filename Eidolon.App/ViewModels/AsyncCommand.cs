@@ -6,7 +6,7 @@ namespace Eidolon.App.ViewModels
 {
     public class AsyncCommand : ICommand
     {
-        private readonly Func<Task> _execute;
+        private readonly Func<object, Task> _execute;
         private readonly Func<bool> _canExecute;
         private readonly Action<Exception> _onError;
         private bool _running;
@@ -14,6 +14,11 @@ namespace Eidolon.App.ViewModels
         public event EventHandler CanExecuteChanged;
 
         public AsyncCommand(Func<Task> execute, Func<bool> canExecute, Action<Exception> onError)
+            : this(parameter => execute(), canExecute, onError)
+        {
+        }
+
+        public AsyncCommand(Func<object, Task> execute, Func<bool> canExecute, Action<Exception> onError)
         {
             _execute = execute;
             _canExecute = canExecute;
@@ -35,7 +40,7 @@ namespace Eidolon.App.ViewModels
             Refresh();
             try
             {
-                await _execute();
+                await _execute(parameter);
             }
             catch (Exception error)
             {

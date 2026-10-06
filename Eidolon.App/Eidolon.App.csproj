@@ -15,9 +15,10 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="../Docs/ThirdPartyNotices.md" Link="ThirdPartyNotices.md" />
-    <EmbeddedResource Include="../Datas/*.json" LogicalName="Eidolon.Datas.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../Docs/ThirdPartyNotices.md" Link="ThirdPartyNotices.md" Visible="false" />
+    <EmbeddedResource Include="../Datas/*.json" LogicalName="Eidolon.Datas.%(Filename)%(Extension)" Visible="false" />
     <Content Include="../Datas/*.json" Link="Datas\%(Filename)%(Extension)">
+      <Visible>false</Visible>
       <CopyToOutputDirectory Condition="'$(Configuration)' != 'Release'">PreserveNewest</CopyToOutputDirectory>
       <CopyToOutputDirectory Condition="'$(Configuration)' == 'Release'">Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>

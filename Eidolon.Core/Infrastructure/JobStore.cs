@@ -1,7 +1,7 @@
+using Dignus.Log;
 using Eidolon.Core.Application;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Eidolon.Core.Domain;
+using System.Globalization;
 
 namespace Eidolon.Core.Infrastructure
 {
@@ -57,70 +57,365 @@ namespace Eidolon.Core.Infrastructure
             }
         }
 
-        public void DeleteGenerations(IReadOnlyList<string> ids)
+        public string OutputDirectory(string generationDirectory)
+        {
+            if (string.IsNullOrWhiteSpace(generationDirectory) == true)
+            {
+                return _imagesDirectory;
+            }
+            if (Path.IsPathFullyQualified(generationDirectory) == false)
+            {
+                throw new StudioException(StudioMessageCode.InvalidGenerationDirectory);
+            }
+            return Path.TrimEndingDirectorySeparator(Path.GetFullPath(generationDirectory.Trim()));
+        }
+
+        public GenerationPage LoadGenerationPage(string generationDirectory, int number, int pageSize,
+            CancellationToken token)
+        {
+            if (number < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(number));
+            }
+            if (pageSize < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pageSize));
+            }
+            lock (_gate)
+            {
+                List<FileInfo> files = ReadImageFiles(generationDirectory, token);
+                GenerationPage page = new GenerationPage();
+                page.TotalCount = files.Count;
+                page.PageCount = Math.Max(1, (files.Count + pageSize - 1) / pageSize);
+                page.Number = Math.Min(number, page.PageCount);
+                if (files.Count > 0)
+                {
+                    page.LatestImagePath = files[0].FullName;
+                }
+                foreach (FileInfo file in files.Skip((page.Number - 1) * pageSize).Take(pageSize))
+                {
+                    GenerationImage image = FindGenerationImage(generationDirectory, file.FullName, token);
+                    if (image != null)
+                    {
+                        page.Images.Add(image);
+                    }
+                }
+                return page;
+            }
+        }
+
+        public GenerationImage FindGenerationImage(string generationDirectory, string path, CancellationToken token)
         {
             lock (_gate)
             {
-                List<JobRecord> jobs = ids.Distinct().Select(Load).ToList();
-                foreach (JobRecord job in jobs)
+                token.ThrowIfCancellationRequested();
+                path = ValidateImagePath(generationDirectory, path);
+                if (File.Exists(path) == false)
                 {
-                    if (job.Kind != JobKind.Generation)
+                    return null;
+                }
+                GenerationImage image = new GenerationImage
+                {
+                    FilePath = path,
+                    CreatedAtUtc = new DateTimeOffset(File.GetCreationTimeUtc(path))
+                };
+                try
+                {
+                    GenerationMetadata metadata = _json.Read<GenerationMetadata>(Path.ChangeExtension(path, ".json"));
+                    if (metadata != null)
                     {
-                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
-                    }
-                    if (job.State == JobState.Preparing || job.State == JobState.Running)
-                    {
-                        throw new StudioException(StudioMessageCode.GenerationRecordBusy);
+                        if (metadata.Format != GenerationMetadata.DocumentFormat || metadata.SchemaVersion != 1)
+                        {
+                            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                        }
+                        if (metadata.Model == null || metadata.Loras == null || metadata.Loras.Any(lora => lora == null) == true)
+                        {
+                            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                        }
+                        if (metadata.UserPrompt == null || metadata.PositivePrompt == null || metadata.NegativePrompt == null
+                            || metadata.BasePositivePrompt == null)
+                        {
+                            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                        }
+                        if (metadata.ReferenceMode != GenerationReferenceMode.None
+                            && (metadata.ReferenceMode != GenerationReferenceMode.Reimagine && metadata.ReferenceMode != GenerationReferenceMode.Restyle
+                                || string.IsNullOrWhiteSpace(metadata.ReferenceImagePath) == true
+                                || double.IsFinite(metadata.Denoise) == false || metadata.Denoise < 0.05 || metadata.Denoise > 0.95))
+                        {
+                            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                        }
+                        image.Metadata = metadata;
                     }
                 }
-                foreach (JobRecord job in jobs)
+                catch (Exception error) when (error is not OperationCanceledException)
                 {
-                    string directory = Path.GetFullPath(DirectoryFor(job.Id));
-                    if (string.Equals(Path.GetDirectoryName(directory), _directory, StringComparison.OrdinalIgnoreCase) == false)
-                    {
-                        throw new StudioException(StudioMessageCode.InvalidJobDirectory);
-                    }
-                    PreserveLegacyImages(job, directory);
-                    Directory.Delete(directory, true);
+                    image.MetadataError = error;
+                    LogHelper.Error(error);
+                }
+                return image;
+            }
+        }
+
+        public List<string> LoadGenerationPaths(string generationDirectory, CancellationToken token)
+        {
+            lock (_gate)
+            {
+                return ReadImageFiles(generationDirectory, token).Select(file => file.FullName).ToList();
+            }
+        }
+
+        public void DeleteGenerationImages(string generationDirectory, IReadOnlyList<string> paths, CancellationToken token)
+        {
+            lock (_gate)
+            {
+                string root = OutputDirectory(generationDirectory);
+                if (Directory.Exists(root) == false)
+                {
+                    return;
+                }
+                if ((File.GetAttributes(root) & FileAttributes.ReparsePoint) != 0)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationDirectory);
+                }
+                List<string> targets = paths.Select(path => ValidateImagePath(root, path))
+                    .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                foreach (string target in targets)
+                {
+                    token.ThrowIfCancellationRequested();
+                    EnsureRegularFile(target);
+                    EnsureRegularFile(Path.ChangeExtension(target, ".json"));
+                }
+                foreach (string target in targets)
+                {
+                    token.ThrowIfCancellationRequested();
+                    File.Delete(target);
+                    File.Delete(Path.ChangeExtension(target, ".json"));
                 }
             }
         }
 
-        public List<JobRecord> LoadAll(bool markInterrupted = false)
+        private void EnsureRegularFile(string path)
+        {
+            if (Directory.Exists(path) == true)
+            {
+                throw new StudioException(StudioMessageCode.InvalidJobImagePath);
+            }
+            if (File.Exists(path) == true && (File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
+            {
+                throw new StudioException(StudioMessageCode.InvalidJobImagePath);
+            }
+        }
+
+        private string ValidateImagePath(string generationDirectory, string path)
+        {
+            string root = OutputDirectory(generationDirectory);
+            if (Path.IsPathFullyQualified(path) == false)
+            {
+                throw new StudioException(StudioMessageCode.InvalidJobImagePath);
+            }
+            path = Path.GetFullPath(path);
+            if (string.Equals(Path.GetDirectoryName(path), root, StringComparison.OrdinalIgnoreCase) == false)
+            {
+                throw new StudioException(StudioMessageCode.InvalidJobImagePath);
+            }
+            if (string.Equals(Path.GetExtension(path), ".png", StringComparison.OrdinalIgnoreCase) == false)
+            {
+                throw new StudioException(StudioMessageCode.InvalidJobImagePath);
+            }
+            return path;
+        }
+
+        private List<FileInfo> ReadImageFiles(string generationDirectory, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            string root = OutputDirectory(generationDirectory);
+            List<FileInfo> files = new List<FileInfo>();
+            if (Directory.Exists(root) == false)
+            {
+                return files;
+            }
+            foreach (FileInfo file in new DirectoryInfo(root).EnumerateFiles("*", SearchOption.TopDirectoryOnly))
+            {
+                token.ThrowIfCancellationRequested();
+                if (string.Equals(file.Extension, ".png", StringComparison.OrdinalIgnoreCase) == true
+                    && (file.Attributes & FileAttributes.ReparsePoint) == 0)
+                {
+                    files.Add(file);
+                }
+            }
+            return files.OrderByDescending(file => file.CreationTimeUtc)
+                .ThenBy(file => file.Name, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        public void MarkInterrupted(CancellationToken token)
         {
             lock (_gate)
             {
-                List<JobRecord> jobs = new List<JobRecord>();
-                if (Directory.Exists(_directory) == false)
+                foreach (JobHeader header in ReadHeaders(token))
                 {
-                    return jobs;
-                }
-                foreach (string directory in Directory.EnumerateDirectories(_directory))
-                {
-                    JobRecord job = _json.Read<JobRecord>(Path.Combine(directory, "Job.json"));
-                    if (job == null)
+                    token.ThrowIfCancellationRequested();
+                    if (header.State == JobState.Preparing || header.State == JobState.Running)
                     {
-                        continue;
-                    }
-                    if (job.SchemaVersion != 1)
-                    {
-                        throw new StudioException(StudioMessageCode.UnsupportedJobSchema);
-                    }
-                    if (Path.GetFullPath(directory) != DirectoryFor(job.Id))
-                    {
-                        throw new StudioException(StudioMessageCode.InvalidJobDirectory);
-                    }
-                    if (markInterrupted == true && (job.State == JobState.Preparing || job.State == JobState.Running))
-                    {
+                        JobRecord job = Load(header.Id);
                         job.State = JobState.Interrupted;
                         job.Error = string.Empty;
                         job.ErrorCode = StudioMessageCode.JobInterrupted;
-                        _json.Write(Path.Combine(directory, "Job.json"), job);
+                        Save(job);
                     }
-                    jobs.Add(job);
                 }
-                return jobs.OrderByDescending(job => job.StartedAtUtc).ToList();
             }
+        }
+
+        public void MigrateGenerationMetadata(string generationDirectory, CancellationToken token)
+        {
+            lock (_gate)
+            {
+                foreach (JobHeader header in ReadHeaders(token))
+                {
+                    token.ThrowIfCancellationRequested();
+                    if (header.Kind != JobKind.Generation || header.HasImageMetadata == true
+                        || header.State == JobState.Preparing || header.State == JobState.Running)
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        JobRecord job = Load(header.Id);
+                        List<string> publishedFiles = new List<string>();
+                        bool legacy = string.IsNullOrWhiteSpace(job.OutputDirectory);
+                        string output = job.OutputDirectory;
+                        if (legacy == true)
+                        {
+                            output = OutputDirectory(generationDirectory);
+                        }
+                        int imageIndex = 0;
+                        foreach (string file in job.ImageFiles)
+                        {
+                            token.ThrowIfCancellationRequested();
+                            int currentIndex = imageIndex;
+                            imageIndex++;
+                            string source = ImagePath(job, file);
+                            if (File.Exists(source) == false)
+                            {
+                                continue;
+                            }
+                            string destination = source;
+                            if (legacy == true)
+                            {
+                                string name = job.Id + "_" + currentIndex.ToString(CultureInfo.InvariantCulture) + ".png";
+                                destination = Path.Combine(output, name);
+                                Directory.CreateDirectory(output);
+                                string legacyMetadataPath = Path.ChangeExtension(destination, ".json");
+                                if (File.Exists(legacyMetadataPath) == true)
+                                {
+                                    GenerationMetadata existing = _json.Read<GenerationMetadata>(legacyMetadataPath);
+                                    if (existing.Format != GenerationMetadata.DocumentFormat || existing.SourceJobId != job.Id)
+                                    {
+                                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                                    }
+                                }
+                                else
+                                {
+                                    if (File.Exists(destination) == true)
+                                    {
+                                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                                    }
+                                    _json.WriteNew(legacyMetadataPath, new GenerationMetadata(job, job.StartedAtUtc));
+                                }
+                                if (File.Exists(destination) == false)
+                                {
+                                    string temporary = destination + "." + Guid.NewGuid().ToString("N") + ".tmp";
+                                    try
+                                    {
+                                        File.Copy(source, temporary, false);
+                                        File.SetCreationTimeUtc(temporary, File.GetCreationTimeUtc(source));
+                                        token.ThrowIfCancellationRequested();
+                                        File.Move(temporary, destination);
+                                    }
+                                    finally
+                                    {
+                                        if (File.Exists(temporary) == true)
+                                        {
+                                            File.Delete(temporary);
+                                        }
+                                    }
+                                }
+                            }
+                            string metadataPath = Path.ChangeExtension(destination, ".json");
+                            if (File.Exists(metadataPath) == false)
+                            {
+                                DateTimeOffset generatedAtUtc = job.FinishedAtUtc;
+                                if (generatedAtUtc == default)
+                                {
+                                    generatedAtUtc = job.StartedAtUtc;
+                                }
+                                _json.WriteNew(metadataPath, new GenerationMetadata(job, generatedAtUtc));
+                            }
+                            publishedFiles.Add(Path.GetFileName(destination));
+                        }
+                        if (legacy == true)
+                        {
+                            job.OutputDirectory = output;
+                            job.ImageFiles = publishedFiles;
+                        }
+                        job.HasImageMetadata = true;
+                        Save(job);
+                    }
+                    catch (Exception error) when (error is not OperationCanceledException)
+                    {
+                        LogHelper.Error(error);
+                    }
+                }
+            }
+        }
+
+        private List<JobHeader> ReadHeaders(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            List<JobHeader> headers = new List<JobHeader>();
+            if (Directory.Exists(_directory) == false)
+            {
+                return headers;
+            }
+            foreach (string directory in Directory.EnumerateDirectories(_directory))
+            {
+                token.ThrowIfCancellationRequested();
+                try
+                {
+                    JobHeader header = _json.Read<JobHeader>(Path.Combine(directory, "Job.json"));
+                    if (header == null)
+                    {
+                        continue;
+                    }
+                    if (header.SchemaVersion != 1)
+                    {
+                        throw new StudioException(StudioMessageCode.UnsupportedJobSchema);
+                    }
+                    if (string.Equals(Path.GetFullPath(directory), DirectoryFor(header.Id), StringComparison.OrdinalIgnoreCase) == false)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+                    }
+                    headers.Add(header);
+                }
+                catch (Exception error) when (error is not OperationCanceledException)
+                {
+                    LogHelper.Error(error);
+                }
+            }
+            return headers;
+        }
+
+        private class JobHeader
+        {
+            public JobHeader()
+            {
+            }
+
+            public int SchemaVersion { get; set; } = 1;
+            public string Id { get; set; } = string.Empty;
+            public JobKind Kind { get; set; }
+            public JobState State { get; set; }
+            public bool HasImageMetadata { get; set; }
         }
 
         public string ImagePath(JobRecord job, string relativePath)
@@ -128,11 +423,7 @@ namespace Eidolon.Core.Infrastructure
             string directory = DirectoryFor(job.Id);
             if (string.IsNullOrWhiteSpace(job.OutputDirectory) == false)
             {
-                if (Path.IsPathFullyQualified(job.OutputDirectory) == false)
-                {
-                    throw new StudioException(StudioMessageCode.InvalidGenerationDirectory);
-                }
-                directory = Path.GetFullPath(job.OutputDirectory);
+                directory = OutputDirectory(job.OutputDirectory);
             }
             return ResolveImagePath(directory, relativePath);
         }
@@ -143,13 +434,17 @@ namespace Eidolon.Core.Infrastructure
         }
 
         public async Task PublishImageAsync(JobRecord job, string workingFile, bool removeWorkingFile,
-            CancellationToken token)
+            DateTimeOffset generatedAtUtc, CancellationToken token)
         {
             string source = WorkingImagePath(job, workingFile);
-            string relative = Guid.NewGuid().ToString("N") + ".png";
+            string relative = generatedAtUtc.ToString("yyyyMMdd_HHmmss_fff", CultureInfo.InvariantCulture)
+                + "_" + Guid.NewGuid().ToString("N") + ".png";
             string destination = ImagePath(job, relative);
             Directory.CreateDirectory(Path.GetDirectoryName(destination));
+            string metadataPath = Path.ChangeExtension(destination, ".json");
             string temporary = destination + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            bool metadataWritten = false;
+            bool imagePublished = false;
             try
             {
                 await using (FileStream input = File.OpenRead(source))
@@ -161,17 +456,16 @@ namespace Eidolon.Core.Infrastructure
                     output.Flush(true);
                 }
                 token.ThrowIfCancellationRequested();
-                File.Move(temporary, destination);
-                try
+                lock (_gate)
                 {
+                    token.ThrowIfCancellationRequested();
+                    _json.WriteNew(metadataPath, new GenerationMetadata(job, generatedAtUtc));
+                    metadataWritten = true;
+                    File.Move(temporary, destination);
+                    imagePublished = true;
                     job.ImageFiles.Add(relative);
+                    job.HasImageMetadata = true;
                     Save(job);
-                }
-                catch
-                {
-                    job.ImageFiles.Remove(relative);
-                    File.Delete(destination);
-                    throw;
                 }
                 if (removeWorkingFile == true)
                 {
@@ -180,50 +474,14 @@ namespace Eidolon.Core.Infrastructure
             }
             finally
             {
+                if (metadataWritten == true && imagePublished == false)
+                {
+                    File.Delete(metadataPath);
+                }
                 if (File.Exists(temporary) == true)
                 {
                     File.Delete(temporary);
                 }
-            }
-        }
-
-        private void PreserveLegacyImages(JobRecord job, string directory)
-        {
-            string prefix = Path.TrimEndingDirectorySeparator(directory) + Path.DirectorySeparatorChar;
-            if (job.ImageFiles.Any(file => ImagePath(job, file).StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) == false)
-            {
-                return;
-            }
-            Directory.CreateDirectory(_imagesDirectory);
-            List<string> copies = new List<string>();
-            List<string> previousFiles = job.ImageFiles;
-            string previousDirectory = job.OutputDirectory;
-            try
-            {
-                foreach (string file in previousFiles)
-                {
-                    string source = ImagePath(job, file);
-                    if (File.Exists(source) == false)
-                    {
-                        continue;
-                    }
-                    string destination = Path.Combine(_imagesDirectory, Guid.NewGuid().ToString("N") + ".png");
-                    copies.Add(destination);
-                    File.Copy(source, destination, false);
-                }
-                job.OutputDirectory = _imagesDirectory;
-                job.ImageFiles = copies.Select(Path.GetFileName).ToList();
-                Save(job);
-            }
-            catch
-            {
-                job.OutputDirectory = previousDirectory;
-                job.ImageFiles = previousFiles;
-                foreach (string copy in copies)
-                {
-                    File.Delete(copy);
-                }
-                throw;
             }
         }
 
@@ -245,16 +503,7 @@ namespace Eidolon.Core.Infrastructure
 
         public void SetOutputDirectory(JobRecord job, string generationDirectory)
         {
-            if (string.IsNullOrWhiteSpace(generationDirectory) == true)
-            {
-                job.OutputDirectory = _imagesDirectory;
-                return;
-            }
-            if (Path.IsPathFullyQualified(generationDirectory) == false)
-            {
-                throw new StudioException(StudioMessageCode.InvalidGenerationDirectory);
-            }
-            job.OutputDirectory = Path.TrimEndingDirectorySeparator(Path.GetFullPath(generationDirectory.Trim()));
+            job.OutputDirectory = OutputDirectory(generationDirectory);
         }
     }
 }

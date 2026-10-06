@@ -10,7 +10,16 @@ namespace Eidolon.Core.Infrastructure
         private readonly FileDownloader _downloader;
         private readonly TimeProvider _time;
         private readonly string _path;
+        private readonly IReadOnlyList<ModelDownload> _downloads;
         private readonly SemaphoreSlim _gate = new SemaphoreSlim(1, 1);
+
+        public IReadOnlyList<ModelDownload> Downloads
+        {
+            get
+            {
+                return _downloads;
+            }
+        }
 
         public AssetLibrary(string dataDirectory, AtomicJsonFile json, SafetensorsInspector inspector,
             FileDownloader downloader, TimeProvider time)
@@ -20,6 +29,31 @@ namespace Eidolon.Core.Infrastructure
             _inspector = inspector;
             _downloader = downloader;
             _time = time;
+            const string sdxlLicense = "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/462165984030d82259a11f4367a4eed129e94a7b/LICENSE.md";
+            _downloads = Array.AsReadOnly(new ModelDownload[]
+            {
+                new ModelDownload("SDXL Base 1.0", ModelFamily.Sdxl,
+                    "stabilityai/stable-diffusion-xl-base-1.0", "462165984030d82259a11f4367a4eed129e94a7b",
+                    "sd_xl_base_1.0.safetensors", 6938078334,
+                    "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b",
+                    sdxlLicense, "License-SDXL.md"),
+                new ModelDownload("Stable Diffusion 1.5", ModelFamily.StableDiffusion15,
+                    "stable-diffusion-v1-5/stable-diffusion-v1-5", "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
+                    "v1-5-pruned-emaonly.safetensors", 4265146304,
+                    "6ce0161689b3853acaa03779ec93eafe75a02f4ced659bee03f50797806fa2fa",
+                    "https://huggingface.co/spaces/CompVis/stable-diffusion-license/resolve/14d42d09bffd871b1666a084fc954a50cff72ac0/license.txt",
+                    "License-SD15.txt"),
+                new ModelDownload("RealVisXL 4.0", ModelFamily.Sdxl,
+                    "SG161222/RealVisXL_V4.0", "26dfe44930964cd70d0a817b6d1cc945c130e38d",
+                    "RealVisXL_V4.0.safetensors", 6938040706,
+                    "912c9dc74f5855175c31a7993f863a043ac8dcc31732b324cd05d75cd7e16844",
+                    sdxlLicense, "License-RealVisXL.md"),
+                new ModelDownload("Illustrious XL 0.1", ModelFamily.Sdxl,
+                    "OnomaAIResearch/Illustrious-xl-early-release-v0", "dca0dac303e6dc4b0c31d8001bc685b89b5d0204",
+                    "Illustrious-XL-v0.1.safetensors", 6938040760,
+                    "3e15ba00387db678ab4a099f75771c4f5ac67fda9e7100a01d263eaf30145aa9",
+                    "https://freedevproject.org/faipl-1.0-sd/", "License-Illustrious.html", "TERM_OF_USE")
+            });
         }
 
         public async Task<List<ModelAsset>> ListAsync(StudioSettings settings)
@@ -249,18 +283,82 @@ namespace Eidolon.Core.Infrastructure
             }
         }
 
-        public async Task<ModelAsset> DownloadStarterAsync(StudioSettings settings, IProgress<WorkProgress> progress,
-            CancellationToken cancellationToken)
+        public async Task DeleteDownloadedAsync(StudioSettings settings, string id, CancellationToken cancellationToken)
         {
+            if (ComfyServerAddress.UsesServerAssets(settings) == true)
+            {
+                throw new StudioException(StudioMessageCode.ExternalAssetImportUnsupported);
+            }
             RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
             layout.EnsureInstalled();
-            string destination = Path.Combine(layout.ModelsDirectory, "sd_xl_base_1.0.safetensors");
-            const string repository = "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/462165984030d82259a11f4367a4eed129e94a7b/";
-            await _downloader.DownloadAsync(repository + "sd_xl_base_1.0.safetensors", destination,
-                "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b", progress, cancellationToken).ConfigureAwait(false);
-            await _downloader.DownloadAsync(repository + "LICENSE.md", Path.Combine(layout.Root, "Models", "License-SDXL.md"),
+            await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                AssetCatalog catalog = Load();
+                ModelAsset asset = catalog.Assets.FirstOrDefault(item => item.Id == id);
+                if (asset == null)
+                {
+                    throw new StudioException(StudioMessageCode.ModelRequired);
+                }
+                if (asset.Kind != AssetKind.Checkpoint)
+                {
+                    throw new StudioException(StudioMessageCode.CheckpointRequired);
+                }
+                if (asset.RuntimeRoot.Equals(layout.Root, StringComparison.OrdinalIgnoreCase) == false)
+                {
+                    throw new StudioException(StudioMessageCode.AssetSourceMismatch);
+                }
+                if (Downloads.Any(item => item.FileName.Equals(asset.EngineName, StringComparison.OrdinalIgnoreCase) == true) == false)
+                {
+                    throw new StudioException(StudioMessageCode.AssetPathInvalid);
+                }
+                string path = layout.AssetPath(asset);
+                DirectoryInfo directory = new DirectoryInfo(layout.ModelsDirectory);
+                while (directory != null)
+                {
+                    if (directory.Exists == true && (directory.Attributes & FileAttributes.ReparsePoint) != 0)
+                    {
+                        throw new StudioException(StudioMessageCode.AssetPathInvalid);
+                    }
+                    directory = directory.Parent;
+                }
+                cancellationToken.ThrowIfCancellationRequested();
+                File.Delete(path);
+                File.Delete(path + ".part");
+                catalog.Assets.RemoveAll(item => item.Id == id);
+                _json.Write(_path, catalog);
+            }
+            finally
+            {
+                _gate.Release();
+            }
+        }
+
+        public async Task<ModelAsset> DownloadAsync(StudioSettings settings, string fileName, IProgress<WorkProgress> progress,
+            CancellationToken cancellationToken)
+        {
+            if (ComfyServerAddress.UsesServerAssets(settings) == true)
+            {
+                throw new StudioException(StudioMessageCode.ExternalAssetImportUnsupported);
+            }
+            ModelDownload model = Downloads.Single(item => item.FileName == fileName);
+            RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+            layout.EnsureInstalled();
+            string destination = Path.Combine(layout.ModelsDirectory, model.FileName);
+            await _downloader.DownloadAsync(model.DownloadUrl, destination,
+                model.Sha256, progress, cancellationToken).ConfigureAwait(false);
+            await _downloader.DownloadAsync(model.LicenseUrl, Path.Combine(layout.Root, "Models", model.LicenseFileName),
                 string.Empty, progress, cancellationToken).ConfigureAwait(false);
-            return await ImportAsync(settings, destination, AssetKind.Checkpoint, ModelFamily.Sdxl,
+            await _downloader.DownloadAsync(model.ModelCardUrl,
+                Path.Combine(layout.Root, "Models", Path.GetFileNameWithoutExtension(model.FileName) + "-README.md"),
+                string.Empty, progress, cancellationToken).ConfigureAwait(false);
+            if (string.IsNullOrEmpty(model.TermsOfUseUrl) == false)
+            {
+                await _downloader.DownloadAsync(model.TermsOfUseUrl,
+                    Path.Combine(layout.Root, "Models", Path.GetFileNameWithoutExtension(model.FileName) + "-Terms.txt"),
+                    string.Empty, progress, cancellationToken).ConfigureAwait(false);
+            }
+            return await ImportAsync(settings, destination, AssetKind.Checkpoint, model.Family,
                 string.Empty, cancellationToken).ConfigureAwait(false);
         }
 

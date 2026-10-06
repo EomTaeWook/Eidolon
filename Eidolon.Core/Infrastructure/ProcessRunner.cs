@@ -45,6 +45,7 @@ namespace Eidolon.Core.Infrastructure
             }
             finally
             {
+                parentLifetime.Dispose();
                 if (process.HasExited == false)
                 {
                     try
@@ -56,7 +57,6 @@ namespace Eidolon.Core.Infrastructure
                     }
                     await process.WaitForExitAsync(CancellationToken.None).ConfigureAwait(false);
                 }
-                parentLifetime.Dispose();
                 await Task.WhenAll(stdout, stderr).ConfigureAwait(false);
             }
 
@@ -64,40 +64,46 @@ namespace Eidolon.Core.Infrastructure
             {
                 char[] buffer = new char[1024];
                 StringBuilder pending = new StringBuilder();
-                int count;
-                while ((count = await reader.ReadAsync(buffer).ConfigureAwait(false)) > 0)
+                try
                 {
-                    for (int index = 0; index < count; index++)
+                    int count;
+                    while ((count = await reader.ReadAsync(buffer.AsMemory(), cancellationToken).ConfigureAwait(false)) > 0)
                     {
-                        char character = buffer[index];
-                        if (character == '\r' || character == '\n')
+                        for (int index = 0; index < count; index++)
                         {
-                            if (pending.Length > 0)
+                            char character = buffer[index];
+                            if (character == '\r' || character == '\n')
                             {
-                                await ReportLineAsync(pending.ToString()).ConfigureAwait(false);
-                                pending.Clear();
+                                if (pending.Length > 0)
+                                {
+                                    await ReportLineAsync(pending.ToString()).ConfigureAwait(false);
+                                    pending.Clear();
+                                }
                             }
-                        }
-                        else
-                        {
-                            pending.Append(character);
-                            if (pending.Length >= 8192)
+                            else
                             {
-                                await ReportLineAsync(pending.ToString()).ConfigureAwait(false);
-                                pending.Clear();
+                                pending.Append(character);
+                                if (pending.Length >= 8192)
+                                {
+                                    await ReportLineAsync(pending.ToString()).ConfigureAwait(false);
+                                    pending.Clear();
+                                }
                             }
                         }
                     }
+                    if (pending.Length > 0)
+                    {
+                        await ReportLineAsync(pending.ToString()).ConfigureAwait(false);
+                    }
                 }
-                if (pending.Length > 0)
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested == true)
                 {
-                    await ReportLineAsync(pending.ToString()).ConfigureAwait(false);
                 }
             }
 
             async Task ReportLineAsync(string line)
             {
-                await logGate.WaitAsync().ConfigureAwait(false);
+                await logGate.WaitAsync(cancellationToken).ConfigureAwait(false);
                 try
                 {
                     log.WriteLine(line);

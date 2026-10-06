@@ -160,6 +160,12 @@ namespace Eidolon.Core.Infrastructure
             IProgress<WorkProgress> progress, CancellationToken cancellationToken)
         {
             await EnsureReadyAsync(settings, progress, cancellationToken).ConfigureAwait(false);
+            string referenceImage = string.Empty;
+            if (job.ReferenceMode != GenerationReferenceMode.None)
+            {
+                progress.Report(new WorkProgress(StudioMessageCode.ReferenceImageUploading));
+                referenceImage = await UploadReferenceImageAsync(settings, job, cancellationToken).ConfigureAwait(false);
+            }
             string clientId = Guid.NewGuid().ToString("N");
             using ClientWebSocket socket = new ClientWebSocket();
             using CancellationTokenSource socketLifetime = new CancellationTokenSource();
@@ -189,7 +195,7 @@ namespace Eidolon.Core.Infrastructure
                 string promptId = Guid.ParseExact(job.Id, "N").ToString("D");
                 JsonObject payload = new JsonObject
                 {
-                    ["prompt"] = _workflow.Build(job),
+                    ["prompt"] = _workflow.Build(job, referenceImage),
                     ["client_id"] = clientId,
                     ["prompt_id"] = promptId
                 };
@@ -286,6 +292,36 @@ namespace Eidolon.Core.Infrastructure
                 {
                 }
             }
+        }
+
+        private async Task<string> UploadReferenceImageAsync(StudioSettings settings, JobRecord job, CancellationToken token)
+        {
+            await using FileStream input = File.OpenRead(job.ReferenceImagePath);
+            using MultipartFormDataContent content = new MultipartFormDataContent();
+            using StreamContent image = new StreamContent(input);
+            image.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
+            content.Add(image, "image", job.Id + ".png");
+            content.Add(new StringContent("input"), "type");
+            content.Add(new StringContent("Eidolon"), "subfolder");
+            content.Add(new StringContent("false"), "overwrite");
+            using HttpResponseMessage response = await _http.PostAsync(Address(settings, "upload/image"), content, token).ConfigureAwait(false);
+            string text = await response.Content.ReadAsStringAsync(token).ConfigureAwait(false);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new StudioException(StudioMessageCode.EngineRequestFailed, (int)response.StatusCode, text);
+            }
+            JsonObject uploaded = JsonNode.Parse(text).AsObject();
+            string name = uploaded["name"]?.GetValue<string>();
+            string subfolder = uploaded["subfolder"]?.GetValue<string>() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(name) == true)
+            {
+                throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+            }
+            if (string.IsNullOrEmpty(subfolder) == false)
+            {
+                return subfolder.Replace('\\', '/') + "/" + name;
+            }
+            return name;
         }
 
         private async Task CancelAsync(StudioSettings settings, string id)

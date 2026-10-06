@@ -8,8 +8,8 @@ Eidolon의 UI·렌더링 구성요소에는 아래 소프트웨어가 포함됩�
 | Dignus / Dignus.Log | MIT, Copyright © 2021–2026 EomTaeWook. [라이선스](https://github.com/EomTaeWook/Dignus-Public/blob/main/LICENSE) |
 | SkiaSharp | MIT, Copyright © Microsoft Corporation. [라이선스](https://github.com/mono/SkiaSharp/blob/main/LICENSE.md) |
 | ONNX Runtime | MIT, Copyright © Microsoft Corporation. [라이선스](https://github.com/microsoft/onnxruntime/blob/v1.23.2/LICENSE) |
-| U²-Net / U2Netp 가중치 | Apache-2.0. [원본](https://github.com/xuebinqin/U-2-Net), [라이선스](https://github.com/xuebinqin/U-2-Net/blob/master/LICENSE). 배경 제거를 처음 사용할 때 내려받고 모델 폴더에 라이선스를 보존합니다. |
-| rembg의 U2Netp ONNX 배포·전처리 방식 | MIT, Copyright © 2020 Daniel Gatis. [원본·라이선스](https://github.com/danielgatis/rembg/blob/main/LICENSE.txt) |
+| IS-Net general-use / DIS | Apache-2.0 및 원본 이용조건. [원본](https://github.com/xuebinqin/DIS), [이용조건](https://github.com/xuebinqin/DIS#7-term-of-use). 배경 제거를 처음 사용할 때 ONNX 모델을 내려받고 이용조건이 포함된 원본 README를 모델 폴더의 `NOTICE-ISNet.md`에 보존합니다. |
+| rembg의 IS-Net ONNX 배포·전처리 방식 | MIT, Copyright © 2020 Daniel Gatis. [원본·라이선스](https://github.com/danielgatis/rembg/blob/main/LICENSE.txt) |
 | Skia | BSD 3-Clause, Copyright © Google Inc. [라이선스](https://skia.googlesource.com/skia/+/main/LICENSE) |
 | HarfBuzzSharp / HarfBuzz | MIT 및 원본 고지. [HarfBuzz 라이선스](https://github.com/harfbuzz/harfbuzz/blob/main/COPYING) |
 | MicroCom.Runtime | MIT. [원본](https://github.com/kekekeks/MicroCom) |
@@ -20,6 +20,9 @@ Eidolon의 UI·렌더링 구성요소에는 아래 소프트웨어가 포함됩�
 | sd-scripts | Apache-2.0. [라이선스](https://github.com/kohya-ss/sd-scripts/blob/v0.12.0/LICENSE.md) |
 | PyTorch / torchvision | BSD 계열. [PyTorch](https://github.com/pytorch/pytorch/blob/v2.10.0/LICENSE), [torchvision](https://github.com/pytorch/vision/blob/v0.25.0/LICENSE) |
 | 기본 SDXL Base 1.0 가중치 | CreativeML Open RAIL++-M. [원본 라이선스](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/462165984030d82259a11f4367a4eed129e94a7b/LICENSE.md) |
+| Stable Diffusion 1.5 가중치 | CreativeML OpenRAIL-M. [모델 카드](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/blob/451f4fe16113bff5a5d2269ed5ad43b0592e9a14/README.md), [원본 라이선스](https://huggingface.co/spaces/CompVis/stable-diffusion-license/blob/14d42d09bffd871b1666a084fc954a50cff72ac0/license.txt) |
+| RealVisXL 4.0 가중치 | Open RAIL++. [모델 카드](https://huggingface.co/SG161222/RealVisXL_V4.0/blob/26dfe44930964cd70d0a817b6d1cc945c130e38d/README.md), [기반 SDXL 라이선스](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/462165984030d82259a11f4367a4eed129e94a7b/LICENSE.md) |
+| Illustrious XL 0.1 가중치 | Fair AI Public License 1.0-SD 및 원본 이용조건. [모델 카드](https://huggingface.co/OnomaAIResearch/Illustrious-xl-early-release-v0/blob/dca0dac303e6dc4b0c31d8001bc685b89b5d0204/README.md), [라이선스](https://freedevproject.org/faipl-1.0-sd/), [이용조건](https://huggingface.co/OnomaAIResearch/Illustrious-xl-early-release-v0/blob/dca0dac303e6dc4b0c31d8001bc685b89b5d0204/TERM_OF_USE) |
 
 MIT 라이선스 고지:
 

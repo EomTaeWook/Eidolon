@@ -3716,8 +3716,8 @@
   {
     "Id": 3204,
     "Name": "EidolonText124",
-    "Kor": "\uD604\uC7AC \uC2E4\uD589 \uD658\uACBD\uC5D0 \uC124\uCE58\uB41C \uAE30\uBCF8 \uBAA8\uB378\uACFC LoRA\uB9CC \uD45C\uC2DC\uD569\uB2C8\uB2E4.",
-    "Eng": "Show only base models and LoRAs installed in the current runtime."
+    "Kor": "\uC124\uCE58\uB41C \uBAA8\uB378\uACFC LoRA\uB97C \uAD00\uB9AC\uD558\uACE0 \uC0C8 \uBAA8\uB378\uC744 \uCD94\uAC00\uD558\uC138\uC694.",
+    "Eng": "Manage installed models and LoRAs, and add new models."
   },
   {
     "Id": 3205,
@@ -3728,14 +3728,14 @@
   {
     "Id": 3206,
     "Name": "EidolonText126",
-    "Kor": "\uAE30\uBCF8 SDXL \uBAA8\uB378 \uBC1B\uAE30",
-    "Eng": "Download SDXL model"
+    "Kor": "\uC120\uD0DD \uBAA8\uB378 \uBC1B\uAE30",
+    "Eng": "Download selected model"
   },
   {
     "Id": 3207,
     "Name": "EidolonText127",
-    "Kor": "\uC790\uC0B0 \uAC00\uC838\uC624\uAE30 \u00B7 \uC815\uBCF4",
-    "Eng": "Import and asset details"
+    "Kor": "\uBAA8\uB378 \uC815\uBCF4",
+    "Eng": "Model details"
   },
   {
     "Id": 3208,
@@ -3746,8 +3746,8 @@
   {
     "Id": 3209,
     "Name": "EidolonText129",
-    "Kor": "\uC124\uCE58\uB41C \uBAA8\uB378 \uACC4\uC5F4",
-    "Eng": "Installed model families"
+    "Kor": "\uBAA8\uB378 \uACC4\uC5F4",
+    "Eng": "Model family"
   },
   {
     "Id": 3210,
@@ -3776,14 +3776,14 @@
   {
     "Id": 3214,
     "Name": "EidolonText134",
-    "Kor": "\uC120\uD0DD\uD55C \uC790\uC0B0 \uC815\uBCF4 \uC800\uC7A5",
-    "Eng": "Save selected asset details"
+    "Kor": "\uBCC0\uACBD \uC0AC\uD56D \uC800\uC7A5",
+    "Eng": "Save changes"
   },
   {
     "Id": 3215,
     "Name": "EidolonText135",
-    "Kor": "\uC120\uD0DD\uD55C \uC790\uC0B0 \uB4F1\uB85D \uD574\uC81C",
-    "Eng": "Unregister selected asset"
+    "Kor": "\uB4F1\uB85D \uD574\uC81C",
+    "Eng": "Unregister"
   },
   {
     "Id": 3216,
@@ -3926,8 +3926,8 @@
   {
     "Id": 3239,
     "Name": "EidolonText159",
-    "Kor": "\uAE30\uBCF8 SDXL \uBAA8\uB378\uB3C4 \uB2E4\uC6B4\uB85C\uB4DC (6.94 GB)",
-    "Eng": "Download the default SDXL model (6.94 GB)"
+    "Kor": "\uC124\uCE58 \uD6C4 \uBC1B\uC744 \uBAA8\uB378",
+    "Eng": "Models to download after installation"
   },
   {
     "Id": 3240,
@@ -3938,14 +3938,14 @@
   {
     "Id": 3241,
     "Name": "EidolonText161",
-    "Kor": "\uC120\uD0DD\uD55C \uACBD\uB85C\uC5D0 \uC124\uCE58 \u00B7 \uBCF5\uAD6C",
-    "Eng": "Install or repair at selected path"
+    "Kor": "\uC124\uCE58 \u00B7 \uBCF5\uAD6C",
+    "Eng": "Install or repair"
   },
   {
     "Id": 3242,
     "Name": "EidolonText162",
-    "Kor": "\uC124\uCE58 \uD3F4\uB354 \uC5F4\uAE30",
-    "Eng": "Open installation folder"
+    "Kor": "\uD3F4\uB354 \uC5F4\uAE30",
+    "Eng": "Open folder"
   },
   {
     "Id": 3243,
@@ -3956,8 +3956,8 @@
   {
     "Id": 3244,
     "Name": "EidolonText164",
-    "Kor": "\uC5D4\uC9C4 \uC124\uC815",
-    "Eng": "Engine settings"
+    "Kor": "\uC5D4\uC9C4 \uC5F0\uACB0",
+    "Eng": "Engine connection"
   },
   {
     "Id": 3245,
@@ -4028,20 +4028,20 @@
   {
     "Id": 3256,
     "Name": "EidolonText176",
-    "Kor": "\uACF5\uC6A9 \uD504\uB86C\uD504\uD2B8",
-    "Eng": "Shared prompts"
+    "Kor": "\uACF5\uD1B5 \uC0DD\uC131 \uC9C0\uCE68",
+    "Eng": "Shared generation instructions"
   },
   {
     "Id": 3257,
     "Name": "EidolonText177",
-    "Kor": "\uBAA8\uB4E0 \uC774\uBBF8\uC9C0\uC5D0 \uC0AC\uC6A9\uD560 \uD45C\uD604\uC744 \uD55C \uBC88 \uC124\uC815\uD558\uC138\uC694.",
-    "Eng": "Set expressions you want to include in every image."
+    "Kor": "\uBAA8\uB4E0 \uC774\uBBF8\uC9C0\uC5D0 \uBC18\uBCF5\uD574\uC11C \uC801\uC6A9\uD560 \uC2A4\uD0C0\uC77C\u00B7\uD488\uC9C8 \uC870\uAC74\uACFC \uC81C\uC678\uD560 \uC694\uC18C\uB97C \uC124\uC815\uD558\uC138\uC694.",
+    "Eng": "Set the styles, quality preferences, and elements to avoid for every image."
   },
   {
     "Id": 3258,
     "Name": "EidolonText178",
-    "Kor": "\uACF5\uC6A9 \uAE0D\uC815 \uD504\uB86C\uD504\uD2B8",
-    "Eng": "Shared positive prompt"
+    "Kor": "\uAE30\uBCF8 \uC0DD\uC131 \uC9C0\uCE68",
+    "Eng": "Default generation instructions"
   },
   {
     "Id": 3259,
@@ -4052,8 +4052,8 @@
   {
     "Id": 3260,
     "Name": "EidolonText180",
-    "Kor": "\uACF5\uC6A9 \uBD80\uC815 \uD504\uB86C\uD504\uD2B8",
-    "Eng": "Shared negative prompt"
+    "Kor": "\uC81C\uC678\uD560 \uC694\uC18C",
+    "Eng": "Elements to avoid"
   },
   {
     "Id": 3261,
@@ -4070,8 +4070,8 @@
   {
     "Id": 3263,
     "Name": "EidolonText183",
-    "Kor": "\uAE30\uBCF8 \uBAA8\uB378\uC740 \uC0DD\uC131 \uD654\uBA74\uC5D0\uC11C \uC9C0\uC815\uD569\uB2C8\uB2E4. \uACF5\uC6A9 \uD504\uB86C\uD504\uD2B8 \uBCC0\uACBD\uC740 \uC800\uC7A5\uD55C \uB2E4\uC74C \uC0DD\uC131\uBD80\uD130 \uC801\uC6A9\uB429\uB2C8\uB2E4.",
-    "Eng": "Choose the default model in Generate. Saved shared prompts apply to subsequent generations."
+    "Kor": "\uAE30\uBCF8 \uBAA8\uB378\uC740 \uC0DD\uC131 \uD654\uBA74\uC5D0\uC11C \uC9C0\uC815\uD569\uB2C8\uB2E4. \uC800\uC7A5\uD55C \uAE30\uBCF8 \uC0DD\uC131 \uC9C0\uCE68\uACFC \uC81C\uC678\uD560 \uC694\uC18C\uB294 \uB2E4\uC74C \uC0DD\uC131\uBD80\uD130 \uC801\uC6A9\uB429\uB2C8\uB2E4.",
+    "Eng": "Choose the default model in Generate. Saved generation instructions and elements to avoid apply to subsequent generations."
   },
   {
     "Id": 3264,
@@ -4112,8 +4112,8 @@
   {
     "Id": 3270,
     "Name": "EidolonText190",
-    "Kor": "\uC124\uC815\uC758 \uACF5\uC6A9 \uAE0D\uC815 \uD504\uB86C\uD504\uD2B8\uC5D0\uB294 \uBC18\uBCF5\uD560 \uC2A4\uD0C0\uC77C\uC744, \uBD80\uC815 \uD504\uB86C\uD504\uD2B8\uC5D0\uB294 \uD53C\uD560 \uD45C\uD604\uC744 \uC785\uB825\uD558\uC138\uC694. \uC800\uC7A5\uD55C \uB0B4\uC6A9\uC740 \uC0DD\uC131 \uD654\uBA74\uC5D0\uB3C4 \uD45C\uC2DC\uB418\uACE0 \uC774\uD6C4 \uC0DD\uC131\uC5D0 \uC801\uC6A9\uB429\uB2C8\uB2E4. \uC0DD\uC131 \uACB0\uACFC\uC5D0\uC11C \uD504\uB86C\uD504\uD2B8\uB97C \uB2E4\uC2DC \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
-    "Eng": "Use the shared positive prompt in Settings for recurring styles, and the negative prompt for things to avoid. Saved prompts are shown in Generate and apply to later generations. Reuse a prompt from Results."
+    "Kor": "\uC124\uC815\uC758 \uAE30\uBCF8 \uC0DD\uC131 \uC9C0\uCE68\uC5D0\uB294 \uBC18\uBCF5\uD560 \uC2A4\uD0C0\uC77C\u00B7\uD488\uC9C8 \uC870\uAC74\uC744, \uC81C\uC678\uD560 \uC694\uC18C\uC5D0\uB294 \uD53C\uD558\uACE0 \uC2F6\uC740 \uB0B4\uC6A9\uC744 \uC785\uB825\uD558\uC138\uC694. \uC800\uC7A5\uD55C \uB0B4\uC6A9\uC740 \uC0DD\uC131 \uD654\uBA74\uC5D0\uB3C4 \uD45C\uC2DC\uB418\uACE0 \uC774\uD6C4 \uC0DD\uC131\uC5D0 \uC801\uC6A9\uB429\uB2C8\uB2E4. \uC0DD\uC131 \uACB0\uACFC\uC5D0\uC11C \uD504\uB86C\uD504\uD2B8\uB97C \uB2E4\uC2DC \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Use default generation instructions in Settings for recurring styles and quality preferences, and Elements to avoid for unwanted content. Saved settings are shown in Generate and apply to later generations. Reuse a prompt from Results."
   },
   {
     "Id": 3271,
@@ -4274,8 +4274,8 @@
   {
     "Id": 3297,
     "Name": "EidolonText217",
-    "Kor": "\n{0} \u00D7 {1} \u00B7 seed {2}\n\uC0DD\uC131\uC5D0 \uC0AC\uC6A9\uB41C \uD504\uB86C\uD504\uD2B8: {3}\n\uBD80\uC815 \uD504\uB86C\uD504\uD2B8: {4}",
-    "Eng": "\n{0} \u00D7 {1} \u00B7 seed {2}\nPrompt used for generation: {3}\nNegative prompt: {4}"
+    "Kor": "\n{0} \u00D7 {1} \u00B7 seed {2}\n\uC801\uC6A9\uB41C \uC0DD\uC131 \uC9C0\uCE68: {3}\n\uC81C\uC678\uD560 \uC694\uC18C: {4}",
+    "Eng": "\n{0} \u00D7 {1} \u00B7 seed {2}\nApplied generation instructions: {3}\nElements to avoid: {4}"
   },
   {
     "Id": 3298,
@@ -4352,8 +4352,8 @@
   {
     "Id": 3310,
     "Name": "EidolonText230",
-    "Kor": "\uC2E4\uD589 \uD658\uACBD \uC124\uCE58 \uC644\uB8CC. \uBAA8\uB378\uC744 \uAC00\uC838\uC624\uAC70\uB098 \uAE30\uBCF8 SDXL \uBAA8\uB378\uC744 \uB2E4\uC6B4\uB85C\uB4DC\uD558\uC138\uC694.",
-    "Eng": "Runtime installed. Import a model or download the default SDXL model."
+    "Kor": "\uC5D4\uC9C4 \uC900\uBE44\uAC00 \uB05D\uB0AC\uC2B5\uB2C8\uB2E4. \uBAA8\uB378\uC744 \uD55C \uAC1C \uC774\uC0C1 \uC124\uCE58\uD558\uAC70\uB098 \uAC00\uC838\uC624\uC138\uC694.",
+    "Eng": "The engine is ready. Install or import at least one model."
   },
   {
     "Id": 3311,
@@ -4556,8 +4556,8 @@
   {
     "Id": 3344,
     "Name": "EidolonText264",
-    "Kor": "\uC2E4\uD589 \uC911\uC778 ComfyUI\uC5D0 \uC5F0\uACB0\uD569\uB2C8\uB2E4. \uB85C\uCEEC \uC8FC\uC18C\uC5D0 \uC11C\uBC84\uAC00 \uC5C6\uC73C\uBA74 \uC124\uCE58\uB41C \uC5D4\uC9C4\uC744 \uC2E4\uD589\uD569\uB2C8\uB2E4.",
-    "Eng": "Connect to a running ComfyUI. If no server is running at a local address, start the installed engine."
+    "Kor": "\uC2E4\uD589 \uC911\uC778 ComfyUI\uC5D0 \uC5F0\uACB0\uD558\uAC70\uB098 \uC124\uCE58\uB41C \uC5D4\uC9C4\uC744 \uC2E4\uD589\uD569\uB2C8\uB2E4.",
+    "Eng": "Connect to a running ComfyUI or start the installed engine."
   },
   {
     "Id": 3345,
@@ -4730,14 +4730,14 @@
   {
     "Id": 3373,
     "Name": "EidolonText293",
-    "Kor": "\uC2E4\uC81C \uC0DD\uC131\uC5D0 \uC0AC\uC6A9\uB41C \uD504\uB86C\uD504\uD2B8",
-    "Eng": "Prompt used for generation"
+    "Kor": "\uC801\uC6A9\uB41C \uC0DD\uC131 \uC9C0\uCE68",
+    "Eng": "Applied generation instructions"
   },
   {
     "Id": 3374,
     "Name": "EidolonText294",
-    "Kor": "\uBD80\uC815 \uD504\uB86C\uD504\uD2B8",
-    "Eng": "Negative prompt"
+    "Kor": "\uC81C\uC678\uD560 \uC694\uC18C",
+    "Eng": "Elements to avoid"
   },
   {
     "Id": 3375,
@@ -4760,8 +4760,8 @@
   {
     "Id": 3378,
     "Name": "EidolonText298",
-    "Kor": "\uC0C8 \uC0DD\uC131\uC758 \uCD5C\uC885 \uC774\uBBF8\uC9C0\uB9CC \uC774 \uD3F4\uB354\uC5D0 GUID.png\uB85C \uC800\uC7A5\uD569\uB2C8\uB2E4. \uAE30\uBCF8 \uACBD\uB85C\uB294 \uC0AC\uC6A9\uC790 AppData\uC758 Eidolon\\Images\uC774\uBA70 \uB2E4\uB978 \uD3F4\uB354\uB97C \uC9C0\uC815\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC6D0\uBCF8\uC740 Job \uD3F4\uB354\uC5D0 \uBCF4\uAD00\uD558\uACE0 \uC774\uC804 \uACB0\uACFC\uB294 \uC774\uB3D9\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
-    "Eng": "New generations save only the final image here as GUID.png. Default: Eidolon\\Images under local AppData. You can choose another folder. Originals stay in job folders; previous results are not moved."
+    "Kor": "\uC0DD\uC131\uD55C \uC774\uBBF8\uC9C0\uC640 \uC0DD\uC131 \uC815\uBCF4\uB97C \uD568\uAED8 \uC800\uC7A5\uD569\uB2C8\uB2E4. \uD3F4\uB354\uB97C \uBC14\uAFD4\uB3C4 \uAE30\uC874 \uC774\uBBF8\uC9C0\uB294 \uC774\uB3D9\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Generated images and their generation details are saved together. Changing the folder does not move existing images."
   },
   {
     "Id": 3379,
@@ -4874,26 +4874,26 @@
   {
     "Id": 3397,
     "Name": "EidolonText317",
-    "Kor": "\uC804\uCCB4 \uC0AD\uC81C",
-    "Eng": "Delete all"
+    "Kor": "\uC804\uCCB4 \uC774\uBBF8\uC9C0 \uC0AD\uC81C",
+    "Eng": "Delete all images"
   },
   {
     "Id": 3398,
     "Name": "EidolonText318",
-    "Kor": "\uC0DD\uC131 \uAE30\uB85D \uC0AD\uC81C",
-    "Eng": "Delete generation history"
+    "Kor": "\uC774\uBBF8\uC9C0 \uC0AD\uC81C",
+    "Eng": "Delete images"
   },
   {
     "Id": 3399,
     "Name": "EidolonText319",
-    "Kor": "\uC120\uD0DD\uD55C \uC0DD\uC131 \uAE30\uB85D\uACFC Job \uD3F4\uB354\uB97C \uC0AD\uC81C\uD560\uAE4C\uC694? \uD504\uB86C\uD504\uD2B8\u00B7\uBAA8\uB378 \uC815\uBCF4\uC640 Job \uD3F4\uB354\uC758 \uC6D0\uBCF8 \uC774\uBBF8\uC9C0\uB294 \uC0AD\uC81C\uB429\uB2C8\uB2E4. \uCD5C\uC885 \uC800\uC7A5 \uC774\uBBF8\uC9C0\uC640 \uD559\uC2B5 \uAE30\uB85D\uC740 \uBCF4\uC874\uD569\uB2C8\uB2E4.",
-    "Eng": "Delete the selected generation record and job folder? Prompt and model information and original images in the job folder will be removed. Final saved images and training records are kept."
+    "Kor": "\uC120\uD0DD\uD55C \uC774\uBBF8\uC9C0 {0}\uC7A5\uACFC \uAC19\uC740 \uC774\uB984\uC758 \uD504\uB86C\uD504\uD2B8 JSON\uC744 \uC0AD\uC81C\uD569\uB2C8\uB2E4. \uC0AD\uC81C\uD55C \uD30C\uC77C\uC740 \uBCF5\uAD6C\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Delete {0} selected images and their matching prompt JSON files? Deleted files cannot be recovered."
   },
   {
     "Id": 3400,
     "Name": "EidolonText320",
-    "Kor": "\uC0DD\uC131 \uAE30\uB85D {0}\uAC1C\uC640 \uD574\uB2F9 Job \uD3F4\uB354\uB97C \uBAA8\uB450 \uC0AD\uC81C\uD560\uAE4C\uC694? \uD504\uB86C\uD504\uD2B8\u00B7\uBAA8\uB378 \uC815\uBCF4\uC640 \uC6D0\uBCF8 \uC774\uBBF8\uC9C0\uB294 \uC0AD\uC81C\uB429\uB2C8\uB2E4. \uCD5C\uC885 \uC800\uC7A5 \uC774\uBBF8\uC9C0\uC640 \uD559\uC2B5 \uAE30\uB85D\uC740 \uBCF4\uC874\uD569\uB2C8\uB2E4.",
-    "Eng": "Delete all {0} generation records and their job folders? Prompt and model information and original images will be removed. Final saved images and training records are kept."
+    "Kor": "\uD604\uC7AC \uCD9C\uB825 \uD3F4\uB354\uC758 \uC774\uBBF8\uC9C0 {0}\uC7A5\uACFC \uAC19\uC740 \uC774\uB984\uC758 \uD504\uB86C\uD504\uD2B8 JSON\uC744 \uBAA8\uB450 \uC0AD\uC81C\uD569\uB2C8\uB2E4. \uC0AD\uC81C\uD55C \uD30C\uC77C\uC740 \uBCF5\uAD6C\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Delete all {0} images and their matching prompt JSON files in the current output folder? Deleted files cannot be recovered."
   },
   {
     "Id": 3401,
@@ -4910,20 +4910,20 @@
   {
     "Id": 3403,
     "Name": "EidolonText323",
-    "Kor": "\uC0DD\uC131 \uAE30\uB85D {0}\uAC1C\uC640 Job \uD3F4\uB354\uB97C \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4. \uCD5C\uC885 \uC800\uC7A5 \uC774\uBBF8\uC9C0\uB294 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4.",
-    "Eng": "Deleted {0} generation records and their job folders. Final saved images were kept."
+    "Kor": "\uC774\uBBF8\uC9C0 {0}\uC7A5\uACFC \uD504\uB86C\uD504\uD2B8 JSON\uC744 \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Deleted {0} images and their prompt JSON files."
   },
   {
     "Id": 3404,
     "Name": "EidolonText324",
-    "Kor": "\uD45C\uC2DC\uB41C \uACB0\uACFC \uC774\uBBF8\uC9C0 \uD55C \uC7A5\uB9CC \uD559\uC2B5\uD569\uB2C8\uB2E4. \uD3F4\uB354 \uC5F4\uAE30\uB85C \uC704\uCE58\uB97C \uD655\uC778\uD558\uAC70\uB098 \uD3F4\uB354\uB85C \uBCC0\uACBD\uC744 \uB20C\uB7EC \uD3F4\uB354 \uC804\uCCB4\uB97C \uD559\uC2B5\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
-    "Eng": "Train only the result image shown here. Open folder shows its location. Use Switch to folder to train every image in a folder instead."
+    "Kor": "\uD604\uC7AC \uC120\uD0DD\uD55C \uC774\uBBF8\uC9C0 \uD55C \uC7A5\uB9CC \uD559\uC2B5\uD569\uB2C8\uB2E4. \uC5EC\uB7EC \uC774\uBBF8\uC9C0\uB85C \uD559\uC2B5\uD558\uB824\uBA74 \uD559\uC2B5 \uD3F4\uB354 \uC120\uD0DD\uC744 \uB20C\uB7EC\uC8FC\uC138\uC694.",
+    "Eng": "Only the selected image will be used for training. Choose a training folder to train with multiple images."
   },
   {
     "Id": 3405,
     "Name": "EidolonText325",
-    "Kor": "\uC544\uC9C1 \uC774\uBBF8\uC9C0\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4",
-    "Eng": "No images yet"
+    "Kor": "\uC544\uC9C1 \uC0DD\uC131\uB41C \uC774\uBBF8\uC9C0\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No generated images yet."
   },
   {
     "Id": 3406,
@@ -4970,8 +4970,8 @@
   {
     "Id": 3413,
     "Name": "EidolonText333",
-    "Kor": "\uD3F4\uB354\uB85C \uBCC0\uACBD",
-    "Eng": "Switch to folder"
+    "Kor": "\uD559\uC2B5 \uD3F4\uB354 \uC120\uD0DD",
+    "Eng": "Choose training folder"
   },
   {
     "Id": 3414,
@@ -5012,8 +5012,8 @@
   {
     "Id": 3420,
     "Name": "EidolonText340",
-    "Kor": "\uC790\uB3D9 \uC801\uC6A9 \uD2B8\uB9AC\uAC70: {0}",
-    "Eng": "Automatic triggers: {0}"
+    "Kor": "\uC55E\uC5D0 \uBD99\uB294 \uD2B8\uB9AC\uAC70: {0}",
+    "Eng": "Prepended trigger: {0}"
   },
   {
     "Id": 3421,
@@ -5026,5 +5026,713 @@
     "Name": "EidolonText342",
     "Kor": "\uD604\uC7AC \uC791\uC5C5\uC774 \uB05D\uB09C \uB4A4 \uC124\uC815\uC744 \uC800\uC7A5\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
     "Eng": "Save settings once the current work finishes."
+  },
+  {
+    "Id": 3423,
+    "Name": "EidolonText343",
+    "Kor": "\uC0AC\uC6A9\uD560 \uBAA8\uB378\uC744 \uACE8\uB77C \uC124\uCE58\uD558\uC138\uC694. \uC0AD\uC81C\uD558\uBA74 \uBAA8\uB378 \uD30C\uC77C\uB3C4 \uC81C\uAC70\uB429\uB2C8\uB2E4.",
+    "Eng": "Choose a model to install. Deleting also removes its file."
+  },
+  {
+    "Id": 3424,
+    "Name": "EidolonText344",
+    "Kor": "\uC0C8 \uBAA8\uB378 \uC124\uCE58",
+    "Eng": "Install a new model"
+  },
+  {
+    "Id": 3425,
+    "Name": "EidolonText345",
+    "Kor": "\uB2E4\uC591\uD55C \uC774\uBBF8\uC9C0 \uC0DD\uC131\uACFC LoRA \uD559\uC2B5\uC5D0 \uC0AC\uC6A9\uD558\uB294 \uAE30\uBCF8 \uBAA8\uB378",
+    "Eng": "Base model for general image generation and LoRA training"
+  },
+  {
+    "Id": 3426,
+    "Name": "EidolonText346",
+    "Kor": "SD 1.5 \uAE30\uBC18 \uC0DD\uC131\uACFC \uAE30\uC874 LoRA \uC0AC\uC6A9\uC744 \uC704\uD55C \uAE30\uBCF8 \uBAA8\uB378",
+    "Eng": "Base model for SD 1.5 generation and compatible LoRAs"
+  },
+  {
+    "Id": 3427,
+    "Name": "EidolonText347",
+    "Kor": "\uC778\uBB3C\u00B7\uC0AC\uC9C4 \uC2A4\uD0C0\uC77C\uC758 \uC2E4\uC0AC \uC774\uBBF8\uC9C0 \uC0DD\uC131\uC5D0 \uB9DE\uCD98 \uBAA8\uB378",
+    "Eng": "Model for photorealistic portraits and photographic images"
+  },
+  {
+    "Id": 3428,
+    "Name": "EidolonText348",
+    "Kor": "\uC0AC\uC6A9 \uAC00\uB2A5",
+    "Eng": "Ready to use"
+  },
+  {
+    "Id": 3429,
+    "Name": "EidolonText349",
+    "Kor": "{0} \uBAA8\uB378 \uC900\uBE44 \uC644\uB8CC",
+    "Eng": "{0} model ready"
+  },
+  {
+    "Id": 3430,
+    "Name": "EidolonText350",
+    "Kor": "\uC77C\uB7EC\uC2A4\uD2B8\u00B7\uC560\uB2C8\uBA54\uC774\uC158 \uC2A4\uD0C0\uC77C\uC758 SDXL \uAE30\uBC18 \uBAA8\uB378",
+    "Eng": "SDXL-based model for illustration and anime styles"
+  },
+  {
+    "Id": 3431,
+    "Name": "EidolonText351",
+    "Kor": "\uC124\uCE58",
+    "Eng": "Install"
+  },
+  {
+    "Id": 3432,
+    "Name": "EidolonText352",
+    "Kor": "\uBAA8\uB378 \uC124\uCE58\uC640 \uC0AD\uC81C\uB294 \uB85C\uCEEC \uC5D4\uC9C4\uC5D0\uC11C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Model installation and deletion are available for the local engine."
+  },
+  {
+    "Id": 3433,
+    "Name": "EidolonText353",
+    "Kor": "\uBA3C\uC800 \uC120\uD0DD\uD55C \uACBD\uB85C\uC5D0 \uC5D4\uC9C4\uC744 \uC124\uCE58\uD558\uC138\uC694. \uC644\uB8CC \uD6C4 \uAC01 \uBAA8\uB378\uC758 \uC124\uCE58 \uBC84\uD2BC\uC744 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Install the engine at the selected path first. Then use the install button for each model."
+  },
+  {
+    "Id": 3434,
+    "Name": "EidolonText354",
+    "Kor": "\uC124\uCE58 \uC911\u2026",
+    "Eng": "Installing\u2026"
+  },
+  {
+    "Id": 3435,
+    "Name": "EidolonText355",
+    "Kor": "\uC0AD\uC81C",
+    "Eng": "Delete"
+  },
+  {
+    "Id": 3436,
+    "Name": "EidolonText356",
+    "Kor": "\uBAA8\uB378 \uC0AD\uC81C",
+    "Eng": "Delete model"
+  },
+  {
+    "Id": 3437,
+    "Name": "EidolonText357",
+    "Kor": "{0} \uBAA8\uB378 \uD30C\uC77C\uC744 \uC0AD\uC81C\uD560\uAE4C\uC694?\n\n{1}\n\n\uB2E4\uC2DC \uC0AC\uC6A9\uD558\uB824\uBA74 \uBAA8\uB378\uC744 \uB2E4\uC2DC \uB2E4\uC6B4\uB85C\uB4DC\uD574\uC57C \uD569\uB2C8\uB2E4.",
+    "Eng": "Delete the {0} model file?\n\n{1}\n\nYou will need to download the model again to use it."
+  },
+  {
+    "Id": 3438,
+    "Name": "EidolonText358",
+    "Kor": "{0} \uBAA8\uB378 \uD30C\uC77C\uC744 \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Deleted the {0} model file."
+  },
+  {
+    "Id": 3439,
+    "Name": "EidolonText359",
+    "Kor": "\uBAA8\uB378\u00B7\uCCB4\uD06C\uD3EC\uC778\uD2B8",
+    "Eng": "Model and checkpoint"
+  },
+  {
+    "Id": 3440,
+    "Name": "EidolonText360",
+    "Kor": "\uC124\uCE58\uD55C \uBAA8\uB378\uACFC \uCCB4\uD06C\uD3EC\uC778\uD2B8 \uD3F4\uB354\uC5D0 \uC9C1\uC811 \uB123\uC740 .safetensors \uBAA8\uB378\uC744 \uC120\uD0DD\uD569\uB2C8\uB2E4. \uD30C\uC77C\uC744 \uCD94\uAC00\uD588\uB2E4\uBA74 \uC0C8\uB85C\uACE0\uCE68\uD558\uC138\uC694.",
+    "Eng": "Choose an installed model or a .safetensors model placed in the checkpoint folder. Refresh after adding files."
+  },
+  {
+    "Id": 3441,
+    "Name": "EidolonText361",
+    "Kor": "\uC120\uD0DD\uD560 \uBAA8\uB378\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uC5D4\uC9C4 \uD0ED\uC5D0\uC11C \uBAA8\uB378\uC744 \uC124\uCE58\uD558\uAC70\uB098 \uAC00\uC838\uC628 \uB4A4 \uC0C8\uB85C\uACE0\uCE68\uD558\uC138\uC694.",
+    "Eng": "No models are available. Install or import a model in the Engine tab, then refresh."
+  },
+  {
+    "Id": 3442,
+    "Name": "EidolonText362",
+    "Kor": "\uC0DD\uC131 \uC9C0\uCE68",
+    "Eng": "Generation instructions"
+  },
+  {
+    "Id": 3443,
+    "Name": "EidolonText363",
+    "Kor": "\uC5EC\uAE30\uC11C \uBC14\uAFBC \uC9C0\uCE68\uC740 \uC774\uBC88 \uC694\uCCAD\uC5D0\uB9CC \uC801\uC6A9\uB429\uB2C8\uB2E4. \uC124\uC815\uC758 \uAE30\uBCF8\uAC12\uC740 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "Changes here apply to this request. Your saved defaults stay the same."
+  },
+  {
+    "Id": 3444,
+    "Name": "EidolonText364",
+    "Kor": "\uAE30\uBCF8\uAC12 \uBD88\uB7EC\uC624\uAE30",
+    "Eng": "Load defaults"
+  },
+  {
+    "Id": 3445,
+    "Name": "EidolonText365",
+    "Kor": "\uC0DD\uC131 \uC815\uBCF4",
+    "Eng": "Generation details"
+  },
+  {
+    "Id": 3446,
+    "Name": "EidolonText366",
+    "Kor": "\uC0C1\uD0DC",
+    "Eng": "Status"
+  },
+  {
+    "Id": 3447,
+    "Name": "EidolonText367",
+    "Kor": "\uC0DD\uC131 \uC2DC\uAC01",
+    "Eng": "Created"
+  },
+  {
+    "Id": 3448,
+    "Name": "EidolonText368",
+    "Kor": "\uD574\uC0C1\uB3C4",
+    "Eng": "Resolution"
+  },
+  {
+    "Id": 3449,
+    "Name": "EidolonText369",
+    "Kor": "\uC2DC\uB4DC",
+    "Eng": "Seed"
+  },
+  {
+    "Id": 3450,
+    "Name": "EidolonText370",
+    "Kor": "\uC774 \uACB0\uACFC\uC758 \uBAA8\uB378 \uB610\uB294 LoRA \uC77C\uBD80\uAC00 \uD604\uC7AC \uBAA9\uB85D\uC5D0 \uC5C6\uC2B5\uB2C8\uB2E4. \uC0DD\uC131 \uC804\uC5D0 \uC120\uD0DD\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694.",
+    "Eng": "Some models or LoRAs used for this result are unavailable. Check your selection before generating."
+  },
+  {
+    "Id": 3451,
+    "Name": "EidolonText371",
+    "Kor": "\uC774\uBC88 \uC694\uCCAD\uC758 \uC9C0\uCE68",
+    "Eng": "Instructions for this request"
+  },
+  {
+    "Id": 3452,
+    "Name": "EidolonText372",
+    "Kor": "\uACB0\uACFC \uAC24\uB7EC\uB9AC",
+    "Eng": "Results gallery"
+  },
+  {
+    "Id": 3453,
+    "Name": "EidolonText373",
+    "Kor": "\uD074\uB9AD\uD558\uBA74 \uC624\uB978\uCABD\uC5D0 \uC774\uBBF8\uC9C0\u00B7\uD504\uB86C\uD504\uD2B8 \uD45C\uC2DC \u00B7 Ctrl\u002B\uD074\uB9AD\uC73C\uB85C \uB2E4\uC911 \uC120\uD0DD \u00B7 Shift\u002B\uD074\uB9AD\uC73C\uB85C \uBC94\uC704 \uC120\uD0DD",
+    "Eng": "Click to preview on the right \u00B7 Ctrl\u002Bclick for multiple selection \u00B7 Shift\u002Bclick to select a range"
+  },
+  {
+    "Id": 3454,
+    "Name": "EidolonText374",
+    "Kor": "\uC774\uC804",
+    "Eng": "Previous"
+  },
+  {
+    "Id": 3455,
+    "Name": "EidolonText375",
+    "Kor": "\uB2E4\uC74C",
+    "Eng": "Next"
+  },
+  {
+    "Id": 3456,
+    "Name": "EidolonText376",
+    "Kor": "{0} / {1} \uD398\uC774\uC9C0",
+    "Eng": "Page {0} of {1}"
+  },
+  {
+    "Id": 3457,
+    "Name": "EidolonText377",
+    "Kor": "\uC774\uBBF8\uC9C0 {0}\uC7A5",
+    "Eng": "{0} images"
+  },
+  {
+    "Id": 3458,
+    "Name": "EidolonText378",
+    "Kor": "\uACB0\uACFC \uBD88\uB7EC\uC624\uB294 \uC911\u2026",
+    "Eng": "Loading results\u2026"
+  },
+  {
+    "Id": 3459,
+    "Name": "EidolonText379",
+    "Kor": "\uB2EB\uAE30",
+    "Eng": "Close"
+  },
+  {
+    "Id": 3460,
+    "Name": "EidolonText380",
+    "Kor": "\uACB0\uACFC\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C\uACE0\uCE68\uD574 \uC8FC\uC138\uC694.",
+    "Eng": "Could not load results. Please refresh."
+  },
+  {
+    "Id": 3461,
+    "Name": "EidolonText381",
+    "Kor": "\uBBF8\uB9AC\uBCF4\uAE30 \uC5C6\uC74C",
+    "Eng": "No preview"
+  },
+  {
+    "Id": 3462,
+    "Name": "EidolonText382",
+    "Kor": "{0}\uC7A5",
+    "Eng": "{0} images"
+  },
+  {
+    "Id": 3463,
+    "Name": "EidolonText383",
+    "Kor": "\uD504\uB86C\uD504\uD2B8 \uC815\uBCF4 \uC5C6\uC74C",
+    "Eng": "No prompt data"
+  },
+  {
+    "Id": 3464,
+    "Name": "EidolonText384",
+    "Kor": "\uD504\uB86C\uD504\uD2B8 JSON\uC744 \uC77D\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uC774\uBBF8\uC9C0\uB294 \uACC4\uC18D \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Cannot read the prompt JSON. The image is still available."
+  },
+  {
+    "Id": 3465,
+    "Name": "EidolonText385",
+    "Kor": "{0}\uC7A5 \uC120\uD0DD\uB428",
+    "Eng": "{0} selected"
+  },
+  {
+    "Id": 3466,
+    "Name": "EidolonText386",
+    "Kor": "\uD06C\uAC8C \uBCF4\uAE30",
+    "Eng": "View image"
+  },
+  {
+    "Id": 3467,
+    "Name": "EidolonText387",
+    "Kor": "\uC120\uD0DD \uD574\uC81C",
+    "Eng": "Clear selection"
+  },
+  {
+    "Id": 3468,
+    "Name": "EidolonText388",
+    "Kor": "\uAC19\uC740 \uC774\uB984\uC758 \uC720\uD6A8\uD55C \uD504\uB86C\uD504\uD2B8 JSON\uC774 \uC788\uC5B4\uC57C \uC0DD\uC131 \uC9C0\uCE68\uC744 \uB2E4\uC2DC \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Reusing instructions requires a valid prompt JSON file with the same name."
+  },
+  {
+    "Id": 3469,
+    "Name": "EidolonText389",
+    "Kor": "1. \uC5D4\uC9C4 \uC900\uBE44",
+    "Eng": "1. Prepare engine"
+  },
+  {
+    "Id": 3470,
+    "Name": "EidolonText390",
+    "Kor": "2. \uC0DD\uC131 \uBAA8\uB378 \uC900\uBE44",
+    "Eng": "2. Prepare generation model"
+  },
+  {
+    "Id": 3471,
+    "Name": "EidolonText391",
+    "Kor": "\uBAA8\uB378 \uC124\uCE58\uAC00 \uD544\uC694\uD569\uB2C8\uB2E4",
+    "Eng": "Install a generation model"
+  },
+  {
+    "Id": 3472,
+    "Name": "EidolonText392",
+    "Kor": "\uC774\uBBF8\uC9C0\uB97C \uC0DD\uC131\uD558\uB824\uBA74 \uBAA8\uB378\uC744 \uD55C \uAC1C \uC774\uC0C1 \uC900\uBE44\uD574\uC57C \uD569\uB2C8\uB2E4. \uBAA8\uB378 \u00B7 LoRA\uC5D0\uC11C \uC124\uCE58\uD558\uAC70\uB098 \uBAA8\uB378 \uD30C\uC77C\uC744 \uAC00\uC838\uC624\uC138\uC694.",
+    "Eng": "You need at least one model to generate images. Install or import a model in Models \u00B7 LoRA."
+  },
+  {
+    "Id": 3473,
+    "Name": "EidolonText393",
+    "Kor": "\uBAA8\uB378 \uC124\uCE58\uD558\uAE30",
+    "Eng": "Install a model"
+  },
+  {
+    "Id": 3474,
+    "Name": "EidolonText394",
+    "Kor": "\uBAA8\uB378 \uC124\uCE58 \uC911",
+    "Eng": "Installing a model"
+  },
+  {
+    "Id": 3475,
+    "Name": "EidolonText395",
+    "Kor": "{0} \uC124\uCE58 \uC911\uC785\uB2C8\uB2E4. \uC644\uB8CC\uB418\uBA74 \uC0DD\uC131 \uD654\uBA74\uC5D0\uC11C \uC120\uD0DD\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "{0} is installing. Once complete, you can select it in Generate."
+  },
+  {
+    "Id": 3476,
+    "Name": "EidolonText396",
+    "Kor": "\uBAA8\uB378 \uC900\uBE44 \uC644\uB8CC",
+    "Eng": "Models ready"
+  },
+  {
+    "Id": 3477,
+    "Name": "EidolonText397",
+    "Kor": "{0}\uAC1C \uBAA8\uB378\uC744 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "{0} models available."
+  },
+  {
+    "Id": 3478,
+    "Name": "EidolonText398",
+    "Kor": "\uBAA8\uB378 \uAD00\uB9AC",
+    "Eng": "Manage models"
+  },
+  {
+    "Id": 3479,
+    "Name": "EidolonText399",
+    "Kor": "\uC124\uCE58 \uC0C1\uD0DC \uBCF4\uAE30",
+    "Eng": "View installation"
+  },
+  {
+    "Id": 3480,
+    "Name": "EidolonText400",
+    "Kor": "\uC5D4\uC9C4 \uC900\uBE44 \uC644\uB8CC",
+    "Eng": "Engine ready"
+  },
+  {
+    "Id": 3481,
+    "Name": "EidolonText401",
+    "Kor": "\uC5D4\uC9C4 \uC124\uCE58 \uB610\uB294 \uC11C\uBC84 \uC5F0\uACB0 \uD544\uC694",
+    "Eng": "Install an engine or connect to a server"
+  },
+  {
+    "Id": 3482,
+    "Name": "EidolonText402",
+    "Kor": "\uC900\uBE44 \uC0C1\uD0DC \uD655\uC778 \uC911\u2026",
+    "Eng": "Checking setup\u2026"
+  },
+  {
+    "Id": 3483,
+    "Name": "EidolonText403",
+    "Kor": "\uC5F0\uACB0\uD55C \uC11C\uBC84\uC758 \uBAA8\uB378\uC744 \uC900\uBE44\uD55C \uB4A4 \uBAA8\uB378 \uBAA9\uB85D\uC744 \uC0C8\uB85C\uACE0\uCE68\uD574 \uC8FC\uC138\uC694.",
+    "Eng": "Prepare a model on your connected server, then refresh the model list."
+  },
+  {
+    "Id": 3484,
+    "Name": "EidolonText404",
+    "Kor": "\uBAA8\uB378 \uBAA9\uB85D \uD655\uC778",
+    "Eng": "View models"
+  },
+  {
+    "Id": 3485,
+    "Name": "EidolonText405",
+    "Kor": "\uBA3C\uC800 \uC5D4\uC9C4 \uC124\uCE58 \uB610\uB294 \uC11C\uBC84 \uC5F0\uACB0\uC744 \uC644\uB8CC\uD574 \uC8FC\uC138\uC694.",
+    "Eng": "First install the engine or connect to a server."
+  },
+  {
+    "Id": 3486,
+    "Name": "EidolonText406",
+    "Kor": "\uC5D4\uC9C4 \uC124\uCE58 \uC644\uB8CC \u00B7 \uC5F0\uACB0 \uD544\uC694",
+    "Eng": "Engine installed \u00B7 connect to continue"
+  },
+  {
+    "Id": 3487,
+    "Name": "EidolonText407",
+    "Kor": "\uC5D4\uC9C4 \uC900\uBE44\uD558\uAE30",
+    "Eng": "Prepare engine"
+  },
+  {
+    "Id": 3488,
+    "Name": "EidolonText408",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC0DD\uC131\uACFC LoRA \uD559\uC2B5\uC5D0 \uD544\uC694\uD55C \uC2E4\uD589 \uD658\uACBD\uC744 \uC900\uBE44\uD569\uB2C8\uB2E4.",
+    "Eng": "Prepare the runtime for image generation and LoRA training."
+  },
+  {
+    "Id": 3489,
+    "Name": "EidolonText409",
+    "Kor": "\uD30C\uC77C \uAC00\uC838\uC624\uAE30",
+    "Eng": "Import file"
+  },
+  {
+    "Id": 3490,
+    "Name": "EidolonText410",
+    "Kor": "\uC0C8\uB85C\uACE0\uCE68",
+    "Eng": "Refresh"
+  },
+  {
+    "Id": 3491,
+    "Name": "EidolonText411",
+    "Kor": "\uB0B4 \uBAA8\uB378 \u00B7 LoRA",
+    "Eng": "My models \u00B7 LoRA"
+  },
+  {
+    "Id": 3492,
+    "Name": "EidolonText412",
+    "Kor": "\uC0C1\uC138 \uC124\uC815",
+    "Eng": "Advanced settings"
+  },
+  {
+    "Id": 3493,
+    "Name": "EidolonText413",
+    "Kor": "\uACC4\uC5F4\uC740 \uC790\uB3D9 \uD310\uBCC4\uD569\uB2C8\uB2E4. \uD310\uBCC4\uB418\uC9C0 \uC54A\uC740 \uBAA8\uB378\uB9CC \uC9C1\uC811 \uC9C0\uC815\uD558\uC138\uC694.",
+    "Eng": "The family is detected automatically. Set it manually only if detection is unavailable."
+  },
+  {
+    "Id": 3494,
+    "Name": "EidolonText414",
+    "Kor": "\uBAA8\uB378 \uACC4\uC5F4\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694.",
+    "Eng": "Check this model\u0027s family."
+  },
+  {
+    "Id": 3495,
+    "Name": "EidolonText415",
+    "Kor": "\uBAA8\uB378 \uD30C\uC77C\uC740 \uC0AD\uC81C\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The model file is kept."
+  },
+  {
+    "Id": 3496,
+    "Name": "EidolonText416",
+    "Kor": "\uC124\uCE58 \uC548\uB0B4",
+    "Eng": "Installation details"
+  },
+  {
+    "Id": 3497,
+    "Name": "EidolonText417",
+    "Kor": "\uC5F0\uACB0 \uC548\uB0B4",
+    "Eng": "Connection details"
+  },
+  {
+    "Id": 3498,
+    "Name": "EidolonText418",
+    "Kor": "\uC124\uCE58\uD558\uAC70\uB098 \uAC00\uC838\uC628 \uBAA8\uB378\uC774 \uC5EC\uAE30\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4.",
+    "Eng": "Installed and imported models appear here."
+  },
+  {
+    "Id": 3499,
+    "Name": "EidolonText419",
+    "Kor": "\uC790\uB3D9 \uC0DD\uC131",
+    "Eng": "Random seed"
+  },
+  {
+    "Id": 3500,
+    "Name": "EidolonText420",
+    "Kor": "\uC694\uCCAD\uB9C8\uB2E4 \uC0C8\uB85C\uC6B4 \uC2DC\uB4DC\uB85C \uC0DD\uC131\uD569\uB2C8\uB2E4.",
+    "Eng": "Each request uses a new random seed."
+  },
+  {
+    "Id": 3501,
+    "Name": "EidolonText421",
+    "Kor": "\uC2DC\uB4DC\uB294 {0}~{1} \uC0AC\uC774\uC758 \uC815\uC218\uB97C \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter an integer seed between {0} and {1}."
+  },
+  {
+    "Id": 3502,
+    "Name": "EidolonText422",
+    "Kor": "\uCD5C\uADFC \uC694\uCCAD \uC2DC\uB4DC: {0}",
+    "Eng": "Latest requested seed: {0}"
+  },
+  {
+    "Id": 3503,
+    "Name": "EidolonText423",
+    "Kor": "LoRA (\uC120\uD0DD)",
+    "Eng": "LoRA (optional)"
+  },
+  {
+    "Id": 3504,
+    "Name": "EidolonText424",
+    "Kor": "\uC67C\uCABD\uC5D0\uC11C \uC774\uBBF8\uC9C0\uB97C \uC120\uD0DD\uD558\uBA74 \uD06C\uAC8C \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Select an image on the left to view it here."
+  },
+  {
+    "Id": 3505,
+    "Name": "EidolonText425",
+    "Kor": "\uD559\uC2B5 \uC774\uBBF8\uC9C0 \uBC30\uACBD",
+    "Eng": "Training image background"
+  },
+  {
+    "Id": 3506,
+    "Name": "EidolonText426",
+    "Kor": "\uC6D0\uBCF8 \uC720\uC9C0",
+    "Eng": "Keep original"
+  },
+  {
+    "Id": 3507,
+    "Name": "EidolonText427",
+    "Kor": "\uD770\uC0C9",
+    "Eng": "White"
+  },
+  {
+    "Id": 3508,
+    "Name": "EidolonText428",
+    "Kor": "\uAC80\uC815\uC0C9",
+    "Eng": "Black"
+  },
+  {
+    "Id": 3509,
+    "Name": "EidolonText429",
+    "Kor": "\uD22C\uBA85 \uC601\uC5ED\uC744 \uC120\uD0DD\uD55C \uC0C9\uC73C\uB85C \uCC44\uC6C1\uB2C8\uB2E4. \uC774\uBBF8 \uC788\uB294 \uBC30\uACBD\uACFC \uC6D0\uBCF8 \uC774\uBBF8\uC9C0\u00B7\uC124\uBA85\uC740 \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+    "Eng": "Fill transparent areas with the selected color. Existing backgrounds, original images and captions are preserved."
+  },
+  {
+    "Id": 3510,
+    "Name": "EidolonText430",
+    "Kor": "\uD559\uC2B5 \uC774\uBBF8\uC9C0 \uBC30\uACBD\uC744 \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Select a training image background."
+  },
+  {
+    "Id": 3511,
+    "Name": "EidolonText431",
+    "Kor": "\uD559\uC2B5 \uC774\uBBF8\uC9C0 \uBC30\uACBD\uC744 \uCC98\uB9AC\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4: {0}",
+    "Eng": "Could not prepare the training image background: {0}"
+  },
+  {
+    "Id": 3512,
+    "Name": "EidolonText432",
+    "Kor": "LoRA \uC774\uB984\u00B7\uD30C\uC77C\uBA85\u00B7\uD2B8\uB9AC\uAC70 \uAC80\uC0C9",
+    "Eng": "Search LoRA name, filename or trigger"
+  },
+  {
+    "Id": 3513,
+    "Name": "EidolonText433",
+    "Kor": "\uAC80\uC0C9\uD55C LoRA\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No matching LoRAs."
+  },
+  {
+    "Id": 3514,
+    "Name": "EidolonText434",
+    "Kor": "{0}\uAC1C LoRA \uC801\uC6A9 \uC911",
+    "Eng": "{0} LoRAs applied"
+  },
+  {
+    "Id": 3515,
+    "Name": "EidolonText435",
+    "Kor": "\uC801\uC6A9 \uC911",
+    "Eng": "Applied"
+  },
+  {
+    "Id": 3516,
+    "Name": "EidolonText436",
+    "Kor": "\uC124\uC815\uC758 \uC0DD\uC131 \uC9C0\uCE68",
+    "Eng": "Generation instructions from settings"
+  },
+  {
+    "Id": 3517,
+    "Name": "EidolonText437",
+    "Kor": "\uC124\uC815\uC5D0 \uC800\uC7A5\uD55C \uC0DD\uC131 \uC9C0\uCE68\uACFC \uC81C\uC678\uD560 \uC694\uC18C\uAC00 \uC801\uC6A9\uB429\uB2C8\uB2E4.",
+    "Eng": "The generation instructions and elements to avoid saved in settings are applied."
+  },
+  {
+    "Id": 3518,
+    "Name": "EidolonText438",
+    "Kor": "\uC0DD\uC131\uD558\uAE30",
+    "Eng": "Generate"
+  },
+  {
+    "Id": 3519,
+    "Name": "EidolonText439",
+    "Kor": "\uBBF8\uB9AC\uBCF4\uAE30",
+    "Eng": "Preview"
+  },
+  {
+    "Id": 3520,
+    "Name": "EidolonText440",
+    "Kor": "\uCC38\uACE0 \uC774\uBBF8\uC9C0",
+    "Eng": "Reference image"
+  },
+  {
+    "Id": 3521,
+    "Name": "EidolonText441",
+    "Kor": "\uCC38\uACE0 \uC774\uBBF8\uC9C0 \uCD94\uAC00",
+    "Eng": "Add reference image"
+  },
+  {
+    "Id": 3522,
+    "Name": "EidolonText442",
+    "Kor": "\uC774\uBBF8\uC9C0 \uBCC0\uACBD",
+    "Eng": "Change image"
+  },
+  {
+    "Id": 3523,
+    "Name": "EidolonText443",
+    "Kor": "\uC81C\uAC70",
+    "Eng": "Remove"
+  },
+  {
+    "Id": 3524,
+    "Name": "EidolonText444",
+    "Kor": "\uCC38\uACE0\uD574 \uC0C8\uB85C \uC0DD\uC131",
+    "Eng": "Reimagine from image"
+  },
+  {
+    "Id": 3525,
+    "Name": "EidolonText445",
+    "Kor": "\uADF8\uB9BC\uCCB4 \uBCC0\uACBD",
+    "Eng": "Change style"
+  },
+  {
+    "Id": 3526,
+    "Name": "EidolonText446",
+    "Kor": "\uC6D0\uBCF8 \uC774\uBBF8\uC9C0\uB97C \uBC14\uD0D5\uC73C\uB85C \uC124\uBA85\uC5D0 \uB9DE\uB294 \uC0C8\uB85C\uC6B4 \uC774\uBBF8\uC9C0\uB97C \uB9CC\uB4ED\uB2C8\uB2E4.",
+    "Eng": "Create a new image based on the reference and your description."
+  },
+  {
+    "Id": 3527,
+    "Name": "EidolonText447",
+    "Kor": "\uB300\uC0C1\uACFC \uAD6C\uB3C4\uB97C \uCD5C\uB300\uD55C \uC720\uC9C0\uD558\uBA70 \uC6D0\uD558\uB294 \uADF8\uB9BC\uCCB4\uB97C \uC801\uC6A9\uD569\uB2C8\uB2E4. \uC124\uBA85\uC5D0 \uBC14\uAFC0 \uC2A4\uD0C0\uC77C\uC744 \uC801\uC5B4\uC8FC\uC138\uC694.",
+    "Eng": "Keep the subject and composition as closely as possible while applying the style described in your prompt."
+  },
+  {
+    "Id": 3528,
+    "Name": "EidolonText448",
+    "Kor": "\uBCC0\uACBD \uAC15\uB3C4",
+    "Eng": "Change strength"
+  },
+  {
+    "Id": 3529,
+    "Name": "EidolonText449",
+    "Kor": "\uB0AE\uC744\uC218\uB85D \uC6D0\uBCF8 \uC720\uC9C0 \u00B7 \uB192\uC744\uC218\uB85D \uD070 \uBCC0\uD654",
+    "Eng": "Lower preserves the original \u00B7 higher makes larger changes"
+  },
+  {
+    "Id": 3530,
+    "Name": "EidolonText450",
+    "Kor": "\uC774\uBBF8\uC9C0\uB97C \uC77D\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. 32 MB\u00B74\uCC9C\uB9CC \uD53D\uC140 \uC774\uD558\uC758 PNG, JPG, WebP \uD30C\uC77C\uC744 \uC120\uD0DD\uD574\uC8FC\uC138\uC694.",
+    "Eng": "Cannot read this image. Choose a PNG, JPG, or WebP file up to 32 MB and 40 million pixels."
+  },
+  {
+    "Id": 3531,
+    "Name": "EidolonText451",
+    "Kor": "\uCC38\uACE0 \uC774\uBBF8\uC9C0\uC758 \uBAA8\uB4DC\uC640 \uBCC0\uACBD \uAC15\uB3C4\uB97C \uD655\uC778\uD574\uC8FC\uC138\uC694. \uBCC0\uACBD \uAC15\uB3C4\uB294 5~95%\uB85C \uC124\uC815\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Check the reference mode and change strength. Strength must be between 5% and 95%."
+  },
+  {
+    "Id": 3532,
+    "Name": "EidolonText452",
+    "Kor": "\uCC38\uACE0 \uC774\uBBF8\uC9C0 \uC900\uBE44 \uC911",
+    "Eng": "Preparing reference image"
+  },
+  {
+    "Id": 3533,
+    "Name": "EidolonText453",
+    "Kor": "\uCC38\uACE0 \uC774\uBBF8\uC9C0\uB97C \uC0DD\uC131 \uC5D4\uC9C4\uC5D0 \uC804\uC1A1 \uC911",
+    "Eng": "Uploading reference image to the generation engine"
+  },
+  {
+    "Id": 3534,
+    "Name": "EidolonText454",
+    "Kor": "\uC774 \uACB0\uACFC\uC758 \uCC38\uACE0 \uC774\uBBF8\uC9C0\uB97C \uCC3E\uAC70\uB098 \uC77D\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uC774\uBBF8\uC9C0\uB97C \uB2E4\uC2DC \uC120\uD0DD\uD574\uC8FC\uC138\uC694.",
+    "Eng": "The reference image for this result cannot be found or read. Select an image again."
+  },
+  {
+    "Id": 3535,
+    "Name": "EidolonText455",
+    "Kor": "\uC774 \uC774\uBBF8\uC9C0\uB85C \uD3B8\uC9D1",
+    "Eng": "Edit from this image"
+  },
+  {
+    "Id": 3536,
+    "Name": "EidolonText456",
+    "Kor": "\uC774\uBBF8\uC9C0 \uD3B8\uC9D1",
+    "Eng": "Image editing"
+  },
+  {
+    "Id": 3537,
+    "Name": "EidolonText457",
+    "Kor": "\uC5B4\uB5BB\uAC8C \uBC14\uAFC0\uAE4C\uC694?",
+    "Eng": "How should it change?"
+  },
+  {
+    "Id": 3538,
+    "Name": "EidolonText458",
+    "Kor": "\uC608: \uB300\uC0C1\uACFC \uAD6C\uB3C4\uB97C \uC720\uC9C0\uD558\uACE0 \uC218\uCC44\uD654\uD48D\uC73C\uB85C \uBC14\uAFD4\uC918",
+    "Eng": "Example: Keep the subject and composition, and change it to a watercolor illustration"
+  },
+  {
+    "Id": 3539,
+    "Name": "EidolonText459",
+    "Kor": "\uD3B8\uC9D1\uD560 \uC774\uBBF8\uC9C0\uB97C \uBA3C\uC800 \uC120\uD0DD\uD574\uC8FC\uC138\uC694.",
+    "Eng": "Select the image you want to edit first."
+  },
+  {
+    "Id": 3540,
+    "Name": "EidolonText460",
+    "Kor": "\uC800\uC7A5 \uD3F4\uB354 \uC120\uD0DD",
+    "Eng": "Choose output folder"
   }
 ]

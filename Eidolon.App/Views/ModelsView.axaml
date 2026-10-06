@@ -1,51 +1,106 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.ModelsView" x:DataType="vm:StudioViewModel">
-  <Grid ColumnDefinitions="*,20,350" Margin="0,12,0,0">
-          <Grid RowDefinitions="Auto,*" IsEnabled="{Binding IsIdle}">
-            <StackPanel Spacing="8" Margin="8,0,0,18">
-              <TextBlock Text="{DynamicResource EidolonText123}" Classes="title" />
-              <TextBlock Text="{DynamicResource EidolonText124}" Classes="muted" />
-              <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
-                <Button Content="{DynamicResource EidolonText125}" Command="{Binding ScanCommand}" />
-                <Button Content="{DynamicResource EidolonText126}" Command="{Binding DownloadModelCommand}" />
-              </StackPanel>
-            </StackPanel>
-            <ListBox Grid.Row="1" ItemsSource="{Binding Library}" SelectedItem="{Binding SelectedAsset}" Background="{DynamicResource SurfaceBrush}" CornerRadius="12">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.ModelsView" x:DataType="vm:StudioViewModel">
+  <UserControl.Styles>
+    <Style Selector="Button">
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector="ScrollViewer.modelDownloads /template/ ScrollBar#PART_VerticalScrollBar">
+      <Setter Property="Width" Value="18" />
+      <Setter Property="MinWidth" Value="18" />
+      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+    </Style>
+    <Style Selector="ScrollViewer.modelDownloads /template/ ScrollBar#PART_VerticalScrollBar /template/ Thumb">
+      <Setter Property="Background" Value="{DynamicResource MutedBrush}" />
+      <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector="ScrollViewer.modelDownloads /template/ ScrollBar#PART_VerticalScrollBar /template/ Thumb:pointerover /template/ Border">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="ScrollViewer.modelDownloads /template/ ScrollBar#PART_VerticalScrollBar /template/ Thumb:pressed /template/ Border">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    </Style>
+  </UserControl.Styles>
+  <Grid RowDefinitions="Auto,Auto,*" Margin="0,16,0,0">
+    <Grid ColumnDefinitions="*,Auto" Margin="4,0,4,16">
+      <StackPanel Spacing="5" Margin="0,0,20,0">
+        <TextBlock Text="{DynamicResource EidolonText123}" FontSize="20" FontWeight="SemiBold" />
+        <TextBlock Text="{DynamicResource EidolonText124}" Classes="muted" FontSize="12" />
+      </StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+        <Button Command="{Binding ImportCommand}" ToolTip.Tip="{DynamicResource EidolonText133}">
+          <StackPanel Orientation="Horizontal" Spacing="7">
+            <Path Data="{StaticResource EidolonIconFolder}" Width="15" Height="15" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
+            <TextBlock Text="{DynamicResource EidolonText409}" VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+        <Button Content="{DynamicResource EidolonText410}" Command="{Binding ScanCommand}" ToolTip.Tip="{DynamicResource EidolonText125}" />
+      </StackPanel>
+    </Grid>
+    <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="3,0,0,0" CornerRadius="6" Padding="14" Margin="0,0,0,12" IsVisible="{Binding NeedsModelSetup}">
+      <StackPanel Spacing="5">
+        <TextBlock Text="{Binding ModelSetupCaption}" FontSize="14" FontWeight="SemiBold" />
+        <TextBlock Text="{Binding ModelSetupHint}" Classes="muted" FontSize="12" />
+      </StackPanel>
+    </Border>
+    <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
+      <Grid RowDefinitions="3*,2*">
+        <Border Classes="card" Padding="16" CornerRadius="10" Margin="0,0,0,12">
+          <ScrollViewer Classes="modelDownloads" MaxHeight="330" AllowAutoHide="False" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+            <views:ModelDownloadsView />
+          </ScrollViewer>
+        </Border>
+        <Border Grid.Row="1" Classes="card" Padding="16" CornerRadius="10">
+          <Grid RowDefinitions="Auto,*">
+            <TextBlock Text="{DynamicResource EidolonText411}" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,10" />
+            <TextBlock Grid.Row="1" Text="{DynamicResource EidolonText418}" Classes="muted" FontSize="13" IsVisible="{Binding !HasLibrary}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <ListBox Grid.Row="1" ItemsSource="{Binding Library}" SelectedItem="{Binding SelectedAsset}" Background="Transparent" BorderThickness="0" IsVisible="{Binding HasLibrary}" ScrollViewer.AllowAutoHide="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
               <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="vm:AssetItem">
-                  <StackPanel Spacing="6" Margin="8,12">
-                    <TextBlock Text="{Binding Label}" FontSize="17" FontWeight="SemiBold" />
-                    <TextBlock Text="{Binding Detail}" Classes="muted" />
+                  <StackPanel Spacing="4" Margin="4,8">
+                    <TextBlock Text="{Binding Label}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Label}" />
+                    <TextBlock Text="{Binding Detail}" Classes="muted" FontSize="12" />
                   </StackPanel>
                 </DataTemplate>
               </ListBox.ItemTemplate>
             </ListBox>
           </Grid>
-          <ScrollViewer Grid.Column="2">
-            <Border Classes="card" IsEnabled="{Binding IsIdle}">
-              <StackPanel Spacing="12">
-                <TextBlock Text="{DynamicResource EidolonText127}" FontSize="20" FontWeight="SemiBold" />
-                <TextBlock Text="{DynamicResource EidolonText129}" Classes="label" />
+        </Border>
+      </Grid>
+      <ScrollViewer Grid.Column="1" Width="300" Margin="16,0,0,0" IsVisible="{Binding HasSelectedAsset}" AllowAutoHide="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Border Classes="card" Padding="18" CornerRadius="10" IsEnabled="{Binding IsIdle}">
+          <StackPanel Spacing="16">
+            <StackPanel Spacing="6">
+              <TextBlock Text="{DynamicResource EidolonText127}" FontSize="15" FontWeight="SemiBold" />
+              <TextBlock Text="{Binding SelectedAsset.Label}" FontSize="14" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding SelectedAsset.Detail}" Classes="muted" FontSize="12" />
+            </StackPanel>
+            <TextBlock Text="{DynamicResource EidolonText414}" FontSize="13" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" IsVisible="{Binding NeedsAssetClassification}" />
+            <Expander Header="{DynamicResource EidolonText412}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" FontSize="13">
+              <StackPanel Spacing="12" Margin="0,12,0,0">
+                <TextBlock Text="{DynamicResource EidolonText129}" FontSize="13" FontWeight="SemiBold" />
                 <ComboBox ItemsSource="{Binding AvailableFamilies}" SelectedItem="{Binding SelectedFamily}">
                   <ComboBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:FamilyChoice">
-                      <TextBlock Text="{Binding Label}" />
+                      <TextBlock Text="{Binding Label}" FontSize="13" />
                     </DataTemplate>
                   </ComboBox.ItemTemplate>
                 </ComboBox>
-                <TextBlock Text="{DynamicResource EidolonText130}" Classes="label" />
-                <TextBox Text="{Binding AssetTrigger}" PlaceholderText="{DynamicResource EidolonText131}" />
-                <TextBlock Text="{DynamicResource EidolonText132}" Classes="muted" FontSize="12" />
-                <Button Classes="primary" Command="{Binding ImportCommand}" HorizontalAlignment="Stretch">
-                  <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Path Data="{StaticResource EidolonIconDownload}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
-                    <TextBlock Text="{DynamicResource EidolonText133}" VerticalAlignment="Center" />
-                  </StackPanel>
-                </Button>
-                <Button Content="{DynamicResource EidolonText134}" Command="{Binding UpdateAssetCommand}" HorizontalAlignment="Stretch" />
-                <Button Content="{DynamicResource EidolonText135}" Command="{Binding RemoveAssetCommand}" HorizontalAlignment="Stretch" />
-                <TextBlock Text="{DynamicResource EidolonText136}" Classes="muted" FontSize="12" />
+                <TextBlock Text="{DynamicResource EidolonText413}" Classes="muted" FontSize="12" />
+                <StackPanel Spacing="10" IsVisible="{Binding IsSelectedAssetLora}">
+                  <TextBlock Text="{DynamicResource EidolonText130}" FontSize="13" FontWeight="SemiBold" />
+                  <TextBox Text="{Binding AssetTrigger}" PlaceholderText="{DynamicResource EidolonText131}" FontSize="13" />
+                  <TextBlock Text="{DynamicResource EidolonText132}" Classes="muted" FontSize="12" />
+                </StackPanel>
+                <Button Content="{DynamicResource EidolonText134}" Command="{Binding UpdateAssetCommand}" Classes="primary" />
               </StackPanel>
-            </Border>
-          </ScrollViewer>
-        </Grid>
+            </Expander>
+            <StackPanel Spacing="5">
+              <Button Content="{DynamicResource EidolonText135}" Command="{Binding RemoveAssetCommand}" Background="Transparent" BorderThickness="0" Padding="0,6" Foreground="{DynamicResource MutedBrush}" ToolTip.Tip="{DynamicResource EidolonText136}" />
+              <TextBlock Text="{DynamicResource EidolonText415}" Classes="muted" FontSize="12" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </ScrollViewer>
+    </Grid>
+  </Grid>
 </UserControl>

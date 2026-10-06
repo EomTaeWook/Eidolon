@@ -7,9 +7,10 @@ namespace Eidolon.Core.Infrastructure
 {
     public class BackgroundRemovalService
     {
-        private const int InputSize = 320;
-        private const string ModelUrl = "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2netp.onnx";
-        private const string ModelMd5 = "8e83ca70e441ab06c318d82300c84806";
+        private const int InputSize = 1024;
+        private const float MinimumForegroundConfidence = 0.5f;
+        private const string ModelUrl = "https://github.com/danielgatis/rembg/releases/download/v0.0.0/isnet-general-use.onnx";
+        private const string ModelMd5 = "fc16ebd8b0c10d971d3513d564d01e29";
         private readonly FileDownloader _downloader;
         private readonly string _modelDirectory;
 
@@ -26,11 +27,11 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.GenerationOutputMissing);
             }
-            string modelPath = Path.Combine(_modelDirectory, "u2netp.onnx");
+            string modelPath = Path.Combine(_modelDirectory, "isnet-general-use.onnx");
             progress.Report(new WorkProgress(StudioMessageCode.BackgroundModelDownloading));
             await _downloader.DownloadAsync(ModelUrl, modelPath, "md5:" + ModelMd5, progress, token).ConfigureAwait(false);
-            await _downloader.DownloadAsync("https://raw.githubusercontent.com/xuebinqin/U-2-Net/master/LICENSE",
-                Path.Combine(_modelDirectory, "LICENSE-U2Net.txt"), string.Empty, progress, token).ConfigureAwait(false);
+            await _downloader.DownloadAsync("https://raw.githubusercontent.com/xuebinqin/DIS/master/README.md",
+                Path.Combine(_modelDirectory, "NOTICE-ISNet.md"), string.Empty, progress, token).ConfigureAwait(false);
             await Task.Run(() => ProcessImage(source, destination, modelPath, progress, token), token).ConfigureAwait(false);
         }
 
@@ -135,9 +136,9 @@ namespace Eidolon.Core.Infrastructure
                 for (int x = 0; x < InputSize; x++)
                 {
                     SKColor color = pixels[y * InputSize + x];
-                    tensor[0, 0, y, x] = (color.Red / maximum - 0.485f) / 0.229f;
-                    tensor[0, 1, y, x] = (color.Green / maximum - 0.456f) / 0.224f;
-                    tensor[0, 2, y, x] = (color.Blue / maximum - 0.406f) / 0.225f;
+                    tensor[0, 0, y, x] = color.Red / maximum - 0.5f;
+                    tensor[0, 1, y, x] = color.Green / maximum - 0.5f;
+                    tensor[0, 2, y, x] = color.Blue / maximum - 0.5f;
                 }
             }
             return tensor;
@@ -150,15 +151,16 @@ namespace Eidolon.Core.Infrastructure
                 throw new StudioException(StudioMessageCode.BackgroundRemovalFailed);
             }
             float minimum = prediction.Min();
-            float range = prediction.Max() - minimum;
+            float maximum = prediction.Max();
+            float range = maximum - minimum;
+            if (maximum < MinimumForegroundConfidence || range <= 0)
+            {
+                throw new StudioException(StudioMessageCode.BackgroundSubjectNotFound);
+            }
             SKColor[] colors = new SKColor[prediction.Length];
             for (int index = 0; index < prediction.Length; index++)
             {
-                float value = prediction[index];
-                if (range > 0)
-                {
-                    value = (value - minimum) / range;
-                }
+                float value = (prediction[index] - minimum) / range;
                 byte opacity = (byte)Math.Round(Math.Clamp(value, 0, 1) * 255);
                 colors[index] = new SKColor(opacity, opacity, opacity, 255);
             }

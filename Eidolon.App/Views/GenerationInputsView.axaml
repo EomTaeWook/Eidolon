@@ -1,0 +1,130 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationInputsView" x:DataType="vm:StudioViewModel">
+  <UserControl.Styles>
+    <Style Selector="Button.quiet">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="Padding" Value="6,4" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+  </UserControl.Styles>
+  <Border Classes="card" Padding="0">
+    <Grid RowDefinitions="Auto,*,Auto">
+      <TextBlock Text="{Binding GenerationInputCaption}" FontSize="18" FontWeight="SemiBold" Margin="20,18,20,0" />
+      <ScrollViewer Grid.Row="1" AllowAutoHide="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="20,16,8,0" Padding="0,0,12,12">
+        <StackPanel Spacing="18">
+          <StackPanel Spacing="8">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Text="{DynamicResource EidolonText359}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+              <Button Grid.Column="1" Classes="quiet" Content="{DynamicResource EidolonText410}" Command="{Binding ScanCommand}" ToolTip.Tip="{DynamicResource EidolonText125}" />
+            </Grid>
+            <ComboBox ItemsSource="{Binding Models}" SelectedItem="{Binding SelectedModel, Mode=TwoWay}" IsVisible="{Binding HasAvailableModels}" IsEnabled="{Binding CanEditGenerationInputs}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:AssetItem">
+                  <StackPanel Spacing="3" ToolTip.Tip="{Binding Asset.EngineName}">
+                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="13" />
+                    <TextBlock Text="{Binding Detail}" Classes="muted" FontSize="11" />
+                  </StackPanel>
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Border Background="{DynamicResource ButtonBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="2,0,0,0" CornerRadius="6" Padding="12" IsVisible="{Binding !HasAvailableModels}">
+              <StackPanel Spacing="10">
+                <TextBlock Text="{Binding ModelSetupCaption}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding ModelSetupHint}" Classes="muted" FontSize="12" />
+                <Button Content="{Binding ModelSetupActionCaption}" Command="{Binding PrepareModelsCommand}" Classes="primary" HorizontalAlignment="Stretch" />
+              </StackPanel>
+            </Border>
+            <StackPanel Spacing="8" IsEnabled="{Binding CanEditGenerationInputs}" IsVisible="{Binding HasAvailableModels}">
+              <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                <TextBlock Text="{DynamicResource EidolonText423}" FontSize="13" />
+                <TextBlock Grid.Column="1" Text="{Binding SelectedLorasCaption}" ToolTip.Tip="{Binding SelectedLoraNames}" Classes="muted" FontSize="11" IsVisible="{Binding HasSelectedLoras}" />
+              </Grid>
+              <TextBlock Text="{DynamicResource EidolonText341}" IsVisible="{Binding !HasAvailableLoras}" Classes="muted" FontSize="12" />
+              <TextBox Text="{Binding LoraSearch, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText432}" IsVisible="{Binding ShowLoraSearch}" FontSize="12" Padding="10,7" />
+              <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" ClipToBounds="True" IsVisible="{Binding HasAvailableLoras}">
+                <Grid>
+                  <ScrollViewer MaxHeight="112" AllowAutoHide="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" IsVisible="{Binding HasMatchingLoras}">
+                    <ItemsControl ItemsSource="{Binding FilteredLoras}">
+                      <ItemsControl.Styles>
+                        <Style Selector="Button.loraRow">
+                          <Setter Property="Background" Value="Transparent" />
+                          <Setter Property="BorderBrush" Value="Transparent" />
+                          <Setter Property="BorderThickness" Value="2,0,0,0" />
+                          <Setter Property="CornerRadius" Value="0" />
+                          <Setter Property="HorizontalAlignment" Value="Stretch" />
+                          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                          <Setter Property="Padding" Value="10,8" />
+                        </Style>
+                        <Style Selector="Button.loraRow:pointerover">
+                          <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+                        </Style>
+                        <Style Selector="Button.loraRow.active">
+                          <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+                          <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                        </Style>
+                      </ItemsControl.Styles>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:AssetItem">
+                          <Button Classes="loraRow" Classes.active="{Binding IsSelected}" Click="OnLoraClicked" AutomationProperties.Name="{Binding Label}" ToolTip.Tip="{Binding TriggerCaption}">
+                            <Grid ColumnDefinitions="*,Auto">
+                              <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="12" />
+                              <TextBlock Grid.Column="1" Text="{DynamicResource EidolonText435}" Foreground="{DynamicResource AccentBrush}" FontSize="11" Margin="8,0,0,0" VerticalAlignment="Center" IsVisible="{Binding IsSelected}" />
+                            </Grid>
+                          </Button>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </ScrollViewer>
+                  <TextBlock Text="{DynamicResource EidolonText433}" Classes="muted" FontSize="12" Margin="12" IsVisible="{Binding !HasMatchingLoras}" />
+                </Grid>
+              </Border>
+            </StackPanel>
+          </StackPanel>
+          <StackPanel Spacing="10" IsEnabled="{Binding CanEditGenerationInputs}" IsVisible="{Binding IsGenerationView}">
+            <TextBlock Text="{DynamicResource EidolonText112}" FontSize="15" FontWeight="SemiBold" />
+            <TextBox Text="{Binding Prompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="124" MaxHeight="220" PlaceholderText="{DynamicResource EidolonText114}" />
+            <views:ReferenceImageInputsView />
+          </StackPanel>
+          <views:EditingInputsView IsVisible="{Binding IsEditingView}" />
+          <StackPanel Spacing="10" IsEnabled="{Binding CanEditGenerationInputs}">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Text="{DynamicResource EidolonText369}" FontSize="13" VerticalAlignment="Center" />
+              <CheckBox Grid.Column="1" Content="{DynamicResource EidolonText419}" IsChecked="{Binding UseRandomGenerationSeed, Mode=TwoWay}" FontSize="12" MinHeight="24" />
+            </Grid>
+            <TextBox Text="{Binding GenerationSeed, Mode=TwoWay}" IsVisible="{Binding !UseRandomGenerationSeed}" FontSize="13" Padding="10,8" />
+            <TextBlock Text="{Binding GenerationSeedValidationHint}" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource ErrorTextBrush}" IsVisible="{Binding !IsGenerationSeedValid}" />
+            <CheckBox IsChecked="{Binding RemoveBackground, Mode=TwoWay}" ToolTip.Tip="{DynamicResource EidolonText309}" Content="{DynamicResource EidolonText308}" FontSize="13" MinHeight="24" />
+          </StackPanel>
+          <StackPanel Spacing="0">
+            <Border Height="1" Background="{DynamicResource BorderBrush}" />
+            <ToggleButton x:Name="GuidelinesToggle" Classes="disclosure" IsChecked="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+              <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
+                <TextBlock Text="{DynamicResource EidolonText436}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                <Path Grid.Column="1" Data="M 2 4 L 7 9 L 12 4" Width="12" Height="8" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" Margin="16,0,0,0" VerticalAlignment="Center" />
+              </Grid>
+            </ToggleButton>
+            <StackPanel Spacing="8" IsVisible="{Binding #GuidelinesToggle.IsChecked}" Margin="0,0,0,8">
+              <TextBlock Text="{DynamicResource EidolonText437}" Classes="muted" FontSize="12" />
+              <TextBlock Text="{DynamicResource EidolonText362}" FontSize="12" FontWeight="SemiBold" />
+              <SelectableTextBlock Text="{Binding GenerationPositivePrompt}" TextWrapping="Wrap" FontSize="12" />
+              <TextBlock Text="{DynamicResource EidolonText180}" FontSize="12" FontWeight="SemiBold" />
+              <SelectableTextBlock Text="{Binding GenerationNegativePrompt}" TextWrapping="Wrap" FontSize="12" />
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+      </ScrollViewer>
+      <Border Grid.Row="2" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="20,14">
+        <StackPanel Spacing="10">
+          <Button Classes="primary" Command="{Binding GenerationSubmitCommand}" HorizontalAlignment="Stretch" ToolTip.Tip="{DynamicResource EidolonText248}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Path Data="{StaticResource EidolonIconPlay}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
+              <TextBlock Text="{Binding GenerationActionCaption}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <SelectableTextBlock Text="{Binding QueuedGenerationSeedCaption}" IsVisible="{Binding HasQueuedGenerationSeed}" Foreground="{DynamicResource MutedBrush}" FontSize="11" TextWrapping="Wrap" />
+          <views:PendingWorkView />
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Border>
+</UserControl>

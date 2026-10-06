@@ -1,10 +1,12 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.PromptDetailsView" x:DataType="vm:JobItem">
-  <StackPanel Spacing="8">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.PromptDetailsView" x:DataType="vm:GenerationItem">
+  <StackPanel Spacing="8" IsVisible="{Binding HasMetadata}">
     <TextBlock Text="{DynamicResource EidolonText292}" Classes="label" />
-    <SelectableTextBlock Text="{Binding Job.UserPrompt, FallbackValue=''}" TextWrapping="Wrap" />
+    <SelectableTextBlock Text="{Binding Metadata.UserPrompt, FallbackValue=''}" TextWrapping="Wrap" />
     <TextBlock Text="{DynamicResource EidolonText293}" Classes="label" />
-    <SelectableTextBlock Text="{Binding Job.PositivePrompt, FallbackValue=''}" TextWrapping="Wrap" />
+    <SelectableTextBlock Text="{Binding Metadata.PositivePrompt, FallbackValue=''}" TextWrapping="Wrap" />
     <TextBlock Text="{DynamicResource EidolonText294}" Classes="label" />
-    <SelectableTextBlock Text="{Binding Job.NegativePrompt, FallbackValue=''}" TextWrapping="Wrap" />
+    <SelectableTextBlock Text="{Binding Metadata.NegativePrompt, FallbackValue=''}" TextWrapping="Wrap" />
+    <TextBlock Text="{DynamicResource EidolonText440}" Classes="label" IsVisible="{Binding HasReferenceImage}" />
+    <SelectableTextBlock Text="{Binding ReferenceCaption}" TextWrapping="Wrap" IsVisible="{Binding HasReferenceImage}" />
   </StackPanel>
 </UserControl>

@@ -98,7 +98,8 @@ namespace Eidolon.App
                 provider.GetService<SettingsStore>(), provider.GetService<AssetLibrary>(), provider.GetService<JobStore>(),
                 provider.GetService<RuntimeInstaller>(), provider.GetService<ComfyEngine>(), provider.GetService<StudioService>(),
                 provider.GetService<DesktopDialogs>(), provider.GetService<ThemeService>(), provider.GetService<LanguageService>(),
-                provider.GetService<StringHelper>(), provider.GetService<StudioWorkPresenter>(), dataDirectory), LifeScope.Singleton);
+                provider.GetService<StringHelper>(), provider.GetService<StudioWorkPresenter>(),
+                provider.GetService<ISeedProvider>(), dataDirectory), LifeScope.Singleton);
             _serviceContainer.RegisterDependencies(typeof(StringHelper).Assembly);
             return _serviceContainer.Build();
         }

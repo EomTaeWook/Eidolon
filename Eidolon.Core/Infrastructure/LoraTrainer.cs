@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using Eidolon.Core.Domain;
+using SkiaSharp;
 
 namespace Eidolon.Core.Infrastructure
 {
@@ -38,67 +39,10 @@ namespace Eidolon.Core.Infrastructure
             string jobDirectory = _jobs.DirectoryFor(job.Id);
             string datasetDirectory = Path.Combine(jobDirectory, "Dataset");
             Directory.CreateDirectory(datasetDirectory);
-            string[] extensions = { ".png", ".jpg", ".jpeg", ".bmp" };
-            List<string> images;
-            if (training.ImageFiles.Count > 0)
-            {
-                images = training.ImageFiles.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-                foreach (string image in images)
-                {
-                    if (File.Exists(image) == false || extensions.Contains(Path.GetExtension(image).ToLowerInvariant()) == false)
-                    {
-                        throw new StudioException(StudioMessageCode.TrainingImagesMissing);
-                    }
-                }
-            }
-            else
-            {
-                images = Directory.EnumerateFiles(training.ImageDirectory, "*", SearchOption.AllDirectories)
-                    .Where(path => extensions.Contains(Path.GetExtension(path).ToLowerInvariant())).OrderBy(path => path).ToList();
-            }
-            if (images.Count == 0)
-            {
-                throw new StudioException(StudioMessageCode.TrainingImagesMissing);
-            }
-            int index = 0;
-            foreach (string image in images)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                index++;
-                string stem = index.ToString("D6", CultureInfo.InvariantCulture);
-                string target = Path.Combine(datasetDirectory, stem + Path.GetExtension(image).ToLowerInvariant());
-                progress.Report(new WorkProgress(StudioMessageCode.PreparingDataset, index * 100.0 / images.Count, false, index, images.Count));
-                await using (FileStream input = File.OpenRead(image))
-                await using (FileStream output = File.Create(target))
-                {
-                    await input.CopyToAsync(output, cancellationToken).ConfigureAwait(false);
-                }
-                string caption = job.DatasetDescription;
-                string captionPath = Path.ChangeExtension(image, ".txt");
-                if (File.Exists(captionPath) == true)
-                {
-                    caption = await File.ReadAllTextAsync(captionPath, cancellationToken).ConfigureAwait(false);
-                }
-                caption = caption.Trim();
-                string combined = job.TriggerWord;
-                if (string.IsNullOrWhiteSpace(caption) == false)
-                {
-                    bool hasTrigger = caption.Equals(job.TriggerWord, StringComparison.OrdinalIgnoreCase) ||
-                        caption.StartsWith(job.TriggerWord + ",", StringComparison.OrdinalIgnoreCase) ||
-                        caption.StartsWith(job.TriggerWord + " ", StringComparison.OrdinalIgnoreCase);
-                    if (hasTrigger == false)
-                    {
-                        combined += ", " + caption;
-                    }
-                    else
-                    {
-                        combined = caption;
-                    }
-                }
-                await File.WriteAllTextAsync(Path.Combine(datasetDirectory, stem + ".txt"), combined,
-                    new UTF8Encoding(false), cancellationToken).ConfigureAwait(false);
-            }
+            IReadOnlyList<TrainingImageInput> images = await PrepareDatasetAsync(training, datasetDirectory,
+                progress, cancellationToken).ConfigureAwait(false);
             job.DatasetImageCount = images.Count;
+            job.DatasetImages = images.Select(image => image.Copy()).ToList();
             _jobs.Save(job);
             GenerationPreset imagePreset = new GenerationPreset(job.Model.Family);
             string datasetConfig = "[general]\ncaption_extension = \".txt\"\nkeep_tokens = 1\n" +
@@ -115,7 +59,8 @@ namespace Eidolon.Core.Infrastructure
                 "paths=[p for p in Path(sys.argv[1]).iterdir() if p.suffix.lower() in ('.png','.jpg','.jpeg','.bmp')]; " +
                 "[Image.open(p).verify() for p in paths]; print('Validated images:',len(paths))";
             await _runner.RunAsync(layout.TrainingPython, new[] { "-c", validateCode, datasetDirectory },
-                layout.TrainingDirectory, logPath, cancellationToken, _installer.EnvironmentFor(layout)).ConfigureAwait(false);
+                layout.TrainingDirectory, logPath, cancellationToken, _installer.EnvironmentFor(layout),
+                stopWithParent: true).ConfigureAwait(false);
             string script = "train_network.py";
             if (job.Model.Family == ModelFamily.Sdxl)
             {
@@ -196,13 +141,176 @@ namespace Eidolon.Core.Infrastructure
                             lastReportAtUtc = now;
                         }
                     }
-                }).ConfigureAwait(false);
+                }, stopWithParent: true).ConfigureAwait(false);
             string trainedPath = Path.Combine(outputDirectory, outputName + ".safetensors");
             if (File.Exists(trainedPath) == false)
             {
                 throw new StudioException(StudioMessageCode.TrainingOutputMissing);
             }
             return trainedPath;
+        }
+
+        public async Task<IReadOnlyList<TrainingImageInput>> PrepareDatasetAsync(TrainingInput training, string datasetDirectory,
+            IProgress<WorkProgress> progress, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Directory.CreateDirectory(datasetDirectory);
+            string[] extensions = { ".png", ".jpg", ".jpeg", ".bmp" };
+            List<TrainingImageInput> images;
+            if (training.Images.Count > 0)
+            {
+                images = training.Images.Select(image => image.Copy()).ToList();
+            }
+            else if (training.ImageFiles.Count > 0)
+            {
+                images = training.ImageFiles.Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Select(path => new TrainingImageInput
+                    {
+                        FilePath = path,
+                        Background = training.Background
+                    }).ToList();
+            }
+            else
+            {
+                images = Directory.EnumerateFiles(training.ImageDirectory, "*", SearchOption.AllDirectories)
+                    .Where(path => extensions.Contains(Path.GetExtension(path).ToLowerInvariant()))
+                    .OrderBy(path => path).Select(path => new TrainingImageInput
+                    {
+                        FilePath = path,
+                        Background = training.Background
+                    }).ToList();
+            }
+            foreach (TrainingImageInput image in images)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (File.Exists(image.FilePath) == false)
+                {
+                    throw new StudioException(StudioMessageCode.TrainingImagesMissing);
+                }
+                if (extensions.Contains(Path.GetExtension(image.FilePath).ToLowerInvariant()) == false)
+                {
+                    throw new StudioException(StudioMessageCode.TrainingImagesMissing);
+                }
+            }
+            if (images.Count == 0)
+            {
+                throw new StudioException(StudioMessageCode.TrainingImagesMissing);
+            }
+            int index = 0;
+            foreach (TrainingImageInput image in images)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                index++;
+                string stem = index.ToString("D6", CultureInfo.InvariantCulture);
+                if (image.Background == TrainingBackground.White)
+                {
+                    stem += "_white";
+                }
+                else if (image.Background == TrainingBackground.Black)
+                {
+                    stem += "_black";
+                }
+                string targetStem = Path.Combine(datasetDirectory, stem);
+                progress.Report(new WorkProgress(StudioMessageCode.PreparingDataset, index * 100.0 / images.Count, false, index, images.Count));
+                await PrepareTrainingImageAsync(image.FilePath, targetStem, image.Background, cancellationToken).ConfigureAwait(false);
+                string caption = training.Description;
+                string captionPath = Path.ChangeExtension(image.FilePath, ".txt");
+                if (File.Exists(captionPath) == true)
+                {
+                    caption = await File.ReadAllTextAsync(captionPath, cancellationToken).ConfigureAwait(false);
+                }
+                caption = caption.Trim();
+                string combined = training.TriggerWord.Trim();
+                if (string.IsNullOrWhiteSpace(caption) == false)
+                {
+                    bool hasTrigger = caption.Equals(combined, StringComparison.OrdinalIgnoreCase) ||
+                        caption.StartsWith(combined + ",", StringComparison.OrdinalIgnoreCase) ||
+                        caption.StartsWith(combined + " ", StringComparison.OrdinalIgnoreCase);
+                    if (string.IsNullOrWhiteSpace(combined) == true)
+                    {
+                        combined = caption;
+                    }
+                    else if (hasTrigger == false)
+                    {
+                        combined += ", " + caption;
+                    }
+                    else
+                    {
+                        combined = caption;
+                    }
+                }
+                await File.WriteAllTextAsync(Path.Combine(datasetDirectory, stem + ".txt"), combined,
+                    new UTF8Encoding(false), cancellationToken).ConfigureAwait(false);
+            }
+            return images;
+        }
+
+        private async Task PrepareTrainingImageAsync(string source, string targetStem, TrainingBackground background,
+            CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            if (background == TrainingBackground.Original)
+            {
+                string target = targetStem + Path.GetExtension(source).ToLowerInvariant();
+                await using FileStream input = File.OpenRead(source);
+                await using FileStream output = File.Create(target);
+                await input.CopyToAsync(output, token).ConfigureAwait(false);
+                return;
+            }
+            SKColor color;
+            if (background == TrainingBackground.White)
+            {
+                color = SKColors.White;
+            }
+            else if (background == TrainingBackground.Black)
+            {
+                color = SKColors.Black;
+            }
+            else
+            {
+                throw new StudioException(StudioMessageCode.InvalidTrainingBackground);
+            }
+            await Task.Run(() =>
+            {
+                try
+                {
+                    token.ThrowIfCancellationRequested();
+                    using SKBitmap original = SKBitmap.Decode(source);
+                    if (original == null)
+                    {
+                        throw new StudioException(StudioMessageCode.TrainingImageProcessingFailed, Path.GetFileName(source));
+                    }
+                    using SKBitmap result = new SKBitmap(original.Width, original.Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+                    using SKImage image = SKImage.FromBitmap(original);
+                    using (SKCanvas canvas = new SKCanvas(result))
+                    {
+                        canvas.Clear(color);
+                        canvas.DrawImage(image, 0, 0);
+                    }
+                    token.ThrowIfCancellationRequested();
+                    using SKData png = result.Encode(SKEncodedImageFormat.Png, 100);
+                    if (png == null)
+                    {
+                        throw new StudioException(StudioMessageCode.TrainingImageProcessingFailed, Path.GetFileName(source));
+                    }
+                    token.ThrowIfCancellationRequested();
+                    using FileStream output = File.Create(targetStem + ".png");
+                    png.SaveTo(output);
+                    token.ThrowIfCancellationRequested();
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (StudioException)
+                {
+                    throw;
+                }
+                catch (Exception error)
+                {
+                    throw new StudioException(StudioMessageCode.TrainingImageProcessingFailed, error, Path.GetFileName(source));
+                }
+            }, token).ConfigureAwait(false);
         }
 
         private bool TryParseRemainingTime(string value, out TimeSpan remainingTime)
