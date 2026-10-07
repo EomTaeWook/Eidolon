@@ -19,6 +19,8 @@ namespace Eidolon.App.ViewModels
         private bool _disposed;
         private int _loadingCount;
 
+        public event Action ImagesChanged;
+
         public TrainingImageGroup(TrainingBackground background, string labelKey, IBrush swatch,
             StringHelper strings, DesktopDialogs dialogs, Func<bool> canEdit, Action changed,
             Action<Exception> onError, CancellationToken lifetime)
@@ -112,6 +114,7 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(CountCaption));
             Raise(nameof(HasImages));
             _changed();
+            ImagesChanged?.Invoke();
         }
 
         private async Task PickImagesAsync()

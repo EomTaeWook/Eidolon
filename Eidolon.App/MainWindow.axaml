@@ -117,10 +117,7 @@
               <StackPanel Spacing="12">
                 <TextBlock Text="{DynamicResource EidolonText176}" Classes="title" />
                 <TextBlock Text="{DynamicResource EidolonText177}" Classes="muted" />
-                <TextBlock Text="{DynamicResource EidolonText178}" Classes="label" />
-                <TextBox Text="{Binding Session.SettingsDraft.PositivePrompt}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="110" PlaceholderText="{DynamicResource EidolonText179}" />
-                <TextBlock Text="{DynamicResource EidolonText180}" Classes="label" />
-                <TextBox Text="{Binding Session.SettingsDraft.NegativePrompt}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="110" PlaceholderText="{DynamicResource EidolonText181}" />
+                <views:PromptSettingsView DataContext="{Binding Settings.Prompts}" />
                 <TextBlock Text="{DynamicResource EidolonText297}" Classes="label" />
                 <Grid ColumnDefinitions="*,Auto,Auto">
                   <TextBox Classes="folderPath" Text="{Binding Settings.GenerationDirectory, Mode=TwoWay}" ToolTip.Tip="{Binding Settings.GenerationDirectory}" />

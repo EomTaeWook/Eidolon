@@ -13,7 +13,6 @@ namespace Eidolon.App.ViewModels
         public AssetsViewModel Assets { get; private set; }
 
         private readonly StudioService _studio;
-        private string _preparedTrainingDatasetPath = string.Empty;
         private string _trainingName = string.Empty;
         private string _trainingTrigger = string.Empty;
         private string _trainingDescription = string.Empty;
@@ -25,12 +24,12 @@ namespace Eidolon.App.ViewModels
         private bool _hasTrainingRemainingTime;
         private TimeSpan _trainingRemainingTime;
         public List<TrainingImageGroup> TrainingImageGroups { get; private set; } = new List<TrainingImageGroup>();
+        public TrainingWorkflowViewModel Workflow { get; private set; }
+        public TrainingDatasetViewModel Dataset { get; private set; }
         public AsyncCommand TrainCommand { get; private set; }
         public AsyncCommand QuickTrainingCommand { get; private set; }
         public AsyncCommand StandardTrainingCommand { get; private set; }
         public AsyncCommand CancelTrainingCommand { get; private set; }
-        public AsyncCommand CreateTrainingDatasetCommand { get; private set; }
-        public AsyncCommand OpenTrainingDatasetCommand { get; private set; }
 
         public decimal TrainingSteps
         {
@@ -49,7 +48,9 @@ namespace Eidolon.App.ViewModels
         {
             get
             {
-                return Session.CanQueue == true && AreTrainingImagesLoading == false && TrainingInputIssue() == StudioMessageCode.None;
+                return Session.CanQueue == true && Dataset.IsPreparing == false
+                    && AreTrainingImagesLoading == false && Dataset.IsCurrent == true
+                    && TrainingInputIssue() == StudioMessageCode.None;
             }
         }
 
@@ -57,6 +58,10 @@ namespace Eidolon.App.ViewModels
         {
             get
             {
+                if (Dataset.IsCurrent == false)
+                {
+                    return _strings.GetString("EidolonText497");
+                }
                 if (AreTrainingImagesLoading == true)
                 {
                     return _strings.GetString("EidolonText475");
@@ -211,19 +216,24 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        public string PreparedTrainingDatasetPath
+        public bool CanEditTrainingInputs
         {
             get
             {
-                return _preparedTrainingDatasetPath;
+                return Session.CanQueue == true && Dataset.IsPreparing == false;
             }
         }
 
-        public bool HasPreparedTrainingDataset
+        public string CaptionExample
         {
             get
             {
-                return string.IsNullOrEmpty(_preparedTrainingDatasetPath) == false;
+                string description = TrainingDescription.Trim();
+                if (string.IsNullOrWhiteSpace(description) == true)
+                {
+                    description = _strings.GetString("EidolonText502");
+                }
+                return TrainingTrigger.Trim() + ", " + description;
             }
         }
 
@@ -235,8 +245,14 @@ namespace Eidolon.App.ViewModels
             }
             set
             {
-                Set(ref _trainingName, value);
-                RefreshTrainingSetup();
+                if (value == null)
+                {
+                    value = string.Empty;
+                }
+                if (Set(ref _trainingName, value) == true)
+                {
+                    InvalidatePreparedDataset();
+                }
             }
         }
 
@@ -248,8 +264,14 @@ namespace Eidolon.App.ViewModels
             }
             set
             {
-                Set(ref _trainingTrigger, value);
-                RefreshTrainingSetup();
+                if (value == null)
+                {
+                    value = string.Empty;
+                }
+                if (Set(ref _trainingTrigger, value) == true)
+                {
+                    InvalidatePreparedDataset();
+                }
             }
         }
 
@@ -261,7 +283,14 @@ namespace Eidolon.App.ViewModels
             }
             set
             {
-                Set(ref _trainingDescription, value);
+                if (value == null)
+                {
+                    value = string.Empty;
+                }
+                if (Set(ref _trainingDescription, value) == true)
+                {
+                    InvalidatePreparedDataset();
+                }
             }
         }
 
@@ -298,10 +327,25 @@ namespace Eidolon.App.ViewModels
             {
                 return StudioMessageCode.ModelRequired;
             }
-            if (HasTrainingImages == false)
+            if (Dataset.IsCurrent == false)
             {
                 return StudioMessageCode.DatasetRequired;
             }
+            StudioMessageCode identityIssue = TrainingIdentityIssue();
+            if (identityIssue != StudioMessageCode.None)
+            {
+                return identityIssue;
+            }
+            if (TrainingSteps != decimal.Truncate(TrainingSteps) || TrainingSteps < TrainingPreset.MinimumSteps ||
+                TrainingSteps > TrainingPreset.MaximumSteps)
+            {
+                return StudioMessageCode.InvalidTrainingSteps;
+            }
+            return StudioMessageCode.None;
+        }
+
+        private StudioMessageCode TrainingIdentityIssue()
+        {
             if (string.IsNullOrWhiteSpace(TrainingName) == true)
             {
                 return StudioMessageCode.LoraNameRequired;
@@ -314,12 +358,76 @@ namespace Eidolon.App.ViewModels
             {
                 return StudioMessageCode.InvalidTrigger;
             }
-            if (TrainingSteps != decimal.Truncate(TrainingSteps) || TrainingSteps < TrainingPreset.MinimumSteps ||
-                TrainingSteps > TrainingPreset.MaximumSteps)
-            {
-                return StudioMessageCode.InvalidTrainingSteps;
-            }
             return StudioMessageCode.None;
+        }
+
+        private bool CanCompleteStep(TrainingStep step)
+        {
+            switch (step)
+            {
+                case TrainingStep.Images:
+                    return HasTrainingImages == true && AreTrainingImagesLoading == false;
+                case TrainingStep.Identity:
+                    return TrainingIdentityIssue() == StudioMessageCode.None;
+                case TrainingStep.Dataset:
+                case TrainingStep.Captions:
+                    return Dataset.IsCurrent == true && Dataset.IsPreparing == false;
+                case TrainingStep.Training:
+                    return CanQueueTraining;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(step));
+            }
+        }
+
+        private string StepHint(TrainingStep step)
+        {
+            switch (step)
+            {
+                case TrainingStep.Images:
+                    if (AreTrainingImagesLoading == true)
+                    {
+                        return _strings.GetString("EidolonText475");
+                    }
+                    if (HasTrainingImages == false)
+                    {
+                        return _strings.GetString("EidolonText470");
+                    }
+                    return TrainingImageSummary;
+                case TrainingStep.Identity:
+                    StudioMessageCode issue = TrainingIdentityIssue();
+                    if (issue != StudioMessageCode.None)
+                    {
+                        return _strings.Format(issue);
+                    }
+                    return _strings.GetString("EidolonText495");
+                case TrainingStep.Dataset:
+                    if (Dataset.IsPreparing == true)
+                    {
+                        return _strings.GetString("EidolonText499");
+                    }
+                    if (Dataset.IsCurrent == true)
+                    {
+                        return _strings.GetString("EidolonText498");
+                    }
+                    if (Dataset.HasPrepared == true)
+                    {
+                        return _strings.GetString("EidolonText500");
+                    }
+                    return _strings.GetString("EidolonText496");
+                case TrainingStep.Captions:
+                    return _strings.GetString("EidolonText501");
+                case TrainingStep.Training:
+                    return TrainingSetupHint;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(step));
+            }
+        }
+
+        private void InvalidatePreparedDataset()
+        {
+            Dataset.Invalidate();
+            Raise(nameof(CaptionExample));
+            RefreshTrainingSetup();
         }
 
         private void RefreshTrainingSetup()
@@ -337,6 +445,10 @@ namespace Eidolon.App.ViewModels
 
         private Task QueueTrainingAsync()
         {
+            if (CanQueueTraining == false)
+            {
+                return Task.CompletedTask;
+            }
             if (TrainingSteps != decimal.Truncate(TrainingSteps) || TrainingSteps < TrainingPreset.MinimumSteps ||
                 TrainingSteps > TrainingPreset.MaximumSteps)
             {
@@ -353,7 +465,7 @@ namespace Eidolon.App.ViewModels
             return Task.CompletedTask;
         }
 
-        private TrainingInput CreateTrainingInput()
+        private TrainingInput CreateTrainingInput(bool usePreparedDataset = true)
         {
             ModelAsset model = null;
             if (Assets.SelectedModel != null)
@@ -369,6 +481,12 @@ namespace Eidolon.App.ViewModels
                 Description = TrainingDescription,
                 Steps = decimal.ToInt32(TrainingSteps)
             };
+            if (usePreparedDataset == true)
+            {
+                input.Images.Clear();
+                input.ImageDirectory = Dataset.Path;
+                input.Background = TrainingBackground.Original;
+            }
             if (ContinueTraining == true && Assets.SelectedResumeLora != null)
             {
                 input.ResumeLora = Assets.SelectedResumeLora.Asset.Copy();
@@ -411,29 +529,16 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        private async Task CreateTrainingDatasetAsync()
-        {
-            TrainingInput input = CreateTrainingInput();
-            string parentDirectory = await _dialogs.PickFolderAsync(_strings.GetString("EidolonText472"));
-            if (string.IsNullOrEmpty(parentDirectory) == true || Session.IsClosing == true)
-            {
-                return;
-            }
-            _work.Enqueue(_strings.GetString("EidolonText471"), async token =>
-            {
-                string path = await _studio.PrepareTrainingDatasetAsync(input, parentDirectory, _work.Progress, token);
-                _preparedTrainingDatasetPath = path;
-                Raise(nameof(PreparedTrainingDatasetPath));
-                Raise(nameof(HasPreparedTrainingDataset));
-                Session.Status = _strings.Format("EidolonText473", input.Images.Count);
-                RefreshCommands();
-            });
-        }
-
         internal async Task UseResultForTrainingAsync(GenerationItem result, string path)
         {
+            if (CanEditTrainingInputs == false)
+            {
+                Navigation.SelectedTab = 2;
+                return;
+            }
             bool hasImages = HasTrainingImages;
             await TrainingImageGroups[0].AddPathsAsync(new[] { path });
+            Workflow.ShowImages();
             if (hasImages == true)
             {
                 Navigation.SelectedTab = 2;
@@ -466,7 +571,13 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(HasTrainingImages));
             Raise(nameof(AreTrainingImagesLoading));
             Raise(nameof(TrainingImageSummary));
+            Dataset.RefreshInputs();
             RefreshTrainingSetup();
+        }
+
+        private void OnTrainingImagesChanged()
+        {
+            InvalidatePreparedDataset();
         }
 
         public TrainingViewModel(StudioSession session, StudioNavigationViewModel navigation,
@@ -478,24 +589,27 @@ namespace Eidolon.App.ViewModels
             TrainingImageGroups = new List<TrainingImageGroup>
             {
                 new TrainingImageGroup(TrainingBackground.White, "EidolonText461", Brushes.White,
-                    _strings, _dialogs, () => Session.CanQueue, RefreshTrainingSource, OnCommandError, Session.Lifetime),
+                    _strings, _dialogs, () => CanEditTrainingInputs, RefreshTrainingSource, OnCommandError, Session.Lifetime),
                 new TrainingImageGroup(TrainingBackground.Black, "EidolonText462", Brushes.Black,
-                    _strings, _dialogs, () => Session.CanQueue, RefreshTrainingSource, OnCommandError, Session.Lifetime)
+                    _strings, _dialogs, () => CanEditTrainingInputs, RefreshTrainingSource, OnCommandError, Session.Lifetime)
             };
             foreach (TrainingImageGroup group in TrainingImageGroups)
             {
                 _commands.AddRange(group.Commands);
+                group.ImagesChanged += OnTrainingImagesChanged;
             }
+            Dataset = new TrainingDatasetViewModel(session, navigation, work, strings, dialogs, studio,
+                () => CreateTrainingInput(false), () => CanCompleteStep(TrainingStep.Images) == true
+                    && CanCompleteStep(TrainingStep.Identity) == true);
+            Dataset.PropertyChanged += OnDatasetChanged;
+            Workflow = new TrainingWorkflowViewModel(_strings, CanCompleteStep, StepHint,
+                () => Session.CanEditGenerationInputs, OnCommandError);
             Assets.PropertyChanged += OnAssetsChanged;
             _work.ProgressChanged += OnTrainingProgress;
             TrainCommand = Command(QueueTrainingAsync, () => CanQueueTraining == true);
             QuickTrainingCommand = Command(() => SetTrainingStepsAsync(TrainingPreset.QuickMaxSteps), () => Session.CanQueue == true);
             StandardTrainingCommand = Command(() => SetTrainingStepsAsync(TrainingPreset.MaxSteps), () => Session.CanQueue == true);
             CancelTrainingCommand = Command(CancelTrainingAsync, () => CanCancelTraining == true);
-            CreateTrainingDatasetCommand = Command(CreateTrainingDatasetAsync,
-                () => Session.CanQueue == true && HasTrainingImages == true && AreTrainingImagesLoading == false);
-            OpenTrainingDatasetCommand = Command(() => _dialogs.OpenFolderAsync(_preparedTrainingDatasetPath),
-                () => Session.IsClosing == false && HasPreparedTrainingDataset == true);
         }
 
         public AssetItem SelectedResumeLora
@@ -560,9 +674,14 @@ namespace Eidolon.App.ViewModels
 
         protected override void RefreshCommands()
         {
+            Raise(nameof(CanEditTrainingInputs));
             Raise(nameof(CanQueueTraining));
             Raise(nameof(TrainingSetupHint));
             base.RefreshCommands();
+            if (Workflow != null)
+            {
+                Workflow.Refresh();
+            }
         }
 
         public override void Localize()
@@ -574,16 +693,26 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(TrainingImageSummary));
             Raise(nameof(TrainingSpeedDescription));
             Raise(nameof(TrainingSpeedCaption));
+            Raise(nameof(CaptionExample));
+            Workflow.Localize();
             RefreshTrainingState();
             base.Localize();
         }
 
+        private void OnDatasetChanged(object sender, PropertyChangedEventArgs args)
+        {
+            RefreshTrainingSetup();
+        }
+
         public override void Dispose()
         {
+            Dataset.PropertyChanged -= OnDatasetChanged;
+            Dataset.Dispose();
             Assets.PropertyChanged -= OnAssetsChanged;
             _work.ProgressChanged -= OnTrainingProgress;
             foreach (TrainingImageGroup group in TrainingImageGroups)
             {
+                group.ImagesChanged -= OnTrainingImagesChanged;
                 group.Dispose();
             }
             base.Dispose();

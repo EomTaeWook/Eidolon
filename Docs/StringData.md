@@ -1,6 +1,6 @@
 # 문자열 데이터 변환
 
-원본은 [Excel/String.xlsx](../Excel/String.xlsx)다. Bough와 같은 Data·Define 시트와 Id, Name, Kor, Eng 필드를 사용한다. 기존 496개 행을 보존하며 Eidolon 문구는 별도 ID·이름으로 관리한다.
+원본은 [Excel/String.xlsx](../Excel/String.xlsx)다. Bough와 같은 Data·Define 시트와 Id, Name, Kor, Eng 필드를 사용한다. 기존 원본 행을 보존하며 Eidolon 문구는 별도 ID·이름으로 관리한다.
 
 원본을 수정한 뒤 ExportTools/ExcelToJson에서 ExcelToJson.exe --no-pause를 실행하고 ExportTools/JsonToCSharp에서 JsonToCSharp.exe --no-pause를 실행한다. 생성 JSON·C#은 직접 수정하지 않는다. 현재 사용자 지시로 빌드·테스트는 실행하지 않으며 변환기는 데이터 산출물 생성 단계다.
 

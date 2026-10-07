@@ -4124,14 +4124,14 @@
   {
     "Id": 3272,
     "Name": "EidolonText192",
-    "Kor": "\uBAA8\uB378, \uC774\uBBF8\uC9C0\uC640 LoRA \uC774\uB984\u00B7\uD2B8\uB9AC\uAC70\uB97C \uC9C0\uC815\uD569\uB2C8\uB2E4. \uB2E8\uACC4 \uC218\uB97C \uC785\uB825\uD558\uAC70\uB098 \uBE60\uB978\u00B7\uAE30\uBCF8 \uD559\uC2B5\uC744 \uC120\uD0DD\uD55C \uB4A4 \uB300\uAE30\uC5F4\uC5D0 \uCD94\uAC00\uD569\uB2C8\uB2E4. \uC694\uCCAD \uBC84\uD2BC \uC606\uC5D0\uC11C \uD559\uC2B5\uC744 \uCDE8\uC18C\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uD558\uB2E8\uC5D0\uB294 \uC9C4\uD589 \uC0C1\uD0DC\uC640 \uC608\uC0C1 \uB0A8\uC740 \uC2DC\uAC04\uC744 \uD45C\uC2DC\uD569\uB2C8\uB2E4. \uD559\uC2B5\uD55C LoRA\uB97C \uC0DD\uC131\uC5D0\uC11C \uC120\uD0DD\uD558\uBA74 \uD2B8\uB9AC\uAC70\uAC00 \uC790\uB3D9 \uC801\uC6A9\uB429\uB2C8\uB2E4.",
-    "Eng": "Choose a model, images, LoRA name and trigger. Enter steps or use Quick or Standard, then queue training. Cancel beside the request button. The footer shows progress and estimated time remaining. Selecting a trained LoRA applies its trigger automatically."
+    "Kor": "\uC774\uBBF8\uC9C0 \uC120\uD0DD \u2192 \uC774\uB984\uACFC \uD2B8\uB9AC\uAC70 \u2192 \uD559\uC2B5 \uD3F4\uB354 \uC900\uBE44 \u2192 \uC124\uBA85 \uD655\uC778 \u2192 \uD559\uC2B5 \uC21C\uC11C\uB85C \uC9C4\uD589\uD569\uB2C8\uB2E4. \uD770\uC0C9\u00B7\uAC80\uC815\uC0C9 \uBAA9\uB85D\uC5D0 \uACE0\uB978 \uC774\uBBF8\uC9C0\uB294 \uD568\uAED8 \uD559\uC2B5\uD574 LoRA \uD558\uB098\uB97C \uB9CC\uB4ED\uB2C8\uB2E4. \uD559\uC2B5 \uD3F4\uB354\uC758 .txt \uC124\uBA85\uC744 \uC218\uC815\uD558\uACE0 \uC800\uC7A5\uD55C \uB4A4 \uBAA8\uB378\uACFC \uB2E8\uACC4 \uC218\uB97C \uC815\uD574 \uD559\uC2B5\uD558\uAE30\uB97C \uB204\uB974\uC138\uC694.",
+    "Eng": "Follow the steps: select images, set a name and trigger, prepare a training folder, review captions, and train. Images from the white and black lists are combined into one LoRA. Edit and save the caption .txt files, choose the model and step count, then s"
   },
   {
     "Id": 3273,
     "Name": "EidolonText193",
-    "Kor": "\uD559\uC2B5\uC5D0\uB294 NVIDIA GPU \uD658\uACBD\uC774 \uD544\uC694\uD569\uB2C8\uB2E4. \uD2B8\uB9AC\uAC70\uB294 \uACF5\uBC31\uACFC \uC27C\uD45C\uAC00 \uC5C6\uB294 \uB2E8\uC5B4\uB97C \uC0AC\uC6A9\uD558\uC138\uC694. \uC644\uB8CC\uD55C LoRA\uB294 \uC790\uB3D9\uC73C\uB85C \uB4F1\uB85D\uB418\uBA70 \uC774\uBBF8\uC9C0 \uC0DD\uC131 \uD0ED\uC5D0\uC11C \uC120\uD0DD\uD574 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uAE30\uBCF8 \uBAA8\uB378\uACFC \uAC19\uC740 \uACC4\uC5F4\uC758 LoRA\uB9CC \uD45C\uC2DC\uD569\uB2C8\uB2E4.",
-    "Eng": "Training requires an NVIDIA GPU environment. Use a trigger word without spaces or commas. Completed LoRAs are registered automatically and can be selected in Generate. Only LoRAs matching the base model family are shown."
+    "Kor": "\uD559\uC2B5\uC5D0\uB294 NVIDIA GPU\uAC00 \uD544\uC694\uD569\uB2C8\uB2E4. \uD2B8\uB9AC\uAC70\uB294 \uACF5\uBC31\uACFC \uC27C\uD45C \uC5C6\uB294 \uB2E8\uC5B4\uB97C \uC0AC\uC6A9\uD558\uC138\uC694. \uC644\uB8CC\uB41C LoRA\uB294 \uC0DD\uC131 \uD654\uBA74\uC5D0\uC11C \uC120\uD0DD\uD560 \uC218 \uC788\uC73C\uBA70, \uD2B8\uB9AC\uAC70\uAC00 \uD504\uB86C\uD504\uD2B8 \uB9E8 \uC55E\uC5D0 \uC790\uB3D9\uC73C\uB85C \uC801\uC6A9\uB429\uB2C8\uB2E4. \uAE30\uBC18 \uBAA8\uB378\uACFC \uAC19\uC740 \uACC4\uC5F4\uC758 LoRA\uB9CC \uD45C\uC2DC\uD569\uB2C8\uB2E4.",
+    "Eng": "Training requires an NVIDIA GPU. Use a trigger without spaces or commas. Completed LoRAs are available in the generation tab, where their triggers are added to the beginning of the prompt. Only LoRAs compatible with the selected model family are shown."
   },
   {
     "Id": 3274,
@@ -5734,5 +5734,365 @@
     "Name": "EidolonText460",
     "Kor": "\uC800\uC7A5 \uD3F4\uB354 \uC120\uD0DD",
     "Eng": "Choose output folder"
+  },
+  {
+    "Id": 3541,
+    "Name": "EidolonText461",
+    "Kor": "\uD770\uC0C9 \uBC30\uACBD",
+    "Eng": "White background"
+  },
+  {
+    "Id": 3542,
+    "Name": "EidolonText462",
+    "Kor": "\uAC80\uC815\uC0C9 \uBC30\uACBD",
+    "Eng": "Black background"
+  },
+  {
+    "Id": 3543,
+    "Name": "EidolonText463",
+    "Kor": "\uC774\uBBF8\uC9C0 \uCD94\uAC00",
+    "Eng": "Add images"
+  },
+  {
+    "Id": 3544,
+    "Name": "EidolonText464",
+    "Kor": "\uD3F4\uB354 \uCD94\uAC00",
+    "Eng": "Add folder"
+  },
+  {
+    "Id": 3545,
+    "Name": "EidolonText465",
+    "Kor": "{0}\uC7A5",
+    "Eng": "{0} images"
+  },
+  {
+    "Id": 3546,
+    "Name": "EidolonText466",
+    "Kor": "\uCD1D {0}\uC7A5 \u00B7 LoRA \uD558\uB098\uB85C \uD559\uC2B5",
+    "Eng": "{0} images \u00B7 One LoRA"
+  },
+  {
+    "Id": 3547,
+    "Name": "EidolonText467",
+    "Kor": "\uC774\uBBF8\uC9C0\uB97C \uCD94\uAC00\uD574\uC8FC\uC138\uC694.",
+    "Eng": "Add images to begin."
+  },
+  {
+    "Id": 3548,
+    "Name": "EidolonText468",
+    "Kor": "\uB450 \uBAA9\uB85D\uC758 \uC774\uBBF8\uC9C0\uB97C \uD568\uAED8 \uD559\uC2B5\uD574 LoRA \uD558\uB098\uB97C \uB9CC\uB4ED\uB2C8\uB2E4. \uD22C\uBA85\uD55C \uC601\uC5ED\uB9CC \uC120\uD0DD\uD55C \uBC30\uACBD\uC0C9\uC73C\uB85C \uCC44\uC6B0\uBA70, \uC774\uBBF8 \uC788\uB294 \uBC30\uACBD\uACFC \uC6D0\uBCF8\uC740 \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+    "Eng": "Both lists are trained together into one LoRA. Only transparent areas are filled with the selected background color. Existing backgrounds and source files are preserved."
+  },
+  {
+    "Id": 3549,
+    "Name": "EidolonText469",
+    "Kor": "\uBAA9\uB85D \uBE44\uC6B0\uAE30",
+    "Eng": "Clear list"
+  },
+  {
+    "Id": 3550,
+    "Name": "EidolonText470",
+    "Kor": "\uD559\uC2B5\uD560 \uC774\uBBF8\uC9C0\uB97C \uCD94\uAC00\uD574\uC8FC\uC138\uC694.",
+    "Eng": "Add training images."
+  },
+  {
+    "Id": 3551,
+    "Name": "EidolonText471",
+    "Kor": "\uD559\uC2B5 \uD3F4\uB354 \uB9CC\uB4E4\uAE30",
+    "Eng": "Create training folder"
+  },
+  {
+    "Id": 3552,
+    "Name": "EidolonText472",
+    "Kor": "\uD559\uC2B5 \uD3F4\uB354\uB97C \uC800\uC7A5\uD560 \uC704\uCE58 \uC120\uD0DD",
+    "Eng": "Choose where to save the training folder"
+  },
+  {
+    "Id": 3553,
+    "Name": "EidolonText473",
+    "Kor": "{0}\uC7A5\uC758 \uC774\uBBF8\uC9C0\uC640 \uC124\uBA85 \uD30C\uC77C\uC744 \uC900\uBE44\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Prepared {0} images and caption files."
+  },
+  {
+    "Id": 3554,
+    "Name": "EidolonText474",
+    "Kor": "\uD559\uC2B5\uD558\uAE30",
+    "Eng": "Train"
+  },
+  {
+    "Id": 3555,
+    "Name": "EidolonText475",
+    "Kor": "\uC774\uBBF8\uC9C0\uB97C \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4.",
+    "Eng": "Loading images."
+  },
+  {
+    "Id": 3556,
+    "Name": "EidolonText476",
+    "Kor": "\uAE30\uC874 \uC774\uBBF8\uC9C0\uC758 \uADF8\uB9BC\uCCB4 \uBC14\uAFB8\uAE30",
+    "Eng": "Change an image style"
+  },
+  {
+    "Id": 3557,
+    "Name": "EidolonText477",
+    "Kor": "\uC774\uBBF8\uC9C0 \uD3B8\uC9D1 \uD0ED\uC5D0\uC11C \uCC38\uACE0 \uC774\uBBF8\uC9C0\uB97C \uC120\uD0DD\uD558\uACE0 \uC6D0\uD558\uB294 \uADF8\uB9BC\uCCB4\uB97C \uC124\uBA85\uD569\uB2C8\uB2E4. \uBAA8\uB378\uACFC LoRA\uB97C \uACE0\uB978 \uB4A4 \uB300\uAE30\uC5F4\uC5D0 \uCD94\uAC00\uD558\uC138\uC694. \uC0DD\uC131 \uACB0\uACFC\uC5D0\uC11C\uB3C4 \uC774\uBBF8\uC9C0 \uD3B8\uC9D1 \uBC84\uD2BC\uC73C\uB85C \uC2DC\uC791\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Select a reference image in the image editing tab and describe the style you want. Choose a model and LoRAs, then add the request to the queue. You can also start with the image editing action in the result gallery."
+  },
+  {
+    "Id": 3559,
+    "Name": "EidolonText479",
+    "Kor": "\uBCC0\uACBD \uAC15\uB3C4\uAC00 \uB0AE\uC744\uC218\uB85D \uC6D0\uBCF8\uC744 \uB354 \uC720\uC9C0\uD558\uACE0, \uB192\uC744\uC218\uB85D \uC0C8 \uADF8\uB9BC\uCCB4\uC640 \uC124\uBA85\uC744 \uB354 \uBC18\uC601\uD569\uB2C8\uB2E4. \uD615\uD0DC\uB098 \uAD6C\uB3C4\uB97C \uC815\uD655\uD788 \uACE0\uC815\uD558\uC9C0\uB294 \uC54A\uC2B5\uB2C8\uB2E4. \uC6D0\uBCF8 \uD30C\uC77C\uC740 \uBCC0\uACBD\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Lower change strength retains more of the original; higher strength applies more of the new style and description. Exact shape or composition is not guaranteed. The source file is preserved."
+  },
+  {
+    "Id": 3560,
+    "Name": "EidolonText480",
+    "Kor": "\uC0DD\uC131 \uD0ED\uC5D0\uC11C\uB3C4 \uCC38\uACE0 \uC774\uBBF8\uC9C0\uB97C \uC120\uD0DD\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC124\uBA85\uACFC \uCC38\uACE0 \uC774\uBBF8\uC9C0\uB97C \uBC14\uD0D5\uC73C\uB85C \uC0C8 \uC774\uBBF8\uC9C0\uB97C \uC0DD\uC131\uD558\uBA70, \uCC38\uACE0 \uC774\uBBF8\uC9C0\uB97C \uC81C\uAC70\uD558\uBA74 \uC124\uBA85\uB9CC\uC73C\uB85C \uC0DD\uC131\uD569\uB2C8\uB2E4.",
+    "Eng": "You can also add a reference image in the generation tab to create a new image from your description and reference. Remove the reference to generate from text alone."
+  },
+  {
+    "Id": 3561,
+    "Name": "EidolonText481",
+    "Kor": "\uBE60\uB978 \uD559\uC2B5 {0}\uB2E8\uACC4 \u00B7 \uAE30\uBCF8 \uD559\uC2B5 {1}\uB2E8\uACC4",
+    "Eng": "Quick: {0} steps \u00B7 Standard: {1} steps"
+  },
+  {
+    "Id": 3562,
+    "Name": "EidolonText482",
+    "Kor": "\uC774\uBBF8\uC9C0\uC5D0\uC11C \uBC30\uACBD\uACFC \uB300\uC0C1\uC744 \uAD6C\uBD84\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uBC30\uACBD \uD22C\uBA85\uD654\uB97C \uB044\uAC70\uB098 \uB2E4\uB978 \uC774\uBBF8\uC9C0\uB85C \uC2DC\uB3C4\uD574\uC8FC\uC138\uC694.",
+    "Eng": "Could not distinguish the subject from the background. Turn off background removal or try another image."
+  },
+  {
+    "Id": 3563,
+    "Name": "EidolonText483",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC120\uD0DD",
+    "Eng": "Select images"
+  },
+  {
+    "Id": 3564,
+    "Name": "EidolonText484",
+    "Kor": "\uC774\uB984\uACFC \uD2B8\uB9AC\uAC70",
+    "Eng": "Name and trigger"
+  },
+  {
+    "Id": 3565,
+    "Name": "EidolonText485",
+    "Kor": "\uD559\uC2B5 \uD3F4\uB354 \uC900\uBE44",
+    "Eng": "Prepare folder"
+  },
+  {
+    "Id": 3566,
+    "Name": "EidolonText486",
+    "Kor": "\uC124\uBA85 \uD655\uC778",
+    "Eng": "Review captions"
+  },
+  {
+    "Id": 3567,
+    "Name": "EidolonText487",
+    "Kor": "\uD559\uC2B5",
+    "Eng": "Train"
+  },
+  {
+    "Id": 3568,
+    "Name": "EidolonText488",
+    "Kor": "{0} / {1} \uB2E8\uACC4",
+    "Eng": "Step {0} of {1}"
+  },
+  {
+    "Id": 3569,
+    "Name": "EidolonText489",
+    "Kor": "\uC774\uC804",
+    "Eng": "Previous"
+  },
+  {
+    "Id": 3570,
+    "Name": "EidolonText490",
+    "Kor": "\uB2E4\uC74C",
+    "Eng": "Next"
+  },
+  {
+    "Id": 3571,
+    "Name": "EidolonText491",
+    "Kor": "\uD559\uC2B5 \uD3F4\uB354 \uC5F4\uAE30",
+    "Eng": "Open training folder"
+  },
+  {
+    "Id": 3572,
+    "Name": "EidolonText492",
+    "Kor": "\uAC19\uC740 \uADF8\uB9BC\uCCB4\uB098 \uB300\uC0C1\uC744 \uB2F4\uC740 \uC774\uBBF8\uC9C0\uB97C \uACE0\uB974\uC138\uC694. \uD22C\uBA85\uD55C \uBD80\uBD84\uC744 \uD770\uC0C9\uC73C\uB85C \uCC44\uC6B8 \uC774\uBBF8\uC9C0\uC640 \uAC80\uC815\uC0C9\uC73C\uB85C \uCC44\uC6B8 \uC774\uBBF8\uC9C0\uB97C \uAC01\uAC01 \uCD94\uAC00\uD569\uB2C8\uB2E4.",
+    "Eng": "Choose images of the same style or subject. Add images to each list according to whether their transparent areas should be filled with white or black."
+  },
+  {
+    "Id": 3573,
+    "Name": "EidolonText493",
+    "Kor": "LoRA\uB97C \uC54C\uC544\uBCFC \uC218 \uC788\uB294 \uC774\uB984\uACFC \uC0DD\uC131\uD560 \uB54C \uC0AC\uC6A9\uD560 \uD2B8\uB9AC\uAC70 \uB2E8\uC5B4\uB97C \uC815\uD574\uC8FC\uC138\uC694. \uD2B8\uB9AC\uAC70\uB294 \uC774 LoRA\uB97C \uC120\uD0DD\uD558\uBA74 \uD504\uB86C\uD504\uD2B8 \uB9E8 \uC55E\uC5D0 \uC790\uB3D9\uC73C\uB85C \uBD99\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Choose a recognizable LoRA name and a trigger word for generation. Selecting this LoRA automatically adds its trigger to the beginning of the prompt."
+  },
+  {
+    "Id": 3574,
+    "Name": "EidolonText494",
+    "Kor": "\uC6D0\uBCF8 \uC774\uBBF8\uC9C0\uC5D0 \uAC19\uC740 \uC774\uB984\uC758 .txt\uAC00 \uC788\uC73C\uBA74 \uADF8 \uC124\uBA85\uC744 \uBA3C\uC800 \uC0AC\uC6A9\uD569\uB2C8\uB2E4. \uC5C6\uB294 \uC774\uBBF8\uC9C0\uB294 \uACF5\uD1B5 \uC124\uBA85\uACFC \uD2B8\uB9AC\uAC70\uB85C \uC124\uBA85 \uD30C\uC77C\uC744 \uB9CC\uB4ED\uB2C8\uB2E4.",
+    "Eng": "An existing .txt file with the same name as an image takes priority. Images without one receive a caption from the common description and trigger."
+  },
+  {
+    "Id": 3575,
+    "Name": "EidolonText495",
+    "Kor": "\uC774 \uC774\uB984\uACFC \uD2B8\uB9AC\uAC70\uB85C \uD559\uC2B5 \uD3F4\uB354\uB97C \uC900\uBE44\uD569\uB2C8\uB2E4.",
+    "Eng": "The training folder will use this name and trigger."
+  },
+  {
+    "Id": 3576,
+    "Name": "EidolonText496",
+    "Kor": "\uC120\uD0DD\uD55C \uC774\uBBF8\uC9C0\uB97C \uD55C \uD3F4\uB354\uC5D0 \uBAA8\uC73C\uACE0 \uC774\uBBF8\uC9C0\uBCC4 .txt \uC124\uBA85\uC744 \uB9CC\uB4ED\uB2C8\uB2E4. \uC800\uC7A5\uD560 \uC704\uCE58\uB97C \uC120\uD0DD\uD558\uBA74 \uC0C8 \uD558\uC704 \uD3F4\uB354\uB97C \uB9CC\uB4E4\uBA70, \uC6D0\uBCF8 \uD30C\uC77C\uC740 \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+    "Eng": "Combine the selected images and create a .txt caption for each one. Choose a save location to create a new subfolder. Source files are preserved."
+  },
+  {
+    "Id": 3577,
+    "Name": "EidolonText497",
+    "Kor": "\uD559\uC2B5 \uD3F4\uB354\uB97C \uBA3C\uC800 \uC900\uBE44\uD574\uC8FC\uC138\uC694.",
+    "Eng": "Prepare the training folder first."
+  },
+  {
+    "Id": 3578,
+    "Name": "EidolonText498",
+    "Kor": "\uD3F4\uB354\uAC00 \uC900\uBE44\uB410\uC2B5\uB2C8\uB2E4. \uB2E4\uC74C \uB2E8\uACC4\uC5D0\uC11C \uC124\uBA85 \uD30C\uC77C\uC744 \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The folder is ready. Review its caption files in the next step."
+  },
+  {
+    "Id": 3579,
+    "Name": "EidolonText499",
+    "Kor": "\uD559\uC2B5 \uD3F4\uB354\uB97C \uC900\uBE44\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Preparing the training folder."
+  },
+  {
+    "Id": 3580,
+    "Name": "EidolonText500",
+    "Kor": "\uC774\uBBF8\uC9C0\uB098 \uC774\uB984\u00B7\uD2B8\uB9AC\uAC70\u00B7\uC124\uBA85\uC744 \uBC14\uAFE8\uC2B5\uB2C8\uB2E4. \uD559\uC2B5 \uD3F4\uB354\uB97C \uB2E4\uC2DC \uB9CC\uB4E4\uC5B4\uC8FC\uC138\uC694.",
+    "Eng": "The images, name, trigger, or description have changed. Create a new training folder."
+  },
+  {
+    "Id": 3581,
+    "Name": "EidolonText501",
+    "Kor": "\uC124\uBA85 \uD30C\uC77C\uC744 \uD655\uC778\uD588\uB2E4\uBA74 \uB2E4\uC74C \uB2E8\uACC4\uB85C \uC774\uB3D9\uD558\uC138\uC694.",
+    "Eng": "Continue when you have reviewed the caption files."
+  },
+  {
+    "Id": 3582,
+    "Name": "EidolonText502",
+    "Kor": "a sword with a golden hilt",
+    "Eng": "a sword with a golden hilt"
+  },
+  {
+    "Id": 3583,
+    "Name": "EidolonText503",
+    "Kor": "\uC124\uBA85 \uD30C\uC77C \uC608\uC2DC",
+    "Eng": "Caption example"
+  },
+  {
+    "Id": 3584,
+    "Name": "EidolonText504",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC120\uD0DD\uBD80\uD130 \uC124\uBA85 \uD655\uC778\uAE4C\uC9C0, \uC21C\uC11C\uB300\uB85C LoRA \uD558\uB098\uB97C \uC900\uBE44\uD569\uB2C8\uB2E4.",
+    "Eng": "Prepare one LoRA, from selecting images to reviewing captions."
+  },
+  {
+    "Id": 3585,
+    "Name": "EidolonText505",
+    "Kor": "\uD559\uC2B5 \uD3F4\uB354\uB97C \uC5F4\uACE0 \uC774\uBBF8\uC9C0 \uC606\uC758 .txt\uB97C \uBA54\uBAA8\uC7A5 \uB4F1\uC73C\uB85C \uC218\uC815\uD55C \uB4A4 \uC800\uC7A5\uD558\uC138\uC694. \uD2B8\uB9AC\uAC70 \uB4A4\uC5D0 \uAC01 \uC774\uBBF8\uC9C0\uC758 \uBB3C\uCCB4\u00B7\uC0C9\u00B7\uD2B9\uC9D5\uC744 \uC801\uC73C\uBA74 \uB429\uB2C8\uB2E4.",
+    "Eng": "Open the training folder, edit the .txt file beside each image in a text editor, and save it. Describe the objects, colors, and features after the trigger."
+  },
+  {
+    "Id": 3586,
+    "Name": "EidolonText506",
+    "Kor": "\uC800\uC7A5\uD55C \uC124\uBA85\uC73C\uB85C \uD559\uC2B5\uD569\uB2C8\uB2E4. \uC774\uBBF8\uC9C0 \uC120\uD0DD\uC774\uB098 \uC774\uB984\u00B7\uD2B8\uB9AC\uAC70\u00B7\uACF5\uD1B5 \uC124\uBA85\uC744 \uBC14\uAFB8\uBA74 \uC0C8 \uD559\uC2B5 \uD3F4\uB354\uB97C \uC900\uBE44\uD574\uC57C \uD569\uB2C8\uB2E4.",
+    "Eng": "Training uses the saved captions. Changing the selected images, name, trigger, or common description requires preparing a new folder."
+  },
+  {
+    "Id": 3587,
+    "Name": "EidolonText507",
+    "Kor": "\uC0DD\uC131\uC5D0 \uC0AC\uC6A9\uD560 \uBAA8\uB378\uACFC \uAC19\uC740 \uACC4\uC5F4\uC758 \uBAA8\uB378\uC744 \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Select a model from the same family as the model you will use for generation."
+  },
+  {
+    "Id": 3588,
+    "Name": "EidolonText508",
+    "Kor": "\uC774\uC5B4 \uD559\uC2B5 (\uC120\uD0DD)",
+    "Eng": "Continue training (optional)"
+  },
+  {
+    "Id": 3589,
+    "Name": "EidolonText509",
+    "Kor": "\uD504\uB86C\uD504\uD2B8 \uD504\uB9AC\uC14B",
+    "Eng": "Prompt presets"
+  },
+  {
+    "Id": 3590,
+    "Name": "EidolonText510",
+    "Kor": "\uC800\uC7A5\uD55C \uD504\uB9AC\uC14B \uC120\uD0DD",
+    "Eng": "Select a saved preset"
+  },
+  {
+    "Id": 3591,
+    "Name": "EidolonText511",
+    "Kor": "\uD504\uB9AC\uC14B\uC744 \uC120\uD0DD\uD558\uBA74 \uC0DD\uC131 \uC9C0\uCE68\uACFC \uC81C\uC678\uD560 \uC694\uC18C\uB97C \uBD88\uB7EC\uC635\uB2C8\uB2E4. \uC124\uC815\uC744 \uC800\uC7A5\uD55C \uB4A4 \uC0DD\uC131\u00B7\uD3B8\uC9D1\uC5D0 \uC801\uC6A9\uB429\uB2C8\uB2E4.",
+    "Eng": "Selecting a preset loads its generation instructions and exclusions. Save settings to apply them to generation and editing."
+  },
+  {
+    "Id": 3592,
+    "Name": "EidolonText512",
+    "Kor": "\uD504\uB9AC\uC14B \uC774\uB984",
+    "Eng": "Preset name"
+  },
+  {
+    "Id": 3593,
+    "Name": "EidolonText513",
+    "Kor": "\uC608: \uAC8C\uC784 \uC544\uC774\uCF58, \uC218\uCC44\uD654",
+    "Eng": "Example: game icons, watercolor"
+  },
+  {
+    "Id": 3594,
+    "Name": "EidolonText514",
+    "Kor": "\uC0C8 \uD504\uB9AC\uC14B \uCD94\uAC00",
+    "Eng": "Add new preset"
+  },
+  {
+    "Id": 3595,
+    "Name": "EidolonText515",
+    "Kor": "\uC120\uD0DD \uD504\uB9AC\uC14B \uC218\uC815",
+    "Eng": "Update selected preset"
+  },
+  {
+    "Id": 3596,
+    "Name": "EidolonText516",
+    "Kor": "\uD504\uB9AC\uC14B \uC0AD\uC81C",
+    "Eng": "Delete preset"
+  },
+  {
+    "Id": 3599,
+    "Name": "EidolonText519",
+    "Kor": "\uD604\uC7AC \uC9C0\uCE68\uC5D0 \uC774\uB984\uC744 \uBD99\uC774\uBA74 \uC0C8 \uD504\uB9AC\uC14B\uC73C\uB85C \uCD94\uAC00\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Name the current instructions to add them as a new preset."
+  },
+  {
+    "Id": 3600,
+    "Name": "EidolonText520",
+    "Kor": "\uAC19\uC740 \uC774\uB984\uC758 \uD504\uB9AC\uC14B\uC774 \uC788\uC2B5\uB2C8\uB2E4. \uB2E4\uB978 \uC774\uB984\uC744 \uC785\uB825\uD574\uC8FC\uC138\uC694.",
+    "Eng": "A preset with this name already exists. Enter a different name."
+  },
+  {
+    "Id": 3601,
+    "Name": "EidolonText521",
+    "Kor": "\uC120\uD0DD\uD55C \uD504\uB9AC\uC14B\uACFC \uB0B4\uC6A9\uC774 \uB2E4\uB985\uB2C8\uB2E4. \uC120\uD0DD \uD504\uB9AC\uC14B\uC744 \uC218\uC815\uD558\uAC70\uB098 \uB2E4\uB978 \uC774\uB984\uC73C\uB85C \uCD94\uAC00\uD558\uC138\uC694.",
+    "Eng": "The selected preset has been edited. Update it or add a new preset with a different name."
+  },
+  {
+    "Id": 3602,
+    "Name": "EidolonText522",
+    "Kor": "\uD504\uB9AC\uC14B \uBAA9\uB85D\uACFC \uD604\uC7AC \uC9C0\uCE68\uC740 \uC124\uC815 \uC800\uC7A5\uC744 \uB204\uB974\uBA74 \uD568\uAED8 \uC800\uC7A5\uB429\uB2C8\uB2E4.",
+    "Eng": "Save settings to store both the preset list and the current instructions."
+  },
+  {
+    "Id": 3605,
+    "Name": "EidolonText525",
+    "Kor": "\uD504\uB86C\uD504\uD2B8 \uD504\uB9AC\uC14B \uC124\uC815\uC5D0 \uB204\uB77D\uB418\uAC70\uB098 \uC911\uBCF5\uB41C \uC815\uBCF4\uAC00 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Prompt preset settings contain missing or duplicate information."
   }
 ]

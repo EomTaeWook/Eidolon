@@ -1,6 +1,7 @@
 using Eidolon.App.Services;
 using Eidolon.App.Localization;
 using Eidolon.App.Presenters;
+using System.Collections.ObjectModel;
 
 namespace Eidolon.App.ViewModels
 {
@@ -14,6 +15,7 @@ namespace Eidolon.App.ViewModels
         private LanguageChoice _selectedLanguage;
         public List<ThemeChoice> Themes { get; private set; }
         public List<LanguageChoice> Languages { get; private set; }
+        public PromptSettingsViewModel Prompts { get; private set; }
         public AsyncCommand PickInstallCommand { get; private set; }
         public AsyncCommand PickGenerationDirectoryCommand { get; private set; }
         public AsyncCommand OpenGenerationDirectoryCommand { get; private set; }
@@ -143,6 +145,8 @@ namespace Eidolon.App.ViewModels
             settings.Language = Session.SettingsDraft.Language;
             settings.PositivePrompt = Session.SettingsDraft.PositivePrompt;
             settings.NegativePrompt = Session.SettingsDraft.NegativePrompt;
+            settings.PromptPresets = new ObservableCollection<PromptPreset>(Session.SettingsDraft.PromptPresets.Select(preset => preset.Copy()));
+            settings.ActivePromptPresetId = Session.SettingsDraft.ActivePromptPresetId;
             settings.GenerationDirectory = GenerationDirectory.Trim();
             Session.SaveSettings(settings);
             GenerationDirectory = settings.GenerationDirectory;
@@ -180,6 +184,7 @@ namespace Eidolon.App.ViewModels
             Assets = assets;
             _themes = themes;
             _languages = languages;
+            Prompts = new PromptSettingsViewModel(session, navigation, work, strings, dialogs);
             Themes = new List<ThemeChoice>
             {
                 new ThemeChoice(AppTheme.Light, _strings.GetString("EidolonText220")),
@@ -208,6 +213,7 @@ namespace Eidolon.App.ViewModels
 
         internal void LoadChoices()
         {
+            Prompts.Load();
             Raise(nameof(SettingsDraft));
             Raise(nameof(InstallDirectory));
             Raise(nameof(GenerationDirectory));
@@ -222,7 +228,14 @@ namespace Eidolon.App.ViewModels
             {
                 theme.Localize(_strings);
             }
+            Prompts.Localize();
             base.Localize();
+        }
+
+        public override void Dispose()
+        {
+            Prompts.Dispose();
+            base.Dispose();
         }
     }
 }
