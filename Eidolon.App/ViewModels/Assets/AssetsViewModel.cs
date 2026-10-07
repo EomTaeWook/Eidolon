@@ -32,6 +32,10 @@ namespace Eidolon.App.ViewModels
         {
             get
             {
+                if (Session.Settings.GenerationBackend == GenerationBackend.Codex)
+                {
+                    return false;
+                }
                 return Session.IsInitialized == true && HasAvailableModels == false;
             }
         }
@@ -222,10 +226,11 @@ namespace Eidolon.App.ViewModels
         public ObservableCollection<FamilyChoice> AvailableFamilies { get; private set; } = new ObservableCollection<FamilyChoice>();
         public List<ModelDownloadItem> DownloadableModels { get; private set; }
         public AsyncCommand PrepareModelsCommand { get; private set; }
-        public AsyncCommand ImportCommand { get; private set; }
+        public AsyncCommand OpenModelDirectoryCommand { get; private set; }
+        public AsyncCommand OpenLoraDirectoryCommand { get; private set; }
         public AsyncCommand ScanCommand { get; private set; }
         public AsyncCommand UpdateAssetCommand { get; private set; }
-        public AsyncCommand RemoveAssetCommand { get; private set; }
+        public AsyncCommand DeleteAssetCommand { get; private set; }
 
         public AssetItem SelectedResumeLora
         {
@@ -245,6 +250,58 @@ namespace Eidolon.App.ViewModels
             {
                 return Session.IsIdle == true && ComfyServerAddress.UsesServerAssets(Session.CreateActiveSettings(Session.Settings)) == false
                     && Session.HasLocalModelRuntime == true;
+            }
+        }
+
+        public bool CanOpenModelDirectories
+        {
+            get
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                if (Session.HasLocalModelRuntime == false)
+                {
+                    return false;
+                }
+                return ComfyServerAddress.UsesServerAssets(Session.CreateActiveSettings(Session.Settings)) == false;
+            }
+        }
+
+        public string ModelDirectory
+        {
+            get
+            {
+                if (CanOpenModelDirectories == false)
+                {
+                    return string.Empty;
+                }
+                return new RuntimeLayout(Session.Settings.InstallDirectory).ModelsDirectory;
+            }
+        }
+
+        public string LoraDirectory
+        {
+            get
+            {
+                if (CanOpenModelDirectories == false)
+                {
+                    return string.Empty;
+                }
+                return new RuntimeLayout(Session.Settings.InstallDirectory).LorasDirectory;
+            }
+        }
+
+        public string ModelFoldersHint
+        {
+            get
+            {
+                if (ComfyServerAddress.UsesServerAssets(Session.CreateActiveSettings(Session.Settings)) == true)
+                {
+                    return _strings.GetString("EidolonText258");
+                }
+                return _strings.GetString("EidolonText573");
             }
         }
 
@@ -398,11 +455,22 @@ namespace Eidolon.App.ViewModels
             {
                 return;
             }
+            await DeleteAssetAsync(model, true);
+        }
+
+        private Task DeleteSelectedAssetAsync()
+        {
+            return DeleteAssetAsync(SelectedAsset.Asset, false);
+        }
+
+        private async Task DeleteAssetAsync(ModelAsset model, bool downloadedOnly)
+        {
             DesktopSettings settings = Session.CreateActiveSettings(Session.Settings);
             string path = new RuntimeLayout(settings.InstallDirectory).AssetPath(model);
             string id = model.Id;
-            if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText356"),
-                _strings.Format("EidolonText357", download.Name, path)) == false)
+            string name = model.Name;
+            if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText556"),
+                _strings.Format("EidolonText557", name, path)) == false)
             {
                 return;
             }
@@ -410,54 +478,27 @@ namespace Eidolon.App.ViewModels
             {
                 try
                 {
-                    await _assets.DeleteDownloadedAsync(settings, id, token);
+                    if (downloadedOnly == true)
+                    {
+                        await _assets.DeleteDownloadedAsync(settings, id, token);
+                    }
+                    else
+                    {
+                        await _assets.DeleteAsync(settings, id, token);
+                    }
                     if (Session.Settings.DefaultModelId == id)
                     {
                         Session.Settings.DefaultModelId = string.Empty;
                         Session.SettingsDraft.DefaultModelId = string.Empty;
                         Session.SaveSettings(Session.Settings);
                     }
-                    Session.Status = _strings.Format("EidolonText358", download.Name);
+                    Session.Status = _strings.Format("EidolonText558", name);
                 }
                 finally
                 {
                     await RefreshAssetsAsync();
                 }
             });
-        }
-
-        private async Task RemoveAssetAsync(string id, CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-            await _assets.RemoveAsync(id);
-            if (Session.Settings.DefaultModelId == id)
-            {
-                Session.Settings.DefaultModelId = string.Empty;
-                Session.SettingsDraft.DefaultModelId = string.Empty;
-                Session.SaveSettings(Session.Settings);
-            }
-            await RefreshAssetsAsync();
-            Session.Status = _strings.GetString("EidolonText240");
-        }
-
-        private async Task ImportAsync(CancellationToken token)
-        {
-            string path = await _dialogs.PickModelAsync();
-            if (string.IsNullOrEmpty(path) == true)
-            {
-                return;
-            }
-            Session.Status = _strings.GetString("EidolonText237");
-            ModelAsset asset = await _assets.ImportAsync(Session.Settings, path, ModelFamily.Unknown, string.Empty, token);
-            if (asset.Kind == AssetKind.Checkpoint && string.IsNullOrEmpty(Session.Settings.DefaultModelId) == true)
-            {
-                Session.Settings.DefaultModelId = asset.Id;
-                Session.SettingsDraft.DefaultModelId = asset.Id;
-                Session.SaveSettings(Session.Settings);
-            }
-            await RefreshAssetsAsync();
-            SelectedAsset = Library.First(item => item.Asset.Id == asset.Id);
-            Session.Status = _strings.GetString("EidolonText238");
         }
 
         private async Task UpdateAssetAsync(CancellationToken token)
@@ -468,9 +509,16 @@ namespace Eidolon.App.ViewModels
             Session.Status = _strings.GetString("EidolonText239");
         }
 
-        private async Task RemoveAssetAsync(CancellationToken token)
+        public bool CanDeleteSelectedAsset
         {
-            await RemoveAssetAsync(SelectedAsset.Asset.Id, token);
+            get
+            {
+                if (CanManageDownloadedModels == false)
+                {
+                    return false;
+                }
+                return SelectedAsset != null;
+            }
         }
 
         internal AssetItem FindReusableAsset(IEnumerable<AssetItem> assets, ModelAsset recorded)
@@ -504,6 +552,11 @@ namespace Eidolon.App.ViewModels
         internal async Task RefreshAssetsAsync()
         {
             List<ModelAsset> assets = await _assets.ListAsync(Session.CreateActiveSettings(Session.Settings));
+            string selectedAssetId = string.Empty;
+            if (SelectedAsset != null)
+            {
+                selectedAssetId = SelectedAsset.Asset.Id;
+            }
             string selectedId = string.Empty;
             if (SelectedModel != null)
             {
@@ -533,7 +586,7 @@ namespace Eidolon.App.ViewModels
                     && asset.EngineName.Equals(item.Model.FileName, StringComparison.OrdinalIgnoreCase) == true);
             }
             Raise(nameof(HasAvailableModels));
-            SelectedAsset = null;
+            SelectedAsset = Library.FirstOrDefault(item => item.Asset.Id == selectedAssetId);
             RefreshAvailableFamilies();
             SelectedModel = Models.FirstOrDefault(item => item.Asset.Id == selectedId);
             if (SelectedModel == null)
@@ -662,18 +715,19 @@ namespace Eidolon.App.ViewModels
             {
                 if (HasAvailableModels == false && Session.HasLocalModelRuntime == false && Session.IsEngineConnected == false)
                 {
-                    Navigation.SelectedEngineTab = 0;
+                    Navigation.SelectedEngineTab = StudioNavigationViewModel.EngineInstallationTab;
                 }
                 else
                 {
-                    Navigation.SelectedEngineTab = 1;
+                    Navigation.SelectedEngineTab = StudioNavigationViewModel.ModelsTab;
                 }
                 return Navigation.NavigateAsync(3);
             }, () => Session.IsInitialized == true && Session.IsClosing == false);
-            ImportCommand = Command(() => Session.WorkAsync(ImportAsync), () => Session.IsIdle == true && ComfyServerAddress.UsesServerAssets(Session.CreateActiveSettings(Session.Settings)) == false);
+            OpenModelDirectoryCommand = Command(() => _dialogs.OpenFolderAsync(ModelDirectory), () => CanOpenModelDirectories);
+            OpenLoraDirectoryCommand = Command(() => _dialogs.OpenFolderAsync(LoraDirectory), () => CanOpenModelDirectories);
             ScanCommand = Command(() => Session.WorkAsync(ScanAssetsAsync));
             UpdateAssetCommand = Command(() => Session.WorkAsync(UpdateAssetAsync), () => Session.IsIdle == true && SelectedAsset != null);
-            RemoveAssetCommand = Command(() => Session.WorkAsync(RemoveAssetAsync), () => Session.IsIdle == true && SelectedAsset != null);
+            DeleteAssetCommand = Command(DeleteSelectedAssetAsync, () => CanDeleteSelectedAsset);
         }
 
         protected override void RefreshCommands()
@@ -688,6 +742,11 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(ModelSetupHint));
             Raise(nameof(ModelSetupActionCaption));
             Raise(nameof(CanManageDownloadedModels));
+            Raise(nameof(CanOpenModelDirectories));
+            Raise(nameof(ModelDirectory));
+            Raise(nameof(LoraDirectory));
+            Raise(nameof(ModelFoldersHint));
+            Raise(nameof(CanDeleteSelectedAsset));
             Raise(nameof(ModelDownloadHint));
             base.RefreshCommands();
         }

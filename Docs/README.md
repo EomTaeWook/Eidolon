@@ -4,7 +4,7 @@
 
 | 문서 | 책임 |
 |---|---|
-| [아키텍처](EidolonArchitecture.md) | Core/App 경계, DI·시작·종료, 화면, 설치·서버, FIFO 큐, SDXL 생성·LoRA 학습, 저장·배포 |
+| [아키텍처](EidolonArchitecture.md) | Core/App 경계, DI·수명, 생성 환경·설정 화면, ComfyUI·Codex 생성·편집, 모델 관리·학습, FIFO 큐, 저장·배포 |
 | [작업 규칙](WorkingRules.md) | 파일별 타입 분리, 계층 경계, 문자열·생성물, 데이터·프로세스 소유권, 검수·커밋 기준 |
 | [문자열 데이터 변환](StringData.md) | Excel 원본, 변환 명령과 생성 템플릿·로더 계약 |
 | [외부 소프트웨어 고지](ThirdPartyNotices.md) | 외부 엔진·라이브러리와 기본 모델의 고지 |

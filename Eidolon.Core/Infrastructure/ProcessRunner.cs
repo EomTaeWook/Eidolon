@@ -14,9 +14,15 @@ namespace Eidolon.Core.Infrastructure
         public async Task RunAsync(string executable, IEnumerable<string> arguments, string workingDirectory,
             string logPath, CancellationToken cancellationToken,
             IReadOnlyDictionary<string, string> environment = null, Action<string> lineReceived = null,
-            bool stopWithParent = false)
+            bool stopWithParent = false, string standardInput = null, Action<string> standardOutputReceived = null,
+            Action<string> standardOutputChunkReceived = null)
         {
             ProcessStartInfo start = CreateStartInfo(executable, arguments, workingDirectory, environment);
+            if (standardInput != null)
+            {
+                start.RedirectStandardInput = true;
+                start.StandardInputEncoding = new UTF8Encoding(false);
+            }
             using Process process = new Process { StartInfo = start };
             using ProcessLogFile log = new ProcessLogFile(logPath);
             using SemaphoreSlim logGate = new SemaphoreSlim(1, 1);
@@ -32,8 +38,13 @@ namespace Eidolon.Core.Infrastructure
             {
                 parentLifetime.Attach(process);
                 LogHelper.Info($"Process started: {Path.GetFileName(executable)}. Log: {logPath}");
-                stdout = ReadAsync(process.StandardOutput);
-                stderr = ReadAsync(process.StandardError);
+                stdout = ReadAsync(process.StandardOutput, true);
+                stderr = ReadAsync(process.StandardError, false);
+                if (standardInput != null)
+                {
+                    await process.StandardInput.WriteAsync(standardInput.AsMemory(), cancellationToken).ConfigureAwait(false);
+                    process.StandardInput.Close();
+                }
                 await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
                 parentLifetime.Dispose();
                 await Task.WhenAll(stdout, stderr).ConfigureAwait(false);
@@ -60,7 +71,7 @@ namespace Eidolon.Core.Infrastructure
                 await Task.WhenAll(stdout, stderr).ConfigureAwait(false);
             }
 
-            async Task ReadAsync(StreamReader reader)
+            async Task ReadAsync(StreamReader reader, bool isStandardOutput)
             {
                 char[] buffer = new char[1024];
                 StringBuilder pending = new StringBuilder();
@@ -69,6 +80,13 @@ namespace Eidolon.Core.Infrastructure
                     int count;
                     while ((count = await reader.ReadAsync(buffer.AsMemory(), cancellationToken).ConfigureAwait(false)) > 0)
                     {
+                        if (isStandardOutput == true)
+                        {
+                            if (standardOutputChunkReceived != null)
+                            {
+                                standardOutputChunkReceived.Invoke(new string(buffer, 0, count));
+                            }
+                        }
                         for (int index = 0; index < count; index++)
                         {
                             char character = buffer[index];
@@ -76,7 +94,7 @@ namespace Eidolon.Core.Infrastructure
                             {
                                 if (pending.Length > 0)
                                 {
-                                    await ReportLineAsync(pending.ToString()).ConfigureAwait(false);
+                                    await ReportLineAsync(pending.ToString(), isStandardOutput).ConfigureAwait(false);
                                     pending.Clear();
                                 }
                             }
@@ -85,7 +103,7 @@ namespace Eidolon.Core.Infrastructure
                                 pending.Append(character);
                                 if (pending.Length >= 8192)
                                 {
-                                    await ReportLineAsync(pending.ToString()).ConfigureAwait(false);
+                                    await ReportLineAsync(pending.ToString(), isStandardOutput).ConfigureAwait(false);
                                     pending.Clear();
                                 }
                             }
@@ -93,7 +111,7 @@ namespace Eidolon.Core.Infrastructure
                     }
                     if (pending.Length > 0)
                     {
-                        await ReportLineAsync(pending.ToString()).ConfigureAwait(false);
+                        await ReportLineAsync(pending.ToString(), isStandardOutput).ConfigureAwait(false);
                     }
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested == true)
@@ -101,7 +119,7 @@ namespace Eidolon.Core.Infrastructure
                 }
             }
 
-            async Task ReportLineAsync(string line)
+            async Task ReportLineAsync(string line, bool isStandardOutput)
             {
                 await logGate.WaitAsync(cancellationToken).ConfigureAwait(false);
                 try
@@ -115,6 +133,13 @@ namespace Eidolon.Core.Infrastructure
                 if (lineReceived != null)
                 {
                     lineReceived.Invoke(line);
+                }
+                if (isStandardOutput == true)
+                {
+                    if (standardOutputReceived != null)
+                    {
+                        standardOutputReceived.Invoke(line);
+                    }
                 }
             }
         }

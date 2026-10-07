@@ -34,12 +34,12 @@
         </StackPanel>
       </Grid>
       <TextBlock Text="{Binding ReferenceImageHint}" Classes="muted" FontSize="12" />
-      <Grid ColumnDefinitions="*,Auto">
+      <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsComfyGeneration}">
         <TextBlock Text="{DynamicResource EidolonText448}" FontSize="12" />
         <TextBlock Grid.Column="1" Text="{Binding ReferenceStrengthCaption}" Classes="muted" FontSize="12" />
       </Grid>
-      <Slider Minimum="0.05" Maximum="0.95" TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding ReferenceChangeStrength, Mode=TwoWay}" />
-      <TextBlock Text="{DynamicResource EidolonText449}" Classes="muted" FontSize="11" />
+      <Slider Minimum="0.05" Maximum="0.95" TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding ReferenceChangeStrength, Mode=TwoWay}" IsVisible="{Binding IsComfyGeneration}" />
+      <TextBlock Text="{DynamicResource EidolonText449}" Classes="muted" FontSize="11" IsVisible="{Binding IsComfyGeneration}" />
     </StackPanel>
   </StackPanel>
 </UserControl>

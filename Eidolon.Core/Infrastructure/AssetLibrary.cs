@@ -283,7 +283,18 @@ namespace Eidolon.Core.Infrastructure
             }
         }
 
-        public async Task DeleteDownloadedAsync(StudioSettings settings, string id, CancellationToken cancellationToken)
+        public Task DeleteDownloadedAsync(StudioSettings settings, string id, CancellationToken cancellationToken)
+        {
+            return DeleteAssetAsync(settings, id, true, cancellationToken);
+        }
+
+        public Task DeleteAsync(StudioSettings settings, string id, CancellationToken cancellationToken)
+        {
+            return DeleteAssetAsync(settings, id, false, cancellationToken);
+        }
+
+        private async Task DeleteAssetAsync(StudioSettings settings, string id, bool downloadedOnly,
+            CancellationToken cancellationToken)
         {
             if (ComfyServerAddress.UsesServerAssets(settings) == true)
             {
@@ -300,27 +311,45 @@ namespace Eidolon.Core.Infrastructure
                 {
                     throw new StudioException(StudioMessageCode.ModelRequired);
                 }
-                if (asset.Kind != AssetKind.Checkpoint)
+                if (Enum.IsDefined(asset.Kind) == false)
                 {
-                    throw new StudioException(StudioMessageCode.CheckpointRequired);
+                    throw new StudioException(StudioMessageCode.AssetPathInvalid);
                 }
                 if (asset.RuntimeRoot.Equals(layout.Root, StringComparison.OrdinalIgnoreCase) == false)
                 {
                     throw new StudioException(StudioMessageCode.AssetSourceMismatch);
                 }
-                if (Downloads.Any(item => item.FileName.Equals(asset.EngineName, StringComparison.OrdinalIgnoreCase) == true) == false)
+                if (downloadedOnly == true)
                 {
-                    throw new StudioException(StudioMessageCode.AssetPathInvalid);
-                }
-                string path = layout.AssetPath(asset);
-                DirectoryInfo directory = new DirectoryInfo(layout.ModelsDirectory);
-                while (directory != null)
-                {
-                    if (directory.Exists == true && (directory.Attributes & FileAttributes.ReparsePoint) != 0)
+                    if (asset.Kind != AssetKind.Checkpoint)
+                    {
+                        throw new StudioException(StudioMessageCode.CheckpointRequired);
+                    }
+                    if (Downloads.Any(item => item.FileName.Equals(asset.EngineName, StringComparison.OrdinalIgnoreCase) == true) == false)
                     {
                         throw new StudioException(StudioMessageCode.AssetPathInvalid);
                     }
+                }
+                string path = layout.AssetPath(asset);
+                DirectoryInfo directory = new DirectoryInfo(Path.GetDirectoryName(path));
+                while (directory != null)
+                {
+                    if (directory.Exists == true)
+                    {
+                        if ((directory.Attributes & FileAttributes.ReparsePoint) != 0)
+                        {
+                            throw new StudioException(StudioMessageCode.AssetPathInvalid);
+                        }
+                    }
                     directory = directory.Parent;
+                }
+                FileInfo file = new FileInfo(path);
+                if (file.Exists == true)
+                {
+                    if ((file.Attributes & FileAttributes.ReparsePoint) != 0)
+                    {
+                        throw new StudioException(StudioMessageCode.AssetPathInvalid);
+                    }
                 }
                 cancellationToken.ThrowIfCancellationRequested();
                 File.Delete(path);

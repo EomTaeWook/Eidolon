@@ -78,7 +78,22 @@ namespace Eidolon.App.ViewModels
                 {
                     return string.Empty;
                 }
+                if (Metadata.GenerationBackend == GenerationBackend.Codex)
+                {
+                    return string.Empty;
+                }
                 return Metadata.Seed.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+        public bool HasSeed
+        {
+            get
+            {
+                if (HasMetadata == false)
+                {
+                    return false;
+                }
+                return Metadata.GenerationBackend == GenerationBackend.ComfyUI;
             }
         }
         public string AppliedLoras
@@ -118,6 +133,10 @@ namespace Eidolon.App.ViewModels
                 if (Metadata.ReferenceMode == GenerationReferenceMode.Restyle)
                 {
                     mode = _strings.GetString("EidolonText445");
+                }
+                if (Metadata.GenerationBackend == GenerationBackend.Codex)
+                {
+                    return mode + " · " + Metadata.ReferenceImageName;
                 }
                 return mode + " · " + Metadata.Denoise.ToString("P0", CultureInfo.InvariantCulture) + " · " + Metadata.ReferenceImageName;
             }

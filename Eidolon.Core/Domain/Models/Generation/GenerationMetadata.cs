@@ -19,6 +19,8 @@ namespace Eidolon.Core.Domain
             PositivePrompt = job.PositivePrompt;
             NegativePrompt = job.NegativePrompt;
             RemoveBackground = job.RemoveBackground;
+            GenerationBackend = job.GenerationBackend;
+            CodexModel = job.CodexModel;
             ReferenceMode = job.ReferenceMode;
             ReferenceImageName = job.ReferenceImageName;
             ReferenceImagePath = job.ReferenceImagePath;
@@ -45,6 +47,8 @@ namespace Eidolon.Core.Domain
         public string PositivePrompt { get; set; } = string.Empty;
         public string NegativePrompt { get; set; } = string.Empty;
         public bool RemoveBackground { get; set; }
+        public GenerationBackend GenerationBackend { get; set; } = GenerationBackend.ComfyUI;
+        public string CodexModel { get; set; } = string.Empty;
         public GenerationReferenceMode ReferenceMode { get; set; } = GenerationReferenceMode.None;
         public string ReferenceImageName { get; set; } = string.Empty;
         public string ReferenceImagePath { get; set; } = string.Empty;

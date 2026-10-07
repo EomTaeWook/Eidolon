@@ -28,6 +28,92 @@ namespace Eidolon.Core.Infrastructure
             return Path.Combine(_directory, id);
         }
 
+        internal string TrainingDatasetDirectory(JobRecord job, RuntimeLayout layout)
+        {
+            DirectoryFor(job.Id);
+            string path = Path.GetFullPath(Path.Combine(layout.TrainingDataDirectory, job.Id));
+            EnsureRegularDirectoryParents(path);
+            if (Directory.Exists(path) == true)
+            {
+                throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+            }
+            job.DatasetDirectory = path;
+            Save(job);
+            return path;
+        }
+
+        public int ClearTrainingDatasets(StudioSettings settings, CancellationToken token)
+        {
+            RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+            layout.EnsureInstalled();
+            string root = Path.GetFullPath(layout.TrainingDataDirectory);
+            EnsureRegularDirectoryParents(root);
+            if (Directory.Exists(root) == false)
+            {
+                return 0;
+            }
+            lock (_gate)
+            {
+                List<string> targets = new List<string>();
+                foreach (string directory in Directory.EnumerateDirectories(root))
+                {
+                    token.ThrowIfCancellationRequested();
+                    if (Guid.TryParseExact(Path.GetFileName(directory), "N", out _) == false)
+                    {
+                        continue;
+                    }
+                    string path = Path.GetFullPath(directory);
+                    if (string.Equals(Path.GetDirectoryName(path), root, StringComparison.OrdinalIgnoreCase) == false)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+                    }
+                    EnsureRegularTrainingTree(path, token);
+                    targets.Add(path);
+                }
+                foreach (string target in targets)
+                {
+                    token.ThrowIfCancellationRequested();
+                    EnsureRegularDirectoryParents(target);
+                    Directory.Delete(target, true);
+                }
+                return targets.Count;
+            }
+        }
+
+        private void EnsureRegularDirectoryParents(string path)
+        {
+            DirectoryInfo directory = new DirectoryInfo(path);
+            while (directory != null)
+            {
+                if (directory.Exists == true)
+                {
+                    if ((directory.Attributes & FileAttributes.ReparsePoint) != 0)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+                    }
+                }
+                directory = directory.Parent;
+            }
+        }
+
+        private void EnsureRegularTrainingTree(string directory, CancellationToken token)
+        {
+            EnsureRegularDirectoryParents(directory);
+            foreach (string path in Directory.EnumerateFileSystemEntries(directory))
+            {
+                token.ThrowIfCancellationRequested();
+                FileAttributes attributes = File.GetAttributes(path);
+                if ((attributes & FileAttributes.ReparsePoint) != 0)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+                }
+                if ((attributes & FileAttributes.Directory) != 0)
+                {
+                    EnsureRegularTrainingTree(path, token);
+                }
+            }
+        }
+
         public void Save(JobRecord job)
         {
             lock (_gate)
@@ -121,31 +207,7 @@ namespace Eidolon.Core.Infrastructure
                 };
                 try
                 {
-                    GenerationMetadata metadata = _json.Read<GenerationMetadata>(Path.ChangeExtension(path, ".json"));
-                    if (metadata != null)
-                    {
-                        if (metadata.Format != GenerationMetadata.DocumentFormat || metadata.SchemaVersion != 1)
-                        {
-                            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
-                        }
-                        if (metadata.Model == null || metadata.Loras == null || metadata.Loras.Any(lora => lora == null) == true)
-                        {
-                            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
-                        }
-                        if (metadata.UserPrompt == null || metadata.PositivePrompt == null || metadata.NegativePrompt == null
-                            || metadata.BasePositivePrompt == null)
-                        {
-                            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
-                        }
-                        if (metadata.ReferenceMode != GenerationReferenceMode.None
-                            && (metadata.ReferenceMode != GenerationReferenceMode.Reimagine && metadata.ReferenceMode != GenerationReferenceMode.Restyle
-                                || string.IsNullOrWhiteSpace(metadata.ReferenceImagePath) == true
-                                || double.IsFinite(metadata.Denoise) == false || metadata.Denoise < 0.05 || metadata.Denoise > 0.95))
-                        {
-                            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
-                        }
-                        image.Metadata = metadata;
-                    }
+                    image.Metadata = ReadGenerationMetadata(path);
                 }
                 catch (Exception error) when (error is not OperationCanceledException)
                 {
@@ -161,6 +223,81 @@ namespace Eidolon.Core.Infrastructure
             lock (_gate)
             {
                 return ReadImageFiles(generationDirectory, token).Select(file => file.FullName).ToList();
+            }
+        }
+
+        internal GenerationMetadata ReadGenerationMetadata(string imagePath)
+        {
+            lock (_gate)
+            {
+                GenerationMetadata metadata = _json.Read<GenerationMetadata>(Path.ChangeExtension(imagePath, ".json"));
+                if (metadata == null)
+                {
+                    return null;
+                }
+                if (metadata.Format != GenerationMetadata.DocumentFormat)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (metadata.SchemaVersion != 1)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (metadata.Model == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (metadata.Loras == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (metadata.Loras.Any(lora => lora == null) == true)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (metadata.UserPrompt == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (metadata.PositivePrompt == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (metadata.NegativePrompt == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (metadata.BasePositivePrompt == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (metadata.ReferenceMode != GenerationReferenceMode.None)
+                {
+                    if (metadata.ReferenceMode != GenerationReferenceMode.Reimagine)
+                    {
+                        if (metadata.ReferenceMode != GenerationReferenceMode.Restyle)
+                        {
+                            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                        }
+                    }
+                    if (string.IsNullOrWhiteSpace(metadata.ReferenceImagePath) == true)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    }
+                    if (double.IsFinite(metadata.Denoise) == false)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    }
+                    if (metadata.Denoise < 0.05)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    }
+                    if (metadata.Denoise > 0.95)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    }
+                }
+                return metadata;
             }
         }
 

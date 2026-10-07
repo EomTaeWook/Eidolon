@@ -8,6 +8,16 @@ namespace Eidolon.App.Localization
         {
             switch (code)
             {
+                case StudioMessageCode.CodexExecutableNotFound:
+                    return "EidolonText534";
+                case StudioMessageCode.CodexGenerating:
+                    return "EidolonText535";
+                case StudioMessageCode.CodexOutputMissing:
+                    return "EidolonText536";
+                case StudioMessageCode.InvalidGenerationBackend:
+                    return "EidolonText537";
+                case StudioMessageCode.InvalidCodexOutput:
+                    return "EidolonText538";
                 case StudioMessageCode.InvalidTrainingBackground:
                     return "EidolonText430";
                 case StudioMessageCode.TrainingImageProcessingFailed:

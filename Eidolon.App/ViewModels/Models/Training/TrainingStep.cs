@@ -4,8 +4,6 @@ namespace Eidolon.App.ViewModels
     {
         Images,
         Identity,
-        Dataset,
-        Captions,
         Training
     }
 }

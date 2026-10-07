@@ -10,6 +10,15 @@ namespace Eidolon.App.ViewModels
         public ModelAsset Asset { get; private set; }
         public string Label { get; private set; }
         public string Detail { get; private set; }
+        public string KindCaption { get; private set; }
+        public string FamilyCaption { get; private set; }
+        public bool IsLora
+        {
+            get
+            {
+                return Asset.Kind == AssetKind.Lora;
+            }
+        }
         public bool HasTriggerWord
         {
             get
@@ -62,12 +71,17 @@ namespace Eidolon.App.ViewModels
             {
                 family = "SDXL";
             }
+            KindCaption = kind;
+            FamilyCaption = family;
             Detail = kind + " · " + family;
             if (string.IsNullOrWhiteSpace(asset.TriggerWord) == false)
             {
                 Detail += " · " + asset.TriggerWord;
             }
             Raise(nameof(Detail));
+            Raise(nameof(KindCaption));
+            Raise(nameof(FamilyCaption));
+            Raise(nameof(IsLora));
             Raise(nameof(HasTriggerWord));
             Raise(nameof(TriggerCaption));
         }

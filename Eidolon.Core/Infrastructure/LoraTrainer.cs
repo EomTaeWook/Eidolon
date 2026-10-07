@@ -1,4 +1,5 @@
 using Eidolon.Core.Application;
+using Dignus.Log;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -37,8 +38,7 @@ namespace Eidolon.Core.Infrastructure
                 throw new StudioException(StudioMessageCode.TrainingModelMissing);
             }
             string jobDirectory = _jobs.DirectoryFor(job.Id);
-            string datasetDirectory = Path.Combine(jobDirectory, "Dataset");
-            Directory.CreateDirectory(datasetDirectory);
+            string datasetDirectory = _jobs.TrainingDatasetDirectory(job, layout);
             IReadOnlyList<TrainingImageInput> images = await PrepareDatasetAsync(training, datasetDirectory,
                 progress, cancellationToken).ConfigureAwait(false);
             job.DatasetImageCount = images.Count;
@@ -213,12 +213,8 @@ namespace Eidolon.Core.Infrastructure
                 string targetStem = Path.Combine(datasetDirectory, stem);
                 progress.Report(new WorkProgress(StudioMessageCode.PreparingDataset, index * 100.0 / images.Count, false, index, images.Count));
                 await PrepareTrainingImageAsync(image.FilePath, targetStem, image.Background, cancellationToken).ConfigureAwait(false);
-                string caption = training.Description;
-                string captionPath = Path.ChangeExtension(image.FilePath, ".txt");
-                if (File.Exists(captionPath) == true)
-                {
-                    caption = await File.ReadAllTextAsync(captionPath, cancellationToken).ConfigureAwait(false);
-                }
+                string caption = await ReadTrainingCaptionAsync(image.FilePath, training.Description,
+                    cancellationToken).ConfigureAwait(false);
                 caption = caption.Trim();
                 string combined = training.TriggerWord.Trim();
                 if (string.IsNullOrWhiteSpace(caption) == false)
@@ -243,6 +239,58 @@ namespace Eidolon.Core.Infrastructure
                     new UTF8Encoding(false), cancellationToken).ConfigureAwait(false);
             }
             return images;
+        }
+
+        internal async Task<string> ReadTrainingCaptionAsync(string imagePath, string description, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            string captionPath = Path.ChangeExtension(imagePath, ".txt");
+            if (File.Exists(captionPath) == true)
+            {
+                return await File.ReadAllTextAsync(captionPath, token).ConfigureAwait(false);
+            }
+            try
+            {
+                GenerationMetadata metadata = _jobs.ReadGenerationMetadata(imagePath);
+                if (metadata != null)
+                {
+                    if (string.IsNullOrWhiteSpace(metadata.PositivePrompt) == false)
+                    {
+                        return metadata.PositivePrompt;
+                    }
+                    if (string.IsNullOrWhiteSpace(metadata.UserPrompt) == false)
+                    {
+                        return metadata.UserPrompt;
+                    }
+                }
+            }
+            catch (StudioException error)
+            {
+                LogHelper.Error(error);
+            }
+            token.ThrowIfCancellationRequested();
+            if (string.IsNullOrWhiteSpace(description) == false)
+            {
+                return description;
+            }
+            string name = Path.GetFileNameWithoutExtension(imagePath);
+            if (Guid.TryParse(name, out _) == true)
+            {
+                return string.Empty;
+            }
+            int separator = name.LastIndexOf('_');
+            if (separator >= 0)
+            {
+                if (Guid.TryParseExact(name.Substring(separator + 1), "N", out _) == true)
+                {
+                    if (DateTime.TryParseExact(name.Substring(0, separator), "yyyyMMdd_HHmmss_fff",
+                        CultureInfo.InvariantCulture, DateTimeStyles.None, out _) == true)
+                    {
+                        return string.Empty;
+                    }
+                }
+            }
+            return name.Replace('_', ' ').Replace('-', ' ');
         }
 
         private async Task PrepareTrainingImageAsync(string source, string targetStem, TrainingBackground background,

@@ -31,6 +31,26 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand PickReferenceImageCommand { get; private set; }
         public AsyncCommand ClearReferenceImageCommand { get; private set; }
 
+        public bool IsComfyGeneration
+        {
+            get
+            {
+                return Session.Settings.GenerationBackend == GenerationBackend.ComfyUI;
+            }
+        }
+
+        public bool IsGenerationBackendReady
+        {
+            get
+            {
+                if (IsComfyGeneration == false)
+                {
+                    return true;
+                }
+                return Assets.SelectedModel != null;
+            }
+        }
+
         private GenerationReferenceDraft ActiveReference
         {
             get
@@ -105,6 +125,10 @@ namespace Eidolon.App.ViewModels
         {
             get
             {
+                if (IsComfyGeneration == false)
+                {
+                    return _strings.GetString("EidolonText539");
+                }
                 if (Navigation.IsEditingView == true)
                 {
                     return _strings.GetString("EidolonText447");
@@ -211,6 +235,10 @@ namespace Eidolon.App.ViewModels
         {
             get
             {
+                if (IsComfyGeneration == false)
+                {
+                    return true;
+                }
                 if (UseRandomGenerationSeed == true)
                 {
                     return true;
@@ -231,7 +259,7 @@ namespace Eidolon.App.ViewModels
         {
             get
             {
-                return string.IsNullOrEmpty(_lastQueuedGenerationSeed) == false;
+                return IsComfyGeneration == true && string.IsNullOrEmpty(_lastQueuedGenerationSeed) == false;
             }
         }
 
@@ -411,18 +439,32 @@ namespace Eidolon.App.ViewModels
                 throw new InvalidOperationException(_strings.GetString("EidolonText001"));
             }
             long seed = 0;
-            if (UseRandomGenerationSeed == true)
+            if (IsComfyGeneration == false)
+            {
+                seed = 0;
+            }
+            else if (UseRandomGenerationSeed == true)
             {
                 seed = _seeds.Next();
             }
-            else if (long.TryParse(GenerationSeed, NumberStyles.None, CultureInfo.InvariantCulture, out seed) == false || seed < 0)
+            else
             {
-                throw new StudioException(StudioMessageCode.InvalidGenerationSeed, 0, long.MaxValue);
+                if (long.TryParse(GenerationSeed, NumberStyles.None, CultureInfo.InvariantCulture, out seed) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationSeed, 0, long.MaxValue);
+                }
+                if (seed < 0)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationSeed, 0, long.MaxValue);
+                }
             }
             ModelAsset model = null;
-            if (Assets.SelectedModel != null)
+            if (IsComfyGeneration == true)
             {
-                model = Assets.SelectedModel.Asset.Copy();
+                if (Assets.SelectedModel != null)
+                {
+                    model = Assets.SelectedModel.Asset.Copy();
+                }
             }
             DesktopSettings settings = Session.CreateActiveSettings(Session.Settings);
             bool removeBackground = RemoveBackground;
@@ -437,10 +479,18 @@ namespace Eidolon.App.ViewModels
                     ChangeStrength = draft.ChangeStrength
                 };
             }
-            List<ModelAsset> loras = Assets.Loras.Where(lora => lora.IsSelected == true).Select(lora => lora.Asset.Copy()).ToList();
+            List<ModelAsset> loras = new List<ModelAsset>();
+            if (IsComfyGeneration == true)
+            {
+                loras = Assets.Loras.Where(lora => lora.IsSelected == true).Select(lora => lora.Asset.Copy()).ToList();
+            }
             _work.Enqueue(_strings.GetString(titleKey) + " · " + prompt,
                 token => GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, token));
-            _lastQueuedGenerationSeed = seed.ToString(CultureInfo.InvariantCulture);
+            _lastQueuedGenerationSeed = string.Empty;
+            if (IsComfyGeneration == true)
+            {
+                _lastQueuedGenerationSeed = seed.ToString(CultureInfo.InvariantCulture);
+            }
             Raise(nameof(HasQueuedGenerationSeed));
             Raise(nameof(QueuedGenerationSeedCaption));
             return Task.CompletedTask;
@@ -481,7 +531,10 @@ namespace Eidolon.App.ViewModels
             RefreshReferenceInputs();
             if (job.ReferenceMode != GenerationReferenceMode.None)
             {
-                reference.ChangeStrength = job.Denoise;
+                if (job.GenerationBackend == GenerationBackend.ComfyUI)
+                {
+                    reference.ChangeStrength = job.Denoise;
+                }
                 try
                 {
                     await LoadReferenceImageAsync(reference, job.ReferenceImagePath, job.ReferenceImageName);
@@ -494,6 +547,20 @@ namespace Eidolon.App.ViewModels
                 }
             }
             RemoveBackground = job.RemoveBackground;
+            if (IsComfyGeneration == false)
+            {
+                UseRandomGenerationSeed = true;
+                Navigation.SelectedTab = targetTab;
+                RefreshReferenceInputs();
+                return;
+            }
+            if (job.GenerationBackend == GenerationBackend.Codex)
+            {
+                UseRandomGenerationSeed = true;
+                Navigation.SelectedTab = targetTab;
+                RefreshReferenceInputs();
+                return;
+            }
             GenerationSeed = job.Seed.ToString(CultureInfo.InvariantCulture);
             UseRandomGenerationSeed = false;
             Assets.SelectedModel = Assets.FindReusableAsset(Assets.Models, job.Model);
@@ -538,10 +605,10 @@ namespace Eidolon.App.ViewModels
             _seeds = seeds;
             Assets.PropertyChanged += OnAssetsChanged;
             GenerateCommand = Command(QueueGenerationAsync,
-                () => Session.CanQueue == true && Assets.SelectedModel != null && IsGenerationSeedValid == true
+                () => Session.CanQueue == true && IsGenerationBackendReady == true && IsGenerationSeedValid == true
                     && _generationReference.AreOptionsValid == true && string.IsNullOrWhiteSpace(Prompt) == false);
             EditImageCommand = Command(QueueEditingAsync,
-                () => Session.CanQueue == true && Assets.SelectedModel != null && IsGenerationSeedValid == true
+                () => Session.CanQueue == true && IsGenerationBackendReady == true && IsGenerationSeedValid == true
                     && _editingReference.HasImage == true && _editingReference.AreOptionsValid == true
                     && string.IsNullOrWhiteSpace(EditingPrompt) == false);
             PickReferenceImageCommand = Command(PickReferenceImageAsync, () => Session.CanEditGenerationInputs == true);
@@ -561,6 +628,11 @@ namespace Eidolon.App.ViewModels
             if (args.PropertyName == nameof(Session.Settings))
             {
                 RefreshGenerationInstructions();
+                Raise(nameof(IsComfyGeneration));
+                Raise(nameof(IsGenerationBackendReady));
+                Raise(nameof(ReferenceImageHint));
+                Raise(nameof(HasQueuedGenerationSeed));
+                RefreshCommands();
             }
         }
 

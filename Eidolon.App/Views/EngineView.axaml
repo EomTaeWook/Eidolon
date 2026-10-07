@@ -50,7 +50,7 @@
       </Grid>
     </Border>
     <ScrollViewer Grid.Row="2" Classes="engineContent" AllowAutoHide="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
-      <Grid ColumnDefinitions="*,20,*" RowDefinitions="Auto,16,Auto">
+      <Grid ColumnDefinitions="*,20,*" RowDefinitions="Auto,16,Auto,16,Auto">
         <Border Classes="card" VerticalAlignment="Top">
           <StackPanel Spacing="18">
             <StackPanel Spacing="6">
@@ -171,6 +171,17 @@
               </Grid>
             </StackPanel>
           </Expander>
+        </Border>
+        <Border Grid.Row="4" Grid.ColumnSpan="3" Classes="card" IsVisible="{Binding CanOpenTrainingData}">
+          <StackPanel Spacing="10">
+            <TextBlock Text="{DynamicResource EidolonText575}" Classes="sectionTitle" />
+            <TextBlock Text="{DynamicResource EidolonText576}" Classes="muted" FontSize="12" />
+            <SelectableTextBlock Text="{Binding TrainingDataDirectory}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Content="{DynamicResource EidolonText332}" Command="{Binding OpenTrainingDataCommand}" />
+              <Button Content="{DynamicResource EidolonText577}" Command="{Binding ClearTrainingDataCommand}" />
+            </StackPanel>
+          </StackPanel>
         </Border>
       </Grid>
     </ScrollViewer>

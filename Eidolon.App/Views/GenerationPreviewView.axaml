@@ -4,7 +4,7 @@
       <Grid ColumnDefinitions="*,Auto" Margin="20,16">
         <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
           <TextBlock Text="{DynamicResource EidolonText439}" FontSize="15" FontWeight="SemiBold" />
-          <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding SelectedGeneration.HasMetadata, FallbackValue=False}">
+            <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding SelectedGeneration.HasSeed, FallbackValue=False}">
             <TextBlock Text="{DynamicResource EidolonText369}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
             <SelectableTextBlock Text="{Binding SelectedGeneration.SeedCaption}" FontSize="12" Foreground="{DynamicResource MutedBrush}" />
           </StackPanel>

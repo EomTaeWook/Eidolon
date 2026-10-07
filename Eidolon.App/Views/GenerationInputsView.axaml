@@ -9,10 +9,28 @@
   </UserControl.Styles>
   <Border Classes="card" Padding="0">
     <Grid RowDefinitions="Auto,*,Auto">
-      <TextBlock Text="{Binding GenerationInputCaption}" FontSize="18" FontWeight="SemiBold" Margin="20,18,20,0" />
+      <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="20,18,20,14">
+        <StackPanel Spacing="10">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding GenerationInputCaption}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Classes="quiet" Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" ToolTip.Tip="{DynamicResource EidolonText176}" AutomationProperties.Name="{DynamicResource EidolonText560}">
+              <StackPanel Orientation="Horizontal" Spacing="5">
+                <Path Data="{StaticResource EidolonIconSettings}" Width="14" Height="14" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.5" />
+                <TextBlock Text="{DynamicResource EidolonText560}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{DynamicResource EidolonText526}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" Background="{DynamicResource BadgeBrush}" BorderThickness="0" CornerRadius="5" Padding="9,4" ToolTip.Tip="{DynamicResource EidolonText560}">
+              <TextBlock Text="{Binding Session.GenerationBackendCaption}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+            </Button>
+          </Grid>
+        </StackPanel>
+      </Border>
       <ScrollViewer Grid.Row="1" AllowAutoHide="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="20,16,8,0" Padding="0,0,12,12">
         <StackPanel Spacing="18">
-          <StackPanel Spacing="8">
+          <StackPanel Spacing="8" IsVisible="{Binding IsComfyGeneration}">
             <Grid ColumnDefinitions="*,Auto">
               <TextBlock Text="{DynamicResource EidolonText359}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
               <Button Grid.Column="1" Classes="quiet" Content="{DynamicResource EidolonText410}" Command="{Binding Assets.ScanCommand}" ToolTip.Tip="{DynamicResource EidolonText125}" />
@@ -80,6 +98,13 @@
               </Border>
             </StackPanel>
           </StackPanel>
+          <Border Background="{DynamicResource ButtonBrush}" CornerRadius="6" Padding="12" IsVisible="{Binding !IsComfyGeneration}">
+            <StackPanel Spacing="6">
+              <TextBlock Text="{DynamicResource EidolonText548}" Classes="muted" FontSize="11" />
+              <TextBlock Text="{Binding Session.CodexModelCaption}" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Session.CodexModelCaption}" />
+              <TextBlock Text="{DynamicResource EidolonText545}" Classes="muted" FontSize="12" />
+            </StackPanel>
+          </Border>
           <StackPanel Spacing="10" IsEnabled="{Binding Session.CanEditGenerationInputs}" IsVisible="{Binding Navigation.IsGenerationView}">
             <TextBlock Text="{DynamicResource EidolonText112}" FontSize="15" FontWeight="SemiBold" />
             <TextBox Text="{Binding Prompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="124" MaxHeight="220" PlaceholderText="{DynamicResource EidolonText114}" />
@@ -87,19 +112,21 @@
           </StackPanel>
           <views:EditingInputsView IsVisible="{Binding Navigation.IsEditingView}" />
           <StackPanel Spacing="10" IsEnabled="{Binding Session.CanEditGenerationInputs}">
-            <Grid ColumnDefinitions="*,Auto">
+            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsComfyGeneration}">
               <TextBlock Text="{DynamicResource EidolonText369}" FontSize="13" VerticalAlignment="Center" />
               <CheckBox Grid.Column="1" Content="{DynamicResource EidolonText419}" IsChecked="{Binding UseRandomGenerationSeed, Mode=TwoWay}" FontSize="12" MinHeight="24" />
             </Grid>
-            <TextBox Text="{Binding GenerationSeed, Mode=TwoWay}" IsVisible="{Binding !UseRandomGenerationSeed}" FontSize="13" Padding="10,8" />
-            <TextBlock Text="{Binding GenerationSeedValidationHint}" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource ErrorTextBrush}" IsVisible="{Binding !IsGenerationSeedValid}" />
+            <StackPanel IsVisible="{Binding IsComfyGeneration}" Spacing="10">
+              <TextBox Text="{Binding GenerationSeed, Mode=TwoWay}" IsVisible="{Binding !UseRandomGenerationSeed}" FontSize="13" Padding="10,8" />
+              <TextBlock Text="{Binding GenerationSeedValidationHint}" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource ErrorTextBrush}" IsVisible="{Binding !IsGenerationSeedValid}" />
+            </StackPanel>
             <CheckBox IsChecked="{Binding RemoveBackground, Mode=TwoWay}" ToolTip.Tip="{DynamicResource EidolonText309}" Content="{DynamicResource EidolonText308}" FontSize="13" MinHeight="24" />
           </StackPanel>
           <StackPanel Spacing="0">
             <Border Height="1" Background="{DynamicResource BorderBrush}" />
             <ToggleButton x:Name="GuidelinesToggle" Classes="disclosure" IsChecked="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
               <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
-                <TextBlock Text="{DynamicResource EidolonText436}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{DynamicResource EidolonText176}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                 <Path Grid.Column="1" Data="M 2 4 L 7 9 L 12 4" Width="12" Height="8" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" Margin="16,0,0,0" VerticalAlignment="Center" />
               </Grid>
             </ToggleButton>

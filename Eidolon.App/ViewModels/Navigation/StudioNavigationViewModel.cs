@@ -2,6 +2,9 @@ namespace Eidolon.App.ViewModels
 {
     public class StudioNavigationViewModel : ObservableObject
     {
+        public const int GenerationMethodTab = 0;
+        public const int EngineInstallationTab = 1;
+        public const int ModelsTab = 2;
         private int _selectedTab;
         private int _selectedEngineTab;
         public AsyncCommand ShowEditingCommand { get; private set; }
@@ -9,6 +12,8 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand ShowResultsCommand { get; private set; }
         public AsyncCommand ShowTrainingCommand { get; private set; }
         public AsyncCommand ShowEngineCommand { get; private set; }
+        public AsyncCommand ShowGenerationEnvironmentCommand { get; private set; }
+        public AsyncCommand ShowModelsCommand { get; private set; }
         public AsyncCommand ShowSettingsCommand { get; private set; }
         public AsyncCommand ShowHelpCommand { get; private set; }
 
@@ -119,14 +124,22 @@ namespace Eidolon.App.ViewModels
             ShowEditingCommand = new AsyncCommand(() => NavigateAsync(1), () => true, onError);
             ShowResultsCommand = new AsyncCommand(() => NavigateAsync(6), () => true, onError);
             ShowTrainingCommand = new AsyncCommand(() => NavigateAsync(2), () => true, onError);
-            ShowEngineCommand = new AsyncCommand(() => NavigateAsync(3), () => true, onError);
+            ShowGenerationEnvironmentCommand = new AsyncCommand(() => NavigateEnvironmentAsync(GenerationMethodTab), () => true, onError);
+            ShowEngineCommand = new AsyncCommand(() => NavigateEnvironmentAsync(EngineInstallationTab), () => true, onError);
+            ShowModelsCommand = new AsyncCommand(() => NavigateEnvironmentAsync(ModelsTab), () => true, onError);
             ShowSettingsCommand = new AsyncCommand(() => NavigateAsync(4), () => true, onError);
             ShowHelpCommand = new AsyncCommand(() => NavigateAsync(5), () => true, onError);
         }
 
-        private Task NavigateAsync(int tab)
+        internal Task NavigateAsync(int tab)
         {
             return _navigate(tab);
+        }
+
+        private Task NavigateEnvironmentAsync(int tab)
+        {
+            SelectedEngineTab = tab;
+            return NavigateAsync(3);
         }
     }
 }

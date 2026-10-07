@@ -1,28 +1,29 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:services="using:Eidolon.App.Services" x:Class="Eidolon.App.Views.PromptSettingsView" x:DataType="vm:PromptSettingsViewModel">
   <StackPanel Spacing="10" IsEnabled="{Binding CanEdit}">
     <TextBlock Text="{DynamicResource EidolonText509}" Classes="label" />
-    <Grid ColumnDefinitions="*,Auto">
-      <ComboBox ItemsSource="{Binding Presets}" SelectedItem="{Binding SelectedPreset, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText510}">
-        <ComboBox.ItemTemplate>
-          <DataTemplate x:DataType="services:PromptPreset">
-            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-          </DataTemplate>
-        </ComboBox.ItemTemplate>
-      </ComboBox>
-      <Button Grid.Column="1" Content="{DynamicResource EidolonText516}" Command="{Binding DeleteCommand}" Margin="8,0,0,0" Padding="12,8" />
-    </Grid>
-    <TextBlock Text="{DynamicResource EidolonText511}" Classes="muted" FontSize="12" />
+    <ComboBox ItemsSource="{Binding Presets}" SelectedItem="{Binding SelectedPreset, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText510}">
+      <ComboBox.ItemTemplate>
+        <DataTemplate x:DataType="services:PromptPreset">
+          <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+        </DataTemplate>
+      </ComboBox.ItemTemplate>
+    </ComboBox>
     <TextBlock Text="{DynamicResource EidolonText178}" Classes="label" />
     <TextBox Text="{Binding PositivePrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="96" PlaceholderText="{DynamicResource EidolonText179}" />
     <TextBlock Text="{DynamicResource EidolonText180}" Classes="label" />
     <TextBox Text="{Binding NegativePrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="96" PlaceholderText="{DynamicResource EidolonText181}" />
-    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Margin="0,6,0,0" />
-    <TextBlock Text="{DynamicResource EidolonText512}" Classes="label" />
-    <TextBox Text="{Binding PresetName, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText513}" />
-    <Grid ColumnDefinitions="*,8,*">
-      <Button Content="{DynamicResource EidolonText514}" Command="{Binding AddCommand}" HorizontalAlignment="Stretch" />
-      <Button Grid.Column="2" Content="{DynamicResource EidolonText515}" Command="{Binding UpdateCommand}" HorizontalAlignment="Stretch" />
-    </Grid>
-    <TextBlock Text="{Binding Hint}" Classes="muted" FontSize="12" />
+    <Border Background="{DynamicResource ButtonBrush}" CornerRadius="8" Padding="16" Margin="0,6,0,0">
+      <StackPanel Spacing="10">
+        <TextBlock Text="{DynamicResource EidolonText547}" FontSize="14" FontWeight="SemiBold" />
+        <TextBlock Text="{DynamicResource EidolonText512}" Classes="label" />
+        <TextBox Text="{Binding PresetName, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText513}" />
+        <Grid ColumnDefinitions="*,8,*,8,Auto">
+          <Button Content="{DynamicResource EidolonText514}" Command="{Binding AddCommand}" HorizontalAlignment="Stretch" />
+          <Button Grid.Column="2" Content="{DynamicResource EidolonText515}" Command="{Binding UpdateCommand}" HorizontalAlignment="Stretch" />
+          <Button Grid.Column="4" Content="{DynamicResource EidolonText516}" Command="{Binding DeleteCommand}" Padding="12,8" />
+        </Grid>
+        <TextBlock Text="{Binding Hint}" Classes="muted" FontSize="12" />
+      </StackPanel>
+    </Border>
   </StackPanel>
 </UserControl>

@@ -129,6 +129,11 @@ namespace Eidolon.Core.Domain
         InvalidReferenceOptions,
         PreparingReferenceImage,
         ReferenceImageUploading,
-        BackgroundSubjectNotFound
+        BackgroundSubjectNotFound,
+        CodexExecutableNotFound,
+        CodexGenerating,
+        CodexOutputMissing,
+        InvalidGenerationBackend,
+        InvalidCodexOutput
     }
 }

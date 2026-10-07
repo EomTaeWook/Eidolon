@@ -68,6 +68,9 @@ namespace Eidolon.App
             _serviceContainer.RegisterType(new StringLanguageSelection(new DesktopSettings().Language));
             _serviceContainer.RegisterType<AtomicJsonFile, AtomicJsonFile>(LifeScope.Singleton);
             _serviceContainer.RegisterType<ProcessRunner, ProcessRunner>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<CodexExecutableLocator, CodexExecutableLocator>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<CodexImageEngine, CodexImageEngine>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<CodexModelCatalog, CodexModelCatalog>(LifeScope.Singleton);
             _serviceContainer.RegisterType<RuntimeModuleReader, RuntimeModuleReader>(LifeScope.Singleton);
             _serviceContainer.RegisterType<RuntimeInstaller, RuntimeInstaller>(LifeScope.Singleton);
             _serviceContainer.RegisterType<SafetensorsInspector, SafetensorsInspector>(LifeScope.Singleton);
@@ -99,7 +102,7 @@ namespace Eidolon.App
                 provider.GetService<RuntimeInstaller>(), provider.GetService<ComfyEngine>(), provider.GetService<StudioService>(),
                 provider.GetService<DesktopDialogs>(), provider.GetService<ThemeService>(), provider.GetService<LanguageService>(),
                 provider.GetService<StringHelper>(), provider.GetService<StudioWorkPresenter>(),
-                provider.GetService<ISeedProvider>(), dataDirectory), LifeScope.Singleton);
+                provider.GetService<ISeedProvider>(), provider.GetService<CodexModelCatalog>(), dataDirectory), LifeScope.Singleton);
             _serviceContainer.RegisterDependencies(typeof(StringHelper).Assembly);
             return _serviceContainer.Build();
         }

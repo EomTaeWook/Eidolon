@@ -15,6 +15,9 @@ namespace Eidolon.Core.Domain
         public string PositivePrompt { get; set; } = string.Empty;
         public string NegativePrompt { get; set; } = string.Empty;
         public string DefaultModelId { get; set; } = string.Empty;
+        public GenerationBackend GenerationBackend { get; set; } = GenerationBackend.ComfyUI;
+        public string CodexExecutablePath { get; set; } = string.Empty;
+        public string CodexModel { get; set; } = string.Empty;
 
         public StudioSettings()
         {
@@ -31,12 +34,27 @@ namespace Eidolon.Core.Domain
                 UseServerAssets = UseServerAssets,
                 PositivePrompt = PositivePrompt,
                 NegativePrompt = NegativePrompt,
-                DefaultModelId = DefaultModelId
+                DefaultModelId = DefaultModelId,
+                GenerationBackend = GenerationBackend,
+                CodexExecutablePath = CodexExecutablePath,
+                CodexModel = CodexModel
             };
         }
 
         public void Validate()
         {
+            if (Enum.IsDefined(GenerationBackend) == false)
+            {
+                throw new StudioException(StudioMessageCode.InvalidGenerationBackend);
+            }
+            if (CodexExecutablePath == null)
+            {
+                throw new StudioException(StudioMessageCode.InvalidGenerationSettings);
+            }
+            if (CodexModel == null)
+            {
+                throw new StudioException(StudioMessageCode.InvalidGenerationSettings);
+            }
             if (Uri.TryCreate(ServerAddress, UriKind.Absolute, out Uri server) == false)
             {
                 throw new StudioException(StudioMessageCode.InvalidServerAddress);

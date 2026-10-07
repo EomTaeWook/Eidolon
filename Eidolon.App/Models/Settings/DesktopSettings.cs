@@ -50,7 +50,10 @@ namespace Eidolon.App.Services
                 NegativePrompt = NegativePrompt,
                 PromptPresets = new ObservableCollection<PromptPreset>(PromptPresets.Select(preset => preset.Copy())),
                 ActivePromptPresetId = ActivePromptPresetId,
-                DefaultModelId = DefaultModelId
+                DefaultModelId = DefaultModelId,
+                GenerationBackend = GenerationBackend,
+                CodexExecutablePath = CodexExecutablePath,
+                CodexModel = CodexModel
             };
         }
 

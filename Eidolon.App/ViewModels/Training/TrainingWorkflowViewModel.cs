@@ -51,22 +51,6 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        public bool IsDatasetStep
-        {
-            get
-            {
-                return _currentStep == TrainingStep.Dataset;
-            }
-        }
-
-        public bool IsCaptionsStep
-        {
-            get
-            {
-                return _currentStep == TrainingStep.Captions;
-            }
-        }
-
         public bool IsTrainingStep
         {
             get
@@ -107,10 +91,6 @@ namespace Eidolon.App.ViewModels
                     return _strings.GetString("EidolonText483");
                 case TrainingStep.Identity:
                     return _strings.GetString("EidolonText484");
-                case TrainingStep.Dataset:
-                    return _strings.GetString("EidolonText485");
-                case TrainingStep.Captions:
-                    return _strings.GetString("EidolonText486");
                 case TrainingStep.Training:
                     return _strings.GetString("EidolonText487");
                 default:
@@ -199,8 +179,6 @@ namespace Eidolon.App.ViewModels
             }
             Raise(nameof(IsImagesStep));
             Raise(nameof(IsIdentityStep));
-            Raise(nameof(IsDatasetStep));
-            Raise(nameof(IsCaptionsStep));
             Raise(nameof(IsTrainingStep));
             Raise(nameof(Title));
             Raise(nameof(Hint));

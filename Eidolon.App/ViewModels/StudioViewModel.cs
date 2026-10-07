@@ -4,6 +4,7 @@ using Eidolon.App.Localization;
 using Eidolon.App.Presenters;
 using Eidolon.Core.Application;
 using Eidolon.Core.Infrastructure;
+using Eidolon.Core.Domain;
 
 namespace Eidolon.App.ViewModels
 {
@@ -24,7 +25,7 @@ namespace Eidolon.App.ViewModels
         public StudioViewModel(SettingsStore settingsStore, AssetLibrary assets, JobStore jobs,
             RuntimeInstaller installer, ComfyEngine engine, StudioService studio, DesktopDialogs dialogs,
             ThemeService themes, LanguageService languages, StringHelper strings, StudioWorkPresenter work,
-            ISeedProvider seeds, string dataDirectory)
+            ISeedProvider seeds, CodexModelCatalog codexModels, string dataDirectory)
         {
             _engine = engine;
             _work = work;
@@ -32,11 +33,11 @@ namespace Eidolon.App.ViewModels
             Session = new StudioSession(settingsStore, engine, work, strings, dataDirectory);
             Navigation = new StudioNavigationViewModel(NavigateAsync, Session.ReportError);
             Assets = new AssetsViewModel(Session, Navigation, work, strings, dialogs, assets, engine);
-            Settings = new SettingsViewModel(Session, Navigation, work, strings, dialogs, Assets, themes, languages);
+            Settings = new SettingsViewModel(Session, Navigation, work, strings, dialogs, Assets, themes, languages, codexModels);
             Generation = new GenerationViewModel(Session, Navigation, work, strings, dialogs, Assets, jobs, studio, seeds);
             Training = new TrainingViewModel(Session, Navigation, work, strings, dialogs, Assets, studio);
             Gallery = new GalleryViewModel(Session, Navigation, work, strings, dialogs, Generation, Training, jobs);
-            Engine = new EngineViewModel(Session, Navigation, work, strings, dialogs, Assets, Settings, assets, installer, engine);
+            Engine = new EngineViewModel(Session, Navigation, work, strings, dialogs, Assets, Settings, assets, installer, engine, jobs);
             Generation.ImageGenerated += Gallery.ShowGeneratedImage;
             Settings.LanguageChanged += Localize;
             _work.Finished += OnWorkFinished;
@@ -69,9 +70,12 @@ namespace Eidolon.App.ViewModels
                 Session.Error = string.Empty;
                 Session.Status = _strings.GetString("EidolonText224");
                 DesktopSettings settings = Session.Settings.Copy();
-                Session.MaintenanceWork = true;
-                _work.Enqueue(_strings.GetString("EidolonText255"), token => Session.ExecuteMaintenanceAsync(
-                    startupToken => Engine.StartEngineOnStartupAsync(settings, startupToken), token));
+                if (settings.GenerationBackend == GenerationBackend.ComfyUI)
+                {
+                    Session.MaintenanceWork = true;
+                    _work.Enqueue(_strings.GetString("EidolonText255"), token => Session.ExecuteMaintenanceAsync(
+                        startupToken => Engine.StartEngineOnStartupAsync(settings, startupToken), token));
+                }
             }
             catch (Exception error)
             {
@@ -84,6 +88,13 @@ namespace Eidolon.App.ViewModels
         private Task NavigateAsync(int tab)
         {
             Navigation.SelectedTab = tab;
+            if (tab == 3)
+            {
+                if (Navigation.SelectedEngineTab == StudioNavigationViewModel.GenerationMethodTab)
+                {
+                    return Settings.RefreshCodexModelsAsync();
+                }
+            }
             if (tab == 6)
             {
                 return Gallery.RefreshGalleryAsync();
@@ -124,7 +135,8 @@ namespace Eidolon.App.ViewModels
             Session.BeginClosing();
             try
             {
-                await Task.WhenAll(Gallery.WaitForLoadAsync(), _work.DisposeAsync().AsTask());
+                await Task.WhenAll(Gallery.WaitForLoadAsync(), Settings.WaitForModelsAsync(), Training.WaitForDescriptionAsync(),
+                    _work.DisposeAsync().AsTask());
             }
             finally
             {

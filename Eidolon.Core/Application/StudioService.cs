@@ -15,10 +15,12 @@ namespace Eidolon.Core.Application
         private readonly TimeProvider _time;
         private readonly ISeedProvider _seeds;
         private readonly BackgroundRemovalService _backgroundRemoval;
+        private readonly CodexImageEngine _codex;
         private readonly SemaphoreSlim _gpuGate = new SemaphoreSlim(1, 1);
 
         public StudioService(AssetLibrary assets, JobStore jobs, ComfyEngine engine,
-            LoraTrainer trainer, TimeProvider time, ISeedProvider seeds, BackgroundRemovalService backgroundRemoval)
+            LoraTrainer trainer, TimeProvider time, ISeedProvider seeds, BackgroundRemovalService backgroundRemoval,
+            CodexImageEngine codex)
         {
             _assets = assets;
             _jobs = jobs;
@@ -27,6 +29,7 @@ namespace Eidolon.Core.Application
             _time = time;
             _seeds = seeds;
             _backgroundRemoval = backgroundRemoval;
+            _codex = codex;
         }
 
         public async Task<JobRecord> GenerateAsync(StudioSettings settings, string prompt, ModelAsset model,
@@ -49,16 +52,41 @@ namespace Eidolon.Core.Application
             }
             if (reference != null)
             {
-                if (reference.Mode != GenerationReferenceMode.Reimagine && reference.Mode != GenerationReferenceMode.Restyle
-                    || double.IsFinite(reference.ChangeStrength) == false || reference.ChangeStrength < 0.05 || reference.ChangeStrength > 0.95)
+                if (reference.Mode != GenerationReferenceMode.Reimagine)
+                {
+                    if (reference.Mode != GenerationReferenceMode.Restyle)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                }
+                if (double.IsFinite(reference.ChangeStrength) == false)
                 {
                     throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
                 }
-                if (reference.ImageData == null || reference.ImageData.Length == 0
-                    || reference.ImageData.Length > GenerationReferenceInput.MaximumImageBytes)
+                if (reference.ChangeStrength < 0.05)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                }
+                if (reference.ChangeStrength > 0.95)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                }
+                if (reference.ImageData == null)
                 {
                     throw new StudioException(StudioMessageCode.InvalidReferenceImage);
                 }
+                if (reference.ImageData.Length == 0)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (reference.ImageData.Length > GenerationReferenceInput.MaximumImageBytes)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+            }
+            if (settings.GenerationBackend == GenerationBackend.Codex)
+            {
+                return await GenerateCodexAsync(settings, prompt, removeBackground, reference, progress, token).ConfigureAwait(false);
             }
             ValidateModel(settings, model);
             foreach (ModelAsset lora in loras)
@@ -128,6 +156,53 @@ namespace Eidolon.Core.Application
             }
         }
 
+        private async Task<JobRecord> GenerateCodexAsync(StudioSettings settings, string prompt,
+            bool removeBackground, GenerationReferenceInput reference, IProgress<WorkProgress> progress, CancellationToken token)
+        {
+            settings.Validate();
+            JobRecord job = new JobRecord
+            {
+                Kind = JobKind.Generation,
+                GenerationBackend = GenerationBackend.Codex,
+                CodexModel = settings.CodexModel.Trim(),
+                Title = prompt.Trim(),
+                UserPrompt = prompt.Trim(),
+                BasePositivePrompt = settings.PositivePrompt,
+                HasBasePositivePrompt = true,
+                PositivePrompt = ComposePrompt(settings.PositivePrompt, prompt, Array.Empty<ModelAsset>()),
+                NegativePrompt = settings.NegativePrompt,
+                RemoveBackground = removeBackground,
+                Model = new ModelAsset { Name = "Codex", EngineName = "image_gen" },
+                StartedAtUtc = _time.GetUtcNow()
+            };
+            _jobs.SetOutputDirectory(job, settings.GenerationDirectory);
+            try
+            {
+                _jobs.Save(job);
+                if (reference != null)
+                {
+                    progress.Report(new WorkProgress(StudioMessageCode.PreparingReferenceImage));
+                    await PrepareReferenceImageAsync(job, reference, null, token).ConfigureAwait(false);
+                    _jobs.Save(job);
+                }
+                await _codex.GenerateAsync(settings.Copy(), job, _jobs, progress, token).ConfigureAwait(false);
+                foreach (string imageFile in job.OriginalImageFiles)
+                {
+                    await PublishImageAsync(job, imageFile, progress, token).ConfigureAwait(false);
+                }
+                job.State = JobState.Completed;
+                job.FinishedAtUtc = _time.GetUtcNow();
+                _jobs.Save(job);
+                progress.Report(new WorkProgress(StudioMessageCode.GenerationCompleted, 100, false));
+                return job;
+            }
+            catch (Exception error)
+            {
+                FinishFailure(job, error);
+                throw;
+            }
+        }
+
         private async Task PrepareReferenceImageAsync(JobRecord job, GenerationReferenceInput reference,
             GenerationPreset preset, CancellationToken token)
         {
@@ -136,8 +211,19 @@ namespace Eidolon.Core.Application
                 token.ThrowIfCancellationRequested();
                 using SKMemoryStream input = new SKMemoryStream(reference.ImageData);
                 using SKCodec codec = SKCodec.Create(input);
-                if (codec == null || codec.Info.Width < 1 || codec.Info.Height < 1
-                    || (long)codec.Info.Width * codec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
+                if (codec == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (codec.Info.Width < 1)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (codec.Info.Height < 1)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if ((long)codec.Info.Width * codec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
                 {
                     throw new StudioException(StudioMessageCode.InvalidReferenceImage);
                 }
@@ -148,19 +234,35 @@ namespace Eidolon.Core.Application
                 }
                 int sourceWidth = source.Width;
                 int sourceHeight = source.Height;
-                if (codec.EncodedOrigin == SKEncodedOrigin.LeftTop || codec.EncodedOrigin == SKEncodedOrigin.RightTop
-                    || codec.EncodedOrigin == SKEncodedOrigin.RightBottom || codec.EncodedOrigin == SKEncodedOrigin.LeftBottom)
+                switch (codec.EncodedOrigin)
                 {
-                    sourceWidth = source.Height;
-                    sourceHeight = source.Width;
+                    case SKEncodedOrigin.LeftTop:
+                    case SKEncodedOrigin.RightTop:
+                    case SKEncodedOrigin.RightBottom:
+                    case SKEncodedOrigin.LeftBottom:
+                        sourceWidth = source.Height;
+                        sourceHeight = source.Width;
+                        break;
                 }
-                double scale = (double)preset.Resolution / Math.Max(sourceWidth, sourceHeight);
-                job.Width = Math.Max(64, (int)Math.Round(sourceWidth * scale / 8) * 8);
-                job.Height = Math.Max(64, (int)Math.Round(sourceHeight * scale / 8) * 8);
-                using SKBitmap prepared = new SKBitmap(job.Width, job.Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+                job.Width = sourceWidth;
+                job.Height = sourceHeight;
+                if (job.GenerationBackend == GenerationBackend.ComfyUI)
+                {
+                    double scale = (double)preset.Resolution / Math.Max(sourceWidth, sourceHeight);
+                    job.Width = Math.Max(64, (int)Math.Round(sourceWidth * scale / 8) * 8);
+                    job.Height = Math.Max(64, (int)Math.Round(sourceHeight * scale / 8) * 8);
+                }
+                using SKBitmap prepared = new SKBitmap(job.Width, job.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using (SKCanvas canvas = new SKCanvas(prepared))
                 {
-                    canvas.Clear(SKColors.White);
+                    if (job.GenerationBackend == GenerationBackend.Codex)
+                    {
+                        canvas.Clear(SKColors.Transparent);
+                    }
+                    else
+                    {
+                        canvas.Clear(SKColors.White);
+                    }
                     canvas.Scale((float)job.Width / sourceWidth, (float)job.Height / sourceHeight);
                     switch (codec.EncodedOrigin)
                     {
@@ -213,35 +315,17 @@ namespace Eidolon.Core.Application
                 job.ReferenceMode = reference.Mode;
                 job.ReferenceImageName = reference.ImageName;
                 job.ReferenceImagePath = destination;
-                job.Denoise = reference.ChangeStrength;
+                if (job.GenerationBackend == GenerationBackend.ComfyUI)
+                {
+                    job.Denoise = reference.ChangeStrength;
+                }
                 token.ThrowIfCancellationRequested();
             }, token).ConfigureAwait(false);
         }
 
-        public async Task<string> PrepareTrainingDatasetAsync(TrainingInput input, string parentDirectory,
-            IProgress<WorkProgress> progress, CancellationToken token)
+        public Task<string> ReadTrainingCaptionAsync(string imagePath, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-            if (input.Images.Count == 0)
-            {
-                throw new StudioException(StudioMessageCode.TrainingImagesMissing);
-            }
-            if (Directory.Exists(parentDirectory) == false)
-            {
-                throw new StudioException(StudioMessageCode.DatasetRequired);
-            }
-            foreach (TrainingImageInput image in input.Images)
-            {
-                if (Enum.IsDefined(typeof(TrainingBackground), image.Background) == false)
-                {
-                    throw new StudioException(StudioMessageCode.InvalidTrainingBackground);
-                }
-            }
-            string name = "Eidolon-Training-" + _time.GetUtcNow().ToString("yyyyMMdd_HHmmss", System.Globalization.CultureInfo.InvariantCulture) + "-" +
-                Guid.NewGuid().ToString("N").Substring(0, 8);
-            string directory = Path.Combine(Path.GetFullPath(parentDirectory), name);
-            await _trainer.PrepareDatasetAsync(input, directory, progress, token).ConfigureAwait(false);
-            return directory;
+            return Task.Run(() => _trainer.ReadTrainingCaptionAsync(imagePath, string.Empty, token), token);
         }
 
         public async Task<ModelAsset> TrainAsync(StudioSettings settings, TrainingInput input,
@@ -399,12 +483,15 @@ namespace Eidolon.Core.Application
         {
             bool removeWorkingFile = false;
             string workingFile = imageFile;
-            if (job.RemoveBackground == true)
+            if (job.GenerationBackend == GenerationBackend.ComfyUI)
             {
-                workingFile = Path.Combine("Processed", Guid.NewGuid().ToString("N") + ".png");
-                await _backgroundRemoval.RemoveAsync(_jobs.WorkingImagePath(job, imageFile),
-                    _jobs.WorkingImagePath(job, workingFile), progress, token).ConfigureAwait(false);
-                removeWorkingFile = true;
+                if (job.RemoveBackground == true)
+                {
+                    workingFile = Path.Combine("Processed", Guid.NewGuid().ToString("N") + ".png");
+                    await _backgroundRemoval.RemoveAsync(_jobs.WorkingImagePath(job, imageFile),
+                        _jobs.WorkingImagePath(job, workingFile), progress, token).ConfigureAwait(false);
+                    removeWorkingFile = true;
+                }
             }
             await _jobs.PublishImageAsync(job, workingFile, removeWorkingFile, _time.GetUtcNow(), token).ConfigureAwait(false);
         }

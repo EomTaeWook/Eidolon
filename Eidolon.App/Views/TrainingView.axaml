@@ -60,7 +60,7 @@
     <Border Grid.Row="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Margin="0,0,0,18">
       <ItemsControl ItemsSource="{Binding Workflow.Steps}">
         <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate><UniformGrid Columns="5" /></ItemsPanelTemplate>
+          <ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:TrainingStepItem">
@@ -158,49 +158,17 @@
               <TextBox Text="{Binding TrainingDescription}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="100" PlaceholderText="{DynamicResource EidolonText148}" />
               <TextBlock Text="{DynamicResource EidolonText494}" Classes="muted" FontSize="12" />
             </StackPanel>
-            <StackPanel Spacing="18" IsVisible="{Binding Workflow.IsDatasetStep}">
-              <TextBlock Text="{DynamicResource EidolonText496}" Classes="muted" FontSize="13" />
-              <Border Background="{DynamicResource WindowBrush}" CornerRadius="8" Padding="18">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="{Binding TrainingName}" FontSize="16" FontWeight="SemiBold" />
-                  <TextBlock Text="{Binding TrainingImageSummary}" Classes="muted" FontSize="13" />
-                  <TextBlock Text="{Binding TrainingTrigger}" FontSize="12" Foreground="{DynamicResource AccentBrush}" />
-                </StackPanel>
-              </Border>
-              <Button Classes="primary" Command="{Binding Dataset.CreateCommand}" HorizontalAlignment="Left" Padding="18,10">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                  <Path Data="{StaticResource EidolonIconFolder}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
-                  <TextBlock Text="{DynamicResource EidolonText471}" VerticalAlignment="Center" />
-                </StackPanel>
-              </Button>
-              <ProgressBar Height="3" IsIndeterminate="True" IsVisible="{Binding Dataset.IsPreparing}" />
-              <StackPanel Spacing="10" IsVisible="{Binding Dataset.HasPrepared}">
-                <SelectableTextBlock Text="{Binding Dataset.Path}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
-                <Button Content="{DynamicResource EidolonText491}" Command="{Binding Dataset.OpenCommand}" HorizontalAlignment="Left" />
-              </StackPanel>
-            </StackPanel>
-            <StackPanel Spacing="18" IsVisible="{Binding Workflow.IsCaptionsStep}">
-              <TextBlock Text="{DynamicResource EidolonText505}" Classes="muted" FontSize="13" />
-              <Button Content="{DynamicResource EidolonText491}" Command="{Binding Dataset.OpenCommand}" HorizontalAlignment="Left" />
-              <Border Background="{DynamicResource WindowBrush}" CornerRadius="8" Padding="18">
-                <StackPanel Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText503}" FontWeight="SemiBold" FontSize="13" />
-                  <SelectableTextBlock Text="{Binding CaptionExample}" TextWrapping="Wrap" FontSize="14" />
-                </StackPanel>
-              </Border>
-              <TextBlock Text="{DynamicResource EidolonText506}" Classes="muted" FontSize="12" />
-              <SelectableTextBlock Text="{Binding Dataset.Path}" Classes="muted" FontSize="11" TextWrapping="Wrap" />
-            </StackPanel>
             <StackPanel Spacing="18" IsVisible="{Binding Workflow.IsTrainingStep}">
               <Border Background="{DynamicResource WindowBrush}" CornerRadius="8" Padding="18">
                 <Grid ColumnDefinitions="*,Auto">
                   <StackPanel Spacing="4">
                     <TextBlock Text="{Binding TrainingName}" FontSize="16" FontWeight="SemiBold" />
-                    <SelectableTextBlock Text="{Binding Dataset.Path}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding TrainingImageSummary}" Classes="muted" FontSize="12" />
                   </StackPanel>
                   <TextBlock Grid.Column="1" Text="{Binding TrainingTrigger}" FontSize="12" Foreground="{DynamicResource AccentBrush}" Margin="20,0,0,0" VerticalAlignment="Center" />
                 </Grid>
               </Border>
+              <TextBlock Text="{DynamicResource EidolonText574}" Classes="muted" FontSize="12" />
               <Grid ColumnDefinitions="*,24,*" IsEnabled="{Binding CanEditTrainingInputs}">
                 <StackPanel Spacing="10">
                   <TextBlock Text="{DynamicResource EidolonText139}" Classes="label" />

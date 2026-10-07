@@ -17,6 +17,8 @@ namespace Eidolon.Core.Domain
         public string PositivePrompt { get; set; } = string.Empty;
         public string NegativePrompt { get; set; } = string.Empty;
         public bool RemoveBackground { get; set; }
+        public GenerationBackend GenerationBackend { get; set; } = GenerationBackend.ComfyUI;
+        public string CodexModel { get; set; } = string.Empty;
         public GenerationReferenceMode ReferenceMode { get; set; } = GenerationReferenceMode.None;
         public string ReferenceImageName { get; set; } = string.Empty;
         public string ReferenceImagePath { get; set; } = string.Empty;
@@ -33,6 +35,7 @@ namespace Eidolon.Core.Domain
         public string EnginePromptId { get; set; } = string.Empty;
         public string TriggerWord { get; set; } = string.Empty;
         public string DatasetDescription { get; set; } = string.Empty;
+        public string DatasetDirectory { get; set; } = string.Empty;
         public TrainingBackground DatasetBackground { get; set; } = TrainingBackground.Original;
         public int DatasetImageCount { get; set; }
         public List<TrainingImageInput> DatasetImages { get; set; } = new List<TrainingImageInput>();

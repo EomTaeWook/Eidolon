@@ -6,7 +6,7 @@
 
 Eidolon은 Avalonia 기반 Windows 데스크톱 이미지 생성·LoRA 학습 프로그램이다. 실행 환경과 모델을 준비한 뒤 사용자는 자연어 프롬프트를 입력하고 결과를 확인한다. 기본 생성 지침·제외할 요소는 설정에서 관리한다. 생성 파라미터와 ComfyUI 워크플로는 프로그램 내부에서 구성한다.
 
-ComfyUI는 이미지 생성 백엔드로 사용한다. ComfyUI의 노드 편집기를 대체하거나 노드 그래프를 화면에 노출하지 않는다. 설치, 모델·LoRA 관리, 생성, 학습, 이어 학습과 학습 결과 등록을 하나의 앱에서 제공한다.
+이미지 생성은 생성 환경에서 ComfyUI 또는 설치된 Codex의 내장 이미지 생성을 선택한다. 공통 지침·제외할 요소는 설정에서 관리한다. ComfyUI의 노드 편집기를 대체하거나 노드 그래프를 화면에 노출하지 않는다. 설치, 모델·LoRA 관리, 생성, 학습, 이어 학습과 학습 결과 등록을 하나의 앱에서 제공한다.
 
 기본 모델은 SDXL Base 1.0, 기본 생성 크기는 1024×1024다. SD 1.5는 가져온 모델의 호환 계열로 지원한다. Bough의 Core/App 분리, Dignus DI, 템플릿 로딩, Excel 다국어와 라이트 테마 구성을 참고한다. 재사용 문서 중 [CodingConvention](ReusableArchitecture/CodingConvention.md)과 [ReleasePolicy](ReusableArchitecture/ReleasePolicy.md)를 적용하며 Unity·Actor·Tick·RepoDB 구조는 채택하지 않는다.
 
@@ -21,6 +21,7 @@ flowchart LR
     Templates --> App
     App --> Core[Eidolon.Core]
     Core --> Comfy[ComfyUI · Python]
+    Core --> Codex[Codex · 내장 이미지 생성]
     Core --> Training[sd-scripts · Python]
     Core --> Files[사용자 설정 · 자산 · 작업 파일]
 ```
@@ -48,7 +49,7 @@ Core는 .NET, Dignus.Collections·Dignus.Log와 배경 제거용 ONNX Runtime·S
 2. Avalonia 시작 전에 `TemplateDataLoader.Load`가 생성 `TemplateLoader.Load`와 `MakeRefTemplate`을 실행한다.
 3. `App`이 Dignus `ServiceContainer`에서 저장소, HTTP 클라이언트, 시간·seed 공급자, 엔진, 유스케이스, 큐, Presenter와 ViewModel을 조립한다. 주요 런타임 서비스와 큐는 앱 공용 인스턴스다.
 4. DI로 생성한 `MainWindow`에 ViewModel과 문자열 서비스를 주입한다. 창이 열리면 설정·이력을 읽고 엔진 준비 작업을 예약한다.
-5. 설정된 주소의 기존 ComfyUI에 먼저 연결한다. 기존 서버가 없으면 조건에 맞는 로컬 설치 엔진을 실행한다. 설치가 필요한 경우 엔진 탭으로 안내한다.
+5. ComfyUI 생성 방식이면 설정된 주소의 기존 서버에 먼저 연결하고 기존 서버가 없으면 조건에 맞는 로컬 설치 엔진을 실행한다. 설치가 필요한 경우 엔진 탭으로 안내한다. Codex 방식에서는 ComfyUI 시작을 예약하지 않고 설치된 Codex로 요청할 수 있게 한다.
 6. 창을 닫을 때 새 요청을 막고 예약·대기 요청과 현재 작업을 취소한 뒤 큐 종료를 기다린다. 이어 앱 소유 엔진을 정리하고 HTTP 클라이언트와 로그를 종료한다.
 
 View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하지 않는다. `StudioWorkPresenter`는 비동기 실행과 UI 알림의 수명을 담당한다. 기능별 서비스 호출 뒤 화면 목록·결과를 갱신하는 연결은 ViewModel에 남아 있다.
@@ -73,15 +74,17 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 
 ## 화면 구성
 
-상단 브랜드와 같은 줄에 이미지 생성, 이미지 편집, 생성 결과, 학습, 엔진, 설정, 사용법 탭을 배치한다. 사용법의 학습 안내는 기존 `ShowTrainingCommand`로 학습 탭에 바로 연결한다. 엔진 안에는 엔진 설치와 모델·LoRA 하위 탭을 두고 `SelectedEngineTab`이 선택 상태를 소유한다. 엔진 설치 하위 탭은 실행 환경 설치·복구, 서버 연결과 설치 모듈 조회를 담당한다. 모델 설치·삭제 목록은 모델·LoRA 하위 탭의 `ModelsView` 안에 `ModelDownloadsView`로 한 번만 배치한다. 모델 파일 가져오기와 계열·트리거 관리도 이 화면에서 기존 자산 서비스를 사용한다. 모델마다 왼쪽에 이름·계열·용량·설명을, 오른쪽에 설치 버튼 또는 사용 가능 상태·삭제 버튼을 표시한다. 체크박스와 별도 목록 선택 상태는 만들지 않는다. `ModelDownloadItem.InstallCommand`·`DeleteCommand`는 기존 Presenter 유지 관리 큐를 사용하며 설치 진행 상태만 항목에 표시한다. 로컬 엔진 준비 전에는 설치 안내를 제공하고 외부 서버 자산에서는 모델 설치·삭제를 비활성화한다. 생성 화면에서는 사용할 모델·LoRA를 선택한다.
+`SettingsView`는 이미지 저장 폴더와 일반 설정을 한 열로 표시한다. 테마·언어는 라디오 버튼으로 즉시 적용하고 설정 저장으로 확정한다. `GenerationEnvironmentView`는 생성 방식·Codex 실행 모델·경로와 공통 지침·제외할 요소·프리셋을 함께 표시한다. `PromptSettingsView`의 지침과 프리셋 관리 입력은 접지 않는다. 두 화면은 기존 `SettingsViewModel`·`SettingsStore`를 공유하며 `SaveSettingsCommand`는 저장 폴더·언어·테마만, `SaveGenerationEnvironmentCommand`는 생성 방식·Codex 입력·지침·프리셋만 저장한다. 다른 화면의 미저장 입력은 적용하지 않는다. 고정 실행 영역은 학습 화면과 같은 페이지 배경과 위쪽 구분선·여백을 사용하며 본문과 같은 너비 안에 안내와 저장 버튼을 배치한다. 공통 상태·진행 영역에는 버튼을 두지 않는다. 생성 입력의 생성 환경 버튼과 저장된 방식 표시는 같은 환경 화면으로 연결한다. 저장된 방식·모델 표시와 미적용 환경 안내는 기존 Session·SettingsViewModel이 소유한다. Codex 환경 저장은 ComfyUI 조회를 요구하지 않고 ComfyUI 저장은 기존 자산 갱신을 사용한다.
 
-엔진 설치 하위 탭의 `EngineView`는 스크롤 위에 작은 엔진·모델 상태 줄을 표시한다. `NeedsModelSetup`이 참일 때만 모델 준비 안내와 다음 동작 버튼을 별도로 강조하고 완료 상태를 큰 배너로 반복하지 않는다. `EngineSetupCaption`은 설치·연결 상태, `ModelSetupCaption`·`ModelSetupHint`·`ModelSetupActionCaption`은 준비 상태 확인·모델 미설치·설치 중인 모델명·사용 가능한 모델 수와 다음 동작을 표시한다. 상태는 기존 엔진 연결·자산 목록·`ModelDownloadItem.IsInstalling`에서 읽으며 별도 준비 상태를 저장하지 않는다. 설치·연결 버튼은 내용에 맞는 크기로 배치하고 기술 안내와 설치 모듈 목록은 펼쳐 조회한다. `PrepareModelsCommand`는 준비 상태에 따라 엔진 준비 또는 모델·LoRA 하위 탭으로 이동하고 설치 중에도 사용할 수 있다. 엔진 설치를 완료했는데 모델이 없으면 해당 탭으로 이어지고 설치·가져오기를 안내한다. 외부 서버에서는 서버 모델 준비와 목록 새로고침을 안내한다. 생성 화면의 빈 모델 선택 영역에도 같은 안내와 이동 버튼을 제공하고 선택 모델이 없으면 생성 요청 버튼을 비활성화한다. 입력 영역의 유지 관리 잠금과 모델 관리 이동을 분리한다.
+상단에는 이미지 생성, 이미지 편집, 생성 결과, 학습, 생성 환경, 설정, 사용법 탭을 배치한다. 생성 환경 안에는 생성 방식, 엔진 설치, 모델·LoRA를 순서대로 두고 `SelectedEngineTab`이 선택을 소유한다. `StudioNavigationViewModel`의 탭 상수와 `ShowGenerationEnvironmentCommand`·`ShowEngineCommand`·`ShowModelsCommand`로 해당 영역에 직접 연결한다. 엔진 설치는 실행 환경 설치·복구, 서버 연결과 모듈 조회를 담당한다. 모델 설치·삭제는 `ModelsView` 안의 `ModelDownloadsView`에 한 번만 배치하고 모델 폴더 열기·계열·트리거 관리도 같은 자산 서비스를 사용한다. `ModelDownloadItem`의 설치·삭제와 보유 자산 삭제는 기존 Presenter 유지 관리 큐를 사용한다. 외부 서버 자산에서는 파일 삭제를 비활성화한다. 생성 화면에서는 ComfyUI에 사용할 모델·LoRA를 선택한다. 사용법은 환경 선택, ComfyUI 준비, Codex 생성·편집, 모델 관리, 공통 지침, 저장 위치와 학습을 안내하고 기존 탐색 명령으로 해당 탭을 연다.
 
-모델 설치 목록의 스크롤은 `ModelsView`에서 높이를 제한하고 세로 스크롤바를 항상 표시한다. 자동 숨김을 끄고 너비 18의 전용 공간과 콘텐츠 우측 여백 12를 확보해 설치·삭제 버튼과 겹치지 않게 한다. 목록에만 적용하는 스타일로 손잡이를 둥글게 표시하고 기본 상태에는 테마의 `MutedBrush`, 마우스 이동·드래그 상태에는 `AccentBrush`를 사용한다. 모델 목록은 설치 중에도 스크롤·조회할 수 있고 변경 동작은 기존 명령의 유지 관리 조건으로 제한한다.
+엔진 설치 하위 탭의 `EngineView`는 스크롤 위에 작은 엔진·모델 상태 줄을 표시한다. `NeedsModelSetup`이 참일 때만 모델 준비 안내와 다음 동작 버튼을 별도로 강조하고 완료 상태를 큰 배너로 반복하지 않는다. `EngineSetupCaption`은 설치·연결 상태, `ModelSetupCaption`·`ModelSetupHint`·`ModelSetupActionCaption`은 준비 상태 확인·모델 미설치·설치 중인 모델명·사용 가능한 모델 수와 다음 동작을 표시한다. 상태는 기존 엔진 연결·자산 목록·`ModelDownloadItem.IsInstalling`에서 읽으며 별도 준비 상태를 저장하지 않는다. 설치·연결 버튼은 내용에 맞는 크기로 배치하고 기술 안내와 설치 모듈 목록은 펼쳐 조회한다. `PrepareModelsCommand`는 준비 상태에 따라 엔진 준비 또는 모델·LoRA 하위 탭으로 이동하고 설치 중에도 사용할 수 있다. 엔진 설치를 완료했는데 모델이 없으면 해당 탭으로 이어지고 설치·모델 폴더 열기를 안내한다. 외부 서버에서는 서버 모델 준비와 목록 새로고침을 안내한다. 생성 화면의 빈 모델 선택 영역에도 같은 안내와 이동 버튼을 제공하고 선택 모델이 없으면 생성 요청 버튼을 비활성화한다. 입력 영역의 유지 관리 잠금과 모델 관리 이동을 분리한다.
 
-학습 화면은 `TrainingView`가 소유하며 `TrainingViewModel`·기존 Presenter·학습 큐를 사용한다. 이미지 선택, 이름과 트리거, 학습 폴더 준비, 설명 확인, 학습의 다섯 단계 중 현재 단계의 입력만 표시한다. 상단에는 번호와 현재 위치를 표시하고 이전·다음·학습 요청·취소 버튼은 스크롤 밖에 고정한다. 이미지와 이름·트리거를 먼저 준비하고 폴더 생성이 끝난 뒤 설명 확인과 모델·단계 수·이어 학습 설정으로 진행한다. 이미 방문한 단계는 상단에서 다시 선택할 수 있으며 앞 단계의 필수 입력이나 폴더가 유효하지 않으면 해당 단계로 돌아간다. `TrainingWorkflowViewModel`은 화면 진행만 소유하고 Core 실행 단계나 학습 프리셋은 소유하지 않는다. 학습 기록 목록은 만들지 않으며 작업 기록·로그·산출물은 `JobStore`가 보존한다. 현재 학습 상태는 하단에서 확인하고 완료 LoRA는 생성 화면에서 선택한다. 생성 화면의 LoRA 선택 목록에는 저장된 자동 적용 트리거를 표시한다.
+`ModelsView`는 한 열 페이지의 공용 스크롤을 사용하고 우측 여백 12로 스크롤바 공간을 확보한다. 설치 중에도 목록을 읽고 스크롤할 수 있으며 변경 동작만 기존 유지 관리 조건으로 제한한다. Codex 생성 방식에서는 `NeedsModelSetup`이 로컬 체크포인트 미설치 안내를 표시하지 않는다.
 
-`ModelsView`의 파일 가져오기·새로고침은 목록 상단에 둔다. 설치 목록과 내 모델·LoRA 목록이 가용 높이를 나누어 사용하며 `HasSelectedAsset`이 참일 때만 선택 정보 영역의 폭을 확보한다. 모델 계열 수정은 상세 설정에 두고 호출 단어 입력은 `IsSelectedAssetLora`가 참일 때만 표시한다. 자동 판별되지 않은 계열은 `NeedsAssetClassification`으로 안내한다. 파일 가져오기는 `AssetLibrary.ImportAsync`에 `ModelFamily.Unknown`과 빈 호출 단어를 전달해 자동 판별하고 가져온 항목을 선택하며 이전 선택 항목의 편집값을 재사용하지 않는다.
+학습 화면은 `TrainingView`·`TrainingViewModel`·기존 Presenter·학습 큐를 사용한다. 이미지 선택, 이름·트리거, 학습 설정의 세 단계 중 현재 단계만 표시한다. 상단에는 번호와 위치, 스크롤 밖에는 이전·다음·학습·취소를 둔다. 선택한 첫 이미지의 설명은 비동기로 불러오며 비어 있는 이름과 트리거는 기본값을 제공한다. 사용자가 수정한 내용과 현재 모델 선택을 유지한다. 설명 읽기 중에는 학습 요청을 막고 입력 변경·종료 뒤 늦은 결과는 반영하지 않으며 종료 시 읽기를 기다린다. 폴더 준비·설명 확인을 별도 입력 단계로 요구하지 않는다. `TrainingWorkflowViewModel`은 화면 진행만 소유하고 학습 유스케이스는 기존 Core 경계를 사용한다. 학습 기록 목록은 표시하지 않으며 상태·남은 시간은 공통 하단에 표시하고 완료 LoRA를 생성 화면에 연결한다.
+
+`ModelsView`는 모델·LoRA 폴더 열기·새로고침, 보유 목록과 선택 정보, 새 모델 설치를 세로로 표시한다. 보유 목록은 한 열의 내용 높이 항목을 사용하고 최대 높이 260에서 스크롤한다. 이름·종류·계열·저장된 트리거는 기존 `AssetItem`의 표시 속성을 사용하며 얇은 테두리로 선택을 표현한다. `Library`·`SelectedAsset`이 목록과 선택을 소유하고 `SelectedItem`은 명시적 양방향 바인딩이다. 선택 정보는 같은 카드의 목록 아래에 표시하며 모델 계열·LoRA 호출 단어·저장·삭제를 접지 않는다. `RefreshAssetsAsync`는 선택 자산 ID를 보존해 정보 수정·목록 조회 뒤에도 선택을 유지하고 삭제된 자산은 선택을 비운다. `DeleteAssetCommand`는 선택한 파일의 실제 삭제를 요청한다. 폴더 열기는 RuntimeLayout의 checkpoints·loras 연결 경로를 사용하며 새로고침이 기존 스캔·서버 조회를 사용한다.
 
 생성과 이미지 편집은 각각 `IsGenerationView`·`IsEditingView`로 탐색하며 `IsGenerationWorkspace`인 경우 같은 모델·LoRA·시드·배경·미리보기 패널을 사용한다. `GenerationInputsView`의 모델과 호환 LoRA는 연속 배치하고 목록은 최대 높이 112에서 행을 눌러 적용·해제한다. 5개 이상이거나 검색어가 있을 때만 `LoraSearch`를 표시하며 이름·파일명·호출 단어를 검색한다. `FilteredLoras`는 기존 `Loras`에서 계산한 표시 목록이고 `AssetItem.IsSelected`가 선택을 소유한다. 검색으로 숨겨진 항목도 선택을 유지하고 모델 변경 시 호환 LoRA만 유지한다. 적용 수는 선택한 경우에만 표시하고 전체 이름과 자동 호출 단어는 도움말로 제공한다. 선택 변경 구독은 목록 재구성과 종료 시 해제한다. 생성 탭은 `Prompt`와 선택적 참고 입력, 편집 탭의 `EditingInputsView`는 `EditingPrompt`와 필수 참고 입력을 표시한다. 두 탭 모두 설명 입력 다음에 참고 영역을 배치한다. `ReferenceImageInputsView`가 두 탭의 이미지·변경·제거·강도 표시를 공유한다. 빈 참고 상태는 두 탭에서 같은 제목과 최소 높이 44의 전체 너비 추가 버튼을 사용한다. 아이콘 크기 16과 간격 8, 입력 간격 10을 공유하고 편집에서만 필수 이미지 안내를 표시한다. 두 요청의 `GenerationSubmitCommand`는 기존 `GenerateCommand`·`EditImageCommand`로 연결한다. 설정 지침은 읽기 전용 펼침 영역에, 요청 버튼과 기존 `PendingWorkView`는 스크롤 밖에 둔다. `CanEditGenerationInputs`는 초기화 완료·종료 여부로 입력 작성을 허용하고 요청 추가는 기존 `CanQueue`가 소유한다.
 
@@ -103,7 +106,7 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 
 설정에서 한국어·영어와 라이트·블랙 테마를 즉시 적용하고 저장한다. 라이트 테마는 Bough의 배경 `#F7FAFC`, 본문 `#1D3447`, 강조 `#285F88`을 기준으로 하며 상단은 `SurfaceBrush`의 중립 배경을 사용한다. 동작 아이콘은 공용 Avalonia 벡터 경로와 소유 버튼의 전경색을 사용한다. 앱 아이콘 원본은 `Eidolon.App/Assets/AppIcon.svg`이며 PNG·ICO를 함께 사용한다.
 
-설정의 `PromptSettingsView`는 프리셋 선택과 두 프롬프트 입력, 프리셋 이름·추가·수정 동작을 한 영역에 배치한다. `PromptSettingsViewModel`은 별도 설정 사본을 만들지 않고 `StudioSession.SettingsDraft`의 현재 지침과 프리셋 컬렉션을 편집한다. 선택하면 지침·제외할 요소를 불러오고 같은 이름의 중복 항목은 추가하지 않는다. 선택 항목의 이름이나 문구를 바꾸면 수정 동작으로 목록에 반영하거나 다른 이름으로 새 항목을 추가한다. 삭제는 목록과 선택만 해제하고 입력 지침을 유지한다.
+생성 환경의 `PromptSettingsView`는 프리셋 선택과 두 프롬프트 입력, 프리셋 이름·추가·수정 동작을 한 영역에 배치한다. `PromptSettingsViewModel`은 별도 설정 사본을 만들지 않고 `StudioSession.SettingsDraft`의 현재 지침과 프리셋 컬렉션을 편집한다. 선택하면 지침·제외할 요소를 불러오고 같은 이름의 중복 항목은 추가하지 않는다. 선택 항목의 이름이나 문구를 바꾸면 수정 동작으로 목록에 반영하거나 다른 이름으로 새 항목을 추가한다. 삭제는 목록과 선택만 해제하고 입력 지침을 유지한다.
 
 프리셋 DTO `PromptPreset`는 `App/Models/Settings`에 두며 식별자·이름·두 문구만 저장한다. `DesktopSettings.PromptPresets`와 `ActivePromptPresetId`를 기존 `SettingsStore`의 `Settings.json`에 함께 저장한다. 이전 설정은 기존 지침을 유지한 채 빈 목록·선택 없음으로 읽는다. `DesktopSettings.Copy`와 설정 저장은 항목을 깊게 복사해 편집 초안이 저장된 설정을 바꾸지 않게 한다. 다시 열 때 선택 항목과 현재 지침을 각각 복원하므로 프리셋을 수정하지 않고 저장한 사용자 지침도 덮어쓰지 않는다. 기존 설정 검증 경계에서 누락·중복 이름과 식별자, 유효하지 않은 선택을 거부하며 손상된 프리셋을 기본값으로 덮어쓰지 않는다. Core에는 실행에 사용할 현재 두 문구만 전달하고 프리셋 저장·선택 책임을 두지 않는다.
 
@@ -172,13 +175,13 @@ ComfyUI 요청은 해당 작업 ID에 대한 개별 취소를 사용한다. 기�
 
 로컬 체크포인트는 `Models/checkpoints`, LoRA는 `Models/loras`에 보관하며 `ModelPaths.yaml`로 ComfyUI에 연결한다. 관리 엔진 준비와 목록 갱신 시 실제 `.safetensors`를 읽는다. 생성 화면 상단의 모델·체크포인트 선택은 설치한 모델과 `EidolonRuntime/Models/checkpoints` 및 하위 폴더에 직접 넣은 체크포인트를 같은 `Models` 목록으로 표시한다. 준비된 로컬 환경이나 서버 연결이 있을 때 생성 화면 진입과 수동 새로고침은 `ScanAssetsAsync`를 기존 유지 관리 큐에서 실행한다. 로컬은 `AssetLibrary.ScanAsync`, 서버 자산은 기존 `ComfyEngine.RefreshExternalModelsAsync`를 사용하며 별도 목록 저장소를 만들지 않는다. `RefreshAssetsAsync`는 기존 선택 모델과 LoRA를 유지하고 선택한 모델의 계열에 맞춰 LoRA 목록을 다시 연결한다. 모델명·계열을 표시하고 엔진 파일명은 도움말로 제공한다. 파일이 없는 등록은 목록에서 제외하며 생성·학습 선택에는 준비된 체크포인트만 표시한다.
 
-`SafetensorsInspector`가 텐서와 메타데이터로 SD 1.5·SDXL 계열을 판별한다. 판별할 수 없는 자산은 모델 화면에서 수동 지정한다. 계열 목록은 설치된 계열을 기본으로 표시하며 미확인 자산을 선택한 경우 수동 분류를 제공한다. 자산 편집의 등록 해제는 라이브러리 정보를 제거하고 가중치 파일은 보존한다. 모델 설치 목록의 삭제는 파일 삭제다. App이 모델명·파일 경로와 재다운로드 안내로 확인을 받고 현재 실행·대기 작업이 없는 기존 유지 관리 경로로 `AssetLibrary.DeleteDownloadedAsync`를 호출한다. 이 경계는 저장된 자산 ID·로컬 설치 루트·체크포인트 종류·배포 목록 파일명을 확인하고 `RuntimeLayout.AssetPath`로 삭제 경로를 제한한다. 상위 폴더의 링크·재분석 지점은 거부한다. 선택한 가중치 파일과 같은 이름의 `.part`만 삭제한 뒤 자산 등록을 제거한다. 삭제한 모델이 기본 모델이면 App이 기본 선택을 비우고 목록을 갱신한다. 라이선스·고지, 사용자 원본·이미지·LoRA와 다른 모델은 보존한다.
+`SafetensorsInspector`가 텐서와 메타데이터로 SD 1.5·SDXL 계열을 판별하고 미확인 자산은 화면에서 수동 분류한다. 보유 목록의 실제 삭제는 `AssetLibrary.DeleteAsync`, 배포 모델 삭제는 `DeleteDownloadedAsync`를 호출하며 두 진입점은 같은 내부 삭제 경계를 사용한다. App이 자산 이름·대상 경로로 확인받고 실행·대기 작업이 없는 유지 관리 큐에서 처리한다. 삭제 경계는 자산 ID·종류·로컬 설치 루트를 확인하고 `RuntimeLayout.AssetPath`로 체크포인트·LoRA 폴더 안에 경로를 제한하며 파일과 상위 경로의 링크를 거부한다. 배포 모델 삭제에는 체크포인트·배포 파일명 조건을 추가한다. 선택한 가중치와 같은 이름의 `.part`만 삭제하고 등록을 제거한다. 기본 모델을 삭제하면 App이 기본 선택을 비우고 목록을 갱신한다. 사용자 이미지·캡션, 학습 Job 원본과 다른 자산은 변경하지 않는다.
 
-파일 가져오기에서는 종류를 선택하지 않는다. `SafetensorsInspector`가 LoRA 텐서 여부로 체크포인트·LoRA를 구분하고 `AssetLibrary`가 해당 모델 폴더에 저장한다. 기본 모델 다운로드와 학습 결과 등록은 예상 종류를 명시해 잘못된 산출물 등록을 계속 거부한다.
+모델 파일은 ComfyUI에 연결한 체크포인트·LoRA 폴더에 넣고 기존 AssetLibrary 스캔으로 조회한다. 기본 모델 다운로드와 학습 결과 등록은 AssetLibrary.ImportAsync에서 예상 종류를 명시해 가중치를 판별하고 잘못된 산출물 등록을 거부한다.
 
 기본 모델을 지정하지 않으면 SDXL을 먼저 선택한다. 모델과 LoRA 계열은 일치해야 하며 생성 화면에는 선택 모델과 같은 계열의 LoRA를 표시한다. SD3·FLUX·inpainting·refiner 전용 모델은 현재 지원하지 않는다.
 
-기존 서버의 실행 인자에서 현재 Runtime의 `ModelPaths.yaml`이 확인되면 로컬 자산으로 처리해 가져오기·다운로드와 파일 판별을 유지한다. 다른 서버의 자산은 `/models/checkpoints`, `/models/loras`로 읽고 API가 없으면 `/object_info`를 사용한다. 서버별 계열·트리거 정보도 `AssetLibrary`가 소유한다. 실행용 설정의 `UseServerAssets`는 연결 결과를 전달하는 임시 값이며 JSON에 저장하지 않는다.
+기존 서버의 실행 인자에서 현재 Runtime의 `ModelPaths.yaml`이 확인되면 로컬 자산으로 처리해 다운로드·폴더 스캔과 파일 판별을 유지한다. 다른 서버의 자산은 `/models/checkpoints`, `/models/loras`로 읽고 API가 없으면 `/object_info`를 사용한다. 서버별 계열·트리거 정보도 `AssetLibrary`가 소유한다. 실행용 설정의 `UseServerAssets`는 연결 결과를 전달하는 임시 값이며 JSON에 저장하지 않는다.
 
 이미지 생성 흐름은 다음과 같다.
 
@@ -203,17 +206,31 @@ App `DesktopSettings.DefaultGenerationDirectory`가 `%LOCALAPPDATA%/Eidolon/Imag
 
 `StudioService.PrepareReferenceImageAsync`는 기존 SkiaSharp로 EXIF 방향을 적용하고 원본 종횡비에 맞춰 모델 프리셋의 긴 변 해상도·8 단위 크기로 정규화한다. 투명 영역은 흰색에 합성하고 `Jobs/<ID>/Inputs/Reference.png`에 새 복사본을 저장하며 원본은 변경하지 않는다. `ComfyEngine`은 연결된 서버의 `/upload/image`에 고유 작업명·Eidolon 하위 폴더로 업로드하고 서버가 반환한 경로를 `LoadImage`에 전달한다. 선택 모델·LoRA·프롬프트·시드·공용 FIFO와 GPU 수명 경계를 그대로 사용하며 별도 생성 프로세스·다운로드 모델·노드 설치는 요구하지 않는다. 최종 배경 제거는 기존 후처리 옵션을 따른다. `JobRecord`와 이미지 옆 `GenerationMetadata`는 참고 모드·원본 이름·준비한 입력 경로·실제 `Denoise`를 보존하며 기존 JSON의 누락 필드는 참고 없음·강도 1.0으로 읽는다. 참고 파일 경로는 로컬 입력 추적·재사용용이고 최종 PNG의 조회·표시에는 필요하지 않다. [ComfyUI 기본 노드 계약](https://github.com/Comfy-Org/ComfyUI/blob/v0.38.0/nodes.py), [이미지 업로드 API](https://github.com/Comfy-Org/ComfyUI/blob/v0.38.0/server.py).
 
+## Codex 이미지 생성
+
+App의 기존 `SettingsStore`가 `DesktopSettings.GenerationBackend`·`CodexExecutablePath`·`CodexModel`과 생성 지침·제외할 요소를 저장한다. 이전 설정에 생성 방식이 없으면 ComfyUI를 사용한다. `GenerationEnvironmentView`와 `SettingsViewModel`은 방식·실행 파일·실행 모델을 선택하고 저장 이후 요청에 적용한다. `CodexModelCatalog`는 같은 실행기 탐색·`ProcessRunner`를 사용해 `codex debug models`의 JSON 카탈로그를 읽는다. 줄 분할 없는 표준 출력 콜백으로 수집하고 표시 가능한 이미지 입력 모델을 목록으로 전달한다. DTO는 Infrastructure의 `Models/Codex`, 화면 항목은 App의 `ViewModels/Models/Settings`에 둔다. 조회는 추론 없이 30초 제한·앱 종료 토큰을 사용하고 종료 시 목록 조회 프로세스 정리를 기다린다. 별도 모델 목록 파일을 만들거나 모델명을 하드코딩하지 않는다. 기본 항목과 저장된 목록 밖 모델은 `CodexModelChoice`로 유지하며 조회 실패는 화면 안내·기존 로그 경계를 사용한다. 카탈로그가 계정의 실제 추론 권한을 보장하지 않는다. 선택한 모델은 `--model`로 전달하고 빈 값은 CLI 기본 모델을 뜻한다. 실행 모델은 내장 이미지 생성 모델과 구분한다. Core에는 실행 설정 사본을 전달하며 별도 인증·설정·결과 저장소를 만들지 않는다.
+
+생성·편집 버튼은 같은 Presenter FIFO 큐로 요청한다. `StudioService.GenerateAsync`가 생성 방식에 따라 기존 ComfyUI 또는 `CodexImageEngine`으로 전달한다. Codex 방식은 로컬 체크포인트·LoRA·시드·변경 강도를 요구하지 않는다. 이 항목들은 입력에서 숨기고 Codex 결과에는 시드를 표시하지 않는다. 학습은 기존 로컬 모델·Python 경계를 계속 사용한다.
+
+`CodexExecutableLocator`는 명시한 절대 `.exe` 경로 또는 해당 사용자의 Codex 설치 경로·PATH를 조회한다. `CodexImageEngine`은 기존 `ProcessRunner`로 `codex exec`를 숨겨 읽기 전용으로 실행하고 `image_generation`을 활성화한다. 프롬프트는 표준 입력으로 전달하고 사용자 설정·로그인 파일을 직접 읽거나 복사하지 않는다. `--ignore-user-config`는 사용자 MCP·훅·프로젝트 설정을 적용하지 않으며 기존 Codex 인증은 해당 실행기가 사용한다. `--json`의 표준 출력 이벤트에서 `CodexOutputReader`가 현재 `thread.started`의 세션 ID를 얻고 `--output-schema`·`--output-last-message`로 `image_path`·`error`를 갖는 `CodexImageResult`를 반환받는다. 프로세스 로그와 분리한 표준 출력 콜백을 기존 `ProcessRunner`에 추가하며 일반 텍스트·표준 오류에서 이미지 경로나 세션을 추측하지 않는다. 내장 이미지 생성이 없거나 실패하면 오류·로그를 제공하며 API 키 호출·스크립트·다른 모델 경로로 자동 전환하지 않는다.
+
+사용자 설명과 저장된 생성 지침은 기존 합성 경계를 사용하고 제외할 요소는 원문 그대로 별도 지시로 전달한다. 참고 이미지는 기존 준비 경계에서 EXIF 방향을 적용해 PNG로 보관하며 Codex에서는 원본 크기·알파를 유지한다. `Reimagine`은 새 이미지의 참고, `Restyle`은 그림체 편집 대상으로 전달하고 ComfyUI의 수치 강도를 적용하지 않는다.
+
+Codex는 내장 도구가 만든 원본 PNG의 절대 경로를 반환하며 이미지 복사·이동·삭제를 수행하지 않는다. 앱은 해당 경로가 Codex 홈의 `generated_images/<현재 세션 ID>` 바로 아래 PNG인지 확인하고 링크 경로·누락 파일·과도한 파일 크기를 거부한다. 앱이 원본을 해당 Job의 고유 `Originals/GUID.png`에 덮어쓰기 없이 복사하므로 읽기 전용 Codex 세션에 Job 폴더 쓰기를 요구하지 않는다. PNG·해상도와 요청한 알파를 확인한 뒤 기존 `JobStore.PublishImageAsync`로 최종 PNG·JSON을 설정 폴더에 게시한다. 별도 결과 경로 검색이나 최근 Codex 이미지 추측은 하지 않는다. `JobRecord`·`GenerationMetadata`의 `GenerationBackend`·`CodexModel`이 사용한 방식과 요청한 실행 모델을 보존하고 미지원 확산 파라미터는 적용한 값으로 표시하지 않는다. 실행 모델이 비어 있는 기록은 CLI 기본 모델을 요청한 상태를 뜻한다. 투명 배경은 Codex 도구에 요청하며 ComfyUI용 제거 후처리는 재적용하지 않는다. 요청·결과 스키마·결과 JSON·프로세스 로그는 해당 Job의 `Originals/Codex`에 남고 Codex가 만든 원본도 보존한다. 프로세스와 자식은 기존 앱 소유 수명에 연결해 앱 종료·요청 취소 시 정리한다.
+
+Codex의 내장 이미지 생성과 실행 옵션은 [공식 이미지 생성 문서](https://learn.chatgpt.com/docs/image-generation), [비대화식 실행 문서](https://learn.chatgpt.com/docs/non-interactive-mode), [실행 모델 지정 문서](https://learn.chatgpt.com/docs/developer-commands)를 따른다. 설치된 Codex의 이미지 생성 지원·로그인·사용 한도가 필요하며 실제 이미지 생성 실행 여부는 빌드 성공과 구분한다.
+
 ## LoRA 학습과 이어 학습
 
-학습 입력은 로컬 기반 모델, 이름, 트리거, 공통 설명과 흰색·검정색 배경별 선택 이미지다. `TrainingView`는 두 목록을 나란히 표시하고 각 목록에서 이미지 여러 장·폴더 추가, 개별 제거와 목록 비우기를 제공한다. App의 `TrainingImageGroup`이 목록 소속 배경·표시 문구·선택 명령을, `TrainingImageItem`이 파일 경로·파일명·축소 비트맵 수명을 소유한다. 파일 선택은 `DesktopDialogs`를 사용하고 하위 폴더 조회·축소 디코딩은 UI 스레드 밖에서 수행한다. 읽는 동안 학습·폴더 생성 요청을 막고 종료·늦은 읽기 결과를 반영하지 않으며 제거·종료 시 비트맵을 해제한다. 빈 목록 높이를 줄이고 이미지가 많으면 제한된 높이 안에서 스크롤한다. 단계 수·트리거의 상세 설명은 도움말로 제공하고 주요 설정과 실행 버튼을 간결하게 유지한다.
+학습 입력은 로컬 기반 모델, 이름, 트리거, 공통 설명과 흰색·검정색 배경별 선택 이미지다. `TrainingView`는 두 목록을 나란히 표시하고 각 목록에서 이미지 여러 장·폴더 추가, 개별 제거와 목록 비우기를 제공한다. App의 `TrainingImageGroup`이 목록 소속 배경·표시 문구·선택 명령을, `TrainingImageItem`이 파일 경로·파일명·축소 비트맵 수명을 소유한다. 파일 선택은 `DesktopDialogs`를 사용하고 하위 폴더 조회·축소 디코딩은 UI 스레드 밖에서 수행한다. 읽는 동안 학습 요청을 막고 종료·늦은 읽기 결과를 반영하지 않으며 제거·종료 시 비트맵을 해제한다. 빈 목록 높이를 줄이고 이미지가 많으면 제한된 높이 안에서 스크롤한다. 단계 수·트리거의 상세 설명은 도움말로 제공하고 주요 설정과 실행 버튼을 간결하게 유지한다.
 
-Core의 `TrainingImageInput`은 파일 경로와 `TrainingBackground`만 소유한다. 폴더 준비 요청 시 두 목록을 복사해 `TrainingInput.Images`에 고정한다. 같은 파일은 배경이 다르면 별도 학습 샘플로 유지한다. `LoraTrainer.PrepareDatasetAsync`는 두 목록을 하나의 데이터셋으로 준비하며 한 번의 학습 실행으로 LoRA 하나를 만든다. `PrepareTrainingImageAsync`는 흰색·검정색에 원본을 합성한 같은 해상도의 불투명 PNG를 저장해 투명·반투명 영역만 채운다. 원본 이미지·캡션과 이미 있는 배경은 바꾸지 않는다. 실제 학습 요청은 준비한 폴더를 `TrainingInput.ImageDirectory`에 고정하고 `Background`를 원본 유지로 지정한다. 폴더에서 읽은 이미지·설명을 기존 실행 Job 폴더에 복사하며 배경을 다시 합성하지 않는다. `StudioService`·`LoraTrainer`가 실제 데이터셋·배경 정보를 기존 `JobRecord`에 기록한다. `TrainingInput.Images`·`ImageFiles`를 사용하는 기존 호출도 유지하며 누락된 배경 값은 원본 유지다.
+Core의 `TrainingImageInput`은 파일 경로와 배경을 소유한다. 요청 추가 시 선택한 두 목록을 `TrainingInput.Images`에 복사하고 이름·트리거·공통 설명·단계 수와 모델 사본을 고정한다. 같은 파일도 배경이 다르면 별도 샘플로 유지한다. `LoraTrainer.PrepareDatasetAsync`가 학습 시작 시 하나의 데이터셋으로 복사한다. 흰색·검정색 합성은 투명·반투명 영역만 채우며 원본·기존 배경·해상도를 보존한다. 기존 폴더·파일 목록을 받는 Core 입력도 유지하며 누락한 배경은 원본 유지다.
 
-학습 폴더 만들기는 모델·학습 실행 없이 선택한 이미지와 설명 파일을 준비한다. `TrainingDatasetViewModel`이 선택 목록·공통 설명·트리거를 고정한 뒤 출력 부모 폴더를 받고 공용 큐에서 `StudioService.PrepareTrainingDatasetAsync`를 호출한다. 서비스는 시간 공급자와 GUID를 사용해 새 `Eidolon-Training-<시각>-<식별자>` 하위 폴더를 만든 뒤 실제 학습과 같은 `LoraTrainer.PrepareDatasetAsync`를 사용한다. 샘플 파일명은 순번·배경으로 구분하고 같은 이름의 `.txt`에는 기존 원본 캡션을 우선 사용한다. 캡션이 없으면 공통 설명을 사용하고 트리거를 앞에 붙인다. 이미지 자동 해석·별도 캡션 모델은 사용하지 않는다. 설명 확인 단계는 준비한 폴더를 열고 외부 편집기로 .txt를 수정·저장하도록 안내한다. 화면의 설명 예시는 실제 파일 내용이나 확인 완료 상태를 대신하지 않는다.
+학습 데이터 경로는 `RuntimeLayout.TrainingDataDirectory`의 `EidolonRuntime/TrainingData/<작업 ID>`다. `JobStore.TrainingDatasetDirectory`가 관리 경로와 작업 ID를 확인하고 `JobRecord.DatasetDirectory`에 기록한다. `LoraTrainer`가 해당 경로에 순번·배경으로 구분한 이미지와 .txt를 자동 준비한다. 설명은 동일 이름 .txt, 이미지 옆 Eidolon 프롬프트 JSON의 적용 프롬프트, 입력한 공통 설명, 직접 붙인 파일명 순서로 사용한다. 적용 프롬프트가 비어 있으면 JSON의 입력 프롬프트를 사용하고 손상·미지원 메타 정보는 로그에 남겨 다음 설명 원본을 사용한다. 시각·GUID 이름과 제외할 요소는 설명에 넣지 않는다. `JobStore.ReadGenerationMetadata`를 갤러리·학습이 공유하고 트리거는 중복 없이 앞에 붙인다. 이미지 내용 분석·별도 캡션 모델은 사용하지 않는다.
 
-준비된 폴더 경로와 입력 변경 번호는 `TrainingDatasetViewModel`의 현재 화면 상태이며 별도 저장소나 학습 실행 경로를 만들지 않는다. 이미지 목록·이름·트리거·공통 설명이 바뀌면 준비 상태를 무효화하고 새 폴더를 만들기 전까지 이후 단계·학습 요청을 막는다. 모델·학습 단계 수 변경과 폴더의 .txt 직접 수정은 폴더를 무효화하지 않는다. 폴더 준비를 큐에서 비웠을 때도 준비 중 상태를 해제한다. 원본·기존 출력 폴더는 덮어쓰지 않는다.
+`EngineView`의 학습 데이터 영역은 저장된 엔진 경로를 표시하고 열기·비우기를 제공한다. `EngineViewModel`은 확인 후 기존 유지 관리 큐에서 `JobStore.ClearTrainingDatasets`를 호출한다. 관리 루트의 직속 GUID 하위 폴더만 삭제하며 부모·하위 링크 경로를 거부하고 실제 학습·대기 요청이 있을 때 비활성화한다. 원본·완료 LoRA·Job 기록·로그는 보존한다. 데이터셋 구성과 학습 인자·산출물은 기존 Job 폴더를 사용하며 `Dataset.toml`이 엔진 경로의 데이터셋을 참조한다. 이전 Job 내부 데이터는 이동하지 않는다.
 
-생성 결과의 이 결과로 학습은 선택한 이미지 한 장을 흰색 배경 목록에 추가하고 학습 탭을 연다. 학습 목록이 비어 있던 경우만 생성에 사용한 모델·프롬프트를 채우고 이름·트리거·이어 학습 선택을 초기화한다. 이미 이미지가 있으면 목록과 입력한 학습 설정을 유지한다. 다른 생성 결과를 자동으로 포함하지 않으며 제외할 요소는 캡션에 넣지 않는다. 모델은 현재 자산 ID 또는 같은 설치 루트·엔진 파일명으로 연결하고 누락 시 사용자가 선택하도록 비워 둔다.
+생성 결과의 이 결과로 학습은 선택한 이미지 한 장을 흰색 배경 목록에 추가하고 학습 탭을 연다. 학습 목록이 비어 있던 경우만 생성에 사용한 모델·프롬프트를 채우고 자동 이름·트리거를 제공하고 이어 학습 선택을 초기화한다. 이미 이미지가 있으면 목록과 입력한 학습 설정을 유지한다. 다른 생성 결과를 자동으로 포함하지 않으며 제외할 요소는 캡션에 넣지 않는다. 모델은 현재 자산 ID 또는 같은 설치 루트·엔진 파일명으로 연결하고 누락 시 현재 모델 선택을 유지하고 모델이 없으면 선택을 안내한다.
 
 학습에는 앱이 소유한 로컬 생성 엔진, 로컬 기반 모델과 학습 환경이 필요하다. 기존 서버는 다른 사용자의 GPU 작업과 종료 권한을 보장할 수 없어 학습에 사용하지 않는다. 해당 프로그램에서 기존 서버를 종료하고 Eidolon이 시작하는 로컬 엔진으로 전환하도록 안내한다.
 
@@ -231,9 +248,9 @@ Core의 `TrainingImageInput`은 파일 경로와 `TrainingBackground`만 소유�
 
 | 소유자 | 위치 | 내용 |
 |---|---|---|
-| App `SettingsStore` | `%LOCALAPPDATA%/Eidolon/Settings.json` | 설치·CPU, 서버 주소, 언어·테마, 공용 프롬프트, 기본 모델, 생성 이미지 폴더 |
+| App `SettingsStore` | `%LOCALAPPDATA%/Eidolon/Settings.json` | 생성 방식·Codex 실행 모델·경로, 설치·CPU·서버 주소, 언어·테마, 공통 지침·프리셋, 기본 모델, 생성 이미지 폴더 |
 | `AssetLibrary` | 같은 사용자 폴더의 `Assets.json` | 설치 루트·서버 주소별 모델 계열, 엔진 이름, 트리거 |
-| `JobStore` | 같은 사용자 폴더의 `Jobs/<ID>` | `Job.json`, 원본 이미지 `Originals`, 처리용 이미지 `Processed`, 학습 데이터·산출물, 학습 인자와 로그 |
+| `JobStore` | 같은 사용자 폴더의 `Jobs/<ID>` | `Job.json`, 원본 이미지 `Originals`, 처리용 이미지 `Processed`, 학습 데이터 경로·산출물, 학습 인자와 로그 |
 | `JobStore` 출력 경계 | 설정의 이미지 폴더, 기본은 사용자 데이터의 `Images` | UTC 생성 시각·GUID 이름의 최종 PNG와 같은 이름의 프롬프트 JSON. JSON은 입력·생성 지침·제외 요소·모델·LoRA·배경 옵션·시드·해상도·파라미터·생성 시각을 보존하며 갤러리는 실제 파일을 조회 |
 | `BackgroundRemovalService` | `%LOCALAPPDATA%/Eidolon/Models/BackgroundRemoval` | 첫 사용에 내려받는 IS-Net general-use ONNX 모델과 원본 이용조건 고지 |
 | `RuntimeInstaller` | `<선택한 폴더>/EidolonRuntime/Runtime.json` | 설치 소유자, 스키마, 상태, 버전 |
@@ -258,4 +275,4 @@ Debug에서는 출력 폴더의 `Datas`를 먼저 읽고 배포 시 App의 내�
 
 `WindowsX64.pubxml`은 win-x64 자체 포함 단일 EXE, 네이티브 라이브러리 포함, 트리밍 비활성화, 압축과 임베디드 디버그 정보를 설정한다. 필수 UI·문자열·고지 리소스는 앱에 포함한다. 사용자 설정·작업 데이터는 사용자 폴더, Python 엔진·모델은 선택 설치 경로에 둔다. 실행 파일 게시와 업로드는 Git 커밋·푸시와 별도 작업이다.
 
-현재 사용자 지시로 빌드·테스트·앱 실행 검증을 수행하지 않는다. 문서의 구현 설명은 실행 성공의 보고가 아니다. 검수 범위와 검증 재개 기준은 [작업 규칙](WorkingRules.md)을 따른다.
+빌드·테스트·앱 실행 검증은 [작업 규칙](WorkingRules.md)과 해당 작업의 명시적 사용자 요청 범위를 따른다. 컴파일을 별도로 요청한 작업에서는 빌드만 실행하며 테스트·앱 실행으로 범위를 확대하지 않는다. 문서의 구현 설명은 실제 이미지 생성 성공의 보고가 아니다.

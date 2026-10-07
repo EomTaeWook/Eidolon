@@ -36,13 +36,13 @@ namespace Eidolon.App.Services
             return path;
         }
 
-        public async Task<string> PickModelAsync()
+        public async Task<string> PickCodexExecutableAsync()
         {
             IReadOnlyList<IStorageFile> files = await _desktop.MainWindow.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = _strings.GetString("EidolonText203"),
+                Title = _strings.GetString("EidolonText532"),
                 AllowMultiple = false,
-                FileTypeFilter = new[] { new FilePickerFileType("Safetensors") { Patterns = new[] { "*.safetensors" } } }
+                FileTypeFilter = new[] { new FilePickerFileType("Codex") { Patterns = new[] { "*.exe" } } }
             });
             if (files.Count == 0)
             {
@@ -51,7 +51,7 @@ namespace Eidolon.App.Services
             string path = files[0].TryGetLocalPath();
             if (string.IsNullOrEmpty(path) == true)
             {
-                throw new InvalidOperationException(_strings.GetString("EidolonText204"));
+                throw new StudioException(StudioMessageCode.CodexExecutableNotFound);
             }
             return path;
         }

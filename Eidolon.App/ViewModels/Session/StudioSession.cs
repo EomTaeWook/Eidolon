@@ -29,6 +29,38 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand ClearPendingCommand { get; private set; }
         public DesktopSettings SettingsDraft { get; private set; } = new DesktopSettings();
 
+        public string GenerationBackendCaption
+        {
+            get
+            {
+                if (Settings.GenerationBackend == GenerationBackend.Codex)
+                {
+                    return _strings.GetString("EidolonText528");
+                }
+                return _strings.GetString("EidolonText527");
+            }
+        }
+
+        public string AppliedGenerationBackendCaption
+        {
+            get
+            {
+                return _strings.Format("EidolonText540", GenerationBackendCaption);
+            }
+        }
+
+        public string CodexModelCaption
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Settings.CodexModel) == true)
+                {
+                    return _strings.GetString("EidolonText551");
+                }
+                return Settings.CodexModel;
+            }
+        }
+
         public bool IsBusy
         {
             get
@@ -287,7 +319,12 @@ namespace Eidolon.App.ViewModels
             }
             private set
             {
-                Set(ref _settings, value);
+                if (Set(ref _settings, value) == true)
+                {
+                    Raise(nameof(GenerationBackendCaption));
+                    Raise(nameof(AppliedGenerationBackendCaption));
+                    Raise(nameof(CodexModelCaption));
+                }
             }
         }
         public CancellationToken Lifetime
@@ -389,6 +426,9 @@ namespace Eidolon.App.ViewModels
         {
             Status = _strings.TranslateMessage(Status);
             Raise(nameof(QueueSummary));
+            Raise(nameof(GenerationBackendCaption));
+            Raise(nameof(AppliedGenerationBackendCaption));
+            Raise(nameof(CodexModelCaption));
         }
 
         internal void BeginClosing()

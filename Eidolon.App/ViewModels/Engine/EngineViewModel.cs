@@ -17,6 +17,7 @@ namespace Eidolon.App.ViewModels
         private readonly AssetLibrary _assets;
         private readonly RuntimeInstaller _installer;
         private readonly ComfyEngine _engine;
+        private readonly JobStore _jobs;
         private int _runtimeModulesRequest;
         private Exception _runtimeModulesFailure;
         public ObservableCollection<RuntimeModuleItem> RuntimeModules { get; private set; } = new ObservableCollection<RuntimeModuleItem>();
@@ -26,6 +27,60 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand StopEngineCommand { get; private set; }
         public AsyncCommand OpenRuntimeCommand { get; private set; }
         public AsyncCommand RefreshRuntimeModulesCommand { get; private set; }
+        public AsyncCommand OpenTrainingDataCommand { get; private set; }
+        public AsyncCommand ClearTrainingDataCommand { get; private set; }
+
+        public bool CanOpenTrainingData
+        {
+            get
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                return Session.HasLocalModelRuntime;
+            }
+        }
+
+        public bool CanClearTrainingData
+        {
+            get
+            {
+                if (CanOpenTrainingData == false)
+                {
+                    return false;
+                }
+                return Session.IsIdle;
+            }
+        }
+
+        public string TrainingDataDirectory
+        {
+            get
+            {
+                if (CanOpenTrainingData == false)
+                {
+                    return string.Empty;
+                }
+                return new RuntimeLayout(Session.Settings.InstallDirectory).TrainingDataDirectory;
+            }
+        }
+
+        private async Task ClearTrainingDataAsync()
+        {
+            DesktopSettings settings = Session.Settings.Copy();
+            string path = new RuntimeLayout(settings.InstallDirectory).TrainingDataDirectory;
+            if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText578"),
+                _strings.Format("EidolonText579", path)) == false)
+            {
+                return;
+            }
+            await Session.WorkAsync(async token =>
+            {
+                int count = await Task.Run(() => _jobs.ClearTrainingDatasets(settings, token), token);
+                Session.Status = _strings.Format("EidolonText580", count);
+            });
+        }
 
         public bool HasRuntimeModules
         {
@@ -223,7 +278,7 @@ namespace Eidolon.App.ViewModels
                 else
                 {
                     Navigation.SelectedTab = 3;
-                    Navigation.SelectedEngineTab = 1;
+                    Navigation.SelectedEngineTab = StudioNavigationViewModel.ModelsTab;
                 }
             }
             finally
@@ -309,13 +364,15 @@ namespace Eidolon.App.ViewModels
 
         public EngineViewModel(StudioSession session, StudioNavigationViewModel navigation,
             StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs,
-            AssetsViewModel assets, SettingsViewModel settings, AssetLibrary library, RuntimeInstaller installer, ComfyEngine engine) : base(session, navigation, work, strings, dialogs)
+            AssetsViewModel assets, SettingsViewModel settings, AssetLibrary library, RuntimeInstaller installer,
+            ComfyEngine engine, JobStore jobs) : base(session, navigation, work, strings, dialogs)
         {
             Assets = assets;
             Settings = settings;
             _assets = library;
             _installer = installer;
             _engine = engine;
+            _jobs = jobs;
             Settings.PropertyChanged += OnSettingsChanged;
             InstallCommand = Command(() => Session.WorkAsync(InstallAsync), () => CanInstallEngine == true);
             StartEngineCommand = Command(() =>
@@ -331,6 +388,8 @@ namespace Eidolon.App.ViewModels
             OpenRuntimeCommand = Command(() => _dialogs.OpenFolderAsync(new RuntimeLayout(Settings.InstallDirectory).Root),
                 () => Session.IsIdle == true && string.IsNullOrWhiteSpace(Settings.InstallDirectory) == false);
             RefreshRuntimeModulesCommand = Command(() => Session.WorkAsync(RefreshRuntimeModulesAsync));
+            OpenTrainingDataCommand = Command(() => _dialogs.OpenFolderAsync(TrainingDataDirectory), () => CanOpenTrainingData);
+            ClearTrainingDataCommand = Command(ClearTrainingDataAsync, () => CanClearTrainingData);
         }
 
         private async void OnSettingsChanged(object sender, PropertyChangedEventArgs args)
@@ -361,6 +420,9 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(IsEngineConnected));
             Raise(nameof(StartEngineCaption));
             Raise(nameof(CanInstallEngine));
+            Raise(nameof(CanOpenTrainingData));
+            Raise(nameof(CanClearTrainingData));
+            Raise(nameof(TrainingDataDirectory));
             base.RefreshCommands();
         }
 
