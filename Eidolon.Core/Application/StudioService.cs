@@ -2,6 +2,7 @@ using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
 using System.Text.RegularExpressions;
 using SkiaSharp;
+using Dignus.Log;
 
 namespace Eidolon.Core.Application
 {
@@ -244,7 +245,8 @@ namespace Eidolon.Core.Application
         }
 
         public async Task<ModelAsset> TrainAsync(StudioSettings settings, TrainingInput input,
-            IProgress<WorkProgress> progress, CancellationToken token)
+            IProgress<WorkProgress> progress, IProgress<Exception> engineRecoveryErrors,
+            CancellationToken token, CancellationToken lifetimeToken)
         {
             if (ComfyServerAddress.UsesServerAssets(settings) == true ||
                 (_engine.Connection != null && _engine.Connection.OwnsProcess == false))
@@ -367,7 +369,28 @@ namespace Eidolon.Core.Application
             }
             finally
             {
-                _gpuGate.Release();
+                try
+                {
+                    if (lifetimeToken.IsCancellationRequested == false)
+                    {
+                        try
+                        {
+                            await _engine.EnsureReadyAsync(settings, progress, lifetimeToken).ConfigureAwait(false);
+                        }
+                        catch (OperationCanceledException) when (lifetimeToken.IsCancellationRequested == true)
+                        {
+                        }
+                        catch (Exception error)
+                        {
+                            LogHelper.Error(error);
+                            engineRecoveryErrors.Report(error);
+                        }
+                    }
+                }
+                finally
+                {
+                    _gpuGate.Release();
+                }
             }
         }
 

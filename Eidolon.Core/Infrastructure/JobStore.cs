@@ -405,19 +405,6 @@ namespace Eidolon.Core.Infrastructure
             return headers;
         }
 
-        private class JobHeader
-        {
-            public JobHeader()
-            {
-            }
-
-            public int SchemaVersion { get; set; } = 1;
-            public string Id { get; set; } = string.Empty;
-            public JobKind Kind { get; set; }
-            public JobState State { get; set; }
-            public bool HasImageMetadata { get; set; }
-        }
-
         public string ImagePath(JobRecord job, string relativePath)
         {
             string directory = DirectoryFor(job.Id);

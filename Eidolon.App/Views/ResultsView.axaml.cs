@@ -39,7 +39,7 @@ namespace Eidolon.App.Views
 
         private void SelectGeneration(object source)
         {
-            if (DataContext is StudioViewModel viewModel && source is Control control
+            if (DataContext is GalleryViewModel viewModel && source is Control control
                 && control.DataContext is GenerationItem item)
             {
                 viewModel.SelectGenerationCommand.Execute(item);
@@ -48,7 +48,7 @@ namespace Eidolon.App.Views
 
         private void OnGalleryKeyDown(object sender, KeyEventArgs args)
         {
-            if (DataContext is StudioViewModel viewModel && sender is ListBox gallery)
+            if (DataContext is GalleryViewModel viewModel && sender is ListBox gallery)
             {
                 if (args.Key == Key.Delete)
                 {

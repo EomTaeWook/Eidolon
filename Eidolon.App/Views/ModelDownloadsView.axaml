@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.ModelDownloadsView" x:DataType="vm:StudioViewModel">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.ModelDownloadsView" x:DataType="vm:AssetsViewModel">
   <StackPanel Spacing="8">
     <TextBlock Text="{DynamicResource EidolonText344}" FontSize="16" FontWeight="SemiBold" />
     <TextBlock Text="{Binding ModelDownloadHint}" Classes="muted" FontSize="12" Margin="0,0,0,4" />

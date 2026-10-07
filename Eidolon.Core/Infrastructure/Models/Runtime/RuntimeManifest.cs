@@ -1,7 +1,3 @@
-using Eidolon.Core.Application;
-using System.Runtime.InteropServices;
-using Eidolon.Core.Domain;
-
 namespace Eidolon.Core.Infrastructure
 {
     public class RuntimeManifest

@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationPreviewView" x:DataType="vm:StudioViewModel">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationPreviewView" x:DataType="vm:GalleryViewModel">
   <Border Classes="card" Padding="0">
     <Grid RowDefinitions="Auto,*,Auto">
       <Grid ColumnDefinitions="*,Auto" Margin="20,16">
@@ -9,7 +9,7 @@
             <SelectableTextBlock Text="{Binding SelectedGeneration.SeedCaption}" FontSize="12" Foreground="{DynamicResource MutedBrush}" />
           </StackPanel>
         </StackPanel>
-        <Button Grid.Column="1" Content="{DynamicResource EidolonText291}" Command="{Binding ShowResultsCommand}" FontSize="12" Padding="10,6" />
+        <Button Grid.Column="1" Content="{DynamicResource EidolonText291}" Command="{Binding Navigation.ShowResultsCommand}" FontSize="12" Padding="10,6" />
       </Grid>
       <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" Margin="20,0,20,16" CornerRadius="8" ClipToBounds="True" Padding="16">
         <Grid>

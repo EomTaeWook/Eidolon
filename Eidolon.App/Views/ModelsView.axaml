@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.ModelsView" x:DataType="vm:StudioViewModel">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.ModelsView" x:DataType="vm:AssetsViewModel">
   <UserControl.Styles>
     <Style Selector="Button">
       <Setter Property="Padding" Value="12,8" />
@@ -67,7 +67,7 @@
         </Border>
       </Grid>
       <ScrollViewer Grid.Column="1" Width="300" Margin="16,0,0,0" IsVisible="{Binding HasSelectedAsset}" AllowAutoHide="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <Border Classes="card" Padding="18" CornerRadius="10" IsEnabled="{Binding IsIdle}">
+        <Border Classes="card" Padding="18" CornerRadius="10" IsEnabled="{Binding Session.IsIdle}">
           <StackPanel Spacing="16">
             <StackPanel Spacing="6">
               <TextBlock Text="{DynamicResource EidolonText127}" FontSize="15" FontWeight="SemiBold" />

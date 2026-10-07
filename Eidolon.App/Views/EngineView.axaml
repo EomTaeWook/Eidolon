@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.EngineView" x:DataType="vm:StudioViewModel">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.EngineView" x:DataType="vm:EngineViewModel">
   <UserControl.Styles>
     <Style Selector="Border.card">
       <Setter Property="Padding" Value="20" />
@@ -30,23 +30,23 @@
       <Grid ColumnDefinitions="Auto,28,*,Auto">
         <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
           <Path Data="{StaticResource EidolonIconEngine}" Width="15" Height="15" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.7" />
-          <TextBlock Text="{Binding EngineSetupCaption}" FontSize="13" VerticalAlignment="Center" />
+          <TextBlock Text="{Binding Assets.EngineSetupCaption}" FontSize="13" VerticalAlignment="Center" />
         </StackPanel>
         <Border Grid.Column="1" Width="1" Height="18" Background="{DynamicResource BorderBrush}" />
         <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
           <Path Data="{StaticResource EidolonIconLibrary}" Width="15" Height="15" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.7" />
-          <TextBlock Text="{Binding ModelSetupCaption}" FontSize="13" VerticalAlignment="Center" />
+          <TextBlock Text="{Binding Assets.ModelSetupCaption}" FontSize="13" VerticalAlignment="Center" />
         </StackPanel>
-        <Button Grid.Column="3" Content="{Binding ModelSetupActionCaption}" Command="{Binding PrepareModelsCommand}" IsVisible="{Binding !NeedsModelSetup}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource AccentBrush}" Padding="10,6" />
+        <Button Grid.Column="3" Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" IsVisible="{Binding !Assets.NeedsModelSetup}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource AccentBrush}" Padding="10,6" />
       </Grid>
     </Border>
-    <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="3,0,0,0" CornerRadius="6" Padding="16" Margin="0,0,0,16" IsVisible="{Binding NeedsModelSetup}">
+    <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="3,0,0,0" CornerRadius="6" Padding="16" Margin="0,0,0,16" IsVisible="{Binding Assets.NeedsModelSetup}">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Spacing="5" Margin="0,0,20,0">
-          <TextBlock Text="{Binding ModelSetupCaption}" FontSize="15" FontWeight="SemiBold" />
-          <TextBlock Text="{Binding ModelSetupHint}" Classes="muted" FontSize="13" />
+          <TextBlock Text="{Binding Assets.ModelSetupCaption}" FontSize="15" FontWeight="SemiBold" />
+          <TextBlock Text="{Binding Assets.ModelSetupHint}" Classes="muted" FontSize="13" />
         </StackPanel>
-        <Button Grid.Column="1" Content="{Binding ModelSetupActionCaption}" Command="{Binding PrepareModelsCommand}" Classes="primary" VerticalAlignment="Center" />
+        <Button Grid.Column="1" Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" Classes="primary" VerticalAlignment="Center" />
       </Grid>
     </Border>
     <ScrollViewer Grid.Row="2" Classes="engineContent" AllowAutoHide="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
@@ -60,11 +60,11 @@
             <StackPanel Spacing="10" IsEnabled="{Binding CanInstallEngine}">
               <TextBlock Text="{DynamicResource EidolonText154}" FontSize="13" FontWeight="SemiBold" />
               <Grid ColumnDefinitions="*,Auto">
-                <TextBox Text="{Binding InstallDirectory, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText155}" FontSize="13" Padding="10,9" />
-                <Button Grid.Column="1" Content="{DynamicResource EidolonText142}" Command="{Binding PickInstallCommand}" Margin="8,0,0,0" />
+                <TextBox Text="{Binding Settings.InstallDirectory, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText155}" FontSize="13" Padding="10,9" />
+                <Button Grid.Column="1" Content="{DynamicResource EidolonText142}" Command="{Binding Settings.PickInstallCommand}" Margin="8,0,0,0" />
               </Grid>
               <TextBlock Text="{DynamicResource EidolonText156}" Classes="muted" FontSize="12" />
-              <CheckBox IsChecked="{Binding SettingsDraft.UseCpu}" Margin="0,2,0,4">
+              <CheckBox IsChecked="{Binding Session.SettingsDraft.UseCpu}" Margin="0,2,0,4">
                 <TextBlock Text="{DynamicResource EidolonText157}" FontSize="13" TextWrapping="Wrap" />
               </CheckBox>
               <StackPanel Orientation="Horizontal" Spacing="8">
@@ -96,7 +96,7 @@
             </StackPanel>
             <StackPanel Spacing="10">
               <TextBlock Text="{DynamicResource EidolonText252}" FontSize="13" FontWeight="SemiBold" />
-              <TextBox Text="{Binding ServerAddress, Mode=TwoWay}" PlaceholderText="http://127.0.0.1:8189" FontSize="13" Padding="10,9" />
+              <TextBox Text="{Binding Settings.ServerAddress, Mode=TwoWay}" PlaceholderText="http://127.0.0.1:8189" FontSize="13" Padding="10,9" />
               <Button Command="{Binding StartEngineCommand}" Classes="primary" IsVisible="{Binding !IsEngineConnected}" Margin="0,4,0,0">
                 <StackPanel Orientation="Horizontal" Spacing="7">
                   <Path Data="{StaticResource EidolonIconPlay}" Width="15" Height="15" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />

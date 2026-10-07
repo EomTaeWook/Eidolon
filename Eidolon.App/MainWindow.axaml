@@ -7,43 +7,43 @@
           <TextBlock Text="Eidolon" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right" VerticalAlignment="Center">
-          <Button Command="{Binding ShowGenerationCommand}" Classes="navigation" Classes.active="{Binding IsGenerationView}">
+          <Button Command="{Binding Navigation.ShowGenerationCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsGenerationView}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Path Data="{StaticResource EidolonIconImage}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
               <TextBlock Text="{DynamicResource EidolonText106}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Command="{Binding ShowEditingCommand}" Classes="navigation" Classes.active="{Binding IsEditingView}">
+          <Button Command="{Binding Navigation.ShowEditingCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsEditingView}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Path Data="{StaticResource EidolonIconEdit}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
               <TextBlock Text="{DynamicResource EidolonText456}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Command="{Binding ShowResultsCommand}" Classes="navigation" Classes.active="{Binding IsResultsView}">
+          <Button Command="{Binding Navigation.ShowResultsCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsResultsView}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Path Data="{StaticResource EidolonIconResults}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
               <TextBlock Text="{DynamicResource EidolonText291}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Command="{Binding ShowTrainingCommand}" Classes="navigation" Classes.active="{Binding IsTrainingView}">
+          <Button Command="{Binding Navigation.ShowTrainingCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsTrainingView}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Path Data="{StaticResource EidolonIconTraining}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
               <TextBlock Text="{DynamicResource EidolonText108}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Command="{Binding ShowEngineCommand}" Classes="navigation" Classes.active="{Binding IsEngineView}">
+          <Button Command="{Binding Navigation.ShowEngineCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsEngineView}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Path Data="{StaticResource EidolonIconEngine}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
               <TextBlock Text="{DynamicResource EidolonText109}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Command="{Binding ShowSettingsCommand}" Classes="navigation" Classes.active="{Binding IsSettingsView}">
+          <Button Command="{Binding Navigation.ShowSettingsCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsSettingsView}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Path Data="{StaticResource EidolonIconSettings}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
               <TextBlock Text="{DynamicResource EidolonText110}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Command="{Binding ShowHelpCommand}" Classes="navigation" Classes.active="{Binding IsHelpView}">
+          <Button Command="{Binding Navigation.ShowHelpCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsHelpView}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Path Data="{StaticResource EidolonIconHelp}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
               <TextBlock Text="{DynamicResource EidolonText111}" VerticalAlignment="Center" />
@@ -53,16 +53,20 @@
       </Grid>
     </Border>
     <Grid Grid.Row="1" Margin="24,0,24,16">
-      <Border IsVisible="{Binding IsGenerationWorkspace}">
+      <Border IsVisible="{Binding Navigation.IsGenerationWorkspace}">
         <Grid ColumnDefinitions="360,18,*" Margin="0,18,0,0">
-          <views:GenerationInputsView Grid.Column="0" />
-          <views:GenerationPreviewView Grid.Column="2" />
+          <views:GenerationInputsView Grid.Column="0" DataContext="{Binding Generation}" />
+          <views:GenerationPreviewView Grid.Column="2" DataContext="{Binding Gallery}" />
         </Grid>
       </Border>
-      <views:ResultsView IsVisible="{Binding IsResultsView}" Margin="0,18,0,0" />
-      <views:TrainingView IsVisible="{Binding IsTrainingView}" Margin="0,18,0,0" />
-      <Border IsVisible="{Binding IsEngineView}">
-        <TabControl SelectedIndex="{Binding SelectedEngineTab}" Margin="0,12,0,0">
+      <Border IsVisible="{Binding Navigation.IsResultsView}">
+        <views:ResultsView Margin="0,18,0,0" DataContext="{Binding Gallery}" />
+      </Border>
+      <Border IsVisible="{Binding Navigation.IsTrainingView}">
+        <views:TrainingView Margin="0,18,0,0" DataContext="{Binding Training}" />
+      </Border>
+      <Border IsVisible="{Binding Navigation.IsEngineView}">
+        <TabControl SelectedIndex="{Binding Navigation.SelectedEngineTab}" Margin="0,12,0,0">
           <TabControl.Styles>
             <Style Selector="TabItem">
               <Setter Property="FontSize" Value="14" />
@@ -70,21 +74,21 @@
             </Style>
           </TabControl.Styles>
           <TabItem Header="{DynamicResource EidolonText152}">
-            <views:EngineView />
+            <views:EngineView DataContext="{Binding Engine}" />
           </TabItem>
           <TabItem Header="{DynamicResource EidolonText107}">
-            <views:ModelsView />
+            <views:ModelsView DataContext="{Binding Assets}" />
           </TabItem>
         </TabControl>
       </Border>
-      <Border IsVisible="{Binding IsSettingsView}">
+      <Border IsVisible="{Binding Navigation.IsSettingsView}">
         <ScrollViewer Margin="0,18,0,0">
           <Grid ColumnDefinitions="*,20,*">
             <Border Classes="card" VerticalAlignment="Top">
               <StackPanel Spacing="12">
                 <TextBlock Text="{DynamicResource EidolonText170}" Classes="title" />
                 <TextBlock Text="{DynamicResource EidolonText171}" Classes="label" />
-                <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}">
+                <ComboBox ItemsSource="{Binding Settings.Themes}" SelectedItem="{Binding Settings.SelectedTheme}">
                   <ComboBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:ThemeChoice">
                       <TextBlock Text="{Binding Label}" />
@@ -92,7 +96,7 @@
                   </ComboBox.ItemTemplate>
                 </ComboBox>
                 <TextBlock Text="{DynamicResource EidolonText172}" Classes="label" />
-                <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}">
+                <ComboBox ItemsSource="{Binding Settings.Languages}" SelectedItem="{Binding Settings.SelectedLanguage}">
                   <ComboBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:LanguageChoice">
                       <TextBlock Text="{Binding Label}" />
@@ -100,13 +104,13 @@
                   </ComboBox.ItemTemplate>
                 </ComboBox>
                 <TextBlock Text="{DynamicResource EidolonText173}" Classes="muted" />
-                <Button Command="{Binding OpenLogsCommand}">
+                <Button Command="{Binding Settings.OpenLogsCommand}">
                   <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Path Data="{StaticResource EidolonIconFolder}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="2.2" />
                     <TextBlock Text="{DynamicResource EidolonText174}" VerticalAlignment="Center" />
                   </StackPanel>
                 </Button>
-                <Button Content="{DynamicResource EidolonText175}" Command="{Binding OpenDataCommand}" />
+                <Button Content="{DynamicResource EidolonText175}" Command="{Binding Settings.OpenDataCommand}" />
               </StackPanel>
             </Border>
             <Border Grid.Column="2" Classes="card" VerticalAlignment="Top">
@@ -114,14 +118,14 @@
                 <TextBlock Text="{DynamicResource EidolonText176}" Classes="title" />
                 <TextBlock Text="{DynamicResource EidolonText177}" Classes="muted" />
                 <TextBlock Text="{DynamicResource EidolonText178}" Classes="label" />
-                <TextBox Text="{Binding SettingsDraft.PositivePrompt}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="110" PlaceholderText="{DynamicResource EidolonText179}" />
+                <TextBox Text="{Binding Session.SettingsDraft.PositivePrompt}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="110" PlaceholderText="{DynamicResource EidolonText179}" />
                 <TextBlock Text="{DynamicResource EidolonText180}" Classes="label" />
-                <TextBox Text="{Binding SettingsDraft.NegativePrompt}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="110" PlaceholderText="{DynamicResource EidolonText181}" />
+                <TextBox Text="{Binding Session.SettingsDraft.NegativePrompt}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="110" PlaceholderText="{DynamicResource EidolonText181}" />
                 <TextBlock Text="{DynamicResource EidolonText297}" Classes="label" />
                 <Grid ColumnDefinitions="*,Auto,Auto">
-                  <TextBox Classes="folderPath" Text="{Binding GenerationDirectory, Mode=TwoWay}" ToolTip.Tip="{Binding GenerationDirectory}" />
-                  <Button Grid.Column="1" Classes="folderAction" Content="{DynamicResource EidolonText460}" Command="{Binding PickGenerationDirectoryCommand}" Margin="8,0,0,0" />
-                  <Button Grid.Column="2" Classes="folderAction" Command="{Binding OpenGenerationDirectoryCommand}" Margin="8,0,0,0" ToolTip.Tip="{DynamicResource EidolonText332}" AutomationProperties.Name="{DynamicResource EidolonText332}">
+                  <TextBox Classes="folderPath" Text="{Binding Settings.GenerationDirectory, Mode=TwoWay}" ToolTip.Tip="{Binding Settings.GenerationDirectory}" />
+                  <Button Grid.Column="1" Classes="folderAction" Content="{DynamicResource EidolonText460}" Command="{Binding Settings.PickGenerationDirectoryCommand}" Margin="8,0,0,0" />
+                  <Button Grid.Column="2" Classes="folderAction" Command="{Binding Settings.OpenGenerationDirectoryCommand}" Margin="8,0,0,0" ToolTip.Tip="{DynamicResource EidolonText332}" AutomationProperties.Name="{DynamicResource EidolonText332}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                       <Path Data="{StaticResource EidolonIconFolder}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
                       <TextBlock Text="{DynamicResource EidolonText332}" VerticalAlignment="Center" />
@@ -129,15 +133,15 @@
                   </Button>
                 </Grid>
                 <TextBlock Text="{DynamicResource EidolonText298}" Classes="muted" FontSize="12" />
-                <Button Content="{DynamicResource EidolonText182}" Command="{Binding SaveSettingsCommand}" Classes="primary" HorizontalAlignment="Stretch" />
-                <TextBlock Text="{DynamicResource EidolonText342}" Classes="muted" FontSize="12" IsVisible="{Binding !IsIdle}" />
+                <Button Content="{DynamicResource EidolonText182}" Command="{Binding Settings.SaveSettingsCommand}" Classes="primary" HorizontalAlignment="Stretch" />
+                <TextBlock Text="{DynamicResource EidolonText342}" Classes="muted" FontSize="12" IsVisible="{Binding !Session.IsIdle}" />
                 <TextBlock Text="{DynamicResource EidolonText183}" Classes="muted" FontSize="12" />
               </StackPanel>
             </Border>
           </Grid>
         </ScrollViewer>
       </Border>
-      <Border IsVisible="{Binding IsHelpView}">
+      <Border IsVisible="{Binding Navigation.IsHelpView}">
         <ScrollViewer Margin="0,18,0,0" HorizontalScrollBarVisibility="Disabled">
           <StackPanel Spacing="16" MaxWidth="1000" HorizontalAlignment="Stretch">
             <TextBlock Text="{DynamicResource EidolonText184}" Classes="title" />
@@ -147,7 +151,7 @@
                 <TextBlock Text="{DynamicResource EidolonText186}" TextWrapping="Wrap" />
                 <TextBlock Text="{DynamicResource EidolonText187}" Classes="muted" />
                 <TextBlock Text="{DynamicResource EidolonText285}" Classes="muted" />
-                <Button Command="{Binding ShowEngineCommand}" HorizontalAlignment="Left">
+                <Button Command="{Binding Navigation.ShowEngineCommand}" HorizontalAlignment="Left">
                   <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Path Data="{StaticResource EidolonIconEngine}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
                     <TextBlock Text="{DynamicResource EidolonText109}" VerticalAlignment="Center" />
@@ -163,7 +167,7 @@
                 <TextBlock Text="{DynamicResource EidolonText303}" Classes="muted" />
                 <TextBlock Text="{DynamicResource EidolonText305}" Classes="muted" />
                 <TextBlock Text="{DynamicResource EidolonText480}" Classes="muted" />
-                <Button Command="{Binding ShowGenerationCommand}" HorizontalAlignment="Left">
+                <Button Command="{Binding Navigation.ShowGenerationCommand}" HorizontalAlignment="Left">
                   <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Path Data="{StaticResource EidolonIconImage}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
                     <TextBlock Text="{DynamicResource EidolonText106}" VerticalAlignment="Center" />
@@ -176,7 +180,7 @@
                 <TextBlock Text="{DynamicResource EidolonText476}" Classes="title" FontSize="21" />
                 <TextBlock Text="{DynamicResource EidolonText477}" TextWrapping="Wrap" />
                 <TextBlock Text="{DynamicResource EidolonText479}" Classes="muted" />
-                <Button Command="{Binding ShowEditingCommand}" HorizontalAlignment="Left">
+                <Button Command="{Binding Navigation.ShowEditingCommand}" HorizontalAlignment="Left">
                   <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Path Data="{StaticResource EidolonIconEdit}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
                     <TextBlock Text="{DynamicResource EidolonText456}" VerticalAlignment="Center" />
@@ -189,7 +193,7 @@
                 <TextBlock Text="{DynamicResource EidolonText191}" Classes="title" FontSize="21" />
                 <TextBlock Text="{DynamicResource EidolonText192}" TextWrapping="Wrap" />
                 <TextBlock Text="{DynamicResource EidolonText193}" Classes="muted" />
-                <Button Command="{Binding ShowTrainingCommand}" HorizontalAlignment="Left">
+                <Button Command="{Binding Navigation.ShowTrainingCommand}" HorizontalAlignment="Left">
                   <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Path Data="{StaticResource EidolonIconTraining}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
                     <TextBlock Text="{DynamicResource EidolonText108}" VerticalAlignment="Center" />
@@ -202,7 +206,7 @@
                 <TextBlock Text="{DynamicResource EidolonText194}" Classes="title" FontSize="21" />
                 <TextBlock Text="{DynamicResource EidolonText195}" TextWrapping="Wrap" />
                 <TextBlock Text="{DynamicResource EidolonText196}" Classes="muted" />
-                <Button Command="{Binding OpenLogsCommand}" HorizontalAlignment="Left">
+                <Button Command="{Binding Settings.OpenLogsCommand}" HorizontalAlignment="Left">
                   <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Path Data="{StaticResource EidolonIconFolder}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="2.2" />
                     <TextBlock Text="{DynamicResource EidolonText174}" VerticalAlignment="Center" />
@@ -216,13 +220,13 @@
     </Grid>
     <Border Grid.Row="2" Background="{DynamicResource FooterBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="28,14">
       <StackPanel Spacing="8">
-        <TextBlock Text="{Binding Status}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Status}" VerticalAlignment="Center" />
-        <ProgressBar Value="{Binding Percent}" IsIndeterminate="{Binding Indeterminate}" IsVisible="{Binding IsBusy}" Height="4" Foreground="{DynamicResource AccentBrush}" />
-        <TextBlock Text="{Binding ActiveRequestTitle}" IsVisible="{Binding IsBusy}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ActiveRequestTitle}" TextWrapping="NoWrap" />
-        <TextBlock Text="{Binding TrainingRemainingText}" IsVisible="{Binding ShowTrainingRemainingTime}" Classes="muted" FontSize="12" />
-        <TextBlock Text="{Binding QueueSummary}" IsVisible="{Binding HasPendingRequests}" Classes="muted" FontSize="12" />
-        <Border IsVisible="{Binding HasError}" Background="{DynamicResource ErrorSurfaceBrush}" CornerRadius="7" Padding="12">
-          <TextBlock Text="{Binding Error}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" MaxHeight="100" />
+        <TextBlock Text="{Binding Session.Status}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Session.Status}" VerticalAlignment="Center" />
+        <ProgressBar Value="{Binding Session.Percent}" IsIndeterminate="{Binding Session.Indeterminate}" IsVisible="{Binding Session.IsBusy}" Height="4" Foreground="{DynamicResource AccentBrush}" />
+        <TextBlock Text="{Binding Session.ActiveRequestTitle}" IsVisible="{Binding Session.IsBusy}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Session.ActiveRequestTitle}" TextWrapping="NoWrap" />
+        <TextBlock Text="{Binding Training.TrainingRemainingText}" IsVisible="{Binding Training.ShowTrainingRemainingTime}" Classes="muted" FontSize="12" />
+        <TextBlock Text="{Binding Session.QueueSummary}" IsVisible="{Binding Session.HasPendingRequests}" Classes="muted" FontSize="12" />
+        <Border IsVisible="{Binding Session.HasError}" Background="{DynamicResource ErrorSurfaceBrush}" CornerRadius="7" Padding="12">
+          <TextBlock Text="{Binding Session.Error}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" MaxHeight="100" />
         </Border>
 
       </StackPanel>

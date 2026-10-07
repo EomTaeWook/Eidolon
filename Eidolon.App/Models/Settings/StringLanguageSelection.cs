@@ -1,5 +1,3 @@
-using Eidolon.Core.Domain;
-
 namespace Eidolon.App.Localization
 {
     public class StringLanguageSelection

@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.ReferenceImageInputsView" x:DataType="vm:StudioViewModel" IsEnabled="{Binding CanEditGenerationInputs}">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.ReferenceImageInputsView" x:DataType="vm:GenerationViewModel" IsEnabled="{Binding Session.CanEditGenerationInputs}">
   <UserControl.Styles>
     <Style Selector="Button.referenceAction:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
@@ -18,7 +18,7 @@
           <TextBlock Text="{DynamicResource EidolonText441}" VerticalAlignment="Center" />
         </StackPanel>
       </Button>
-      <TextBlock Text="{DynamicResource EidolonText459}" Classes="muted" FontSize="12" IsVisible="{Binding IsEditingView}" />
+      <TextBlock Text="{DynamicResource EidolonText459}" Classes="muted" FontSize="12" IsVisible="{Binding Navigation.IsEditingView}" />
     </StackPanel>
     <StackPanel Spacing="10" IsVisible="{Binding HasReferenceImage}">
       <Grid ColumnDefinitions="64,10,*">

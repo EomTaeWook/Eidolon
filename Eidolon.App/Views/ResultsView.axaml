@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.ResultsView" x:DataType="vm:StudioViewModel">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.ResultsView" x:DataType="vm:GalleryViewModel">
   <UserControl.Resources>
     <x:Int32 x:Key="ResultsGalleryColumns">2</x:Int32>
   </UserControl.Resources>
@@ -142,7 +142,7 @@
           </Border>
           <TextBlock Text="{DynamicResource EidolonText325}" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap" />
           <TextBlock Text="{DynamicResource EidolonText304}" Classes="muted" FontSize="12" TextAlignment="Center" TextWrapping="Wrap" />
-          <Button Content="{DynamicResource EidolonText106}" Command="{Binding ShowGenerationCommand}" HorizontalAlignment="Center" Padding="16,7" Margin="0,4,0,0" />
+          <Button Content="{DynamicResource EidolonText106}" Command="{Binding Navigation.ShowGenerationCommand}" HorizontalAlignment="Center" Padding="16,7" Margin="0,4,0,0" />
         </StackPanel>
         <StackPanel Grid.Row="2" Spacing="10" Margin="0,12,0,0">
           <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" IsVisible="{Binding IsGalleryLoading}">

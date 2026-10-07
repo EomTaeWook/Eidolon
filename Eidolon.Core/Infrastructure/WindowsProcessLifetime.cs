@@ -26,10 +26,10 @@ namespace Eidolon.Core.Infrastructure
                 _job = null;
                 throw new StudioException(StudioMessageCode.ProcessStartFailed, new Win32Exception(error));
             }
-            ExtendedLimitInformation limits = new ExtendedLimitInformation();
+            WindowsJobExtendedLimitInformation limits = new WindowsJobExtendedLimitInformation();
             limits.BasicLimitInformation.LimitFlags = KillOnJobClose;
             if (SetInformationJobObject(_job, ExtendedLimitInformationClass, ref limits,
-                (uint)Marshal.SizeOf<ExtendedLimitInformation>()) == false)
+                (uint)Marshal.SizeOf<WindowsJobExtendedLimitInformation>()) == false)
             {
                 int error = Marshal.GetLastWin32Error();
                 Dispose();
@@ -62,46 +62,11 @@ namespace Eidolon.Core.Infrastructure
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetInformationJobObject(SafeFileHandle job, int informationClass,
-            ref ExtendedLimitInformation information, uint length);
+            ref WindowsJobExtendedLimitInformation information, uint length);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool AssignProcessToJobObject(SafeFileHandle job, SafeProcessHandle process);
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct BasicLimitInformation
-        {
-            public long PerProcessUserTimeLimit;
-            public long PerJobUserTimeLimit;
-            public uint LimitFlags;
-            public UIntPtr MinimumWorkingSetSize;
-            public UIntPtr MaximumWorkingSetSize;
-            public uint ActiveProcessLimit;
-            public UIntPtr Affinity;
-            public uint PriorityClass;
-            public uint SchedulingClass;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct IoCounters
-        {
-            public ulong ReadOperationCount;
-            public ulong WriteOperationCount;
-            public ulong OtherOperationCount;
-            public ulong ReadTransferCount;
-            public ulong WriteTransferCount;
-            public ulong OtherTransferCount;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct ExtendedLimitInformation
-        {
-            public BasicLimitInformation BasicLimitInformation;
-            public IoCounters IoInfo;
-            public UIntPtr ProcessMemoryLimit;
-            public UIntPtr JobMemoryLimit;
-            public UIntPtr PeakProcessMemoryUsed;
-            public UIntPtr PeakJobMemoryUsed;
-        }
     }
 }

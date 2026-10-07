@@ -1,6 +1,6 @@
 # Eidolon 아키텍처
 
-기준일: 2026-10-05. 현재 구현의 책임 경계와 실행 흐름을 기록한다. 작업 시 지켜야 할 사항은 [작업 규칙](WorkingRules.md), 다국어 생성 절차는 [문자열 데이터 변환](StringData.md)이 소유한다.
+기준일: 2026-10-07. 현재 구현의 책임 경계와 실행 흐름을 기록한다. 작업 시 지켜야 할 사항은 [작업 규칙](WorkingRules.md), 다국어 생성 절차는 [문자열 데이터 변환](StringData.md)이 소유한다.
 
 ## 제품 방향
 
@@ -27,11 +27,12 @@ flowchart LR
 
 | 위치 | 책임 | 주요 타입 |
 |---|---|---|
-| `Eidolon.Core/Domain` | 실행 설정, 모델·작업·프리셋, 오류와 진행 계약 | `StudioSettings`, `ModelAsset`, `JobRecord`, `StudioException`, `WorkProgress` |
+| `Eidolon.Core/Domain/Models`, `Domain` | 기능별 실행 설정·모델·작업·프리셋·진행 모델, 오류 계약 | `StudioSettings`, `ModelAsset`, `JobRecord`, `StudioException`, `WorkProgress` |
 | `Eidolon.Core/Application` | 생성·학습 유스케이스, FIFO 큐, seed 공급 계약 | `StudioService`, `StudioWorkQueue`, `ISeedProvider` |
 | `Eidolon.Core/Infrastructure` | 설치, ComfyUI 연결·실행, 학습 실행, 배경 제거, 파일과 자산 저장 | `RuntimeInstaller`, `ComfyEngine`, `ProcessRunner`, `LoraTrainer`, `BackgroundRemovalService`, `AssetLibrary`, `JobStore` |
 | `Eidolon.App` | Avalonia 진입점·화면, DI 조립, 템플릿 로딩, 앱 수명 | `Program`, `App`, `MainWindow`, `TemplateDataLoader` |
-| `Eidolon.App/ViewModels` | 사용자 입력, 바인딩, 화면 상태와 결과 연결 | `StudioViewModel`, 화면용 항목·선택 모델 |
+| `Eidolon.App/ViewModels` | 루트 화면 조합과 기능별 사용자 입력·명령·결과 연결 | `StudioViewModel`, `GenerationViewModel`, `GalleryViewModel`, `TrainingViewModel`, `AssetsViewModel`, `EngineViewModel`, `SettingsViewModel` |
+| `Eidolon.App/ViewModels/Models`, `Eidolon.App/Models` | 기능별 화면 항목·선택·입력 모델과 사용자 설정 모델 | `AssetItem`, `GenerationItem`, `GenerationReferenceDraft`, `DesktopSettings` |
 | `Eidolon.App/Presenters` | 큐 진입, UI 스레드 복귀, 진행·취소와 예약 작업 수명 | `StudioWorkPresenter`, `StudioWorkState` |
 | `Eidolon.App/Services`, `Localization` | 대화상자, 사용자 설정, 언어·테마, 파일 로그와 메시지 번역 | `SettingsStore`, `DesktopSettings`, `StringHelper`, `StudioMessageTemplates` |
 | `DataContainer/Generated` | Excel에서 생성한 템플릿·컨테이너·로더 | `StringTemplate`, `TemplateContainer`, `TemplateLoader` |
@@ -52,6 +53,21 @@ Core는 .NET, Dignus.Collections·Dignus.Log와 배경 제거용 ONNX Runtime·S
 
 View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하지 않는다. `StudioWorkPresenter`는 비동기 실행과 UI 알림의 수명을 담당한다. 기능별 서비스 호출 뒤 화면 목록·결과를 갱신하는 연결은 ViewModel에 남아 있다.
 
+`StudioViewModel`은 주입받은 공용 서비스를 기능별 ViewModel에 연결하고 초기화·탐색·언어 변경 전파·종료를 조합한다. `StudioNavigationViewModel`은 탭과 탐색 명령을 소유한다. `StudioSession`은 앱 수명의 토큰, 저장된 설정과 편집 사본, 진행·오류·대기 표시 및 입력 가능 조건을 소유한다. 설정 저장은 기존 `SettingsStore`로만 전달하며 두 번째 설정 저장소·캐시를 만들지 않는다. 기능별 ViewModel은 루트를 참조하지 않고 필요한 자산·설정·생성·학습 경계를 명시적으로 전달받는다. `StudioPanelViewModel`은 명령 등록·오류 표시·공통 알림 구독 해제를 공유한다.
+
+| ViewModel | 소유 책임 |
+|---|---|
+| `AssetsViewModel` | 기존 `AssetLibrary`를 통한 목록·모델·호환 LoRA 선택, 가져오기·분류·다운로드·삭제 |
+| `GenerationViewModel` | 생성·편집의 설명·참고 이미지·시드·배경, 요청 사본과 결과 재사용 |
+| `GalleryViewModel` | 기존 `JobStore`를 통한 페이지·선택·미리보기·비트맵 수명, 삭제·저장·편집·학습 연결 |
+| `TrainingViewModel` | 두 배경의 이미지 그룹·학습 입력·단계·취소 표시, 학습과 폴더 생성 요청, 완료 자산 갱신 |
+| `EngineViewModel` | 설치·연결·정지·모듈 표시와 엔진 설정 적용 예약 |
+| `SettingsViewModel` | 언어·테마·경로·생성 지침 편집, 기존 설정 저장과 즉시 적용 |
+
+`StudioService.TrainAsync`는 GPU 사용권을 얻은 뒤 엔진 정지·학습·LoRA 등록·엔진 복구를 모두 소유한다. 요청 토큰은 학습 취소를, 앱 수명 토큰은 복구 중단을 담당한다. 취소·실패 후에도 앱이 살아 있으면 엔진을 복구하고 앱 종료 중에는 복구하지 않는다. 복구를 마친 뒤 GPU 사용권을 반환한다. 복구 오류는 별도 `IProgress<Exception>`으로 App에 전달해 학습 결과·원래 실패를 덮어쓰지 않는다. App은 기존 Presenter의 UI 실행 경계에서 오류 진행 콜백을 만들고 번역해 표시하며 프로세스를 직접 재시작하지 않는다.
+
+데이터 모델·DTO는 각 계층의 `Models` 아래에서 기능별로 묶는다. Core 실행 모델은 `Domain/Models`, 설치 기록·Job 헤더·Windows API 구조체는 `Infrastructure/Models`, 화면 항목은 `App/ViewModels/Models`, 사용자 설정은 `App/Models/Settings`에 둔다. 물리적 위치를 정리해도 기존 네임스페이스·직렬화 형식과 저장 경로는 유지한다. `JobHeader`는 기존 `JobStore`가 읽는 헤더 모델이며 독립 저장소를 만들지 않는다.
+
 ## 화면 구성
 
 상단 브랜드와 같은 줄에 이미지 생성, 이미지 편집, 생성 결과, 학습, 엔진, 설정, 사용법 탭을 배치한다. 사용법의 학습 안내는 기존 `ShowTrainingCommand`로 학습 탭에 바로 연결한다. 엔진 안에는 엔진 설치와 모델·LoRA 하위 탭을 두고 `SelectedEngineTab`이 선택 상태를 소유한다. 엔진 설치 하위 탭은 실행 환경 설치·복구, 서버 연결과 설치 모듈 조회를 담당한다. 모델 설치·삭제 목록은 모델·LoRA 하위 탭의 `ModelsView` 안에 `ModelDownloadsView`로 한 번만 배치한다. 모델 파일 가져오기와 계열·트리거 관리도 이 화면에서 기존 자산 서비스를 사용한다. 모델마다 왼쪽에 이름·계열·용량·설명을, 오른쪽에 설치 버튼 또는 사용 가능 상태·삭제 버튼을 표시한다. 체크박스와 별도 목록 선택 상태는 만들지 않는다. `ModelDownloadItem.InstallCommand`·`DeleteCommand`는 기존 Presenter 유지 관리 큐를 사용하며 설치 진행 상태만 항목에 표시한다. 로컬 엔진 준비 전에는 설치 안내를 제공하고 외부 서버 자산에서는 모델 설치·삭제를 비활성화한다. 생성 화면에서는 사용할 모델·LoRA를 선택한다.
@@ -60,7 +76,7 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 
 모델 설치 목록의 스크롤은 `ModelsView`에서 높이를 제한하고 세로 스크롤바를 항상 표시한다. 자동 숨김을 끄고 너비 18의 전용 공간과 콘텐츠 우측 여백 12를 확보해 설치·삭제 버튼과 겹치지 않게 한다. 목록에만 적용하는 스타일로 손잡이를 둥글게 표시하고 기본 상태에는 테마의 `MutedBrush`, 마우스 이동·드래그 상태에는 `AccentBrush`를 사용한다. 모델 목록은 설치 중에도 스크롤·조회할 수 있고 변경 동작은 기존 명령의 유지 관리 조건으로 제한한다.
 
-학습 화면은 `TrainingView`가 소유하며 기존 `StudioViewModel`·Presenter·학습 큐를 사용한다. 이미지·이름·설명 입력과 모델·단계 수·트리거·이어 학습 설정을 나란히 배치하고 요청 버튼은 스크롤 밖에 고정한다. 학습 기록 목록과 화면 선택 상태는 만들지 않으며 작업 기록·로그·산출물은 `JobStore`가 보존한다. 현재 학습 상태는 하단에서 확인하고 완료 LoRA는 생성 화면에서 선택한다. 생성 화면의 LoRA 선택 목록에는 저장된 자동 적용 트리거를 표시한다.
+학습 화면은 `TrainingView`가 소유하며 `TrainingViewModel`·기존 Presenter·학습 큐를 사용한다. 이미지·이름·설명 입력과 모델·단계 수·트리거·이어 학습 설정을 나란히 배치하고 요청 버튼은 스크롤 밖에 고정한다. 학습 기록 목록과 화면 선택 상태는 만들지 않으며 작업 기록·로그·산출물은 `JobStore`가 보존한다. 현재 학습 상태는 하단에서 확인하고 완료 LoRA는 생성 화면에서 선택한다. 생성 화면의 LoRA 선택 목록에는 저장된 자동 적용 트리거를 표시한다.
 
 `ModelsView`의 파일 가져오기·새로고침은 목록 상단에 둔다. 설치 목록과 내 모델·LoRA 목록이 가용 높이를 나누어 사용하며 `HasSelectedAsset`이 참일 때만 선택 정보 영역의 폭을 확보한다. 모델 계열 수정은 상세 설정에 두고 호출 단어 입력은 `IsSelectedAssetLora`가 참일 때만 표시한다. 자동 판별되지 않은 계열은 `NeedsAssetClassification`으로 안내한다. 파일 가져오기는 `AssetLibrary.ImportAsync`에 `ModelFamily.Unknown`과 빈 호출 단어를 전달해 자동 판별하고 가져온 항목을 선택하며 이전 선택 항목의 편집값을 재사용하지 않는다.
 
@@ -68,9 +84,9 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 
 생성 시드는 `UseRandomGenerationSeed`의 기본 자동 생성 또는 `GenerationSeed`의 직접 입력으로 정한다. 기존 DI의 `ISeedProvider`를 `StudioViewModel`에 주입하고 큐 추가 시 시드를 한 번 정해 실행 클로저에 고정한다. 직접 입력은 문화권과 무관한 0 이상 `long` 정수만 허용하며 App과 `StudioService.GenerateAsync` 양쪽에서 입력 경계를 확인한다. Core는 전달받은 값을 `JobRecord.Seed`에 기록하고 워크플로·이미지 옆 JSON까지 같은 값을 전달한다. 최근 큐 요청 시드는 실행 영역에서 복사할 수 있고 이미지 미리보기는 `SelectedGeneration.SeedCaption`으로 해당 결과의 값을 표시한다. 별도 시드 설정 파일이나 저장소는 만들지 않는다.
 
-생성 화면의 지침 영역은 `StudioViewModel.GenerationPositivePrompt`·`GenerationNegativePrompt`로 저장된 설정을 읽기 전용으로 표시하고 설정 저장·초기화 뒤 갱신한다. 별도 요청별 지침 상태와 기본값 불러오기 명령은 두지 않으며 큐 추가 시 설정 사본을 고정한다. `GenerationPreviewView`는 한 패널 안에 미리보기·저장된 시드·결과 이동과 접힌 생성 정보를 배치한다. 중립적인 이미지 무대 안에서 실제 비트맵의 종횡비를 유지하고 체크무늬는 이미지 경계 안에만 그리며 긴 프롬프트 정보는 필요할 때 펼쳐 읽는다. `PromptDetailsView`를 생성·결과 화면이 공유하고 `GenerationItem.Metadata`의 입력 프롬프트·적용 지침·제외 요소·참고 이미지 조건을 표시한다. 적용 지침은 자동 LoRA 호출 단어 → 사용자 입력 → 설정 지침 순서이며 중복 호출 단어를 추가하지 않는다. 텍스트는 복사할 수 있다. 향후 MCP의 요청별 지침 변경은 [TBD]이며 현재 Core의 `StudioSettings` 사본 전달 경계를 유지한다. 설정 지침·생성 정보의 펼침 헤더는 App 공용 `ToggleButton.disclosure` 스타일을 사용한다. 컨트롤과 콘텐츠를 전체 너비로 펼치고 40의 최소 높이와 제목·우측 화살표 간격을 확보한다. 체크 상태에서 화살표를 180도 회전하며 펼침 여부는 각 View의 토글 상태가 소유한다.
+생성 화면의 지침 영역은 `GenerationViewModel.GenerationPositivePrompt`·`GenerationNegativePrompt`로 저장된 설정을 읽기 전용으로 표시하고 설정 저장·초기화 뒤 갱신한다. 별도 요청별 지침 상태와 기본값 불러오기 명령은 두지 않으며 큐 추가 시 설정 사본을 고정한다. `GenerationPreviewView`는 한 패널 안에 미리보기·저장된 시드·결과 이동과 접힌 생성 정보를 배치한다. 중립적인 이미지 무대 안에서 실제 비트맵의 종횡비를 유지하고 체크무늬는 이미지 경계 안에만 그리며 긴 프롬프트 정보는 필요할 때 펼쳐 읽는다. `PromptDetailsView`를 생성·결과 화면이 공유하고 `GenerationItem.Metadata`의 입력 프롬프트·적용 지침·제외 요소·참고 이미지 조건을 표시한다. 적용 지침은 자동 LoRA 호출 단어 → 사용자 입력 → 설정 지침 순서이며 중복 호출 단어를 추가하지 않는다. 텍스트는 복사할 수 있다. 향후 MCP의 요청별 지침 변경은 [TBD]이며 현재 Core의 `StudioSettings` 사본 전달 경계를 유지한다. 설정 지침·생성 정보의 펼침 헤더는 App 공용 `ToggleButton.disclosure` 스타일을 사용한다. 컨트롤과 콘텐츠를 전체 너비로 펼치고 40의 최소 높이와 제목·우측 화살표 간격을 확보한다. 체크 상태에서 화살표를 180도 회전하며 펼침 여부는 각 View의 토글 상태가 소유한다.
 
-생성 결과 탭의 `ResultsView`는 왼쪽에 현재 설정의 이미지 출력 폴더를 카드 갤러리로, 오른쪽에 선택한 큰 이미지와 프롬프트를 함께 제공한다. 왼쪽 갤러리의 실제 너비에 맞춰 열 수를 바꾸고 카드마다 실제 PNG 한 장과 제목·모델·시각·프롬프트 정보 여부를 표시한다. `StudioViewModel.Generations`는 현재 페이지 12개만 소유한다. `JobStore.LoadGenerationPage`는 출력 폴더 바로 아래의 PNG 파일을 생성 시각 내림차순·파일명으로 정렬하고 전체 이미지 수·페이지 범위·현재 페이지의 `GenerationImage`를 반환한다. 프롬프트는 해당 이미지와 같은 이름의 JSON에서만 읽는다. Job 폴더는 갤러리 조회의 원본이 아니며 이미지·JSON을 다른 출력 폴더로 함께 옮겨도 조회·재사용할 수 있다. JSON이 없거나 손상되어도 이미지 카드·보기·저장·학습 연결은 유지하고 프롬프트 재사용을 비활성화한다. 별도 인덱스 파일·결과 저장소·이미지 캐시는 만들지 않는다.
+생성 결과 탭의 `ResultsView`는 왼쪽에 현재 설정의 이미지 출력 폴더를 카드 갤러리로, 오른쪽에 선택한 큰 이미지와 프롬프트를 함께 제공한다. 왼쪽 갤러리의 실제 너비에 맞춰 열 수를 바꾸고 카드마다 실제 PNG 한 장과 제목·모델·시각·프롬프트 정보 여부를 표시한다. `GalleryViewModel.Generations`는 현재 페이지 12개만 소유한다. `JobStore.LoadGenerationPage`는 출력 폴더 바로 아래의 PNG 파일을 생성 시각 내림차순·파일명으로 정렬하고 전체 이미지 수·페이지 범위·현재 페이지의 `GenerationImage`를 반환한다. 프롬프트는 해당 이미지와 같은 이름의 JSON에서만 읽는다. Job 폴더는 갤러리 조회의 원본이 아니며 이미지·JSON을 다른 출력 폴더로 함께 옮겨도 조회·재사용할 수 있다. JSON이 없거나 손상되어도 이미지 카드·보기·저장·학습 연결은 유지하고 프롬프트 재사용을 비활성화한다. 별도 인덱스 파일·결과 저장소·이미지 캐시는 만들지 않는다.
 
 페이지 조회와 축소 이미지 디코딩은 UI 스레드 밖에서 처리한다. 현재 페이지의 실제 이미지 파일만 너비 384로 디코딩하며 `GenerationItem`이 표시 수명을 소유한다. 페이지 변경·종료 시 비트맵을 해제한다. 이전 읽기를 취소하고 수명·요청 번호를 확인해 늦게 끝난 결과가 새 페이지를 덮지 않게 하며 종료 시 읽기도 기다린다. 조회 오류는 새로고침 안내와 함께 표시하고 손상된 PNG에는 미리보기 없는 카드를 표시한다. 빈 상태에는 생성 화면으로 이동하는 안내를 제공한다. 시작 시 `MarkInterrupted`는 실행 상태인 Job만 갱신하고 `MigrateGenerationMetadata`가 기존 결과의 JSON을 출력 위치에 추가한다. `JobRecord.HasImageMetadata`로 완료한 이전을 반복하지 않는다. Job 안에만 있던 최종 이미지는 현재 출력 폴더로 복사하고 기존 원본은 보존한다. 임시 파일을 거쳐 게시하며 기존 이미지·JSON은 덮어쓰지 않는다. 이미 별도 출력 폴더에 저장한 결과는 그 위치를 유지한다.
 
@@ -80,7 +96,7 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 
 공통 하단에는 상태 메시지, 진행률, 예상 남은 시간, 대기 건수와 오류만 표시한다. 버튼과 펼침 동작은 두지 않는다. 학습 취소는 `TrainingView`의 요청 버튼 옆에 두며 완료 LoRA 등록·생성 작업에는 취소를 제공하지 않는다. 대기 목록·비우기는 생성 입력 영역과 학습 화면의 `PendingWorkView`가 같은 큐 데이터를 표시한다. 준비 중에는 남은 시간 계산 중으로 표시하고 대기 상태에는 중립적인 준비 문구를 사용한다. 상세 프로세스 출력은 파일 로그에 기록한다.
 
-결과 이미지의 다른 이름으로 저장·프롬프트 재사용과 설정 폴더 선택·열기는 작업 실행 중에도 사용한다. 설정은 편집할 수 있으며 저장이 대기 중이면 버튼을 비활성화하고 안내한다. 학습 입력 준비 상태는 `StudioViewModel.TrainingInputIssue`가 기존 오류 코드로 판별하고 실행 영역의 안내와 요청 버튼 활성화에 함께 사용한다. 실제 모델·파일·학습 실행 검증은 기존 Core 경계를 유지한다.
+결과 이미지의 다른 이름으로 저장·프롬프트 재사용과 설정 폴더 선택·열기는 작업 실행 중에도 사용한다. 설정은 편집할 수 있으며 저장이 대기 중이면 버튼을 비활성화하고 안내한다. 학습 입력 준비 상태는 `TrainingViewModel.TrainingInputIssue`가 기존 오류 코드로 판별하고 실행 영역의 안내와 요청 버튼 활성화에 함께 사용한다. 실제 모델·파일·학습 실행 검증은 기존 Core 경계를 유지한다.
 
 설정에서 한국어·영어와 라이트·블랙 테마를 즉시 적용하고 저장한다. 라이트 테마는 Bough의 배경 `#F7FAFC`, 본문 `#1D3447`, 강조 `#285F88`을 기준으로 하며 상단은 `SurfaceBrush`의 중립 배경을 사용한다. 동작 아이콘은 공용 Avalonia 벡터 경로와 소유 버튼의 전경색을 사용한다. 앱 아이콘 원본은 `Eidolon.App/Assets/AppIcon.svg`이며 PNG·ICO를 함께 사용한다.
 
