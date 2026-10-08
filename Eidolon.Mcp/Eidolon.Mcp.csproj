@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Dependency-free MCP tool server using HttpListener.</Description>
+    <Description>MCP tool server using HttpListener and Dignus dependency injection.</Description>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Dignus" Version="1.3.0" />
+  </ItemGroup>
 </Project>

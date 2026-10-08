@@ -11,7 +11,6 @@ namespace Eidolon.Mcp
         private readonly McpRequestReader _reader;
         private readonly McpDispatcher _dispatcher;
         private readonly Action<Exception> _onError;
-        private readonly SemaphoreSlim _lifecycle = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _requestSlots;
         private readonly ConcurrentDictionary<long, McpRequestExecution> _requests = new ConcurrentDictionary<long, McpRequestExecution>();
         private HttpListener _listener;
@@ -53,38 +52,31 @@ namespace Eidolon.Mcp
 
         public async Task StartAsync(CancellationToken token = default)
         {
-            await _lifecycle.WaitAsync(token).ConfigureAwait(false);
-            try
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            token.ThrowIfCancellationRequested();
+            if (IsRunning == false)
             {
-                ObjectDisposedException.ThrowIf(_disposed, this);
-                if (IsRunning == true)
-                {
-                    return;
-                }
                 if (_listener != null)
                 {
                     await StopInternalAsync().ConfigureAwait(false);
+                    token.ThrowIfCancellationRequested();
                 }
-                HttpListener listener = new HttpListener();
-                listener.Prefixes.Add(_options.Endpoint.GetLeftPart(UriPartial.Authority) + "/");
-                try
-                {
-                    listener.Start();
-                }
-                catch
-                {
-                    listener.Close();
-                    throw;
-                }
-                _listener = listener;
-                _lifetime = new CancellationTokenSource();
-                SetRunning(true);
-                _acceptTask = AcceptAsync(listener, _lifetime);
             }
-            finally
+            HttpListener listener = new HttpListener();
+            listener.Prefixes.Add(_options.Endpoint.GetLeftPart(UriPartial.Authority) + "/");
+            try
             {
-                _lifecycle.Release();
+                listener.Start();
             }
+            catch
+            {
+                listener.Close();
+                throw;
+            }
+            _listener = listener;
+            _lifetime = new CancellationTokenSource();
+            SetRunning(true);
+            _acceptTask = AcceptAsync(listener, _lifetime);
         }
 
         private async Task AcceptAsync(HttpListener listener, CancellationTokenSource lifetime)
@@ -154,9 +146,12 @@ namespace Eidolon.Mcp
                 _reader.ValidateConnection(context.Request);
                 request = await _reader.ReadAsync(context.Request, token).ConfigureAwait(false);
                 _reader.ValidateVersion(context.Request, request);
-                if (request.IsModern == false && request.Method != "initialize")
+                if (request.IsModern == false)
                 {
-                    execution.Identify(request.Id);
+                    if (request.Method != "initialize")
+                    {
+                        execution.Identify(request.Id);
+                    }
                 }
                 if (request.IsNotification == true)
                 {
@@ -200,10 +195,13 @@ namespace Eidolon.Mcp
                 {
                     context.Response.Abort();
                 }
-                if (lifetime.IsCancellationRequested == false && execution.IsClientCancelled == false)
+                if (lifetime.IsCancellationRequested == false)
                 {
-                    await TryWriteErrorAsync(context.Response, 408,
-                        McpProtocol.Error(request?.Id, -32000, "The MCP request timed out."), lifetime).ConfigureAwait(false);
+                    if (execution.IsClientCancelled == false)
+                    {
+                        await TryWriteErrorAsync(context.Response, 408,
+                            McpProtocol.Error(request?.Id, -32000, "The MCP request timed out."), lifetime).ConfigureAwait(false);
+                    }
                 }
             }
             catch (Exception error)
@@ -297,17 +295,9 @@ namespace Eidolon.Mcp
             }
         }
 
-        public async Task StopAsync()
+        public Task StopAsync()
         {
-            await _lifecycle.WaitAsync().ConfigureAwait(false);
-            try
-            {
-                await StopInternalAsync().ConfigureAwait(false);
-            }
-            finally
-            {
-                _lifecycle.Release();
-            }
+            return StopInternalAsync();
         }
 
         private async Task StopInternalAsync()
@@ -336,21 +326,13 @@ namespace Eidolon.Mcp
 
         public async ValueTask DisposeAsync()
         {
-            await _lifecycle.WaitAsync().ConfigureAwait(false);
-            try
+            if (_disposed == true)
             {
-                if (_disposed == true)
-                {
-                    return;
-                }
-                _disposed = true;
-                await StopInternalAsync().ConfigureAwait(false);
-                _requestSlots.Dispose();
+                return;
             }
-            finally
-            {
-                _lifecycle.Release();
-            }
+            _disposed = true;
+            await StopInternalAsync().ConfigureAwait(false);
+            _requestSlots.Dispose();
         }
     }
 }

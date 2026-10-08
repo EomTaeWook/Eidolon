@@ -1,6 +1,6 @@
 # Eidolon 아키텍처
 
-기준일: 2026-10-07. 현재 구현의 책임 경계와 실행 흐름을 기록한다. 작업 시 지켜야 할 사항은 [작업 규칙](WorkingRules.md), 다국어 생성 절차는 [문자열 데이터 변환](StringData.md)이 소유한다.
+기준일: 2026-10-08. 현재 구현의 책임 경계와 실행 흐름을 기록한다. 작업 시 지켜야 할 사항은 [작업 규칙](WorkingRules.md), 다국어 생성 절차는 [문자열 데이터 변환](StringData.md)이 소유한다.
 
 ## 제품 방향
 
@@ -38,11 +38,11 @@ flowchart LR
 | `Eidolon.App/Presenters` | 큐 진입, UI 스레드 복귀, 진행·취소와 예약 작업 수명 | `StudioWorkPresenter`, `StudioWorkState` |
 | `Eidolon.App/Services`, `Localization` | 대화상자, 사용자 설정, 언어·테마, 파일 로그와 메시지 번역 | `SettingsStore`, `DesktopSettings`, `StringHelper`, `StudioMessageTemplates` |
 | `DataContainer/Generated` | Excel에서 생성한 템플릿·컨테이너·로더 | `StringTemplate`, `TemplateContainer`, `TemplateLoader` |
-| `Eidolon.Mcp/Controllers`, `Transport`, `Protocol`, `Tools`, `Models` | 종속성 없는 HttpListener 전송, 메서드별 JSON-RPC 컨트롤러와 도구 등록·입력 계약 | `McpHttpServer`, `ToolsCallController`, `McpTool`, `McpServerOptions` |
+| `Eidolon.Mcp/Controllers`, `Transport`, `Protocol`, `Tools`, `Models` | HttpListener 전송, Dignus DI의 transient JSON-RPC 컨트롤러와 도구 등록·입력 계약 | `McpHttpServer`, `McpDispatcher`, `ToolsCallController`, `McpTool`, `McpServerOptions` |
 | `Eidolon.App/Mcp`, `ViewModels/Mcp` | `CreateTools()`·private 처리 메서드로 기존 생성·조회 경계를 연결하고 서버 수명·화면 상태 관리 | `McpService`, `McpViewModel` |
 | `Excel`, `Datas`, `ExportTools` | 문자열 원본, 생성 JSON, 변환 도구와 설정 | `String.xlsx`, `String.json` |
 
-Core는 .NET, Dignus.Collections·Dignus.Log와 배경 제거용 ONNX Runtime·SkiaSharp를 사용하며 App, Avalonia, DataContainer, 언어·테마·번역 서비스와 UI 리소스 키를 참조하지 않는다. App은 Core와 DataContainer를 참조하고 Avalonia 및 Dignus DI를 사용한다. DataContainer는 생성 데이터 계약을 제공한다. Eidolon.Mcp는 .NET 기본 라이브러리만 참조한다.
+Core는 .NET, Dignus.Collections·Dignus.Log와 배경 제거용 ONNX Runtime·SkiaSharp를 사용하며 App, Avalonia, DataContainer, 언어·테마·번역 서비스와 UI 리소스 키를 참조하지 않는다. App은 Core와 DataContainer를 참조하고 Avalonia 및 Dignus DI를 사용한다. DataContainer는 생성 데이터 계약을 제공한다. Eidolon.Mcp는 .NET 기본 라이브러리와 Dignus를 참조한다.
 
 `StudioException`은 `StudioMessageCode`와 인자를, `WorkProgress`는 코드·인자·진행률·불확정 진행 여부를 전달한다. App의 `StudioMessageTemplates`가 코드와 Excel 키의 대응을 소유하고 `StringHelper`가 표시 문장을 만든다. Core에 `IStringProvider`를 두지 않는다. 언어·테마를 포함한 전체 사용자 설정은 App의 `DesktopSettings`와 `SettingsStore`가 소유하며 Core에는 실행용 `StudioSettings`를 전달한다.
 
@@ -81,7 +81,7 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 
 에셋 제작 탭은 스프라이트와 캐릭터·물체 삼면도 초안을 제공한다. `AssetCreationService`는 기존 `StudioService.GenerateAsync`를 순서대로 호출하고 `JobStore`에 묶음·부분 완료·항목의 원본 Job 연결을 저장한다. `AssetFrameImporter`는 교체 이미지 사본을 준비하고 `AssetSheetExporter`는 공통 캔버스에 PNG·시트·좌표 메타데이터를 내보낸다. 별도 큐·저장소·GPU 사용권을 만들지 않는다. 화면·저장·품질 한계 계약은 [에셋 제작](AssetCreation.md)이 소유한다.
 
-MCP는 외부 패키지·Core/App 참조가 없는 `Eidolon.Mcp` 라이브러리와 App의 도구 어댑터로 나눈다. 설정의 일반 화면에서 로컬 HTTP 서버를 켜고 끄며 루트가 종료 수명을 조합한다. 생성·편집은 기존 `GenerationViewModel`·FIFO 큐·서비스를, 조회는 기존 Session·자산·JobStore를 사용한다. 요청별 지침은 설정 사본에 적용하고 저장 설정·프리셋을 바꾸지 않는다. 상세 도구·전송·클라이언트 연결은 [MCP 연결](Mcp.md)이 소유한다.
+MCP는 Dignus DI를 사용하는 `Eidolon.Mcp` 라이브러리와 App의 도구 어댑터로 나눈다. 라이브러리는 Core/App을 참조하지 않는다. `McpDispatcher`는 메서드와 컨트롤러 타입을 등록하고 요청·알림마다 `LifeScope.Transient` 인스턴스를 resolve한다. 옵션·도구 목록·콜백은 서버 수명 동안 공유한다. 설정의 일반 화면에서 로컬 HTTP 서버를 켜고 끄며 루트가 종료 수명을 조합한다. 생성·편집은 기존 `GenerationViewModel`·FIFO 큐·서비스를, 조회는 기존 Session·자산·JobStore를 사용한다. 요청별 지침은 설정 사본에 적용하고 저장 설정·프리셋을 바꾸지 않는다. 상세 도구·전송·클라이언트 연결은 [MCP 연결](Mcp.md)이 소유한다.
 
 `SettingsView`는 이미지 저장 폴더와 일반 설정을 한 열로 표시한다. 테마·언어는 라디오 버튼으로 즉시 적용하고 설정 저장으로 확정한다. `GenerationEnvironmentView`는 생성 방식·Codex 실행 모델·경로와 공통 지침·제외할 요소·프리셋을 함께 표시한다. `PromptSettingsView`의 지침과 프리셋 관리 입력은 접지 않는다. 두 화면은 기존 `SettingsViewModel`·`SettingsStore`를 공유하며 `SaveSettingsCommand`는 저장 폴더·언어·테마만, `SaveGenerationEnvironmentCommand`는 생성 방식·Codex 입력·지침·프리셋만 저장한다. 다른 화면의 미저장 입력은 적용하지 않는다. 고정 실행 영역은 학습 화면과 같은 페이지 배경과 위쪽 구분선·여백을 사용하며 본문과 같은 너비 안에 안내와 저장 버튼을 배치한다. 공통 상태·진행 영역에는 버튼을 두지 않는다. 생성 입력의 생성 환경 버튼과 저장된 방식 표시는 같은 환경 화면으로 연결한다. 저장된 방식·모델 표시와 미적용 환경 안내는 기존 Session·SettingsViewModel이 소유한다. Codex 환경 저장은 ComfyUI 조회를 요구하지 않고 ComfyUI 저장은 기존 자산 갱신을 사용한다.
 

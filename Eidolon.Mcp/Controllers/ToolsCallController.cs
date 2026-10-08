@@ -5,10 +5,11 @@ namespace Eidolon.Mcp
 {
     internal class ToolsCallController : IMcpController
     {
+        internal const string MethodName = "tools/call";
         private readonly IReadOnlyDictionary<string, McpTool> _tools;
         private readonly Action<Exception> _reportError;
 
-        internal ToolsCallController(IReadOnlyDictionary<string, McpTool> tools, Action<Exception> reportError)
+        public ToolsCallController(IReadOnlyDictionary<string, McpTool> tools, Action<Exception> reportError)
         {
             _tools = tools;
             _reportError = reportError;
@@ -18,7 +19,7 @@ namespace Eidolon.Mcp
         {
             get
             {
-                return "tools/call";
+                return MethodName;
             }
         }
 

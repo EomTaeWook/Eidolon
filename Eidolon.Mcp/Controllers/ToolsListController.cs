@@ -4,9 +4,10 @@ namespace Eidolon.Mcp
 {
     internal class ToolsListController : IMcpController
     {
+        internal const string MethodName = "tools/list";
         private readonly IReadOnlyDictionary<string, McpTool> _tools;
 
-        internal ToolsListController(IReadOnlyDictionary<string, McpTool> tools)
+        public ToolsListController(IReadOnlyDictionary<string, McpTool> tools)
         {
             _tools = tools;
         }
@@ -15,7 +16,7 @@ namespace Eidolon.Mcp
         {
             get
             {
-                return "tools/list";
+                return MethodName;
             }
         }
 

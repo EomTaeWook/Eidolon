@@ -4,9 +4,10 @@ namespace Eidolon.Mcp
 {
     internal class ServerDiscoverController : IMcpController
     {
+        internal const string MethodName = "server/discover";
         private readonly McpServerOptions _options;
 
-        internal ServerDiscoverController(McpServerOptions options)
+        public ServerDiscoverController(McpServerOptions options)
         {
             _options = options;
         }
@@ -15,7 +16,7 @@ namespace Eidolon.Mcp
         {
             get
             {
-                return "server/discover";
+                return MethodName;
             }
         }
 

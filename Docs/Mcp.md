@@ -93,9 +93,9 @@ URL 예약 명령의 계약은 [Microsoft netsh http 문서](https://learn.micro
 
 ## 책임 경계
 
-`Eidolon.Mcp`는 외부 패키지·App/Core 참조 없이 `HttpListener`, JSON-RPC, MCP 전송과 도구 등록을 소유한다. 모델은 `Models/Server`, `Models/Protocol`, `Models/Tools`로 묶으며 통신·프로토콜·도구 실행 타입은 기능 폴더에서 타입별 파일로 나눈다. 라이브러리 상세 계약은 [라이브러리 사용법](../Eidolon.Mcp/README.md)이 소유한다.
+`Eidolon.Mcp`는 Dignus DI를 사용하고 App/Core 참조 없이 `HttpListener`, JSON-RPC, MCP 전송과 도구 등록을 소유한다. Dignus는 [작업 규칙](WorkingRules.md)의 외부 패키지 제한에서 허용한다. 모델은 `Models/Server`, `Models/Protocol`, `Models/Tools`로 묶으며 통신·프로토콜·도구 실행 타입은 기능 폴더에서 타입별 파일로 나눈다. 라이브러리 상세 계약은 [라이브러리 사용법](../Eidolon.Mcp/README.md)이 소유한다.
 
-JSON-RPC 메서드는 `Eidolon.Mcp/Controllers`의 `InitializeController`, `PingController`, `ServerDiscoverController`, `ToolsListController`, `ToolsCallController`, `NotificationsCancelledController`가 각각 처리한다. `McpDispatcher`는 메서드 라우팅과 공통 응답 메타데이터만 조합한다.
+JSON-RPC 메서드는 `Eidolon.Mcp/Controllers`의 `InitializeController`, `PingController`, `ServerDiscoverController`, `ToolsListController`, `ToolsCallController`, `NotificationsCancelledController`가 각각 처리한다. 컨트롤러는 transient이며 `McpDispatcher`가 메서드별 타입을 찾아 요청·알림마다 DI에서 새로 resolve한 뒤 공통 응답 메타데이터를 붙인다. 서버 옵션·도구 목록·콜백과 App의 `McpService`는 공유한다.
 
 App의 `Mcp/McpService.cs`는 `CreateTools()`에서 도구 정의와 private 처리 메서드를 등록하고 기존 Session·자산 선택·생성 ViewModel·JobStore에 연결한다. 호출 흐름은 `tools/call → ToolsCallController → McpService의 처리 메서드`다. UI 상태는 Avalonia UI 스레드에서 읽고 요청 사본을 만든다. `ViewModels/Mcp/McpViewModel`이 서버의 시작·정지·화면 상태를 소유하고 루트가 종료를 조합한다. Core는 MCP와 UI를 참조하지 않는다. 별도 설정 저장소, 생성 큐, 작업 이력이나 결과 인덱스를 만들지 않는다.
 

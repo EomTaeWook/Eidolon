@@ -4,7 +4,9 @@ namespace Eidolon.Mcp
 {
     internal class PingController : IMcpController
     {
-        internal PingController()
+        internal const string MethodName = "ping";
+
+        public PingController()
         {
         }
 
@@ -12,7 +14,7 @@ namespace Eidolon.Mcp
         {
             get
             {
-                return "ping";
+                return MethodName;
             }
         }
 

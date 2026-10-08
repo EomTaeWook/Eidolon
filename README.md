@@ -59,7 +59,7 @@ ComfyUI 노드 그래프와 생성 파라미터는 제품 내부에서 구성합
 |---|---|
 | `Eidolon.Core` | Domain 계약, Application 유스케이스, Infrastructure의 설치·ComfyUI·Codex·학습·저장 구현 |
 | `Eidolon.App` | Avalonia 화면, ViewModel·Presenter, 파일 대화상자, 다국어·템플릿 로딩, DI와 앱 수명 |
-| `Eidolon.Mcp` | .NET 기본 라이브러리만 사용하는 HttpListener MCP 서버와 메서드별 컨트롤러 |
+| `Eidolon.Mcp` | HttpListener MCP 서버와 Dignus DI의 transient 컨트롤러 |
 | `DataContainer` | Excel 변환기가 생성하는 템플릿·컨테이너·로더 |
 | `<선택한 폴더>\EidolonRuntime` | 실행 도구·Python·엔진·모델·다운로드 캐시·설치 로그 |
 | `%LOCALAPPDATA%\Eidolon` | 사용자 설정, 자산 목록, 생성·학습 작업과 결과 |

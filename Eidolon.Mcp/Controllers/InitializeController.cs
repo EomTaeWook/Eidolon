@@ -5,9 +5,10 @@ namespace Eidolon.Mcp
 {
     internal class InitializeController : IMcpController
     {
+        internal const string MethodName = "initialize";
         private readonly McpServerOptions _options;
 
-        internal InitializeController(McpServerOptions options)
+        public InitializeController(McpServerOptions options)
         {
             _options = options;
         }
@@ -16,7 +17,7 @@ namespace Eidolon.Mcp
         {
             get
             {
-                return "initialize";
+                return MethodName;
             }
         }
 
@@ -32,13 +33,19 @@ namespace Eidolon.Mcp
             {
                 throw new McpProtocolException(-32602, "initialize requires clientInfo as an object.");
             }
-            if (client["name"]?.GetValueKind() != JsonValueKind.String
-                || string.IsNullOrWhiteSpace(client["name"].GetValue<string>()) == true)
+            if (client["name"]?.GetValueKind() != JsonValueKind.String)
             {
                 throw new McpProtocolException(-32602, "clientInfo requires a nonempty name.");
             }
-            if (client["version"]?.GetValueKind() != JsonValueKind.String
-                || string.IsNullOrWhiteSpace(client["version"].GetValue<string>()) == true)
+            if (string.IsNullOrWhiteSpace(client["name"].GetValue<string>()) == true)
+            {
+                throw new McpProtocolException(-32602, "clientInfo requires a nonempty name.");
+            }
+            if (client["version"]?.GetValueKind() != JsonValueKind.String)
+            {
+                throw new McpProtocolException(-32602, "clientInfo requires a nonempty version.");
+            }
+            if (string.IsNullOrWhiteSpace(client["version"].GetValue<string>()) == true)
             {
                 throw new McpProtocolException(-32602, "clientInfo requires a nonempty version.");
             }

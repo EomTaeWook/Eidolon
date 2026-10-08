@@ -6,9 +6,10 @@ namespace Eidolon.Mcp
 {
     internal class NotificationsCancelledController : IMcpController
     {
+        internal const string MethodName = "notifications/cancelled";
         private readonly Func<JsonNode, Task> _cancelRequest;
 
-        internal NotificationsCancelledController(Func<JsonNode, Task> cancelRequest)
+        public NotificationsCancelledController(Func<JsonNode, Task> cancelRequest)
         {
             _cancelRequest = cancelRequest;
         }
@@ -17,7 +18,7 @@ namespace Eidolon.Mcp
         {
             get
             {
-                return "notifications/cancelled";
+                return MethodName;
             }
         }
 
@@ -29,11 +30,21 @@ namespace Eidolon.Mcp
                 return null;
             }
             JsonNode id = request.Parameters["requestId"];
-            if (id == null || (id.GetValueKind() != JsonValueKind.String
-                && (id.GetValueKind() != JsonValueKind.Number || long.TryParse(id.ToJsonString(), NumberStyles.AllowLeadingSign,
-                    CultureInfo.InvariantCulture, out _) == false)))
+            if (id == null)
             {
                 return null;
+            }
+            if (id.GetValueKind() != JsonValueKind.String)
+            {
+                if (id.GetValueKind() != JsonValueKind.Number)
+                {
+                    return null;
+                }
+                if (long.TryParse(id.ToJsonString(), NumberStyles.AllowLeadingSign,
+                    CultureInfo.InvariantCulture, out _) == false)
+                {
+                    return null;
+                }
             }
             await _cancelRequest(id).ConfigureAwait(false);
             return null;

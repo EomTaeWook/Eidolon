@@ -1,3 +1,4 @@
+using Dignus.DependencyInjection;
 using System.Text.Json.Nodes;
 
 namespace Eidolon.Mcp
@@ -5,7 +6,8 @@ namespace Eidolon.Mcp
     internal class McpDispatcher
     {
         private readonly McpServerOptions _options;
-        private readonly Dictionary<string, IMcpController> _controllers;
+        private readonly Dictionary<string, Type> _controllerTypes;
+        private readonly IServiceProvider _services;
 
         internal McpDispatcher(McpServerOptions options, IReadOnlyList<McpTool> tools,
             Action<Exception> reportError, Func<JsonNode, Task> cancelRequest)
@@ -20,40 +22,49 @@ namespace Eidolon.Mcp
                     throw new ArgumentException("An MCP tool name is registered more than once: " + tool.Name, nameof(tools));
                 }
             }
-            _controllers = new Dictionary<string, IMcpController>(StringComparer.Ordinal);
-            Register(new InitializeController(options));
-            Register(new PingController());
-            Register(new ServerDiscoverController(options));
-            Register(new ToolsListController(registeredTools));
-            Register(new ToolsCallController(registeredTools, reportError));
-            Register(new NotificationsCancelledController(cancelRequest));
+            ServiceContainer services = new ServiceContainer();
+            services.RegisterType(options);
+            services.RegisterType<IReadOnlyDictionary<string, McpTool>>(registeredTools);
+            services.RegisterType<Action<Exception>>(reportError);
+            services.RegisterType<Func<JsonNode, Task>>(cancelRequest);
+            _controllerTypes = new Dictionary<string, Type>(StringComparer.Ordinal);
+            Register<InitializeController>(services, InitializeController.MethodName);
+            Register<PingController>(services, PingController.MethodName);
+            Register<ServerDiscoverController>(services, ServerDiscoverController.MethodName);
+            Register<ToolsListController>(services, ToolsListController.MethodName);
+            Register<ToolsCallController>(services, ToolsCallController.MethodName);
+            Register<NotificationsCancelledController>(services, NotificationsCancelledController.MethodName);
+            _services = services.Build();
         }
 
-        private void Register(IMcpController controller)
+        private void Register<TController>(ServiceContainer services, string method) where TController : class, IMcpController
         {
-            _controllers.Add(controller.Method, controller);
+            services.RegisterType<TController, TController>(LifeScope.Transient);
+            _controllerTypes.Add(method, typeof(TController));
         }
 
         internal async Task<JsonObject> DispatchAsync(McpRequest request, CancellationToken token)
         {
             if (request.IsNotification == true)
             {
-                if (_controllers.TryGetValue(request.Method, out IMcpController notification) == true)
+                if (_controllerTypes.TryGetValue(request.Method, out Type notificationType) == true)
                 {
+                    token.ThrowIfCancellationRequested();
+                    IMcpController notification = (IMcpController)_services.GetService(notificationType);
                     await notification.ExecuteAsync(request, token).ConfigureAwait(false);
                 }
                 return null;
             }
-            if (_controllers.TryGetValue(request.Method, out IMcpController controller) == false
-                || request.Method.StartsWith("notifications/", StringComparison.Ordinal) == true)
+            if (request.Method.StartsWith("notifications/", StringComparison.Ordinal) == true)
             {
-                int status = 200;
-                if (request.IsModern == true)
-                {
-                    status = 404;
-                }
-                throw new McpProtocolException(-32601, "Method not found: " + request.Method, status);
+                throw MethodNotFound(request);
             }
+            if (_controllerTypes.TryGetValue(request.Method, out Type controllerType) == false)
+            {
+                throw MethodNotFound(request);
+            }
+            token.ThrowIfCancellationRequested();
+            IMcpController controller = (IMcpController)_services.GetService(controllerType);
             JsonObject result = await controller.ExecuteAsync(request, token).ConfigureAwait(false);
             if (request.IsModern == true)
             {
@@ -64,6 +75,16 @@ namespace Eidolon.Mcp
                 };
             }
             return McpProtocol.Response(request.Id, result);
+        }
+
+        private McpProtocolException MethodNotFound(McpRequest request)
+        {
+            int status = 200;
+            if (request.IsModern == true)
+            {
+                status = 404;
+            }
+            return new McpProtocolException(-32601, "Method not found: " + request.Method, status);
         }
     }
 }

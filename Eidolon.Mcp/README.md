@@ -1,6 +1,6 @@
 # Eidolon.Mcp
 
-`HttpListener`로 MCP 도구 서버를 제공하는 .NET 10 클래스 라이브러리다. 외부 NuGet, ASP.NET Core, Dignus, Avalonia와 Eidolon Core/App에 의존하지 않는다. 프로젝트별 기능은 `McpTool`의 실행 핸들러로 등록한다.
+`HttpListener`로 MCP 도구 서버를 제공하는 .NET 10 클래스 라이브러리다. 컨트롤러 생성에는 `Dignus` 1.3.0의 DI를 사용한다. 외부 패키지 제한에서 Dignus는 허용하며 ASP.NET Core, Avalonia와 Eidolon Core/App에 의존하지 않는다. 프로젝트별 기능은 `McpTool`의 실행 핸들러로 등록한다.
 
 ## 사용
 
@@ -37,9 +37,13 @@ await server.StartAsync();
 
 `McpServerOptions`는 서버 생성 시 복사한다. 도구 정의와 스키마도 등록 시 복사하며 실행 중 목록은 고정한다. 같은 서버 인스턴스를 정지 후 다시 시작할 수 있고 해제 뒤에는 시작할 수 없다. 호출자는 서버의 수명과 오류 로그 콜백을 소유한다. `StateChanged`는 호출 스레드에서 발생하므로 UI 연결은 해당 UI 스레드로 전달한다.
 
+시작·정지·해제는 호출자가 순서대로 호출하며 서버는 이 동작을 세마포어로 직렬화하지 않는다. 실행 중 재시작 요청은 별도 중복 시작 처리 없이 `HttpListener.Start()`로 전달하며 바인딩 실패는 원래 예외로 반환한다. 실패한 새 listener만 닫고 기존 실행 listener는 유지한다. 동시 HTTP 요청 수 제한은 별도의 요청 슬롯 세마포어가 담당한다.
+
 ## 구성
 
 `Controllers`에 JSON-RPC 메서드마다 하나의 컨트롤러를 둔다. 초기화·핑·조회·호출·취소는 각각 `InitializeController`, `PingController`, `ServerDiscoverController`, `ToolsListController`, `ToolsCallController`, `NotificationsCancelledController`가 소유한다. `Protocol/McpDispatcher`는 컨트롤러 등록·라우팅과 공통 응답을 조합하며 도구의 업무 처리는 호스트가 등록한 핸들러로 전달한다.
+
+`McpDispatcher`는 서버 구성 시 Dignus `ServiceContainer`에 모든 컨트롤러를 `LifeScope.Transient`로 등록하고 provider를 한 번 구성한다. 라우팅에는 각 컨트롤러의 `MethodName`과 타입을 저장하며 요청·알림을 처리할 때 해당 타입을 resolve해 새 컨트롤러를 실행한다. 등록 과정에서 컨트롤러를 생성하지 않는다. 생성자는 Dignus의 생성자 주입을 위해 public으로 선언하고 컨트롤러 타입은 internal을 유지한다. 서버 옵션·읽기 전용 도구 목록·오류 및 취소 콜백은 기존 인스턴스로 등록해 공유한다. 생성자 델리게이트의 표현식 트리 준비는 Dignus DI가 소유한다.
 
 Eidolon App은 `Mcp/McpService.cs`의 `CreateTools()`에서 `new McpTool(new McpToolDefinition(name, description, schema), handler)`로 도구를 등록한다. 처리 메서드는 같은 클래스의 private 메서드로 모은다. `tools/call → ToolsCallController → McpService의 처리 메서드` 순서로 실행한다.
 
