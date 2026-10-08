@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 
 namespace Eidolon.App.Views
 {
@@ -6,7 +7,7 @@ namespace Eidolon.App.Views
     {
         public SettingsView()
         {
-            InitializeComponent();
+            AvaloniaXamlLoader.Load(this);
         }
     }
 }

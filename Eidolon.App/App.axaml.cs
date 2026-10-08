@@ -78,6 +78,9 @@ namespace Eidolon.App
             _serviceContainer.RegisterType<ISeedProvider, CryptoSeedProvider>(LifeScope.Singleton);
             _serviceContainer.RegisterType<LoraTrainer, LoraTrainer>(LifeScope.Singleton);
             _serviceContainer.RegisterType<StudioService, StudioService>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<AssetSheetExporter, AssetSheetExporter>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<AssetFrameImporter, AssetFrameImporter>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<AssetCreationService, AssetCreationService>(LifeScope.Singleton);
             _serviceContainer.RegisterType<StudioWorkQueue, StudioWorkQueue>(LifeScope.Singleton);
             _serviceContainer.RegisterType<ThemeService, ThemeService>(LifeScope.Singleton);
             _serviceContainer.RegisterType<LanguageService, LanguageService>(LifeScope.Singleton);
@@ -102,7 +105,8 @@ namespace Eidolon.App
                 provider.GetService<RuntimeInstaller>(), provider.GetService<ComfyEngine>(), provider.GetService<StudioService>(),
                 provider.GetService<DesktopDialogs>(), provider.GetService<ThemeService>(), provider.GetService<LanguageService>(),
                 provider.GetService<StringHelper>(), provider.GetService<StudioWorkPresenter>(),
-                provider.GetService<ISeedProvider>(), provider.GetService<CodexModelCatalog>(), dataDirectory), LifeScope.Singleton);
+                provider.GetService<ISeedProvider>(), provider.GetService<CodexModelCatalog>(), dataDirectory,
+                provider.GetService<AssetCreationService>(), provider.GetService<AssetImageLoader>()), LifeScope.Singleton);
             _serviceContainer.RegisterDependencies(typeof(StringHelper).Assembly);
             return _serviceContainer.Build();
         }

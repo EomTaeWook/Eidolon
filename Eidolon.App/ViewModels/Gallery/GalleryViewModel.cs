@@ -15,6 +15,7 @@ namespace Eidolon.App.ViewModels
     {
         private GenerationViewModel Generation { get; set; }
         private TrainingViewModel Training { get; set; }
+        private readonly AssetCreationViewModel _creation;
 
         private const int GalleryPageSize = 12;
         private const int GalleryThumbnailWidth = 384;
@@ -128,6 +129,7 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand DeleteAllGenerationsCommand { get; private set; }
         public AsyncCommand ReusePromptCommand { get; private set; }
         public AsyncCommand UseResultForTrainingCommand { get; private set; }
+        public AsyncCommand UseResultForAssetCreationCommand { get; private set; }
         public AsyncCommand OpenImageFolderCommand { get; private set; }
 
         public GenerationItem SelectedResult
@@ -484,13 +486,16 @@ namespace Eidolon.App.ViewModels
 
         public GalleryViewModel(StudioSession session, StudioNavigationViewModel navigation,
             StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs,
-            GenerationViewModel generation, TrainingViewModel training, JobStore jobs) : base(session, navigation, work, strings, dialogs)
+            GenerationViewModel generation, TrainingViewModel training, JobStore jobs, AssetCreationViewModel creation) : base(session, navigation, work, strings, dialogs)
         {
             Generation = generation;
             Training = training;
+            _creation = creation;
             _jobs = jobs;
             GallerySelection.CollectionChanged += OnGallerySelectionChanged;
             UseResultAsReferenceCommand = Command(() => Generation.UseResultAsReferenceAsync(SelectedResult),
+                () => Session.CanEditGenerationInputs == true && HasSelectedResult == true && HasPreview == true);
+            UseResultForAssetCreationCommand = Command(UseResultForAssetCreationAsync,
                 () => Session.CanEditGenerationInputs == true && HasSelectedResult == true && HasPreview == true);
             SelectGenerationCommand = new AsyncCommand(SelectGenerationAsync,
                 () => Session.IsClosing == false && IsGalleryLoading == false, OnCommandError);
@@ -521,6 +526,16 @@ namespace Eidolon.App.ViewModels
         internal void ShowGeneratedImage(GenerationImage image)
         {
             SelectedGeneration = new GenerationItem(image, _strings);
+        }
+
+        private Task UseResultForAssetCreationAsync()
+        {
+            string prompt = string.Empty;
+            if (SelectedResult.Metadata != null)
+            {
+                prompt = SelectedResult.Metadata.UserPrompt;
+            }
+            return _creation.UseAsReferenceAsync(_previewPath, prompt);
         }
 
         internal Task WaitForLoadAsync()

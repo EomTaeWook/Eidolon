@@ -2,20 +2,20 @@ namespace Eidolon.App.ViewModels
 {
     public class StudioNavigationViewModel : ObservableObject
     {
-        public const int GenerationMethodTab = 0;
-        public const int EngineInstallationTab = 1;
-        public const int ModelsTab = 2;
         private int _selectedTab;
-        private int _selectedEngineTab;
+        private int _selectedEnvironmentTab;
+        private int _selectedSettingsTab;
         public AsyncCommand ShowEditingCommand { get; private set; }
         public AsyncCommand ShowGenerationCommand { get; private set; }
         public AsyncCommand ShowResultsCommand { get; private set; }
         public AsyncCommand ShowTrainingCommand { get; private set; }
-        public AsyncCommand ShowEngineCommand { get; private set; }
         public AsyncCommand ShowGenerationEnvironmentCommand { get; private set; }
+        public AsyncCommand ShowEngineSettingsCommand { get; private set; }
+        public AsyncCommand ShowEngineCommand { get; private set; }
         public AsyncCommand ShowModelsCommand { get; private set; }
         public AsyncCommand ShowSettingsCommand { get; private set; }
         public AsyncCommand ShowHelpCommand { get; private set; }
+        public AsyncCommand ShowAssetCreationCommand { get; private set; }
 
         public int SelectedTab
         {
@@ -32,9 +32,10 @@ namespace Eidolon.App.ViewModels
                     Raise(nameof(IsGenerationWorkspace));
                     Raise(nameof(IsResultsView));
                     Raise(nameof(IsTrainingView));
-                    Raise(nameof(IsEngineView));
+                    Raise(nameof(IsGenerationEnvironmentView));
                     Raise(nameof(IsSettingsView));
                     Raise(nameof(IsHelpView));
+                    Raise(nameof(IsAssetCreationView));
                 }
             }
         }
@@ -71,15 +72,27 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        public int SelectedEngineTab
+        public int SelectedEnvironmentTab
         {
             get
             {
-                return _selectedEngineTab;
+                return _selectedEnvironmentTab;
             }
             set
             {
-                Set(ref _selectedEngineTab, value);
+                Set(ref _selectedEnvironmentTab, value);
+            }
+        }
+
+        public int SelectedSettingsTab
+        {
+            get
+            {
+                return _selectedSettingsTab;
+            }
+            set
+            {
+                Set(ref _selectedSettingsTab, value);
             }
         }
 
@@ -91,7 +104,7 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        public bool IsEngineView
+        public bool IsGenerationEnvironmentView
         {
             get
             {
@@ -115,6 +128,14 @@ namespace Eidolon.App.ViewModels
             }
         }
 
+        public bool IsAssetCreationView
+        {
+            get
+            {
+                return SelectedTab == 7;
+            }
+        }
+
         private readonly Func<int, Task> _navigate;
 
         public StudioNavigationViewModel(Func<int, Task> navigate, Action<Exception> onError)
@@ -124,22 +145,40 @@ namespace Eidolon.App.ViewModels
             ShowEditingCommand = new AsyncCommand(() => NavigateAsync(1), () => true, onError);
             ShowResultsCommand = new AsyncCommand(() => NavigateAsync(6), () => true, onError);
             ShowTrainingCommand = new AsyncCommand(() => NavigateAsync(2), () => true, onError);
-            ShowGenerationEnvironmentCommand = new AsyncCommand(() => NavigateEnvironmentAsync(GenerationMethodTab), () => true, onError);
-            ShowEngineCommand = new AsyncCommand(() => NavigateEnvironmentAsync(EngineInstallationTab), () => true, onError);
-            ShowModelsCommand = new AsyncCommand(() => NavigateEnvironmentAsync(ModelsTab), () => true, onError);
+            ShowGenerationEnvironmentCommand = new AsyncCommand(() => NavigateAsync(3), () => true, onError);
+            ShowEngineSettingsCommand = new AsyncCommand(OpenEngineSettingsAsync, () => true, onError);
+            ShowEngineCommand = ShowEngineSettingsCommand;
+            ShowModelsCommand = new AsyncCommand(OpenModelsAsync, () => true, onError);
             ShowSettingsCommand = new AsyncCommand(() => NavigateAsync(4), () => true, onError);
             ShowHelpCommand = new AsyncCommand(() => NavigateAsync(5), () => true, onError);
+            ShowAssetCreationCommand = new AsyncCommand(OpenAssetCreationAsync, () => true, onError);
         }
 
-        internal Task NavigateAsync(int tab)
+        private Task NavigateAsync(int tab)
         {
             return _navigate(tab);
         }
 
-        private Task NavigateEnvironmentAsync(int tab)
+        internal Task OpenEngineSettingsAsync()
         {
-            SelectedEngineTab = tab;
+            SelectedSettingsTab = 1;
+            return NavigateAsync(4);
+        }
+
+        internal Task OpenModelsAsync()
+        {
+            SelectedEnvironmentTab = 1;
             return NavigateAsync(3);
+        }
+
+        internal Task OpenAssetCreationAsync()
+        {
+            return NavigateAsync(7);
+        }
+
+        internal Task OpenTrainingDataAsync()
+        {
+            return NavigateAsync(2);
         }
     }
 }

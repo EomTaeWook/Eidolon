@@ -196,7 +196,8 @@ namespace Eidolon.App.ViewModels
                 error.Code == StudioMessageCode.RuntimeNotInstalled || error.Code == StudioMessageCode.RuntimeIncomplete ||
                 error.Code == StudioMessageCode.GenerationRuntimeMissing)
             {
-                Navigation.SelectedTab = 3;
+                Navigation.SelectedSettingsTab = 1;
+                Navigation.SelectedTab = 4;
                 Session.Status = _strings.GetString("EidolonText225");
             }
         }
@@ -277,8 +278,8 @@ namespace Eidolon.App.ViewModels
                 }
                 else
                 {
+                    Navigation.SelectedEnvironmentTab = 1;
                     Navigation.SelectedTab = 3;
-                    Navigation.SelectedEngineTab = StudioNavigationViewModel.ModelsTab;
                 }
             }
             finally

@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationMethodView" x:DataType="vm:SettingsViewModel">
+  <Grid RowDefinitions="*,Auto" MaxWidth="920" Margin="0,16,12,0">
+    <ScrollViewer AllowAutoHide="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,0,16">
+      <StackPanel Spacing="16" HorizontalAlignment="Stretch">
+        <Border Classes="card">
+          <StackPanel Spacing="14">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Text="{DynamicResource EidolonText526}" FontSize="20" FontWeight="SemiBold" />
+              <TextBlock Grid.Column="1" Text="{Binding Session.AppliedGenerationBackendCaption}" Foreground="{DynamicResource AccentBrush}" FontSize="12" VerticalAlignment="Center" Margin="16,0,0,0" />
+            </Grid>
+            <ComboBox ItemsSource="{Binding GenerationBackends}" SelectedItem="{Binding SelectedGenerationBackend, Mode=TwoWay}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:GenerationBackendChoice">
+                  <TextBlock Text="{Binding Label}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock Text="{DynamicResource EidolonText541}" Foreground="{DynamicResource AccentBrush}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasUnappliedGenerationBackend}" />
+            <StackPanel Spacing="10" IsVisible="{Binding !IsCodexSelected}">
+              <TextBlock Text="{DynamicResource EidolonText544}" Classes="muted" FontSize="12" />
+              <StackPanel Spacing="8" Orientation="Horizontal">
+                <Button Content="{DynamicResource EidolonText152}" Command="{Binding Navigation.ShowEngineCommand}" Padding="12,8" />
+                <Button Content="{DynamicResource EidolonText107}" Command="{Binding Navigation.ShowModelsCommand}" Padding="12,8" />
+              </StackPanel>
+            </StackPanel>
+            <StackPanel Spacing="10" IsVisible="{Binding IsCodexSelected}">
+              <TextBlock Text="{DynamicResource EidolonText531}" Classes="muted" FontSize="12" />
+              <TextBlock Text="{DynamicResource EidolonText548}" Classes="label" />
+              <Grid ColumnDefinitions="*,Auto">
+                <ComboBox ItemsSource="{Binding CodexModels}" SelectedItem="{Binding SelectedCodexModel, Mode=TwoWay}" IsEnabled="{Binding !IsLoadingCodexModels}" MinHeight="32" Padding="10,6">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:CodexModelChoice">
+                      <TextBlock Text="{Binding Label}" FontSize="13" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Model}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Grid.Column="1" Content="{DynamicResource EidolonText410}" Command="{Binding RefreshCodexModelsCommand}" Margin="8,0,0,0" Padding="12,6" MinHeight="32" />
+              </Grid>
+              <TextBlock Text="{Binding CodexModelsHint}" Classes="muted" FontSize="12" />
+              <TextBlock Text="{DynamicResource EidolonText550}" Classes="muted" FontSize="12" />
+              <TextBlock Text="{DynamicResource EidolonText529}" Classes="label" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBox Classes="folderPath" Text="{Binding CodexExecutablePath, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText530}" ToolTip.Tip="{Binding CodexExecutablePath}" />
+                <Button Grid.Column="1" Classes="folderAction" Content="{DynamicResource EidolonText532}" Command="{Binding PickCodexExecutableCommand}" Margin="8,0,0,0" />
+              </Grid>
+              <TextBlock Text="{DynamicResource EidolonText533}" Classes="muted" FontSize="12" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Text="{DynamicResource EidolonText176}" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="{DynamicResource EidolonText543}" Classes="muted" FontSize="12" />
+            <views:PromptSettingsView DataContext="{Binding Prompts}" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
+    <Border Grid.Row="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,16,0,0" Margin="0,16,0,0">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="5" Margin="0,0,20,0" VerticalAlignment="Center">
+          <TextBlock Text="{Binding Session.AppliedGenerationBackendCaption}" FontWeight="SemiBold" FontSize="13" />
+          <TextBlock Text="{DynamicResource EidolonText542}" Classes="muted" FontSize="12" />
+          <TextBlock Text="{DynamicResource EidolonText342}" Classes="muted" FontSize="12" IsVisible="{Binding !Session.IsIdle}" />
+        </StackPanel>
+        <Button Grid.Column="1" Content="{DynamicResource EidolonText561}" Command="{Binding SaveGenerationEnvironmentCommand}" Classes="primary" MinWidth="140" VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

@@ -715,13 +715,12 @@ namespace Eidolon.App.ViewModels
             {
                 if (HasAvailableModels == false && Session.HasLocalModelRuntime == false && Session.IsEngineConnected == false)
                 {
-                    Navigation.SelectedEngineTab = StudioNavigationViewModel.EngineInstallationTab;
+                    return Navigation.OpenEngineSettingsAsync();
                 }
                 else
                 {
-                    Navigation.SelectedEngineTab = StudioNavigationViewModel.ModelsTab;
+                    return Navigation.OpenModelsAsync();
                 }
-                return Navigation.NavigateAsync(3);
             }, () => Session.IsInitialized == true && Session.IsClosing == false);
             OpenModelDirectoryCommand = Command(() => _dialogs.OpenFolderAsync(ModelDirectory), () => CanOpenModelDirectories);
             OpenLoraDirectoryCommand = Command(() => _dialogs.OpenFolderAsync(LoraDirectory), () => CanOpenModelDirectories);

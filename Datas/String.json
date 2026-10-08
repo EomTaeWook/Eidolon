@@ -6418,5 +6418,455 @@
     "Name": "EidolonText580",
     "Kor": "\uD559\uC2B5 \uB370\uC774\uD130 \uD3F4\uB354 {0}\uAC1C\uB97C \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4.",
     "Eng": "Deleted {0} training dataset folders."
+  },
+  {
+    "Id": 3660,
+    "Name": "EidolonText581",
+    "Kor": "\uC0DD\uC131 \uD658\uACBD",
+    "Eng": "Generation environment"
+  },
+  {
+    "Id": 3661,
+    "Name": "EidolonText582",
+    "Kor": "\uC0DD\uC131 \uBC29\uC2DD\uACFC \uC0AC\uC6A9\uD560 \uBAA8\uB378, \uBAA8\uB4E0 \uC774\uBBF8\uC9C0\uC5D0 \uC801\uC6A9\uD560 \uACF5\uD1B5 \uC9C0\uCE68\uC744 \uAD00\uB9AC\uD569\uB2C8\uB2E4.",
+    "Eng": "Manage generation methods, models, and instructions shared by all images."
+  },
+  {
+    "Id": 3662,
+    "Name": "EidolonText583",
+    "Kor": "\uC0DD\uC131 \uBC29\uC2DD",
+    "Eng": "Generation methods"
+  },
+  {
+    "Id": 3663,
+    "Name": "EidolonText584",
+    "Kor": "\uD559\uC2B5 \uB370\uC774\uD130",
+    "Eng": "Training data"
+  },
+  {
+    "Id": 3664,
+    "Name": "EidolonText585",
+    "Kor": "\uC900\uBE44\uD55C \uD559\uC2B5 \uB370\uC774\uD130\uB85C LoRA\uB97C \uD559\uC2B5\uD569\uB2C8\uB2E4. \uB370\uC774\uD130 \uC900\uBE44\uC640 \uC218\uC815\uC740 \uC124\uC815\uC5D0\uC11C \uC9C4\uD589\uD558\uC138\uC694.",
+    "Eng": "Train a LoRA with the prepared dataset. Prepare and edit training data in Settings."
+  },
+  {
+    "Id": 3665,
+    "Name": "EidolonText586",
+    "Kor": "\uD654\uBA74\uACFC \uC800\uC7A5 \uC704\uCE58, \uC5D4\uC9C4 \uC124\uCE58\u00B7\uC5F0\uACB0, \uD559\uC2B5 \uB370\uC774\uD130 \uC900\uBE44\uB97C \uAD00\uB9AC\uD569\uB2C8\uB2E4.",
+    "Eng": "Manage appearance, storage, engine setup and connections, and training data."
+  },
+  {
+    "Id": 3666,
+    "Name": "EidolonText587",
+    "Kor": "\uD559\uC2B5 \uB370\uC774\uD130\uAC00 \uC544\uC9C1 \uC5C6\uC2B5\uB2C8\uB2E4. \uC704\uC758 \uD559\uC2B5 \uB370\uC774\uD130\uB97C \uB20C\uB7EC \uC774\uBBF8\uC9C0\uC640 \uC124\uBA85\uC744 \uC900\uBE44\uD558\uC138\uC694.",
+    "Eng": "No training data is ready. Select Training data above to prepare images and captions."
+  },
+  {
+    "Id": 3667,
+    "Name": "EidolonText588",
+    "Kor": "\uC124\uBA85\uC73C\uB85C \uC0C8\uB85C\uC6B4 \uC774\uBBF8\uC9C0\uB97C \uB9CC\uB4ED\uB2C8\uB2E4. \uCC38\uACE0 \uC774\uBBF8\uC9C0\uB97C \uCD94\uAC00\uD558\uBA74 \uAE30\uC874 \uC774\uBBF8\uC9C0\uC758 \uAD6C\uB3C4\uC640 \uB0B4\uC6A9\uC744 \uBC14\uD0D5\uC73C\uB85C \uC0DD\uC131\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Create a new image from a description. Add a reference image to guide its composition and content."
+  },
+  {
+    "Id": 3668,
+    "Name": "EidolonText589",
+    "Kor": "\uC774\uBBF8\uC9C0\uC640 \uC6D0\uD558\uB294 \uADF8\uB9BC\uCCB4\uB97C \uC9C0\uC815\uD574 \uD3B8\uC9D1\uD569\uB2C8\uB2E4. \uBCC0\uACBD \uAC15\uB3C4\uB85C \uAE30\uC874 \uC774\uBBF8\uC9C0\uAC00 \uC720\uC9C0\uB418\uB294 \uC815\uB3C4\uB97C \uC870\uC808\uD569\uB2C8\uB2E4.",
+    "Eng": "Choose an image and describe the desired style. Change strength controls how much of the original image is preserved."
+  },
+  {
+    "Id": 3669,
+    "Name": "EidolonText590",
+    "Kor": "\uC0DD\uC131\uC73C\uB85C \uC774\uB3D9",
+    "Eng": "Open Generate"
+  },
+  {
+    "Id": 3670,
+    "Name": "EidolonText591",
+    "Kor": "\uD3B8\uC9D1\uC73C\uB85C \uC774\uB3D9",
+    "Eng": "Open Edit"
+  },
+  {
+    "Id": 3671,
+    "Name": "EidolonText592",
+    "Kor": "\uC800\uC7A5 \uC704\uCE58",
+    "Eng": "Storage"
+  },
+  {
+    "Id": 3672,
+    "Name": "EidolonText593",
+    "Kor": "\uC5D4\uC9C4 \uC124\uCE58\u00B7\uC5F0\uACB0",
+    "Eng": "Engine setup and connection"
+  },
+  {
+    "Id": 3673,
+    "Name": "EidolonText594",
+    "Kor": "\uC77C\uBC18",
+    "Eng": "General"
+  },
+  {
+    "Id": 3674,
+    "Name": "EidolonText595",
+    "Kor": "MCP \uC5F0\uACB0",
+    "Eng": "MCP connection"
+  },
+  {
+    "Id": 3675,
+    "Name": "EidolonText596",
+    "Kor": "\uC678\uBD80 AI \uB3C4\uAD6C\uC5D0\uC11C \uC774\uBBF8\uC9C0 \uC0DD\uC131\u00B7\uD3B8\uC9D1\uACFC \uACB0\uACFC \uC870\uD68C\uB97C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC0AC\uC6A9\uD560 \uB54C \uC11C\uBC84\uB97C \uCF1C\uC138\uC694.",
+    "Eng": "Use image generation, editing and result lookup from external AI tools. Start the server when you need it."
+  },
+  {
+    "Id": 3676,
+    "Name": "EidolonText597",
+    "Kor": "\uC0DD\uC131 \uC9C0\uCE68\uC740 MCP \uC694\uCCAD\uBCC4\uB85C \uBC14\uAFC0 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC800\uC7A5\uD55C \uC124\uC815\uC740 \uC720\uC9C0\uB418\uBA70 \uAC19\uC740 PC\uC5D0\uC11C\uB9CC \uC5F0\uACB0\uD569\uB2C8\uB2E4.",
+    "Eng": "Override generation instructions per MCP request. Saved settings are preserved. Connections are limited to this PC."
+  },
+  {
+    "Id": 3677,
+    "Name": "EidolonText598",
+    "Kor": "\uC5F0\uACB0 \uB300\uAE30 \uC911",
+    "Eng": "Listening"
+  },
+  {
+    "Id": 3678,
+    "Name": "EidolonText599",
+    "Kor": "\uC11C\uBC84 \uAEBC\uC9D0",
+    "Eng": "Server stopped"
+  },
+  {
+    "Id": 3679,
+    "Name": "EidolonText600",
+    "Kor": "\uC11C\uBC84 \uCF1C\uAE30",
+    "Eng": "Start server"
+  },
+  {
+    "Id": 3680,
+    "Name": "EidolonText601",
+    "Kor": "\uC11C\uBC84 \uB044\uAE30",
+    "Eng": "Stop server"
+  },
+  {
+    "Id": 3681,
+    "Name": "EidolonText602",
+    "Kor": "MCP \uC8FC\uC18C\uC758 \uC218\uC2E0 \uAD8C\uD55C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uC0AC\uC6A9\uBC95 \uBB38\uC11C\uC758 HTTP URL \uC608\uC57D \uC548\uB0B4\uB97C \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The MCP address has no listener permission. See the HTTP URL reservation instructions in the usage document."
+  },
+  {
+    "Id": 3682,
+    "Name": "EidolonText603",
+    "Kor": "\uC5D0\uC14B \uC81C\uC791",
+    "Eng": "Asset creation"
+  },
+  {
+    "Id": 3683,
+    "Name": "EidolonText604",
+    "Kor": "\uAE30\uC900 \uC774\uBBF8\uC9C0\uB85C \uC2A4\uD504\uB77C\uC774\uD2B8 \uD504\uB808\uC784\uC774\uB098 \uBAA8\uB378\uB9C1 \uCC38\uACE0 \uC774\uBBF8\uC9C0\uB97C \uB9CC\uB4ED\uB2C8\uB2E4.",
+    "Eng": "Create sprite frames or modeling-reference views from a reference image."
+  },
+  {
+    "Id": 3684,
+    "Name": "EidolonText605",
+    "Kor": "\uC2A4\uD504\uB77C\uC774\uD2B8 \uC560\uB2C8\uBA54\uC774\uC158",
+    "Eng": "Sprite animation"
+  },
+  {
+    "Id": 3685,
+    "Name": "EidolonText606",
+    "Kor": "\uCE90\uB9AD\uD130 \uC0BC\uBA74\uB3C4",
+    "Eng": "Character views"
+  },
+  {
+    "Id": 3686,
+    "Name": "EidolonText607",
+    "Kor": "\uBB3C\uCCB4 \uC0BC\uBA74\uB3C4",
+    "Eng": "Object views"
+  },
+  {
+    "Id": 3687,
+    "Name": "EidolonText608",
+    "Kor": "1. \uAE30\uC900 \uC774\uBBF8\uC9C0",
+    "Eng": "1. Reference image"
+  },
+  {
+    "Id": 3688,
+    "Name": "EidolonText609",
+    "Kor": "2. \uC81C\uC791 \uC124\uC815",
+    "Eng": "2. Creation settings"
+  },
+  {
+    "Id": 3689,
+    "Name": "EidolonText610",
+    "Kor": "\uB3D9\uC791 \uC124\uBA85",
+    "Eng": "Action"
+  },
+  {
+    "Id": 3690,
+    "Name": "EidolonText611",
+    "Kor": "\uD504\uB808\uC784 \uC218",
+    "Eng": "Frame count"
+  },
+  {
+    "Id": 3691,
+    "Name": "EidolonText612",
+    "Kor": "\uC7AC\uC0DD \uC18D\uB3C4 (FPS)",
+    "Eng": "Playback speed (FPS)"
+  },
+  {
+    "Id": 3692,
+    "Name": "EidolonText613",
+    "Kor": "\uCC38\uACE0 \uC774\uBBF8\uC9C0 \uBCC0\uACBD \uAC15\uB3C4",
+    "Eng": "Reference change strength"
+  },
+  {
+    "Id": 3693,
+    "Name": "EidolonText614",
+    "Kor": "\uD53D\uC140 \uC544\uD2B8",
+    "Eng": "Pixel art"
+  },
+  {
+    "Id": 3694,
+    "Name": "EidolonText615",
+    "Kor": "\uCD9C\uB825 \uD504\uB808\uC784 \uD06C\uAE30 (px)",
+    "Eng": "Export frame size (px)"
+  },
+  {
+    "Id": 3695,
+    "Name": "EidolonText616",
+    "Kor": "\uC2DC\uD2B8 \uC5F4 \uC218",
+    "Eng": "Sheet columns"
+  },
+  {
+    "Id": 3696,
+    "Name": "EidolonText617",
+    "Kor": "\uBB36\uC74C \uB9CC\uB4E4\uAE30",
+    "Eng": "Create collection"
+  },
+  {
+    "Id": 3697,
+    "Name": "EidolonText618",
+    "Kor": "\uC7AC\uC0DD",
+    "Eng": "Play"
+  },
+  {
+    "Id": 3698,
+    "Name": "EidolonText619",
+    "Kor": "\uC77C\uC2DC \uC815\uC9C0",
+    "Eng": "Pause"
+  },
+  {
+    "Id": 3699,
+    "Name": "EidolonText620",
+    "Kor": "\uD504\uB808\uC784 {0}",
+    "Eng": "Frame {0}"
+  },
+  {
+    "Id": 3700,
+    "Name": "EidolonText621",
+    "Kor": "\uAE30\uC900 \uC774\uBBF8\uC9C0\uB97C \uC120\uD0DD\uD558\uACE0 \uC81C\uC791 \uC124\uBA85\uC744 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Select a reference image and describe the asset."
+  },
+  {
+    "Id": 3701,
+    "Name": "EidolonText622",
+    "Kor": "3. \uACB0\uACFC \uD655\uC778",
+    "Eng": "3. Review results"
+  },
+  {
+    "Id": 3702,
+    "Name": "EidolonText623",
+    "Kor": "\uC774\uC804 \uC81C\uC791 \uBB36\uC74C",
+    "Eng": "Previous collections"
+  },
+  {
+    "Id": 3703,
+    "Name": "EidolonText624",
+    "Kor": "\uB300\uAE30",
+    "Eng": "Pending"
+  },
+  {
+    "Id": 3704,
+    "Name": "EidolonText625",
+    "Kor": "\uC0DD\uC131 \uC911",
+    "Eng": "Generating"
+  },
+  {
+    "Id": 3705,
+    "Name": "EidolonText626",
+    "Kor": "\uB2E4\uC2DC \uB9CC\uB4E4\uAE30 \uD544\uC694",
+    "Eng": "Needs regeneration"
+  },
+  {
+    "Id": 3706,
+    "Name": "EidolonText627",
+    "Kor": "\uC5D0\uC14B \uB0B4\uBCF4\uB0B4\uAE30 \uD3F4\uB354 \uC120\uD0DD",
+    "Eng": "Choose an asset export folder"
+  },
+  {
+    "Id": 3707,
+    "Name": "EidolonText628",
+    "Kor": "\uC120\uD0DD \uD56D\uBAA9\uC758 \uC0DD\uC131 \uC124\uBA85",
+    "Eng": "Selected frame prompt"
+  },
+  {
+    "Id": 3708,
+    "Name": "EidolonText629",
+    "Kor": "\uCC38\uACE0 \uC0DD\uC131\uC73C\uB85C \uB9CC\uB4DC\uB294 \uCD08\uC548\uC785\uB2C8\uB2E4. \uC678\uD615\u00B7\uB3D9\uC791\u00B7\uC2DC\uC810\uC758 \uC77C\uAD00\uC131\uC744 \uBCF4\uC7A5\uD558\uC9C0 \uC54A\uC73C\uBBC0\uB85C \uACB0\uACFC\uB97C \uD655\uC778\uD558\uACE0 \uD544\uC694\uD55C \uD56D\uBAA9\uC744 \uB2E4\uC2DC \uB9CC\uB4DC\uC138\uC694.",
+    "Eng": "These are reference-based drafts. Identity, motion and view consistency are not guaranteed. Review the results and regenerate individual items as needed."
+  },
+  {
+    "Id": 3709,
+    "Name": "EidolonText630",
+    "Kor": "\uC120\uD0DD \uD56D\uBAA9 \uB2E4\uC2DC \uB9CC\uB4E4\uAE30",
+    "Eng": "Regenerate selected"
+  },
+  {
+    "Id": 3710,
+    "Name": "EidolonText631",
+    "Kor": "\uC81C\uC791 \uCDE8\uC18C",
+    "Eng": "Cancel creation"
+  },
+  {
+    "Id": 3711,
+    "Name": "EidolonText632",
+    "Kor": "\uC774\uBBF8\uC9C0 \uAD50\uCCB4",
+    "Eng": "Replace image"
+  },
+  {
+    "Id": 3712,
+    "Name": "EidolonText633",
+    "Kor": "\uBBF8\uC644\uC131 \uC774\uC5B4 \uB9CC\uB4E4\uAE30",
+    "Eng": "Resume unfinished"
+  },
+  {
+    "Id": 3713,
+    "Name": "EidolonText634",
+    "Kor": "\uC5D0\uC14B \uC81C\uC791 \uC785\uB825\uC774\uB098 \uBB36\uC74C \uAE30\uB85D\uC774 \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The asset creation input or collection record is invalid."
+  },
+  {
+    "Id": 3714,
+    "Name": "EidolonText635",
+    "Kor": "{0}/{1} \uD56D\uBAA9 \uC0DD\uC131 \uC911",
+    "Eng": "Generating item {0}/{1}"
+  },
+  {
+    "Id": 3715,
+    "Name": "EidolonText636",
+    "Kor": "\uC5D0\uC14B \uC81C\uC791\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. \uC644\uC131\uB41C \uC774\uBBF8\uC9C0\uB294 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "Asset creation failed. Completed images are preserved."
+  },
+  {
+    "Id": 3716,
+    "Name": "EidolonText637",
+    "Kor": "\uC815\uBA74",
+    "Eng": "Front"
+  },
+  {
+    "Id": 3717,
+    "Name": "EidolonText638",
+    "Kor": "\uCE21\uBA74",
+    "Eng": "Side"
+  },
+  {
+    "Id": 3718,
+    "Name": "EidolonText639",
+    "Kor": "\uD6C4\uBA74",
+    "Eng": "Back"
+  },
+  {
+    "Id": 3719,
+    "Name": "EidolonText640",
+    "Kor": "\uC717\uBA74",
+    "Eng": "Top"
+  },
+  {
+    "Id": 3720,
+    "Name": "EidolonText641",
+    "Kor": "\uC608: \uD30C\uB780 \uB9DD\uD1A0\uB97C \uC785\uC740 \uC791\uC740 \uAE30\uC0AC",
+    "Eng": "e.g. a small knight wearing a blue cape"
+  },
+  {
+    "Id": 3721,
+    "Name": "EidolonText642",
+    "Kor": "\uC608: \uC624\uB978\uCABD\uC73C\uB85C \uAC77\uAE30",
+    "Eng": "e.g. walking to the right"
+  },
+  {
+    "Id": 3722,
+    "Name": "EidolonText643",
+    "Kor": "\uD504\uB808\uC784\uBCC4 \uD3EC\uC988 \uC124\uBA85 (\uC120\uD0DD)",
+    "Eng": "Per-frame poses (optional)"
+  },
+  {
+    "Id": 3723,
+    "Name": "EidolonText644",
+    "Kor": "\uD504\uB808\uC784 \uC218\uB9CC\uD07C \uD55C \uC904\uC529 \uC785\uB825\uD569\uB2C8\uB2E4. \uBE44\uC6B0\uBA74 \uACF5\uD1B5 \uB3D9\uC791\uC744 \uB2E8\uACC4\uBCC4 \uCD08\uC548\uC73C\uB85C \uB9CC\uB4ED\uB2C8\uB2E4.",
+    "Eng": "Enter one pose per frame, one per line. Leave blank to draft phases of the shared action."
+  },
+  {
+    "Id": 3724,
+    "Name": "EidolonText645",
+    "Kor": "\uBAA8\uB378\u00B7LoRA\u00B7\uCD9C\uB825 \uC124\uC815",
+    "Eng": "Model, LoRA and output"
+  },
+  {
+    "Id": 3725,
+    "Name": "EidolonText646",
+    "Kor": "\uC55E\uC73C\uB85C \uC774\uB3D9",
+    "Eng": "Move earlier"
+  },
+  {
+    "Id": 3726,
+    "Name": "EidolonText647",
+    "Kor": "\uB4A4\uB85C \uC774\uB3D9",
+    "Eng": "Move later"
+  },
+  {
+    "Id": 3727,
+    "Name": "EidolonText648",
+    "Kor": "4. \uACF5\uD1B5 \uD06C\uAE30\u00B7\uD558\uB2E8 \uC911\uC559 \uAE30\uC900\uC810\uC73C\uB85C PNG\uC640 \uC2DC\uD2B8\uB97C \uC800\uC7A5\uD569\uB2C8\uB2E4.",
+    "Eng": "4. Export PNG frames and a sheet at a common size with a bottom-center pivot."
+  },
+  {
+    "Id": 3728,
+    "Name": "EidolonText649",
+    "Kor": "\uC2DC\uD2B8\u00B7PNG \uB0B4\uBCF4\uB0B4\uAE30",
+    "Eng": "Export sheet and PNGs"
+  },
+  {
+    "Id": 3729,
+    "Name": "EidolonText650",
+    "Kor": "\uBAA8\uB4E0 \uD56D\uBAA9\uC5D0 \uC774\uBBF8\uC9C0\uAC00 \uC788\uC5B4\uC57C \uB0B4\uBCF4\uB0BC \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "All items need an image before export."
+  },
+  {
+    "Id": 3730,
+    "Name": "EidolonText651",
+    "Kor": "\uCD9C\uB825 \uC2DC\uD2B8\uAC00 \uB108\uBB34 \uD07D\uB2C8\uB2E4. \uD504\uB808\uC784 \uD06C\uAE30\uB97C \uC904\uC774\uC138\uC694.",
+    "Eng": "The output sheet is too large. Reduce the frame size."
+  },
+  {
+    "Id": 3731,
+    "Name": "EidolonText652",
+    "Kor": "\uC2A4\uD504\uB77C\uC774\uD2B8\u00B7\uC0BC\uBA74\uB3C4 \uC81C\uC791",
+    "Eng": "Create sprites and views"
+  },
+  {
+    "Id": 3732,
+    "Name": "EidolonText653",
+    "Kor": "\uC0DD\uC131 \uACB0\uACFC\uC758 \uD070 \uC774\uBBF8\uC9C0\uC5D0\uC11C \uC6B0\uD074\uB9AD \uBA54\uB274\uC758 \uC5D0\uC14B \uC81C\uC791\uC744 \uC120\uD0DD\uD558\uBA74 \uC774\uBBF8\uC9C0\uC640 \uAE30\uC874 \uC124\uBA85\uC744 \uAC00\uC838\uC635\uB2C8\uB2E4. \uC5D0\uC14B \uC81C\uC791\uC5D0\uC11C \uAE30\uC900 \uC774\uBBF8\uC9C0\uC640 \uB300\uC0C1 \uC124\uBA85\uC744 \uC785\uB825\uD558\uACE0 \uC2A4\uD504\uB77C\uC774\uD2B8 \uB610\uB294 \uC0BC\uBA74\uB3C4\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4. \uC2A4\uD504\uB77C\uC774\uD2B8\uB294 \uB3D9\uC791\u00B7\uD504\uB808\uC784 \uC218\u00B7\uC7AC\uC0DD \uC18D\uB3C4\uB97C \uC9C0\uC815\uD569\uB2C8\uB2E4. \uCE90\uB9AD\uD130\uB294 \uC815\uBA74\u00B7\uCE21\uBA74\u00B7\uD6C4\uBA74, \uBB3C\uCCB4\uB294 \uC815\uBA74\u00B7\uCE21\uBA74\u00B7\uC717\uBA74\uC744 \uB9CC\uB4ED\uB2C8\uB2E4. \uACB0\uACFC\uC5D0\uC11C \uD56D\uBAA9\uC744 \uC120\uD0DD\uD574 \uB2E4\uC2DC \uB9CC\uB4E4\uAC70\uB098 \uC774\uBBF8\uC9C0\uB85C \uAD50\uCCB4\uD560 \uC218 \uC788\uACE0, \uC2A4\uD504\uB77C\uC774\uD2B8\uB294 \uC21C\uC11C \uBCC0\uACBD\uACFC \uBC18\uBCF5 \uC7AC\uC0DD\uC744 \uC9C0\uC6D0\uD569\uB2C8\uB2E4. \uCDE8\uC18C\u00B7\uC2E4\uD328\uD55C \uBB36\uC74C\uC740 \uBBF8\uC644\uC131 \uC774\uC5B4 \uB9CC\uB4E4\uAE30\uB85C ",
+    "Eng": "Right-click a large result preview and choose Asset creation to use its image and existing description. In Asset creation, select a reference, describe the subject and choose sprites or views. For sprites, enter an action, frame count and playback speed. "
+  },
+  {
+    "Id": 3733,
+    "Name": "EidolonText654",
+    "Kor": "\uACF5\uD1B5 \uC2DC\uB4DC: {0}",
+    "Eng": "Common seed: {0}"
+  },
+  {
+    "Id": 3734,
+    "Name": "EidolonText655",
+    "Kor": "\uC5D0\uC14B \uC81C\uC791\uC740 ComfyUI \uC0DD\uC131 \uBC29\uC2DD\uC5D0\uC11C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC0DD\uC131 \uD658\uACBD\uC5D0\uC11C \uBC29\uC2DD\uC744 \uBCC0\uACBD\uD558\uC138\uC694.",
+    "Eng": "Asset creation uses ComfyUI. Change the backend in Generation environment to create assets."
   }
 ]

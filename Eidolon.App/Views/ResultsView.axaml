@@ -170,6 +170,11 @@
           </WrapPanel>
         </StackPanel>
         <Border Grid.Row="1" Height="280" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="10" ClipToBounds="True">
+          <Border.ContextMenu>
+            <ContextMenu>
+              <MenuItem Header="{DynamicResource EidolonText603}" Command="{Binding UseResultForAssetCreationCommand}" />
+            </ContextMenu>
+          </Border.ContextMenu>
           <Grid>
             <views:TransparencyBackground IsVisible="{Binding HasPreview}" />
             <Image Source="{Binding Preview}" Stretch="Uniform" IsVisible="{Binding HasPreview}" />

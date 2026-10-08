@@ -272,6 +272,16 @@ namespace Eidolon.App.Localization
                     return "EidolonText452";
                 case StudioMessageCode.ReferenceImageUploading:
                     return "EidolonText453";
+                case StudioMessageCode.InvalidAssetCollection:
+                    return "EidolonText634";
+                case StudioMessageCode.AssetFrameGenerating:
+                    return "EidolonText635";
+                case StudioMessageCode.AssetCreationFailed:
+                    return "EidolonText636";
+                case StudioMessageCode.AssetExportIncomplete:
+                    return "EidolonText650";
+                case StudioMessageCode.AssetSheetTooLarge:
+                    return "EidolonText651";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(code), code, null);
             }

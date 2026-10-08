@@ -156,6 +156,90 @@ namespace Eidolon.Core.Infrastructure
             return Path.TrimEndingDirectorySeparator(Path.GetFullPath(generationDirectory.Trim()));
         }
 
+        public void SaveAssetCollection(AssetCollection collection)
+        {
+            lock (_gate)
+            {
+                _json.Write(Path.Combine(DirectoryFor(collection.Id), "AssetCollection.json"), collection);
+            }
+        }
+
+        public AssetCollection LoadAssetCollection(string id)
+        {
+            lock (_gate)
+            {
+                AssetCollection collection = _json.Read<AssetCollection>(Path.Combine(DirectoryFor(id), "AssetCollection.json"));
+                if (collection == null || collection.Id != id || collection.Format != AssetCollection.DocumentFormat
+                    || collection.SchemaVersion != 1 || collection.Frames == null || collection.Model == null
+                    || collection.Loras == null || collection.Settings == null || Enum.IsDefined(collection.Kind) == false
+                    || collection.Frames.Count < 2 || collection.Frames.Count > AssetCreationInput.MaximumFrames
+                    || collection.Frames.Any(frame => frame == null || frame.ImagePath == null || frame.Prompt == null
+                        || frame.Label == null || frame.Seed < 0 || frame.ImageSeed < 0 || frame.ErrorArguments == null
+                        || Enum.IsDefined(frame.State) == false || Enum.IsDefined(frame.ErrorCode) == false) == true
+                    || collection.Loras.Any(lora => lora == null) == true
+                    || string.IsNullOrWhiteSpace(collection.Prompt) == true || collection.Seed < 0
+                    || Enum.IsDefined(collection.State) == false || Enum.IsDefined(collection.ErrorCode) == false || collection.ErrorArguments == null
+                    || collection.FrameWidth < 16 || collection.FrameWidth > AssetCreationInput.MaximumFrameSize
+                    || collection.FrameHeight < 16 || collection.FrameHeight > AssetCreationInput.MaximumFrameSize
+                    || collection.Columns < 1 || collection.Columns > AssetCreationInput.MaximumFrames
+                    || collection.FramesPerSecond < 1 || collection.FramesPerSecond > 60
+                    || double.IsFinite(collection.ChangeStrength) == false || collection.ChangeStrength < 0.05 || collection.ChangeStrength > 0.95)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Kind != AssetCreationKind.SpriteAnimation && collection.Frames.Count != 3)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                for (int index = 0; index < collection.Frames.Count; index++)
+                {
+                    if (collection.Frames[index].Number != index + 1)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                }
+                collection.Settings.UseServerAssets = collection.UseServerAssets;
+                return collection;
+            }
+        }
+
+        public List<AssetCollection> LoadAssetCollections(CancellationToken token)
+        {
+            lock (_gate)
+            {
+                List<AssetCollection> collections = new List<AssetCollection>();
+                if (Directory.Exists(_directory) == false)
+                {
+                    return collections;
+                }
+                foreach (string directory in Directory.EnumerateDirectories(_directory))
+                {
+                    token.ThrowIfCancellationRequested();
+                    if (File.Exists(Path.Combine(directory, "AssetCollection.json")) == false)
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        collections.Add(LoadAssetCollection(Path.GetFileName(directory)));
+                    }
+                    catch (Exception error) when (error is not OperationCanceledException)
+                    {
+                        LogHelper.Error(error);
+                    }
+                }
+                return collections.OrderByDescending(collection => collection.CreatedAtUtc).ToList();
+            }
+        }
+
+        public void WriteAssetSheetManifest(string path, AssetSheetManifest manifest)
+        {
+            lock (_gate)
+            {
+                _json.WriteNew(path, manifest);
+            }
+        }
+
         public GenerationPage LoadGenerationPage(string generationDirectory, int number, int pageSize,
             CancellationToken token)
         {
@@ -388,6 +472,18 @@ namespace Eidolon.Core.Infrastructure
         {
             lock (_gate)
             {
+                foreach (AssetCollection collection in LoadAssetCollections(token))
+                {
+                    if (collection.State == JobState.Preparing || collection.State == JobState.Running)
+                    {
+                        collection.State = JobState.Interrupted;
+                        foreach (AssetFrame frame in collection.Frames.Where(frame => frame.State == JobState.Running))
+                        {
+                            frame.State = JobState.Interrupted;
+                        }
+                        SaveAssetCollection(collection);
+                    }
+                }
                 foreach (JobHeader header in ReadHeaders(token))
                 {
                     token.ThrowIfCancellationRequested();

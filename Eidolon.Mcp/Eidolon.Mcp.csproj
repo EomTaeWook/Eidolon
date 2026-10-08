@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Dependency-free MCP tool server using HttpListener.</Description>
+  </PropertyGroup>
+</Project>

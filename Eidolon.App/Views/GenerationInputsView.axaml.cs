@@ -14,7 +14,8 @@ namespace Eidolon.App.Views
 
         private void OnLoraClicked(object sender, RoutedEventArgs args)
         {
-            if (DataContext is StudioViewModel viewModel && sender is Button button && button.DataContext is AssetItem item)
+            if (DataContext is GenerationViewModel viewModel && viewModel.Session.CanEditGenerationInputs == true
+                && sender is Button button && button.DataContext is AssetItem item)
             {
                 item.IsSelected = item.IsSelected == false;
             }

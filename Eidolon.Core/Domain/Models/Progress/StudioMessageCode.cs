@@ -134,6 +134,11 @@ namespace Eidolon.Core.Domain
         CodexGenerating,
         CodexOutputMissing,
         InvalidGenerationBackend,
-        InvalidCodexOutput
+        InvalidCodexOutput,
+        InvalidAssetCollection,
+        AssetFrameGenerating,
+        AssetCreationFailed,
+        AssetExportIncomplete,
+        AssetSheetTooLarge
     }
 }

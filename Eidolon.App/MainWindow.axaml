@@ -25,16 +25,22 @@
               <TextBlock Text="{DynamicResource EidolonText291}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
+          <Button Command="{Binding Navigation.ShowAssetCreationCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsAssetCreationView}">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <Path Data="{StaticResource EidolonIconResults}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
+              <TextBlock Text="{DynamicResource EidolonText603}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
           <Button Command="{Binding Navigation.ShowTrainingCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsTrainingView}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Path Data="{StaticResource EidolonIconTraining}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
               <TextBlock Text="{DynamicResource EidolonText108}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsEngineView}">
+          <Button Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsGenerationEnvironmentView}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-              <Path Data="{StaticResource EidolonIconEngine}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
-              <TextBlock Text="{DynamicResource EidolonText560}" VerticalAlignment="Center" />
+              <Path Data="{StaticResource EidolonIconLibrary}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
+              <TextBlock Text="{DynamicResource EidolonText581}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
           <Button Command="{Binding Navigation.ShowSettingsCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsSettingsView}">
@@ -65,27 +71,14 @@
       <Border IsVisible="{Binding Navigation.IsTrainingView}">
         <views:TrainingView Margin="0,18,0,0" DataContext="{Binding Training}" />
       </Border>
-      <Border IsVisible="{Binding Navigation.IsEngineView}">
-        <TabControl SelectedIndex="{Binding Navigation.SelectedEngineTab}" Margin="0,12,0,0">
-          <TabControl.Styles>
-            <Style Selector="TabItem">
-              <Setter Property="FontSize" Value="14" />
-              <Setter Property="Padding" Value="18,10" />
-            </Style>
-          </TabControl.Styles>
-          <TabItem Header="{DynamicResource EidolonText570}">
-            <views:GenerationEnvironmentView DataContext="{Binding Settings}" />
-          </TabItem>
-          <TabItem Header="{DynamicResource EidolonText152}">
-            <views:EngineView DataContext="{Binding Engine}" />
-          </TabItem>
-          <TabItem Header="{DynamicResource EidolonText107}">
-            <views:ModelsView DataContext="{Binding Assets}" />
-          </TabItem>
-        </TabControl>
+      <Border IsVisible="{Binding Navigation.IsAssetCreationView}">
+        <views:AssetCreationView Margin="0,18,0,0" DataContext="{Binding AssetCreation}" />
+      </Border>
+      <Border IsVisible="{Binding Navigation.IsGenerationEnvironmentView}">
+        <views:GenerationEnvironmentView Margin="0,18,0,0" />
       </Border>
       <Border IsVisible="{Binding Navigation.IsSettingsView}">
-        <views:SettingsView DataContext="{Binding Settings}" />
+        <views:SettingsView Margin="0,18,0,0" />
       </Border>
       <Border IsVisible="{Binding Navigation.IsHelpView}">
         <ScrollViewer Margin="0,18,0,0" HorizontalScrollBarVisibility="Disabled">
@@ -93,33 +86,23 @@
             <TextBlock Text="{DynamicResource EidolonText184}" Classes="title" />
             <Border Classes="card">
               <StackPanel Spacing="10">
+                <TextBlock Text="{DynamicResource EidolonText652}" Classes="title" FontSize="21" />
+                <TextBlock Text="{DynamicResource EidolonText653}" TextWrapping="Wrap" />
+                <Button Content="{DynamicResource EidolonText603}" Command="{Binding Navigation.ShowAssetCreationCommand}" HorizontalAlignment="Left" />
+              </StackPanel>
+            </Border>
+            <Border Classes="card">
+              <StackPanel Spacing="10">
                 <TextBlock Text="{DynamicResource EidolonText185}" Classes="title" FontSize="21" />
                 <TextBlock Text="{DynamicResource EidolonText186}" TextWrapping="Wrap" />
                 <TextBlock Text="{DynamicResource EidolonText187}" Classes="muted" />
                 <TextBlock Text="{DynamicResource EidolonText285}" Classes="muted" />
-                <Button Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" HorizontalAlignment="Left">
+                <Button Command="{Binding Navigation.ShowEngineSettingsCommand}" HorizontalAlignment="Left">
                   <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Path Data="{StaticResource EidolonIconEngine}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
-                    <TextBlock Text="{DynamicResource EidolonText560}" VerticalAlignment="Center" />
+                    <TextBlock Text="{DynamicResource EidolonText593}" VerticalAlignment="Center" />
                   </StackPanel>
                 </Button>
-                <Button Content="{DynamicResource EidolonText110}" Command="{Binding Navigation.ShowSettingsCommand}" HorizontalAlignment="Left" />
-              </StackPanel>
-            </Border>
-            <Border Classes="card">
-              <StackPanel Spacing="10">
-                <TextBlock Text="{DynamicResource EidolonText563}" Classes="title" FontSize="21" />
-                <TextBlock Text="{DynamicResource EidolonText565}" TextWrapping="Wrap" />
-                <TextBlock Text="{DynamicResource EidolonText566}" Classes="muted" />
-                <TextBlock Text="{DynamicResource EidolonText567}" Classes="muted" />
-                <Button Content="{DynamicResource EidolonText560}" Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" HorizontalAlignment="Left" />
-              </StackPanel>
-            </Border>
-            <Border Classes="card">
-              <StackPanel Spacing="10">
-                <TextBlock Text="{DynamicResource EidolonText568}" Classes="title" FontSize="21" />
-                <TextBlock Text="{DynamicResource EidolonText569}" TextWrapping="Wrap" />
-                <Button Content="{DynamicResource EidolonText107}" Command="{Binding Navigation.ShowModelsCommand}" HorizontalAlignment="Left" />
               </StackPanel>
             </Border>
             <Border Classes="card">
@@ -181,18 +164,21 @@
         </ScrollViewer>
       </Border>
     </Grid>
-    <Border Grid.Row="2" Background="{DynamicResource FooterBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="28,14">
-      <StackPanel Spacing="8">
-        <TextBlock Text="{Binding Session.Status}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Session.Status}" VerticalAlignment="Center" />
-        <ProgressBar Value="{Binding Session.Percent}" IsIndeterminate="{Binding Session.Indeterminate}" IsVisible="{Binding Session.IsBusy}" Height="4" Foreground="{DynamicResource AccentBrush}" />
-        <TextBlock Text="{Binding Session.ActiveRequestTitle}" IsVisible="{Binding Session.IsBusy}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Session.ActiveRequestTitle}" TextWrapping="NoWrap" />
-        <TextBlock Text="{Binding Training.TrainingRemainingText}" IsVisible="{Binding Training.ShowTrainingRemainingTime}" Classes="muted" FontSize="12" />
-        <TextBlock Text="{Binding Session.QueueSummary}" IsVisible="{Binding Session.HasPendingRequests}" Classes="muted" FontSize="12" />
-        <Border IsVisible="{Binding Session.HasError}" Background="{DynamicResource ErrorSurfaceBrush}" CornerRadius="7" Padding="12">
+    <Border Grid.Row="2" Background="{DynamicResource FooterBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="24,10">
+      <Grid RowDefinitions="20,6,3,4,16,Auto">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Text="{Binding Session.Status}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Session.Status}" TextWrapping="NoWrap" VerticalAlignment="Center" />
+          <TextBlock Grid.Column="1" Text="{Binding Session.QueueSummary}" IsVisible="{Binding Session.HasPendingRequests}" Classes="muted" FontSize="12" TextWrapping="NoWrap" VerticalAlignment="Center" Margin="24,0,0,0" />
+        </Grid>
+        <ProgressBar Grid.Row="2" Value="{Binding Session.Percent}" IsIndeterminate="{Binding Session.Indeterminate}" IsVisible="{Binding Session.IsBusy}" Height="3" Foreground="{DynamicResource AccentBrush}" />
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto">
+          <TextBlock Text="{Binding Session.ActiveRequestTitle}" IsVisible="{Binding Session.IsBusy}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Session.ActiveRequestTitle}" TextWrapping="NoWrap" VerticalAlignment="Center" />
+          <TextBlock Grid.Column="1" Text="{Binding Training.TrainingRemainingText}" IsVisible="{Binding Training.ShowTrainingRemainingTime}" Classes="muted" FontSize="12" TextWrapping="NoWrap" VerticalAlignment="Center" Margin="24,0,0,0" />
+        </Grid>
+        <Border Grid.Row="5" IsVisible="{Binding Session.HasError}" Background="{DynamicResource ErrorSurfaceBrush}" CornerRadius="7" Padding="12" Margin="0,8,0,0">
           <TextBlock Text="{Binding Session.Error}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" MaxHeight="100" />
         </Border>
-
-      </StackPanel>
+      </Grid>
     </Border>
   </Grid>
 </Window>

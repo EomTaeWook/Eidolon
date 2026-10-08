@@ -50,13 +50,13 @@ namespace Eidolon.Core.Application
             return _requests.Select(request => request.Title).ToArray();
         }
 
-        public void Enqueue(string title, Func<CancellationToken, Task> execute)
+        public void Enqueue(string title, Func<CancellationToken, Task> execute, Action discarded = null)
         {
             ArgumentNullException.ThrowIfNull(execute);
             EnterEnqueue();
             try
             {
-                _requests.Add(new WorkRequest(title, execute));
+                _requests.Add(new WorkRequest(title, execute, discarded));
                 _signal.Release();
             }
             finally
@@ -97,7 +97,10 @@ namespace Eidolon.Core.Application
 
         public void ClearPending()
         {
-            _requests.Clear();
+            while (_requests.TryRead(out WorkRequest request) == true)
+            {
+                request.Discard();
+            }
             Changed?.Invoke();
         }
 
@@ -126,6 +129,7 @@ namespace Eidolon.Core.Application
                     }
                     catch (OperationCanceledException) when (currentLifetime.IsCancellationRequested == true)
                     {
+                        request.Discard();
                     }
                     catch (Exception error)
                     {
@@ -166,7 +170,7 @@ namespace Eidolon.Core.Application
                 {
                     await _enqueueDrained.Task.ConfigureAwait(false);
                 }
-                _requests.Clear();
+                ClearPending();
                 try
                 {
                     await _lifetime.CancelAsync().ConfigureAwait(false);

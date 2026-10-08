@@ -2,6 +2,7 @@
   <Project Path="Eidolon.Core/Eidolon.Core.csproj" />
   <Folder Name="/Shared/">
     <Project Path="DataContainer/DataContainer.csproj" />
+    <Project Path="Eidolon.Mcp/Eidolon.Mcp.csproj" />
   </Folder>
   <Project Path="Eidolon.App/Eidolon.App.csproj" />
 </Solution>

@@ -70,13 +70,13 @@ namespace Eidolon.App.Presenters
             return _queue.GetPendingTitles();
         }
 
-        public void Enqueue(string title, Func<CancellationToken, Task> action)
+        public void Enqueue(string title, Func<CancellationToken, Task> action, Action discarded = null)
         {
             if (_closing == true)
             {
                 throw new ObjectDisposedException(nameof(StudioWorkPresenter));
             }
-            _queue.Enqueue(title, token => ExecuteQueuedAsync(action, token));
+            _queue.Enqueue(title, token => ExecuteQueuedAsync(action, token), discarded);
             QueueChanged?.Invoke();
             LogHelper.Info(_strings.GetString("EidolonText247") + " " + title);
         }

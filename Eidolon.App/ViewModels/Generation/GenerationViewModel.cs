@@ -484,16 +484,26 @@ namespace Eidolon.App.ViewModels
             {
                 loras = Assets.Loras.Where(lora => lora.IsSelected == true).Select(lora => lora.Asset.Copy()).ToList();
             }
+            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey);
+            return Task.CompletedTask;
+        }
+
+        internal void EnqueueGeneration(DesktopSettings settings, string prompt, ModelAsset model,
+            List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, string titleKey)
+        {
+            if (Session.CanQueue == false)
+            {
+                throw new InvalidOperationException("The application is not ready to queue an image request.");
+            }
             _work.Enqueue(_strings.GetString(titleKey) + " · " + prompt,
                 token => GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, token));
             _lastQueuedGenerationSeed = string.Empty;
-            if (IsComfyGeneration == true)
+            if (settings.GenerationBackend == GenerationBackend.ComfyUI)
             {
                 _lastQueuedGenerationSeed = seed.ToString(CultureInfo.InvariantCulture);
             }
             Raise(nameof(HasQueuedGenerationSeed));
             Raise(nameof(QueuedGenerationSeedCaption));
-            return Task.CompletedTask;
         }
 
         private async Task GenerateAsync(DesktopSettings settings, string prompt, ModelAsset model,
