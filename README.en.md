@@ -8,7 +8,7 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 ## Download
 
-The Windows x64 public beta is available from [GitHub Releases](https://github.com/EomTaeWook/Eidolon/releases).
+[Download Eidolon v0.1.0-beta.1 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v0.1.0-beta.1/Eidolon-0.1.0-beta.1-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v0.1.0-beta.1)
 
 Run the single `.exe` file. No extraction or separate .NET installation is required. For Codex, sign in to your installed Codex first. For ComfyUI, prepare the engine and models through the app.
 

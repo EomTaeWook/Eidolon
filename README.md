@@ -8,7 +8,7 @@ ComfyUI와 설치된 Codex 중 생성 방식을 선택하고, 공통 생성 지�
 
 ## 다운로드
 
-Windows x64 공개 베타는 [GitHub 릴리스](https://github.com/EomTaeWook/Eidolon/releases)에서 제공합니다.
+[Eidolon v0.1.0-beta.1 Windows x64 다운로드](https://github.com/EomTaeWook/Eidolon/releases/download/v0.1.0-beta.1/Eidolon-0.1.0-beta.1-win-x64.exe) · [릴리스 정보](https://github.com/EomTaeWook/Eidolon/releases/tag/v0.1.0-beta.1)
 
 단일 `.exe` 파일을 실행하세요. 압축 해제나 별도 .NET 설치는 필요 없습니다. Codex 방식은 설치된 Codex에 먼저 로그인하고, ComfyUI 방식은 앱에서 엔진과 모델을 준비합니다.
 
