@@ -34,6 +34,8 @@ namespace Eidolon.App.Localization
                     return "EidolonText312";
                 case StudioMessageCode.InvalidGenerationRecord:
                     return "EidolonText313";
+                case StudioMessageCode.InvalidGenerationMetadata:
+                    return "EidolonText659";
                 case StudioMessageCode.GenerationRecordBusy:
                     return "EidolonText314";
                 case StudioMessageCode.BackgroundRemovalFailed:

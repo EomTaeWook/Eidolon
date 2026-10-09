@@ -13,7 +13,7 @@
 | `eidolon_edit_image` | 참고 이미지와 설명으로 그림체 편집 요청 추가 |
 | `eidolon_list_images` | 현재 출력 폴더의 PNG 경로와 저장된 생성 조건을 페이지로 조회 |
 | `eidolon_create_sprite_animation` | 기준 이미지·동작 설명으로 스프라이트 프레임 초안 제작 요청 추가 |
-| `eidolon_create_views` | 캐릭터 또는 물체 삼면도 초안 제작 요청 추가 |
+| `eidolon_create_views` | 정면·측면·후면·윗면 사면도 초안 제작 요청 추가 |
 | `eidolon_get_asset_collection` | 묶음 상태와 항목별 이미지·설명·시드·오류 조회 |
 | `eidolon_list_asset_collections` | 최근 제작 묶음 20개의 ID·상태·완료 수 조회 |
 | `eidolon_resume_asset_collection` | 미완성 묶음의 남은 항목만 다시 요청 |
@@ -30,13 +30,13 @@
 
 ## 에셋 제작 호출
 
-제작 요청에는 `prompt`·`reference_path`가 필요하다. 스프라이트에는 `action`도 입력한다. `frame_count`는 기본 8, 2~32이며 `fps`는 기본 10, 1~60이다. `frame_descriptions`를 주면 프레임 수와 같은 개수의 포즈 설명을 전달한다. 삼면도의 `view_set`은 `character`(기본: 정면·측면·후면) 또는 `object`(정면·측면·윗면)다.
+제작 요청에는 `prompt`·`reference_path`가 필요하다. 스프라이트에는 `action`도 입력한다. `frame_count`는 기본 8, 2~32이며 `fps`는 기본 10, 1~60이다. `frame_descriptions`를 주면 프레임 수와 같은 개수의 포즈 설명을 전달한다. 사면도는 캐릭터·물체 구분 없이 정면·측면·후면·윗면의 4항목을 만들며 별도 시점 종류를 입력하지 않는다.
 
-두 제작 호출은 이미지 생성과 같은 `model_id`·`lora_ids`·`seed`·지침 사본을 사용한다. 참고 강도 기본값은 0.45, 배경 제거 기본값은 true다. `frame_size`는 내보낼 정사각형 크기(스프라이트 기본 256, 삼면도 기본 1024, 16~2048), `columns`는 시트 열 수(기본 4, 1~32), `pixel_art`는 픽셀 아트 설명과 nearest 보간을 지정한다. 생성 해상도는 기존 모델 프리셋을 따른다. 이 호출은 img2img 초안이며 자연스러운 반복 동작·대상 유지·기하학적으로 정확한 삼면도를 보장하지 않는다.
+두 제작 호출은 저장된 ComfyUI 또는 Codex 생성 방식과 지침 사본을 사용한다. ComfyUI는 이미지 생성과 같은 `model_id`·`lora_ids`·`seed`를 사용하며 참고 강도 기본값은 0.45다. Codex는 체크포인트 없이 제작하며 `model_id`·`lora_ids`·`seed`·`change_strength`를 지정하면 오류를 반환한다. 배경 투명화 기본값은 true이며 Codex는 내장 이미지 생성에 알파 출력을 요청한다. `frame_size`는 내보낼 정사각형 크기(스프라이트 기본 256, 사면도 기본 1024, 16~2048), `columns`는 시트 열 수(기본 4, 1~32), `pixel_art`는 픽셀 아트 설명과 nearest 보간을 지정한다. ComfyUI 생성 해상도는 기존 모델 프리셋을 따른다. 이 호출은 참고 생성 초안이며 자연스러운 반복 동작·대상 유지·기하학적으로 정확한 사면도를 보장하지 않는다.
 
-응답의 `accepted`·`collection_id`·`seed`는 요청 접수다. `eidolon_get_asset_collection`에 `collection_id`를 주어 완료를 조회한다. 조회 결과는 묶음 DTO의 `State`·`Frames`와 항목의 `Number`·`ImagePath`·`SourceJobId`·`Seed`(요청 시드)·`ImageSeed`(현재 이미지의 실제 시드)·`ErrorCode`·`ErrorArguments`를 포함한다. 묶음 조건은 요청 당시의 사본이며 나중의 설정 변경에 영향받지 않는다.
+응답의 `accepted`·`collection_id`·`generation_backend`는 요청 접수와 생성 방식이다. ComfyUI 응답에는 `seed`, Codex 응답에는 `codex_model`을 포함한다. `eidolon_get_asset_collection`에 `collection_id`를 주어 완료를 조회한다. 조회 결과는 묶음 DTO의 `Settings`·`State`·`Frames`와 항목의 `Number`·`ImagePath`·`SourceJobId`·`Seed`(요청 시드)·`ImageSeed`(현재 이미지의 실제 시드)·`ErrorCode`·`ErrorArguments`를 포함한다. Codex의 DTO 시드 필드는 0이며 적용된 시드를 뜻하지 않는다. 묶음 조건은 요청 당시의 사본이며 나중의 설정 변경에 영향받지 않는다.
 
-이어 만들기는 `collection_id`, 선택 재생성은 추가로 `frame_number`(1부터)·`prompt`·선택적 `seed`를 받는다. 둘 다 큐가 비었을 때 요청한다. 완료한 항목과 실패 전 이미지를 보존한다. 내보내기는 `collection_id`·`directory`(절대 폴더 경로)를 받아 새 하위 폴더를 만들고 `directory`·`sheet`·`metadata` 경로를 반환한다. 모든 항목에 이미지가 필요하다. 정렬·원본·좌표·실패 시 파일 계약은 [에셋 제작](AssetCreation.md)을 따른다.
+이어 만들기는 `collection_id`, 선택 재생성은 추가로 `frame_number`(1부터)·`prompt`를 받는다. 선택적 `seed`는 ComfyUI로 저장한 묶음에서만 허용한다. 현재 생성 환경과 관계없이 묶음의 저장된 생성 방식으로 처리한다. 둘 다 큐가 비었을 때 요청한다. 완료한 항목과 실패 전 이미지를 보존한다. 내보내기는 `collection_id`·`directory`(절대 폴더 경로)를 받아 새 하위 폴더를 만들고 `directory`·`sheet`·`metadata` 경로를 반환한다. 모든 항목에 이미지가 필요하다. 정렬·원본·좌표·실패 시 파일 계약은 [에셋 제작](AssetCreation.md)을 따른다.
 
 ## HTTP 메시지
 
@@ -101,4 +101,4 @@ App의 `Mcp/McpService.cs`는 `CreateTools()`에서 도구 정의와 private 처
 
 현재 변경은 빌드·테스트·클라이언트 접속 검증을 수행하지 않았다.
 
-생성·편집 도구는 저장된 생성 방식을 사용합니다. Codex 방식에서는 체크포인트·LoRA·시드·변경 강도 인자를 지정하면 오류를 반환하며, 응답에는 생성 방식과 Codex 실행 모델을 제공합니다. 공통 지침의 요청별 사본과 참고 이미지는 기존 Codex 생성 경계로 전달합니다. 에셋 제작 도구는 ComfyUI 방식에서만 사용할 수 있습니다.
+생성·편집·에셋 제작 도구는 저장된 생성 방식을 사용합니다. Codex 방식에서는 체크포인트·LoRA·시드·변경 강도 인자를 지정하면 오류를 반환하며, 응답에는 생성 방식과 Codex 실행 모델을 제공합니다. 공통 지침의 요청별 사본과 참고 이미지는 기존 Codex 생성 경계로 전달합니다.

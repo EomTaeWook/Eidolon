@@ -139,6 +139,7 @@ namespace Eidolon.Core.Domain
         AssetFrameGenerating,
         AssetCreationFailed,
         AssetExportIncomplete,
-        AssetSheetTooLarge
+        AssetSheetTooLarge,
+        InvalidGenerationMetadata
     }
 }

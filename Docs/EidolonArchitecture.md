@@ -77,9 +77,9 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 
 ## 화면 구성
 
-에셋 제작은 ComfyUI 생성 방식을 사용한다. Codex 방식에서는 제작 버튼을 비활성화하고 생성 환경 이동을 안내한다.
+에셋 제작은 저장된 ComfyUI 또는 Codex 생성 방식을 사용한다. Codex는 체크포인트 없이 기준 이미지와 항목별 설명을 기존 생성 경계로 전달하며 모델·LoRA·참고 강도·시드 입력을 표시하지 않는다. 이어 만들기와 재생성은 묶음에 저장된 생성 방식과 지침을 사용한다.
 
-에셋 제작 탭은 스프라이트와 캐릭터·물체 삼면도 초안을 제공한다. `AssetCreationService`는 기존 `StudioService.GenerateAsync`를 순서대로 호출하고 `JobStore`에 묶음·부분 완료·항목의 원본 Job 연결을 저장한다. `AssetFrameImporter`는 교체 이미지 사본을 준비하고 `AssetSheetExporter`는 공통 캔버스에 PNG·시트·좌표 메타데이터를 내보낸다. 별도 큐·저장소·GPU 사용권을 만들지 않는다. 화면·저장·품질 한계 계약은 [에셋 제작](AssetCreation.md)이 소유한다.
+에셋 제작 탭은 스프라이트와 정면·측면·후면·윗면 사면도 초안을 제공한다. `AssetCreationService`는 기존 `StudioService.GenerateAsync`를 순서대로 호출하고 `JobStore`에 묶음·부분 완료·항목의 원본 Job 연결을 저장한다. `AssetFrameImporter`는 교체 이미지 사본을 준비하고 `AssetSheetExporter`는 공통 캔버스에 PNG·시트·좌표 메타데이터를 내보낸다. `AssetFrameRenderer`는 알파 경계와 스프라이트 크기 보정을 소유하며 App의 `AssetImageLoader`와 내보내기가 같은 그리기 규칙을 사용한다. 원본·생성 메타데이터를 덮어쓰거나 별도 보정 이미지 저장소를 만들지 않는다. 별도 큐·GPU 사용권을 만들지 않는다. 화면·저장·품질 한계 계약은 [에셋 제작](AssetCreation.md)이 소유한다.
 
 MCP는 Dignus DI를 사용하는 `Eidolon.Mcp` 라이브러리와 App의 도구 어댑터로 나눈다. 라이브러리는 Core/App을 참조하지 않는다. `McpDispatcher`는 메서드와 컨트롤러 타입을 등록하고 요청·알림마다 `LifeScope.Transient` 인스턴스를 resolve한다. 옵션·도구 목록·콜백은 서버 수명 동안 공유한다. 설정의 일반 화면에서 로컬 HTTP 서버를 켜고 끄며 루트가 종료 수명을 조합한다. 생성·편집은 기존 `GenerationViewModel`·FIFO 큐·서비스를, 조회는 기존 Session·자산·JobStore를 사용한다. 요청별 지침은 설정 사본에 적용하고 저장 설정·프리셋을 바꾸지 않는다. 상세 도구·전송·클라이언트 연결은 [MCP 연결](Mcp.md)이 소유한다.
 
@@ -225,7 +225,11 @@ App의 기존 `SettingsStore`가 `DesktopSettings.GenerationBackend`·`CodexExec
 
 사용자 설명과 저장된 생성 지침은 기존 합성 경계를 사용하고 제외할 요소는 원문 그대로 별도 지시로 전달한다. 참고 이미지는 기존 준비 경계에서 EXIF 방향을 적용해 PNG로 보관하며 Codex에서는 원본 크기·알파를 유지한다. `Reimagine`은 새 이미지의 참고, `Restyle`은 그림체 편집 대상으로 전달하고 ComfyUI의 수치 강도를 적용하지 않는다.
 
-Codex는 내장 도구가 만든 원본 PNG의 절대 경로를 반환하며 이미지 복사·이동·삭제를 수행하지 않는다. 앱은 해당 경로가 Codex 홈의 `generated_images/<현재 세션 ID>` 바로 아래 PNG인지 확인하고 링크 경로·누락 파일·과도한 파일 크기를 거부한다. 앱이 원본을 해당 Job의 고유 `Originals/GUID.png`에 덮어쓰기 없이 복사하므로 읽기 전용 Codex 세션에 Job 폴더 쓰기를 요구하지 않는다. PNG·해상도와 요청한 알파를 확인한 뒤 기존 `JobStore.PublishImageAsync`로 최종 PNG·JSON을 설정 폴더에 게시한다. 별도 결과 경로 검색이나 최근 Codex 이미지 추측은 하지 않는다. `JobRecord`·`GenerationMetadata`의 `GenerationBackend`·`CodexModel`이 사용한 방식과 요청한 실행 모델을 보존하고 미지원 확산 파라미터는 적용한 값으로 표시하지 않는다. 실행 모델이 비어 있는 기록은 CLI 기본 모델을 요청한 상태를 뜻한다. 투명 배경은 Codex 도구에 요청하며 ComfyUI용 제거 후처리는 재적용하지 않는다. 요청·결과 스키마·결과 JSON·프로세스 로그는 해당 Job의 `Originals/Codex`에 남고 Codex가 만든 원본도 보존한다. 프로세스와 자식은 기존 앱 소유 수명에 연결해 앱 종료·요청 취소 시 정리한다.
+`JobStore.ReadGenerationMetadata`는 이미지 옆 JSON의 형식·필수 값·생성 방식을 확인하고 참고 이미지 변경 강도 범위는 ComfyUI 결과에만 적용한다. Codex 결과에 남은 기본 `Denoise=1`은 적용된 변경 강도가 아니며 정상 기록으로 읽는다. 메타데이터 형식 오류는 `InvalidGenerationMetadata`로 전달하고 App이 프롬프트 JSON 오류 문구로 표시한다. 이미지가 없다는 생성 Job 오류와 구분하며 기존 이미지·JSON을 다시 쓰거나 마이그레이션하지 않는다.
+
+Codex 내부 실행 지시문은 App의 `Resources/Codex`에 있는 공통 요청·투명 배경·편집·참고 이미지 텍스트 템플릿이 소유한다. App이 기존 `PackagedResources`로 내장 파일을 읽어 `CodexInstructionTemplates`를 DI에 등록하고 Core 실행기에 주입한다. `CodexImageEngine`은 JSON으로 인코딩한 생성·제외 프롬프트와 옵션별 지시문을 공통 템플릿에 한 번만 채우며 사용자 입력 안의 템플릿 표시는 다시 해석하지 않는다. UI 번역 리소스와 별개인 실행 계약이며 결과 JSON 스키마·경로 검증은 기존 Core 실행기가 소유한다.
+
+Codex는 내장 도구가 만든 원본 PNG의 절대 경로를 반환하며 이미지 복사·이동·삭제나 셸을 통한 결과 경로 검색을 수행하지 않는다. 도구가 생성은 완료했지만 경로를 제공하지 않으면 구조화한 응답의 경로와 오류를 비워 반환한다. 앱은 해당 경로가 Codex 홈의 `generated_images/<현재 세션 ID>` 바로 아래 PNG인지 확인하고 링크 경로·누락 파일·과도한 파일 크기를 거부한다. 앱이 원본을 해당 Job의 고유 `Originals/GUID.png`에 덮어쓰기 없이 복사하므로 읽기 전용 Codex 세션에 Job 폴더 쓰기를 요구하지 않는다. PNG·해상도와 요청한 알파를 확인한 뒤 기존 `JobStore.PublishImageAsync`로 최종 PNG·JSON을 설정 폴더에 게시한다. 반환 경로가 비어 있으면 표준 출력의 현재 세션 ID에 대응하는 폴더 바로 아래 PNG가 정확히 한 장일 때만 가져온다. 경로 없는 응답이 오류를 보고해도 실제 생성 파일의 검증을 거쳐 처리하며 PNG가 없거나 여러 장이면 실패한다. 다른 세션·최근 파일·수정 시각으로 결과를 추측하지 않는다. `JobRecord`·`GenerationMetadata`의 `GenerationBackend`·`CodexModel`이 사용한 방식과 요청한 실행 모델을 보존하고 미지원 확산 파라미터는 적용한 값으로 표시하지 않는다. 실행 모델이 비어 있는 기록은 CLI 기본 모델을 요청한 상태를 뜻한다. 투명 배경은 Codex 도구에 요청하며 ComfyUI용 제거 후처리는 재적용하지 않는다. 요청·결과 스키마·결과 JSON·프로세스 로그는 해당 Job의 `Originals/Codex`에 남고 Codex가 만든 원본도 보존한다. 프로세스와 자식은 기존 앱 소유 수명에 연결해 앱 종료·요청 취소 시 정리한다.
 
 Codex의 내장 이미지 생성과 실행 옵션은 [공식 이미지 생성 문서](https://learn.chatgpt.com/docs/image-generation), [비대화식 실행 문서](https://learn.chatgpt.com/docs/non-interactive-mode), [실행 모델 지정 문서](https://learn.chatgpt.com/docs/developer-commands)를 따른다. 설치된 Codex의 이미지 생성 지원·로그인·사용 한도가 필요하며 실제 이미지 생성 실행 여부는 빌드 성공과 구분한다.
 

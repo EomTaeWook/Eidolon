@@ -6,6 +6,7 @@ namespace Eidolon.Core.Domain
         public const int MaximumFrameSize = 2048;
         public const int DefaultSpriteFrameSize = 256;
         public const int DefaultViewFrameSize = 1024;
+        public const int ViewCount = 4;
         public const long MaximumSheetPixels = 64 * 1000 * 1000;
 
         public AssetCreationInput()

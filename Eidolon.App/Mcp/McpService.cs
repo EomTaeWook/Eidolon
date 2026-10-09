@@ -86,18 +86,18 @@ namespace Eidolon.App.Mcp
                     OpenWorld = false
                 }, ListImagesAsync),
                 new McpTool(new McpToolDefinition("eidolon_create_sprite_animation",
-                    "Queue a sprite-animation draft from one reference image. Uses fixed common model, LoRAs and instructions. This is img2img key-pose drafting, not a motion-conditioned pipeline; character identity and a smooth loop are not guaranteed. Optional frame_descriptions has one pose description per frame. Returns collection_id immediately; poll eidolon_get_asset_collection. Export after reviewing all frames.",
+                    "Queue a sprite-animation draft from one reference image using the saved ComfyUI or Codex backend and shared instructions. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. Identity and a smooth loop are not guaranteed. Optional frame_descriptions has one pose description per frame. Returns collection_id immediately; poll eidolon_get_asset_collection. Export after reviewing all frames.",
                     AssetCreationSchema(true)), CreateSpriteAnimationAsync),
                 new McpTool(new McpToolDefinition("eidolon_create_views",
-                    "Queue three modeling-reference images of the same subject. view_set=character produces front/side/back; object produces front/side/top. These are AI reference drafts, not a 3D model or geometrically verified projections. Returns collection_id; poll get_asset_collection.",
+                    "Queue front, side, back and top images of the same subject using the saved ComfyUI or Codex backend. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. These are AI reference drafts, not a 3D model or geometrically verified projections. Returns collection_id; poll eidolon_get_asset_collection.",
                     AssetCreationSchema(false)), CreateViewsAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_asset_collection", "Read a collection state and ordered frame paths, prompts, seeds and errors.",
                     CollectionSchema()) { ReadOnly = true, Idempotent = true, OpenWorld = false }, GetAssetCollectionAsync),
                 new McpTool(new McpToolDefinition("eidolon_list_asset_collections", "List the latest 20 asset collections with IDs and completion counts.")
                     { ReadOnly = true, Idempotent = true, OpenWorld = false }, ListAssetCollectionsAsync),
-                new McpTool(new McpToolDefinition("eidolon_resume_asset_collection", "Queue only unfinished frames in an existing collection. Requires an idle queue.",
+                new McpTool(new McpToolDefinition("eidolon_resume_asset_collection", "Queue only unfinished frames using the collection's saved backend and generation conditions. Requires an idle queue.",
                     CollectionSchema()), ResumeAssetCollectionAsync),
-                new McpTool(new McpToolDefinition("eidolon_regenerate_asset_frame", "Queue a replacement for one frame or view using its captured reference and generation conditions. Requires an idle queue. Keeps the old image if regeneration fails.",
+                new McpTool(new McpToolDefinition("eidolon_regenerate_asset_frame", "Queue a replacement for one frame or view using its captured reference, backend and generation conditions. Seed applies only to ComfyUI collections. Requires an idle queue. Keeps the old image if regeneration fails.",
                     RegenerateAssetSchema()), RegenerateAssetFrameAsync),
                 new McpTool(new McpToolDefinition("eidolon_export_asset_collection", "Export all reviewed frame images into a new subfolder: normalized Frames PNGs, Sheet.png, Sheet.json with frame rectangles, bottom-center pivots and FPS, and preserved Sources. All frames must have images. Does not overwrite existing files.",
                     ExportAssetSchema()), ExportAssetCollectionAsync)
@@ -450,10 +450,6 @@ namespace Eidolon.App.Mcp
                     ["items"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4000 } };
                 schema["required"].AsArray().Add("action");
             }
-            else
-            {
-                properties["view_set"] = new JsonObject { ["type"] = "string", ["enum"] = new JsonArray("character", "object") };
-            }
             return schema;
         }
         private JsonObject CollectionSchema()
@@ -495,12 +491,7 @@ namespace Eidolon.App.Mcp
         }
         private Task<McpToolResult> CreateViewsAsync(JsonObject arguments, CancellationToken token)
         {
-            AssetCreationKind kind = AssetCreationKind.CharacterViews;
-            if (arguments["view_set"]?.GetValue<string>() == "object")
-            {
-                kind = AssetCreationKind.ObjectViews;
-            }
-            return ExecuteAssetAsync(() => CreateAssetAsync(arguments, kind, token));
+            return ExecuteAssetAsync(() => CreateAssetAsync(arguments, AssetCreationKind.FourViews, token));
         }
         private async Task<McpToolResult> CreateAssetAsync(JsonObject arguments, AssetCreationKind kind, CancellationToken token)
         {
@@ -540,8 +531,18 @@ namespace Eidolon.App.Mcp
                 return _creation.EnqueueAsync(options.Settings, options.Model, options.Loras, input, token);
             });
             AssetCollection collection = await queued.ConfigureAwait(false);
-            return new McpToolResult(new JsonObject { ["accepted"] = true, ["collection_id"] = collection.Id,
-                ["seed"] = collection.Seed, ["frame_count"] = collection.Frames.Count, ["state"] = "Preparing" });
+            JsonObject result = new JsonObject { ["accepted"] = true, ["collection_id"] = collection.Id,
+                ["generation_backend"] = collection.Settings.GenerationBackend.ToString(),
+                ["frame_count"] = collection.Frames.Count, ["state"] = "Preparing" };
+            if (collection.Settings.GenerationBackend == GenerationBackend.ComfyUI)
+            {
+                result["seed"] = collection.Seed;
+            }
+            else
+            {
+                result["codex_model"] = collection.Settings.CodexModel;
+            }
+            return new McpToolResult(result);
         }
         private Task<McpToolResult> GetAssetCollectionAsync(JsonObject arguments, CancellationToken token)
         {
@@ -561,6 +562,7 @@ namespace Eidolon.App.Mcp
                 {
                     items.Add(new JsonObject { ["collection_id"] = collection.Id, ["prompt"] = collection.Prompt,
                         ["kind"] = collection.Kind.ToString(), ["state"] = collection.State.ToString(),
+                        ["generation_backend"] = collection.Settings.GenerationBackend.ToString(),
                         ["frame_count"] = collection.Frames.Count,
                         ["completed_count"] = collection.Frames.Count(frame => frame.State == JobState.Completed) });
                 }
@@ -578,13 +580,29 @@ namespace Eidolon.App.Mcp
         private async Task<McpToolResult> QueueExistingAssetAsync(JsonObject arguments, bool regenerate, CancellationToken token)
         {
             string id = arguments["collection_id"].GetValue<string>();
+            long seed = 0;
+            if (regenerate == true)
+            {
+                AssetCollection collection = await Task.Run(() => _jobs.LoadAssetCollection(id), token).ConfigureAwait(false);
+                if (collection.Settings.GenerationBackend == GenerationBackend.Codex)
+                {
+                    if (arguments.ContainsKey("seed") == true)
+                    {
+                        throw new ArgumentException("Codex asset regeneration does not apply seeds.");
+                    }
+                }
+                else
+                {
+                    seed = ReadSeed(arguments);
+                }
+            }
             Task queued = await Dispatcher.UIThread.InvokeAsync<Task>(() =>
             {
                 EnsureAvailable(token);
                 if (regenerate == true)
                 {
                     return _creation.EnqueueExistingAsync(id, ReadInteger(arguments, "frame_number", 0),
-                        arguments["prompt"].GetValue<string>(), ReadSeed(arguments));
+                        arguments["prompt"].GetValue<string>(), seed);
                 }
                 return _creation.EnqueueExistingAsync(id);
             });

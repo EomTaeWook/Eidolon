@@ -4082,56 +4082,56 @@
   {
     "Id": 3265,
     "Name": "EidolonText185",
-    "Kor": "1. \uC0DD\uC131 \uD658\uACBD \uC120\uD0DD",
-    "Eng": "1. Choose a generation environment"
+    "Kor": "\uCC98\uC74C \uC2DC\uC791\uD558\uAE30",
+    "Eng": "Getting started"
   },
   {
     "Id": 3266,
     "Name": "EidolonText186",
-    "Kor": "\uC0DD\uC131 \uD658\uACBD\uC758 \uC0DD\uC131 \uBC29\uC2DD\u00B7\uC9C0\uCE68\uC5D0\uC11C ComfyUI \uB610\uB294 Codex\uC640 \uACF5\uD1B5 \uC0DD\uC131 \uC9C0\uCE68\u00B7\uC81C\uC678\uD560 \uC694\uC18C\u00B7\uD504\uB9AC\uC14B\uC744 \uC800\uC7A5\uD569\uB2C8\uB2E4. \uC774\uBBF8\uC9C0 \uC800\uC7A5 \uD3F4\uB354\u00B7\uC5B8\uC5B4\u00B7\uD14C\uB9C8\uB294 \uC124\uC815\uC5D0\uC11C \uBCC4\uB3C4\uB85C \uC800\uC7A5\uD569\uB2C8\uB2E4.",
-    "Eng": "Save ComfyUI or Codex, shared guidelines, excluded elements and presets in Generation environment \u003E Generation method and guidelines. Save the output folder, language and theme separately in Settings."
+    "Kor": "1. \uC0DD\uC131 \uD658\uACBD \u2192 \uC0DD\uC131 \uBC29\uC2DD\u00B7\uC9C0\uCE68\uC5D0\uC11C ComfyUI \uB610\uB294 Codex\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4.\n2. Codex\uB97C \uC0AC\uC6A9\uD558\uB824\uBA74 \uC124\uCE58\uB41C Codex\uC5D0\uC11C \uBA3C\uC800 \uB85C\uADF8\uC778\uD558\uACE0 \uC2E4\uD589 \uBAA8\uB378\uC744 \uC120\uD0DD\uD569\uB2C8\uB2E4. \uAE30\uBCF8 \uBAA8\uB378\uC740 Codex\uC758 \uAE30\uBCF8\uAC12\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4.\n3. \uACF5\uD1B5 \uC0DD\uC131 \uC9C0\uCE68\u00B7\uC81C\uC678\uD560 \uC694\uC18C\uC640 \uD504\uB9AC\uC14B\uC744 \uC815\uD558\uACE0 \uC0DD\uC131 \uD658\uACBD \uC800\uC7A5\uC744 \uB204\uB985\uB2C8\uB2E4.",
+    "Eng": "1. Open Generation environment \u003E Generation method and guidelines and choose ComfyUI or Codex.\n2. For Codex, sign in to your installed Codex and select an execution model. Default model uses the CLI default.\n3. Set shared guidelines, exclusions and preset"
   },
   {
     "Id": 3267,
     "Name": "EidolonText187",
-    "Kor": "ComfyUI\uB294 \uC5D4\uC9C4 \uC124\uCE58\uC5D0\uC11C \uC2E4\uD589 \uD658\uACBD\uC744 \uC900\uBE44\uD558\uACE0 \uBAA8\uB378\u00B7LoRA\uC5D0\uC11C \uAE30\uBC18 \uBAA8\uB378\uC744 \uC124\uCE58\uD558\uAC70\uB098 \uBAA8\uB378 \uD3F4\uB354\uC5D0 \uB123\uACE0 \uC0C8\uB85C\uACE0\uCE68\uD569\uB2C8\uB2E4. NVIDIA GPU\uAC00 \uC5C6\uC73C\uBA74 CPU \uD658\uACBD\uC73C\uB85C \uC774\uBBF8\uC9C0 \uC0DD\uC131\uB9CC \uC9C0\uC6D0\uD569\uB2C8\uB2E4.",
-    "Eng": "For ComfyUI, prepare the runtime in Engine setup, then install a base model or place it in Model folder and refresh. CPU supports image generation only."
+    "Kor": "ComfyUI\uB294 \uC124\uC815 \u2192 \uC5D4\uC9C4 \uC124\uCE58\u00B7\uC5F0\uACB0\uC5D0\uC11C \uC2E4\uD589 \uD658\uACBD\uC744 \uC900\uBE44\uD569\uB2C8\uB2E4. \uC0DD\uC131 \uD658\uACBD \u2192 \uBAA8\uB378\u00B7LoRA\uC5D0\uC11C \uBAA8\uB378\uC744 \uC124\uCE58\uD558\uAC70\uB098 \uBAA8\uB378 \uD3F4\uB354\u00B7LoRA \uD3F4\uB354\uC5D0 .safetensors\uB97C \uB123\uACE0 \uC0C8\uB85C\uACE0\uCE68\uD569\uB2C8\uB2E4. CPU \uD658\uACBD\uC740 \uC774\uBBF8\uC9C0 \uC0DD\uC131\uB9CC \uC9C0\uC6D0\uD569\uB2C8\uB2E4.",
+    "Eng": "For ComfyUI, prepare the runtime in Settings \u003E Engine setup and connection. Install a model in Generation environment \u003E Models and LoRAs, or put .safetensors files in Model folder or LoRA folder and refresh. CPU mode supports image generation only."
   },
   {
     "Id": 3268,
     "Name": "EidolonText188",
-    "Kor": "\uD504\uB86C\uD504\uD2B8\uB85C \uC774\uBBF8\uC9C0 \uC0DD\uC131",
-    "Eng": "Generate from a prompt"
+    "Kor": "\uC774\uBBF8\uC9C0 \uC0DD\uC131",
+    "Eng": "Generate images"
   },
   {
     "Id": 3269,
     "Name": "EidolonText189",
-    "Kor": "\uC124\uBA85\uC744 \uC785\uB825\uD558\uACE0 \uC0DD\uC131 \uC694\uCCAD\uC744 \uCD94\uAC00\uD569\uB2C8\uB2E4. ComfyUI\uC5D0\uC11C\uB294 \uBAA8\uB378\uACFC \uC120\uD0DD\uD560 LoRA\uB97C \uC9C0\uC815\uD569\uB2C8\uB2E4. Codex\uC5D0\uC11C\uB294 \uC800\uC7A5\uB41C \uC2E4\uD589 \uBAA8\uB378\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4. \uBC30\uACBD \uD22C\uBA85\uD558\uAC8C\uB97C \uCF1C\uBA74 \uD22C\uBA85 PNG\uB97C \uC694\uCCAD\uD558\uBA70 \uC2E4\uD589 \uC911\uC5D0\uB3C4 \uB2E4\uC74C \uC694\uCCAD\uC744 \uCD94\uAC00\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
-    "Eng": "Describe the image and submit a request. ComfyUI uses your selected model and LoRAs; Codex uses the saved agent model. Enable Transparent background for a transparent PNG. More requests can be queued while running."
+    "Kor": "1. \uC774\uBBF8\uC9C0 \uC0DD\uC131\uC5D0\uC11C \uB9CC\uB4E4\uACE0 \uC2F6\uC740 \uB300\uC0C1\uC744 \uC124\uBA85\uD569\uB2C8\uB2E4. ComfyUI\uB294 \uBAA8\uB378\uACFC \uD638\uD658 LoRA\uB97C \uC120\uD0DD\uD558\uACE0 Codex\uB294 \uC800\uC7A5\uD55C \uC2E4\uD589 \uBAA8\uB378\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4.\n2. \uD544\uC694\uD55C \uACBD\uC6B0 \uCC38\uACE0 \uC774\uBBF8\uC9C0\uB97C \uCD94\uAC00\uD558\uAC70\uB098 \uBC30\uACBD \uD22C\uBA85\uD558\uAC8C\uB97C \uCF2D\uB2C8\uB2E4.\n3. \uC0DD\uC131 \uC694\uCCAD\uC744 \uCD94\uAC00\uD569\uB2C8\uB2E4. \uC2E4\uD589 \uC911\uC5D0\uB3C4 \uB2E4\uC74C \uC694\uCCAD\uC744 \uC791\uC131\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "1. In Generate, describe the image. For ComfyUI, choose a model and compatible LoRAs. Codex uses the saved execution model.\n2. Add a reference image or enable Transparent background if needed.\n3. Submit the request. You can prepare more requests while a j"
   },
   {
     "Id": 3270,
     "Name": "EidolonText190",
-    "Kor": "\uC0DD\uC131 \uD658\uACBD\uC5D0\uC11C \uACF5\uD1B5 \uC0DD\uC131 \uC9C0\uCE68\uACFC \uC81C\uC678\uD560 \uC694\uC18C\uB97C \uD3B8\uC9D1\uD558\uACE0 \uD504\uB9AC\uC14B\uC744 \uC120\uD0DD\uD558\uAC70\uB098 \uCD94\uAC00\u00B7\uC218\uC815\uD569\uB2C8\uB2E4. \uC0DD\uC131 \uD658\uACBD \uC800\uC7A5\uC744 \uB204\uB974\uBA74 \uC774\uD6C4 \uC0DD\uC131\u00B7\uD3B8\uC9D1 \uC694\uCCAD\uC5D0 \uC801\uC6A9\uD558\uBA70 \uB300\uAE30 \uC911\uC778 \uC694\uCCAD\uC740 \uAE30\uC874 \uC124\uC815\uC744 \uC720\uC9C0\uD569\uB2C8\uB2E4.",
-    "Eng": "Edit shared guidelines and exclusions, and select, add or update presets in Generation environment. Save the generation environment to apply them to new generation and editing requests. Queued requests retain their settings."
+    "Kor": "\uC0DD\uC131 \uD658\uACBD\uC758 \uC9C0\uCE68\uC740 \uC0C8 \uC0DD\uC131\u00B7\uD3B8\uC9D1 \uC694\uCCAD\uC5D0 \uACF5\uD1B5\uC73C\uB85C \uC801\uC6A9\uD569\uB2C8\uB2E4. \uC800\uC7A5 \uC804\uC5D0 \uB300\uAE30\uC5F4\uC5D0 \uB123\uC740 \uC694\uCCAD\uC740 \uAE30\uC874 \uC124\uC815\uC744 \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+    "Eng": "Shared guidelines apply to new generation and editing requests. Requests queued before saving retain their previous settings."
   },
   {
     "Id": 3271,
     "Name": "EidolonText191",
-    "Kor": "3. \uB0B4 \uC774\uBBF8\uC9C0\uB85C LoRA \uD559\uC2B5",
-    "Eng": "3. Train a LoRA with your images"
+    "Kor": "LoRA \uD559\uC2B5",
+    "Eng": "Train a LoRA"
   },
   {
     "Id": 3272,
     "Name": "EidolonText192",
-    "Kor": "\uC774\uBBF8\uC9C0 \uC120\uD0DD \u2192 \uC774\uB984\u00B7\uD2B8\uB9AC\uAC70 \u2192 \uD559\uC2B5 \uC124\uC815 \uC21C\uC11C\uB85C \uC9C4\uD589\uD569\uB2C8\uB2E4. \uCCAB \uC774\uBBF8\uC9C0\uC758 \uC124\uBA85\uC744 \uC790\uB3D9\uC73C\uB85C \uCC44\uC6B0\uACE0 \uC774\uB984\u00B7\uD2B8\uB9AC\uAC70\uB294 \uAE30\uBCF8\uAC12\uC744 \uC81C\uACF5\uD569\uB2C8\uB2E4. \uD655\uC778\uD558\uAC70\uB098 \uC218\uC815\uD55C \uB4A4 \uD559\uC2B5\uD558\uC138\uC694. \uD559\uC2B5 \uD3F4\uB354\uB294 \uC5D4\uC9C4 \uACBD\uB85C \uC544\uB798 \uC791\uC5C5\uBCC4\uB85C \uC790\uB3D9 \uC900\uBE44\uD558\uBA70 \uC5D4\uC9C4 \uC124\uCE58\uC5D0\uC11C \uC5F4\uAC70\uB098 \uBE44\uC6B8 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
-    "Eng": "Select images, review the name and trigger, then configure training. The first image fills the description; a name and trigger are provided. Review or edit them before training. Datasets are prepared per job under the engine path and can be opened or clea"
+    "Kor": "1. \uD559\uC2B5\uD560 \uC774\uBBF8\uC9C0\uB97C \uD770\uC0C9\u00B7\uAC80\uC815\uC0C9 \uBC30\uACBD \uBAA9\uB85D\uC5D0 \uCD94\uAC00\uD569\uB2C8\uB2E4.\n2. \uC790\uB3D9 \uC785\uB825\uB41C \uC124\uBA85\uACFC LoRA \uC774\uB984\u00B7\uD2B8\uB9AC\uAC70\uB97C \uD655\uC778\uD558\uAC70\uB098 \uC218\uC815\uD569\uB2C8\uB2E4.\n3. \uD559\uC2B5 \uC124\uC815\uC744 \uD655\uC778\uD558\uACE0 \uD559\uC2B5\uC744 \uC2DC\uC791\uD569\uB2C8\uB2E4. \uD559\uC2B5 \uB370\uC774\uD130\uB294 \uC5D4\uC9C4 \uACBD\uB85C \uC544\uB798 \uC791\uC5C5\uBCC4 \uD3F4\uB354\uC5D0 \uC790\uB3D9 \uC900\uBE44\uD569\uB2C8\uB2E4.\n4. \uC644\uB8CC\uB41C LoRA\uB97C \uC774\uBBF8\uC9C0 \uC0DD\uC131\uC5D0\uC11C \uC120\uD0DD\uD558\uBA74 \uC800\uC7A5\uD55C \uD2B8\uB9AC\uAC70\uAC00 \uC790\uB3D9\uC73C\uB85C \uC801\uC6A9\uB429\uB2C8\uB2E4.",
+    "Eng": "1. Add training images to the white or black background lists.\n2. Review or edit the suggested description, LoRA name and trigger.\n3. Review training settings and start. A dataset is prepared automatically in a per-job folder under the engine path.\n4. Sel"
   },
   {
     "Id": 3273,
     "Name": "EidolonText193",
-    "Kor": "LoRA \uD559\uC2B5\uC5D0\uB294 \uB85C\uCEEC ComfyUI \uD658\uACBD\u00B7\uAE30\uBC18 \uBAA8\uB378\uACFC NVIDIA GPU\uAC00 \uD544\uC694\uD569\uB2C8\uB2E4. \uC0DD\uC131\uC5D0\uC11C \uD638\uD658 LoRA\uB97C \uC120\uD0DD\uD558\uBA74 \uC800\uC7A5\uB41C \uD2B8\uB9AC\uAC70\uAC00 \uC790\uB3D9 \uC801\uC6A9\uB429\uB2C8\uB2E4. Codex \uC0DD\uC131\uC5D0\uB294 LoRA\uB97C \uC801\uC6A9\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
-    "Eng": "LoRA training requires a local ComfyUI runtime, base model and NVIDIA GPU. Selecting a compatible LoRA applies its saved trigger. LoRAs do not apply to Codex generation."
+    "Kor": "\uD559\uC2B5\uC5D0\uB294 \uC571\uC774 \uAD00\uB9AC\uD558\uB294 \uB85C\uCEEC ComfyUI \uD658\uACBD\u00B7\uAE30\uBC18 \uBAA8\uB378\uACFC NVIDIA GPU\uAC00 \uD544\uC694\uD569\uB2C8\uB2E4. \uAE30\uC874 LoRA\uB97C \uC774\uC5B4 \uD559\uC2B5\uD574 \uC0C8 \uAC00\uC911\uCE58\uB97C \uB9CC\uB4E4 \uC218 \uC788\uC2B5\uB2C8\uB2E4. Codex \uC0DD\uC131\uC5D0\uB294 LoRA\uB97C \uC801\uC6A9\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Training requires a local ComfyUI runtime managed by this app, a base model and an NVIDIA GPU. You can continue training an existing LoRA to produce new weights. LoRAs do not apply to Codex generation."
   },
   {
     "Id": 3274,
@@ -4142,14 +4142,14 @@
   {
     "Id": 3275,
     "Name": "EidolonText195",
-    "Kor": "\uD558\uB2E8\uC5D0\uB294 \uC0C1\uD0DC\u00B7\uC9C4\uD589\uB960\u00B7\uB0A8\uC740 \uC2DC\uAC04\uACFC \uB300\uAE30 \uAC74\uC218\uB9CC \uD45C\uC2DC\uD569\uB2C8\uB2E4. \uD559\uC2B5 \uCDE8\uC18C\uB294 \uD559\uC2B5 \uC694\uCCAD \uBC84\uD2BC \uC606\uC5D0 \uC788\uC2B5\uB2C8\uB2E4. \uC0DD\uC131\u00B7\uD559\uC2B5 \uD654\uBA74\uC758 \uB300\uAE30\uC5F4 \uBAA9\uB85D\uC5D0\uC11C \uC544\uC9C1 \uC2DC\uC791\uD558\uC9C0 \uC54A\uC740 \uC694\uCCAD\uC744 \uBE44\uC6B8 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC571 \uC885\uB8CC \uC2DC \uC2E4\uD589 \uC911\uC778 \uC791\uC5C5\uACFC \uB300\uAE30 \uC694\uCCAD\uC744 \uC815\uB9AC\uD569\uB2C8\uB2E4.",
-    "Eng": "The footer displays status, progress, time remaining and pending count. Cancel training beside the request button. Clear requests that have not started from the queue in Generate or Train. Closing the app cleans up running and pending work."
+    "Kor": "\uC0DD\uC131\u00B7\uD3B8\uC9D1\u00B7\uD559\uC2B5\uACFC \uC5D0\uC14B \uC694\uCCAD\uC740 \uC21C\uC11C\uB300\uB85C \uC2E4\uD589\uD569\uB2C8\uB2E4. \uD558\uB2E8\uC740 \uC0C1\uD0DC\u00B7\uC9C4\uD589\uB960\u00B7\uD559\uC2B5 \uC608\uC0C1 \uB0A8\uC740 \uC2DC\uAC04\u00B7\uB300\uAE30 \uAC74\uC218\uB9CC \uD45C\uC2DC\uD569\uB2C8\uB2E4. \uCDE8\uC18C\uC640 \uB300\uAE30\uC5F4 \uBE44\uC6B0\uAE30\uB294 \uD574\uB2F9 \uD654\uBA74\uC758 \uC2E4\uD589 \uC601\uC5ED\uC5D0\uC11C \uC0AC\uC6A9\uD569\uB2C8\uB2E4. \uC571\uC744 \uC885\uB8CC\uD558\uBA74 \uC2E4\uD589 \uC911\uC778 \uC791\uC5C5\uACFC \uB300\uAE30 \uC694\uCCAD\uC744 \uC815\uB9AC\uD569\uB2C8\uB2E4.",
+    "Eng": "Generation, editing, training and asset requests run in order. The footer shows status, progress, estimated training time remaining and pending count. Use cancellation and queue actions in the current screen. Closing the app cleans up active and queued re"
   },
   {
     "Id": 3276,
     "Name": "EidolonText196",
-    "Kor": "\uC624\uB958\uAC00 \uBC1C\uC0DD\uD558\uBA74 \uC571 \uB85C\uADF8, \uC124\uCE58 \uD3F4\uB354\uC758 Logs, \uD574\uB2F9 \uD559\uC2B5 \uC791\uC5C5\uC758 Training.log\uB97C \uD655\uC778\uD558\uC138\uC694. \uBAA8\uB378 \uB4F1\uB85D \uD574\uC81C\uB294 \uAC00\uC911\uCE58 \uD30C\uC77C\uC744 \uC0AD\uC81C\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. \uC124\uC815 \uD30C\uC77C\uC774 \uC190\uC0C1\uB418\uBA74 \uC0AC\uC6A9\uC790 \uB370\uC774\uD130 \uD3F4\uB354\uC758 .bak \uD30C\uC77C\uB85C \uBCF5\uC6D0\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
-    "Eng": "If an error occurs, check the app log, the installation folder\u0027s Logs, or Training.log in the training job folder. Unregistering a model preserves its weights. Restore a damaged settings file from its .bak backup in the user data folder."
+    "Kor": "\uC624\uB958\uAC00 \uBC1C\uC0DD\uD558\uBA74 \uC571 \uB85C\uADF8 \uD3F4\uB354\uB97C \uC5F4\uC5B4 Eidolon.log\uB97C \uD655\uC778\uD569\uB2C8\uB2E4. \uC5D4\uC9C4 \uC124\uCE58 \uD3F4\uB354\uC758 Logs\uC640 \uAC01 Job\uC758 Codex.log\u00B7Training.log\uC5D0\uB3C4 \uC2E4\uD589 \uB0B4\uC6A9\uC774 \uB0A8\uC2B5\uB2C8\uB2E4. \uC190\uC0C1\uB41C \uC124\uC815\uC740 \uC0AC\uC6A9\uC790 \uB370\uC774\uD130 \uD3F4\uB354\uC758 .bak \uD30C\uC77C\uC744 \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "For errors, open the app log folder and check Eidolon.log. Runtime logs are also stored in the engine folder\u0027s Logs and each job\u0027s Codex.log or Training.log. For damaged settings, check the .bak file in the user data folder."
   },
   {
     "Id": 3277,
@@ -4682,8 +4682,8 @@
   {
     "Id": 3365,
     "Name": "EidolonText285",
-    "Kor": "ComfyUI \uC11C\uBC84 \uC8FC\uC18C\uB294 \uC5D4\uC9C4 \uC124\uCE58\uC5D0\uC11C \uC785\uB825\uD569\uB2C8\uB2E4. \uAE30\uC874 \uC11C\uBC84\uC5D0 \uC5F0\uACB0\uD558\uAC70\uB098 \uB85C\uCEEC \uC124\uCE58 \uC5D4\uC9C4\uC744 \uC2E4\uD589\uD569\uB2C8\uB2E4. Codex\uB294 ComfyUI \uC124\uCE58\uC640 \uC11C\uBC84 \uC5F0\uACB0 \uC5C6\uC774 \uC124\uCE58\uB41C Codex\uC758 \uB85C\uADF8\uC778\uC73C\uB85C \uC0AC\uC6A9\uD569\uB2C8\uB2E4.",
-    "Eng": "Set the ComfyUI server address in Engine setup. Connect to an existing server or start the installed local engine. Codex uses its own sign-in without ComfyUI setup."
+    "Kor": "ComfyUI \uC11C\uBC84 \uC8FC\uC18C\uB3C4 \uC5D4\uC9C4 \uC124\uCE58\u00B7\uC5F0\uACB0\uC5D0\uC11C \uC785\uB825\uD569\uB2C8\uB2E4. \uAE30\uC874 \uC11C\uBC84\uC5D0 \uC5F0\uACB0\uD558\uAC70\uB098 \uC124\uCE58\uD55C \uB85C\uCEEC \uC5D4\uC9C4\uC744 \uC2E4\uD589\uD569\uB2C8\uB2E4. Codex\uB294 ComfyUI \uC124\uCE58 \uC5C6\uC774 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Set the ComfyUI server address in Engine setup and connection. Connect to an existing server or start the installed local engine. Codex can be used without installing ComfyUI."
   },
   {
     "Id": 3366,
@@ -5828,20 +5828,20 @@
   {
     "Id": 3556,
     "Name": "EidolonText476",
-    "Kor": "\uAE30\uC874 \uC774\uBBF8\uC9C0\uC758 \uADF8\uB9BC\uCCB4 \uBC14\uAFB8\uAE30",
-    "Eng": "Change an image style"
+    "Kor": "\uC774\uBBF8\uC9C0 \uD3B8\uC9D1",
+    "Eng": "Edit images"
   },
   {
     "Id": 3557,
     "Name": "EidolonText477",
-    "Kor": "\uC6D0\uBCF8 \uC774\uBBF8\uC9C0\uC640 \uC218\uC815 \uC124\uBA85\uC744 \uC785\uB825\uD574 \uD3B8\uC9D1\uC744 \uC694\uCCAD\uD569\uB2C8\uB2E4. ComfyUI\uB294 \uC120\uD0DD \uBAA8\uB378\u00B7LoRA\uC640 \uBCC0\uACBD \uAC15\uB3C4\uB97C \uC0AC\uC6A9\uD558\uACE0, Codex\uB294 \uC6D0\uBCF8\uACFC \uC218\uC815 \uC124\uBA85\uC744 \uD568\uAED8 \uC804\uB2EC\uD569\uB2C8\uB2E4. \uC6D0\uBCF8\uC740 \uBCF4\uC874\uD558\uACE0 \uACB0\uACFC\uB294 \uC0C8 \uC774\uBBF8\uC9C0\uB85C \uC800\uC7A5\uD569\uB2C8\uB2E4.",
-    "Eng": "Provide a source image and edit instructions. ComfyUI uses the selected model, LoRAs and change strength; Codex receives the image and instructions. The source is preserved and the result is saved as a new image."
+    "Kor": "1. \uC774\uBBF8\uC9C0 \uD3B8\uC9D1\uC5D0\uC11C \uC6D0\uBCF8 \uC774\uBBF8\uC9C0\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4. \uC0DD\uC131 \uACB0\uACFC\uC758 \uC774 \uC774\uBBF8\uC9C0\uB85C \uD3B8\uC9D1\uC73C\uB85C \uAC00\uC838\uC62C \uC218\uB3C4 \uC788\uC2B5\uB2C8\uB2E4.\n2. \uBC14\uAFB8\uACE0 \uC2F6\uC740 \uADF8\uB9BC\uCCB4\uB098 \uB0B4\uC6A9\uC744 \uC124\uBA85\uD558\uACE0 \uD3B8\uC9D1 \uC694\uCCAD\uC744 \uCD94\uAC00\uD569\uB2C8\uB2E4.\n3. \uACB0\uACFC\uB294 \uC0C8 \uC774\uBBF8\uC9C0\uB85C \uC800\uC7A5\uD569\uB2C8\uB2E4. \uC6D0\uBCF8 \uD30C\uC77C\uC740 \uBCF4\uC874\uD569\uB2C8\uB2E4.",
+    "Eng": "1. In Edit, choose a source image, or use Edit this image from Results.\n2. Describe the style or content changes and submit the request.\n3. The result is saved as a new image. The source file is preserved."
   },
   {
     "Id": 3559,
     "Name": "EidolonText479",
-    "Kor": "\uBCC0\uACBD \uAC15\uB3C4\uAC00 \uB0AE\uC744\uC218\uB85D \uC6D0\uBCF8\uC744 \uB354 \uC720\uC9C0\uD558\uACE0, \uB192\uC744\uC218\uB85D \uC0C8 \uADF8\uB9BC\uCCB4\uC640 \uC124\uBA85\uC744 \uB354 \uBC18\uC601\uD569\uB2C8\uB2E4. \uD615\uD0DC\uB098 \uAD6C\uB3C4\uB97C \uC815\uD655\uD788 \uACE0\uC815\uD558\uC9C0\uB294 \uC54A\uC2B5\uB2C8\uB2E4. \uC6D0\uBCF8 \uD30C\uC77C\uC740 \uBCC0\uACBD\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
-    "Eng": "Lower change strength retains more of the original; higher strength applies more of the new style and description. Exact shape or composition is not guaranteed. The source file is preserved."
+    "Kor": "ComfyUI\uB294 \uBAA8\uB378\u00B7LoRA\uC640 \uBCC0\uACBD \uAC15\uB3C4\uB97C \uC0AC\uC6A9\uD569\uB2C8\uB2E4. \uB0AE\uC740 \uAC15\uB3C4\uB294 \uC6D0\uBCF8\uC744 \uB354 \uC720\uC9C0\uD558\uACE0 \uB192\uC740 \uAC15\uB3C4\uB294 \uC218\uC815 \uC124\uBA85\uC744 \uB354 \uBC18\uC601\uD569\uB2C8\uB2E4. Codex\uC5D0\uB294 \uC6D0\uBCF8\uACFC \uC218\uC815 \uC124\uBA85\uC744 \uC804\uB2EC\uD558\uBA70 \uBCC0\uACBD \uAC15\uB3C4\u00B7LoRA\uB294 \uC801\uC6A9\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "ComfyUI uses a model, LoRAs and change strength. Lower strength retains more of the source; higher strength applies more of your edit instructions. Codex receives the image and instructions without change strength or LoRAs."
   },
   {
     "Id": 3560,
@@ -6560,8 +6560,8 @@
   {
     "Id": 3683,
     "Name": "EidolonText604",
-    "Kor": "\uAE30\uC900 \uC774\uBBF8\uC9C0\uB85C \uC2A4\uD504\uB77C\uC774\uD2B8 \uD504\uB808\uC784\uC774\uB098 \uBAA8\uB378\uB9C1 \uCC38\uACE0 \uC774\uBBF8\uC9C0\uB97C \uB9CC\uB4ED\uB2C8\uB2E4.",
-    "Eng": "Create sprite frames or modeling-reference views from a reference image."
+    "Kor": "\uAE30\uC900 \uC774\uBBF8\uC9C0\uB85C \uC2A4\uD504\uB77C\uC774\uD2B8 \uB610\uB294 \uC815\uBA74\u00B7\uCE21\uBA74\u00B7\uD6C4\uBA74\u00B7\uC717\uBA74 \uC0AC\uBA74\uB3C4\uB97C \uB9CC\uB4ED\uB2C8\uB2E4.",
+    "Eng": "Create sprites or front, side, back and top views from a reference image."
   },
   {
     "Id": 3684,
@@ -6572,8 +6572,8 @@
   {
     "Id": 3685,
     "Name": "EidolonText606",
-    "Kor": "\uCE90\uB9AD\uD130 \uC0BC\uBA74\uB3C4",
-    "Eng": "Character views"
+    "Kor": "\uC0AC\uBA74\uB3C4",
+    "Eng": "Four views"
   },
   {
     "Id": 3686,
@@ -6848,14 +6848,14 @@
   {
     "Id": 3731,
     "Name": "EidolonText652",
-    "Kor": "\uC2A4\uD504\uB77C\uC774\uD2B8\u00B7\uC0BC\uBA74\uB3C4 \uC81C\uC791",
-    "Eng": "Create sprites and views"
+    "Kor": "\uC2A4\uD504\uB77C\uC774\uD2B8\u00B7\uC0AC\uBA74\uB3C4 \uC81C\uC791",
+    "Eng": "Create sprites and four views"
   },
   {
     "Id": 3732,
     "Name": "EidolonText653",
-    "Kor": "\uC0DD\uC131 \uACB0\uACFC\uC758 \uD070 \uC774\uBBF8\uC9C0\uC5D0\uC11C \uC6B0\uD074\uB9AD \uBA54\uB274\uC758 \uC5D0\uC14B \uC81C\uC791\uC744 \uC120\uD0DD\uD558\uBA74 \uC774\uBBF8\uC9C0\uC640 \uAE30\uC874 \uC124\uBA85\uC744 \uAC00\uC838\uC635\uB2C8\uB2E4. \uC5D0\uC14B \uC81C\uC791\uC5D0\uC11C \uAE30\uC900 \uC774\uBBF8\uC9C0\uC640 \uB300\uC0C1 \uC124\uBA85\uC744 \uC785\uB825\uD558\uACE0 \uC2A4\uD504\uB77C\uC774\uD2B8 \uB610\uB294 \uC0BC\uBA74\uB3C4\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4. \uC2A4\uD504\uB77C\uC774\uD2B8\uB294 \uB3D9\uC791\u00B7\uD504\uB808\uC784 \uC218\u00B7\uC7AC\uC0DD \uC18D\uB3C4\uB97C \uC9C0\uC815\uD569\uB2C8\uB2E4. \uCE90\uB9AD\uD130\uB294 \uC815\uBA74\u00B7\uCE21\uBA74\u00B7\uD6C4\uBA74, \uBB3C\uCCB4\uB294 \uC815\uBA74\u00B7\uCE21\uBA74\u00B7\uC717\uBA74\uC744 \uB9CC\uB4ED\uB2C8\uB2E4. \uACB0\uACFC\uC5D0\uC11C \uD56D\uBAA9\uC744 \uC120\uD0DD\uD574 \uB2E4\uC2DC \uB9CC\uB4E4\uAC70\uB098 \uC774\uBBF8\uC9C0\uB85C \uAD50\uCCB4\uD560 \uC218 \uC788\uACE0, \uC2A4\uD504\uB77C\uC774\uD2B8\uB294 \uC21C\uC11C \uBCC0\uACBD\uACFC \uBC18\uBCF5 \uC7AC\uC0DD\uC744 \uC9C0\uC6D0\uD569\uB2C8\uB2E4. \uCDE8\uC18C\u00B7\uC2E4\uD328\uD55C \uBB36\uC74C\uC740 \uBBF8\uC644\uC131 \uC774\uC5B4 \uB9CC\uB4E4\uAE30\uB85C ",
-    "Eng": "Right-click a large result preview and choose Asset creation to use its image and existing description. In Asset creation, select a reference, describe the subject and choose sprites or views. For sprites, enter an action, frame count and playback speed. "
+    "Kor": "1. \uC5D0\uC14B \uC81C\uC791\uC5D0\uC11C \uAE30\uC900 \uC774\uBBF8\uC9C0\uC640 \uB300\uC0C1 \uC124\uBA85\uC744 \uC785\uB825\uD569\uB2C8\uB2E4. \uC0DD\uC131 \uACB0\uACFC\uC758 \uD070 \uC774\uBBF8\uC9C0\uB97C \uC6B0\uD074\uB9AD\uD574 \uC5D0\uC14B \uC81C\uC791\uC73C\uB85C \uAC00\uC838\uC62C \uC218\uB3C4 \uC788\uC2B5\uB2C8\uB2E4.\n2. \uC2A4\uD504\uB77C\uC774\uD2B8\uB294 \uB3D9\uC791\u00B7\uD504\uB808\uC784 \uC218\u00B7\uC7AC\uC0DD \uC18D\uB3C4\uB97C \uC815\uD558\uACE0 \uC0AC\uBA74\uB3C4\uB294 \uC815\uBA74\u00B7\uCE21\uBA74\u00B7\uD6C4\uBA74\u00B7\uC717\uBA74\uC744 \uC0DD\uC131\uD569\uB2C8\uB2E4.\n3. \uC0DD\uC131 \uD6C4 \uD504\uB808\uC784\uC744 \uC7AC\uC0DD\u00B7\uBE44\uAD50\uD558\uACE0 \uD544\uC694\uD55C \uD56D\uBAA9\uB9CC \uC7AC\uC0DD\uC131\uD558\uAC70\uB098 \uAD50\uCCB4\uD569\uB2C8\uB2E4.\n4. \uAC1C\uBCC4 PNG\u00B7\uC2DC\uD2B8\u00B7\uC88C\uD45C\uC640 FPS JSON\uC744 \uB0B4\uBCF4\uB0C5\uB2C8\uB2E4.",
+    "Eng": "1. In Asset creation, choose a reference image and describe the subject. You can also right-click the large image in Results and choose Asset creation.\n2. For sprites, set the action, frame count and FPS. Four views generate front, side, back and top.\n3. "
   },
   {
     "Id": 3733,
@@ -6866,7 +6866,67 @@
   {
     "Id": 3734,
     "Name": "EidolonText655",
-    "Kor": "\uC5D0\uC14B \uC81C\uC791\uC740 ComfyUI \uC0DD\uC131 \uBC29\uC2DD\uC5D0\uC11C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC0DD\uC131 \uD658\uACBD\uC5D0\uC11C \uBC29\uC2DD\uC744 \uBCC0\uACBD\uD558\uC138\uC694.",
-    "Eng": "Asset creation uses ComfyUI. Change the backend in Generation environment to create assets."
+    "Kor": "Codex\uAC00 \uAE30\uC900 \uC774\uBBF8\uC9C0\uC640 \uACF5\uD1B5 \uC9C0\uCE68\uC73C\uB85C \uAC01 \uD504\uB808\uC784\u00B7\uC2DC\uC810\uC744 \uC21C\uC11C\uB300\uB85C \uC0DD\uC131\uD569\uB2C8\uB2E4. \uCCB4\uD06C\uD3EC\uC778\uD2B8\u00B7LoRA\u00B7\uCC38\uACE0 \uAC15\uB3C4\u00B7\uC2DC\uB4DC\uB294 \uC0AC\uC6A9\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Codex generates each frame or view in sequence from the reference and shared guidelines. Checkpoints, LoRAs, reference strength and seeds do not apply."
+  },
+  {
+    "Id": 3735,
+    "Name": "EidolonText656",
+    "Kor": "\uBB36\uC74C \uC0AD\uC81C",
+    "Eng": "Delete collection"
+  },
+  {
+    "Id": 3736,
+    "Name": "EidolonText657",
+    "Kor": "{0}\n\n\uC774 \uC81C\uC791 \uBB36\uC74C\uC744 \uC0AD\uC81C\uD560\uAE4C\uC694? \uBB36\uC74C \uAE30\uB85D\uACFC \uB0B4\uBD80 \uC791\uC5C5 \uD30C\uC77C\uC744 \uC0AD\uC81C\uD569\uB2C8\uB2E4. \uC0DD\uC131\uB41C PNG\uC640 \uD504\uB86C\uD504\uD2B8 JSON, \uC6D0\uBCF8 \uC0DD\uC131 \uC791\uC5C5, \uB0B4\uBCF4\uB0B8 \uD30C\uC77C\uC740 \uBCF4\uC874\uD569\uB2C8\uB2E4.",
+    "Eng": "{0}\n\nDelete this collection and its internal working files? Generated PNGs, prompt JSON, source generation jobs and exported files are preserved."
+  },
+  {
+    "Id": 3737,
+    "Name": "EidolonText658",
+    "Kor": "{0} \uC81C\uC791 \uBB36\uC74C\uC744 \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Deleted collection: {0}"
+  },
+  {
+    "Id": 3738,
+    "Name": "EidolonText659",
+    "Kor": "\uD504\uB86C\uD504\uD2B8 JSON\uC758 \uC0DD\uC131 \uC815\uBCF4 \uD615\uC2DD\uC774 \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The generation data in the prompt JSON has an invalid format."
+  },
+  {
+    "Id": 3739,
+    "Name": "EidolonText660",
+    "Kor": "\uC774\uBBF8\uC9C0 \uC0DD\uC131\u00B7\uD3B8\uC9D1\uBD80\uD130 \uACB0\uACFC \uAD00\uB9AC, \uC2A4\uD504\uB77C\uC774\uD2B8\u00B7\uC0AC\uBA74\uB3C4 \uC81C\uC791\uACFC LoRA \uD559\uC2B5\uAE4C\uC9C0 \uD55C\uACF3\uC5D0\uC11C \uC9C4\uD589\uD569\uB2C8\uB2E4. \uC544\uB798 \uC21C\uC11C\uB85C \uD658\uACBD\uC744 \uC900\uBE44\uD558\uACE0 \uD544\uC694\uD55C \uC791\uC5C5 \uD654\uBA74\uC744 \uC5EC\uC138\uC694.",
+    "Eng": "Create and edit images, manage results, make sprites and four views, and train LoRAs in one app. Prepare your environment below, then open the screen for your task."
+  },
+  {
+    "Id": 3740,
+    "Name": "EidolonText661",
+    "Kor": "\uC0DD\uC131 \uACB0\uACFC \uAD00\uB9AC",
+    "Eng": "Manage results"
+  },
+  {
+    "Id": 3741,
+    "Name": "EidolonText662",
+    "Kor": "\uC0DD\uC131 \uACB0\uACFC\uC5D0\uC11C \uC774\uBBF8\uC9C0\uB97C \uC120\uD0DD\uD558\uBA74 \uC0DD\uC131 \uC870\uAC74\uACFC \uD504\uB86C\uD504\uD2B8\uB97C \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC800\uC7A5\u00B7\uD504\uB86C\uD504\uD2B8 \uC7AC\uC0AC\uC6A9\u00B7\uC774 \uC774\uBBF8\uC9C0\uB85C \uD3B8\uC9D1\u00B7\uC774 \uACB0\uACFC\uB85C \uD559\uC2B5\uC73C\uB85C \uB2E4\uC74C \uC791\uC5C5\uC744 \uC774\uC5B4\uAC11\uB2C8\uB2E4. Ctrl\u00B7Shift\uB85C \uC5EC\uB7EC \uC774\uBBF8\uC9C0\uB97C \uC120\uD0DD\uD574 \uC0AD\uC81C\uD558\uAC70\uB098 \uC774\uBBF8\uC9C0 \uD3F4\uB354\uB97C \uC5F4 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC774\uBBF8\uC9C0 \uC0AD\uC81C\uB294 PNG\uC640 \uAC19\uC740 \uC774\uB984\uC758 \uD504\uB86C\uD504\uD2B8 JSON\uC744 \uD568\uAED8 \uC0AD\uC81C\uD569\uB2C8\uB2E4.",
+    "Eng": "Select an image in Results to read its settings and prompt. Save it, reuse the prompt, edit the image or use it for training. Use Ctrl or Shift to select multiple images for deletion, or open the image folder. Deleting an image also removes its matching p"
+  },
+  {
+    "Id": 3742,
+    "Name": "EidolonText663",
+    "Kor": "\uC7AC\uC0DD \uC18D\uB3C4\uB294 \uCD08\uB2F9 \uBCF4\uC5EC\uC8FC\uB294 \uD504\uB808\uC784 \uC218\uC785\uB2C8\uB2E4. \uBBF8\uB9AC\uBCF4\uAE30\uC640 \uB0B4\uBCF4\uB0B4\uAE30\uB294 \uAC19\uC740 \uD06C\uAE30 \uBCF4\uC815\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4. \uBBF8\uC644\uC131 \uBB36\uC74C\uC740 \uC774\uC5B4 \uB9CC\uB4E4 \uC218 \uC788\uC73C\uBA70 \uBB36\uC74C \uC0AD\uC81C\uB294 \uC81C\uC791 \uAE30\uB85D\u00B7\uB0B4\uBD80 \uC791\uC5C5 \uD30C\uC77C\uB9CC \uC0AD\uC81C\uD558\uACE0 \uC0DD\uC131 \uC774\uBBF8\uC9C0\u00B7\uD504\uB86C\uD504\uD2B8 JSON\u00B7\uB0B4\uBCF4\uB0B8 \uD30C\uC77C\uC740 \uBCF4\uC874\uD569\uB2C8\uB2E4.",
+    "Eng": "FPS is the number of frames shown per second. Preview and export use the same size normalization. Resume unfinished collections when needed. Delete collection removes its record and internal working files, while preserving generated images, prompt JSON an"
+  },
+  {
+    "Id": 3743,
+    "Name": "EidolonText664",
+    "Kor": "\uC124\uC815\uACFC \uC800\uC7A5 \uC704\uCE58",
+    "Eng": "Settings and storage"
+  },
+  {
+    "Id": 3744,
+    "Name": "EidolonText665",
+    "Kor": "\uC124\uC815 \u2192 \uC77C\uBC18\uC5D0\uC11C \uC774\uBBF8\uC9C0 \uC800\uC7A5 \uD3F4\uB354\u00B7\uC5B8\uC5B4\u00B7\uD14C\uB9C8\uC640 MCP \uC5F0\uACB0\uC744 \uAD00\uB9AC\uD569\uB2C8\uB2E4. \uAE30\uBCF8 \uC774\uBBF8\uC9C0 \uD3F4\uB354\uB294 %LOCALAPPDATA%\\Eidolon\\Images\uC774\uBA70 PNG\uC640 \uAC19\uC740 \uC774\uB984\uC758 \uD504\uB86C\uD504\uD2B8 JSON\uC744 \uD568\uAED8 \uC800\uC7A5\uD569\uB2C8\uB2E4. \uC6D0\uBCF8\uACFC \uC2E4\uD589 \uB85C\uADF8\uB294 Jobs \uC544\uB798\uC5D0 \uBCF4\uC874\uD569\uB2C8\uB2E4. \uD559\uC2B5 \uB370\uC774\uD130\uB294 \uC124\uC815 \u2192 \uC5D4\uC9C4 \uC124\uCE58\u00B7\uC5F0\uACB0\uC5D0\uC11C \uC5F4\uAC70\uB098 \uBE44\uC6B8 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Manage the image folder, language, theme and MCP connection in Settings \u003E General. The default image folder is %LOCALAPPDATA%\\Eidolon\\Images; each PNG has a matching prompt JSON. Originals and job logs are preserved under Jobs. Open or clear prepared data"
   }
 ]

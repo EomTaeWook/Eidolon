@@ -16,7 +16,12 @@
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,16,*">
     <StackPanel Spacing="5">
-      <TextBlock Text="{DynamicResource EidolonText603}" Classes="title" FontSize="24" />
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{DynamicResource EidolonText603}" Classes="title" FontSize="24" />
+        <Border Grid.Column="1" Background="{DynamicResource BadgeBrush}" CornerRadius="6" Padding="10,4" VerticalAlignment="Center">
+          <TextBlock Text="{Binding Session.GenerationBackendCaption}" FontSize="12" />
+        </Border>
+      </Grid>
       <TextBlock Text="{DynamicResource EidolonText604}" Classes="muted" FontSize="12" />
       <TextBlock Text="{DynamicResource EidolonText655}" Classes="muted" FontSize="12" IsVisible="{Binding !IsComfyAssetCreation}" />
     </StackPanel>
@@ -74,10 +79,12 @@
               </StackPanel>
               <StackPanel Spacing="8">
                 <Border Height="1" Background="{DynamicResource BorderBrush}" />
-                <TextBlock Text="{Binding Assets.SelectedModel.Label}" TextTrimming="CharacterEllipsis" Classes="muted" FontSize="12" IsVisible="{Binding Assets.HasAvailableModels}" />
-                <StackPanel Spacing="8" IsVisible="{Binding !Assets.HasAvailableModels}">
-                  <TextBlock Text="{Binding Assets.ModelSetupCaption}" Classes="muted" FontSize="12" />
-                  <Button Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" HorizontalAlignment="Stretch" />
+                <StackPanel Spacing="8" IsVisible="{Binding IsComfyAssetCreation}">
+                  <TextBlock Text="{Binding Assets.SelectedModel.Label}" TextTrimming="CharacterEllipsis" Classes="muted" FontSize="12" IsVisible="{Binding Assets.HasAvailableModels}" />
+                  <StackPanel Spacing="8" IsVisible="{Binding !Assets.HasAvailableModels}">
+                    <TextBlock Text="{Binding Assets.ModelSetupCaption}" Classes="muted" FontSize="12" />
+                    <Button Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" HorizontalAlignment="Stretch" />
+                  </StackPanel>
                 </StackPanel>
                 <ToggleButton x:Name="OptionsToggle" Classes="disclosure" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                   <Grid ColumnDefinitions="*,Auto">
@@ -86,29 +93,31 @@
                   </Grid>
                 </ToggleButton>
                 <StackPanel Spacing="10" IsVisible="{Binding #OptionsToggle.IsChecked}">
-                  <TextBlock Text="{DynamicResource EidolonText359}" FontSize="12" />
-                  <ComboBox ItemsSource="{Binding Assets.Models}" SelectedItem="{Binding Assets.SelectedModel, Mode=TwoWay}">
-                    <ComboBox.ItemTemplate>
-                      <DataTemplate x:DataType="vm:AssetItem">
-                        <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="12" />
-                      </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                  </ComboBox>
-                  <TextBlock Text="{DynamicResource EidolonText423}" FontSize="12" />
-                  <TextBox Text="{Binding Assets.LoraSearch, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText432}" IsVisible="{Binding Assets.ShowLoraSearch}" FontSize="12" />
-                  <ScrollViewer MaxHeight="112" HorizontalScrollBarVisibility="Disabled">
-                    <ItemsControl ItemsSource="{Binding Assets.FilteredLoras}">
-                      <ItemsControl.ItemTemplate>
+                  <StackPanel Spacing="10" IsVisible="{Binding IsComfyAssetCreation}">
+                    <TextBlock Text="{DynamicResource EidolonText359}" FontSize="12" />
+                    <ComboBox ItemsSource="{Binding Assets.Models}" SelectedItem="{Binding Assets.SelectedModel, Mode=TwoWay}">
+                      <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="vm:AssetItem">
-                          <Button Classes="assetLora" Classes.active="{Binding IsSelected}" Click="OnLoraClicked" ToolTip.Tip="{Binding TriggerCaption}">
-                            <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="12" />
-                          </Button>
+                          <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="12" />
                         </DataTemplate>
-                      </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                  </ScrollViewer>
-                  <TextBlock Text="{DynamicResource EidolonText613}" FontSize="12" />
-                  <Slider Value="{Binding ChangeStrength, Mode=TwoWay}" Minimum="0.05" Maximum="0.95" />
+                      </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock Text="{DynamicResource EidolonText423}" FontSize="12" />
+                    <TextBox Text="{Binding Assets.LoraSearch, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText432}" IsVisible="{Binding Assets.ShowLoraSearch}" FontSize="12" />
+                    <ScrollViewer MaxHeight="112" HorizontalScrollBarVisibility="Disabled">
+                      <ItemsControl ItemsSource="{Binding Assets.FilteredLoras}">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="vm:AssetItem">
+                            <Button Classes="assetLora" Classes.active="{Binding IsSelected}" Click="OnLoraClicked" ToolTip.Tip="{Binding TriggerCaption}">
+                              <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="12" />
+                            </Button>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                    </ScrollViewer>
+                    <TextBlock Text="{DynamicResource EidolonText613}" FontSize="12" />
+                    <Slider Value="{Binding ChangeStrength, Mode=TwoWay}" Minimum="0.05" Maximum="0.95" />
+                  </StackPanel>
                   <CheckBox Content="{DynamicResource EidolonText308}" IsChecked="{Binding RemoveBackground, Mode=TwoWay}" FontSize="12" />
                   <CheckBox Content="{DynamicResource EidolonText614}" IsChecked="{Binding PixelArt, Mode=TwoWay}" FontSize="12" />
                   <TextBlock Text="{DynamicResource EidolonText615}" FontSize="12" />
@@ -130,22 +139,23 @@
         </Grid>
       </Border>
       <Grid Grid.Column="2" RowDefinitions="Auto,12,*,12,Auto">
-        <Grid ColumnDefinitions="*,Auto">
-          <ComboBox ItemsSource="{Binding Collections}" SelectedItem="{Binding SelectedCollection, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText623}">
+        <Grid ColumnDefinitions="*,Auto,Auto">
+          <ComboBox ItemsSource="{Binding Collections}" SelectedItem="{Binding SelectedCollection, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText623}" IsEnabled="{Binding Session.CanQueue}">
             <ComboBox.ItemTemplate>
               <DataTemplate x:DataType="vm:AssetCollectionChoice">
                 <TextBlock Text="{Binding Caption}" TextTrimming="CharacterEllipsis" />
               </DataTemplate>
             </ComboBox.ItemTemplate>
           </ComboBox>
-          <Button Grid.Column="1" Content="{DynamicResource EidolonText410}" Command="{Binding RefreshCollectionsCommand}" Margin="8,0,0,0" />
+          <Button Grid.Column="1" Content="{DynamicResource EidolonText656}" Command="{Binding DeleteCollectionCommand}" Margin="8,0,0,0" />
+          <Button Grid.Column="2" Content="{DynamicResource EidolonText410}" Command="{Binding RefreshCollectionsCommand}" Margin="8,0,0,0" />
         </Grid>
         <Border Grid.Row="2" Classes="card" Padding="16">
           <ScrollViewer HorizontalScrollBarVisibility="Disabled" AllowAutoHide="False">
             <StackPanel Spacing="12">
               <TextBlock Text="{DynamicResource EidolonText622}" FontSize="18" FontWeight="SemiBold" />
               <TextBlock Text="{Binding Preview.Title}" TextTrimming="CharacterEllipsis" />
-              <TextBlock Text="{Binding Preview.SeedCaption}" Classes="muted" FontSize="12" IsVisible="{Binding Preview.HasCollection}" />
+              <TextBlock Text="{Binding Preview.SeedCaption}" Classes="muted" FontSize="12" IsVisible="{Binding Preview.HasSeed}" />
               <Border Height="280" CornerRadius="8" ClipToBounds="True" IsVisible="{Binding Preview.IsSprite}">
                 <Grid>
                   <views:TransparencyBackground />

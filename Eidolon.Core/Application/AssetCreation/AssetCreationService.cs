@@ -26,22 +26,54 @@ namespace Eidolon.Core.Application
             AssetCreationInput input, CancellationToken token)
         {
             ValidateInput(input);
-            if (settings != null && settings.GenerationBackend != GenerationBackend.ComfyUI)
-            {
-                throw new StudioException(StudioMessageCode.InvalidGenerationBackend);
-            }
-            if (model == null || model.Kind != AssetKind.Checkpoint || model.Family == ModelFamily.Unknown)
-            {
-                throw new StudioException(StudioMessageCode.ModelRequired);
-            }
-            if (settings == null || loras == null)
+            if (settings == null)
             {
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
-            if (loras.Any(lora => lora == null || lora.Kind != AssetKind.Lora || lora.Family != model.Family
-                || lora.RuntimeRoot != model.RuntimeRoot) == true)
+            if (loras == null)
             {
-                throw new StudioException(StudioMessageCode.ModelFamilyMismatch);
+                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+            }
+            settings.Validate();
+            ModelAsset generationModel = new ModelAsset();
+            List<ModelAsset> generationLoras = new List<ModelAsset>();
+            long seed = 0;
+            if (settings.GenerationBackend == GenerationBackend.ComfyUI)
+            {
+                if (model == null)
+                {
+                    throw new StudioException(StudioMessageCode.ModelRequired);
+                }
+                if (model.Kind != AssetKind.Checkpoint)
+                {
+                    throw new StudioException(StudioMessageCode.ModelRequired);
+                }
+                if (model.Family == ModelFamily.Unknown)
+                {
+                    throw new StudioException(StudioMessageCode.ModelRequired);
+                }
+                foreach (ModelAsset lora in loras)
+                {
+                    if (lora == null)
+                    {
+                        throw new StudioException(StudioMessageCode.ModelFamilyMismatch);
+                    }
+                    if (lora.Kind != AssetKind.Lora)
+                    {
+                        throw new StudioException(StudioMessageCode.ModelFamilyMismatch);
+                    }
+                    if (lora.Family != model.Family)
+                    {
+                        throw new StudioException(StudioMessageCode.ModelFamilyMismatch);
+                    }
+                    if (lora.RuntimeRoot != model.RuntimeRoot)
+                    {
+                        throw new StudioException(StudioMessageCode.ModelFamilyMismatch);
+                    }
+                }
+                generationModel = model.Copy();
+                generationLoras = loras.Select(lora => lora.Copy()).ToList();
+                seed = input.Seed;
             }
             using SKMemoryStream memory = new SKMemoryStream(input.Reference.ImageData);
             using SKCodec codec = SKCodec.Create(memory);
@@ -54,14 +86,15 @@ namespace Eidolon.Core.Application
             AssetCollection collection = new AssetCollection
             {
                 Kind = input.Kind, Prompt = input.Prompt.Trim(), ActionPrompt = input.ActionPrompt.Trim(),
-                Settings = settings.Copy(), Model = model.Copy(), Loras = loras.Select(lora => lora.Copy()).ToList(),
+                Settings = settings.Copy(), Model = generationModel, Loras = generationLoras,
                 UseServerAssets = settings.UseServerAssets,
                 ReferenceName = Path.GetFileName(input.Reference.ImageName), ChangeStrength = input.Reference.ChangeStrength,
-                Seed = input.Seed, RemoveBackground = input.RemoveBackground, PixelArt = input.PixelArt,
+                Seed = seed, RemoveBackground = input.RemoveBackground, PixelArt = input.PixelArt,
                 FrameWidth = input.FrameWidth, FrameHeight = input.FrameHeight, Columns = input.Columns,
                 FramesPerSecond = input.FramesPerSecond, CreatedAtUtc = _time.GetUtcNow()
             };
-            int count = 3;
+            string[] views = { "front", "side", "back", "top" };
+            int count = AssetCreationInput.ViewCount;
             if (input.Kind == AssetCreationKind.SpriteAnimation)
             {
                 count = input.FrameCount;
@@ -81,11 +114,6 @@ namespace Eidolon.Core.Application
                 }
                 else
                 {
-                    string[] views = { "front", "side", "back" };
-                    if (input.Kind == AssetCreationKind.ObjectViews)
-                    {
-                        views[2] = "top";
-                    }
                     label = views[index];
                     instruction = views[index] + " view, orthographic projection, no perspective, neutral pose";
                 }
@@ -95,6 +123,13 @@ namespace Eidolon.Core.Application
                     Prompt = collection.Prompt + ", " + instruction
                         + ", single subject, entire subject visible, consistent design and proportions, fixed camera, plain background"
                 });
+                if (input.Kind == AssetCreationKind.SpriteAnimation)
+                {
+                    collection.Frames.Last().Prompt += ", exactly one animation frame, no sprite sheet or collage"
+                        + ", keep the reference subject's head and body proportions, apparent size, camera distance and viewing angle unchanged"
+                        + ", use identical canvas framing and a fixed bottom-center ground baseline in every frame"
+                        + ", change only the requested pose, no zoom, no reframing, no cropping";
+                }
                 if (input.PixelArt == true)
                 {
                     collection.Frames.Last().Prompt += ", pixel art, crisp pixel edges, no anti-aliasing";
@@ -150,6 +185,10 @@ namespace Eidolon.Core.Application
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
             collection.Frames[number - 1].Prompt = prompt.Trim();
+            if (collection.Settings.GenerationBackend == GenerationBackend.Codex)
+            {
+                seed = 0;
+            }
             collection.Frames[number - 1].Seed = seed;
             collection.State = JobState.Running;
             try
@@ -197,6 +236,10 @@ namespace Eidolon.Core.Application
                 frame.ImagePath = _jobs.ImagePath(result, result.ImageFiles.Last());
                 frame.SourceJobId = result.Id;
                 frame.ImageSeed = result.Seed;
+                if (result.GenerationBackend == GenerationBackend.Codex)
+                {
+                    collection.Model = result.Model.Copy();
+                }
                 frame.State = JobState.Completed;
             }
             catch (Exception error)
@@ -283,6 +326,13 @@ namespace Eidolon.Core.Application
             {
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
+            if (input.Kind != AssetCreationKind.SpriteAnimation)
+            {
+                if (input.Kind != AssetCreationKind.FourViews)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+            }
             if (input.Reference == null || input.Reference.ImageData == null || input.Reference.ImageData.Length == 0
                 || input.Reference.ImageData.Length > GenerationReferenceInput.MaximumImageBytes)
             {
@@ -310,7 +360,7 @@ namespace Eidolon.Core.Application
             {
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
-            int count = 3;
+            int count = AssetCreationInput.ViewCount;
             if (input.Kind == AssetCreationKind.SpriteAnimation)
             {
                 count = input.FrameCount;

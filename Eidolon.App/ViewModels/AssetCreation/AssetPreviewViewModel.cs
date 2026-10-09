@@ -177,11 +177,22 @@ namespace Eidolon.App.ViewModels
                 return 520;
             }
         }
-        public string SeedCaption
+        public bool HasSeed
         {
             get
             {
                 if (_collection == null)
+                {
+                    return false;
+                }
+                return _collection.Settings.GenerationBackend == GenerationBackend.ComfyUI;
+            }
+        }
+        public string SeedCaption
+        {
+            get
+            {
+                if (HasSeed == false)
                 {
                     return string.Empty;
                 }
@@ -270,7 +281,7 @@ namespace Eidolon.App.ViewModels
                         {
                             try
                             {
-                                bitmap = _images.Load(_images.Read(frame.ImagePath), 512, collection.PixelArt);
+                                bitmap = _images.LoadFrame(_images.Read(frame.ImagePath), collection, 512, token);
                             }
                             catch (Exception error) when (error is IOException || error is StudioException
                                 || error is UnauthorizedAccessException || error is ArgumentException)
@@ -411,7 +422,7 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(ThumbnailWidth));
             Raise(nameof(ThumbnailHeight));
             Raise(nameof(FrameListHeight));
-            foreach (string property in new[] { nameof(Collection), nameof(HasCollection), nameof(HasFrames), nameof(IsSprite), nameof(CanExport), nameof(Title), nameof(Interpolation), nameof(Preview), nameof(SeedCaption) })
+            foreach (string property in new[] { nameof(Collection), nameof(HasCollection), nameof(HasFrames), nameof(IsSprite), nameof(CanExport), nameof(Title), nameof(Interpolation), nameof(Preview), nameof(HasSeed), nameof(SeedCaption) })
             {
                 Raise(property);
             }
@@ -440,6 +451,24 @@ namespace Eidolon.App.ViewModels
             catch (OperationCanceledException)
             {
             }
+        }
+
+        public async Task ClearAsync()
+        {
+            _requestedId = string.Empty;
+            Raise(nameof(IsCurrent));
+            RefreshCommands();
+            await CloseAsync();
+            SelectedFrame = null;
+            foreach (AssetFrameItem frame in Frames)
+            {
+                frame.Dispose();
+            }
+            Frames.Clear();
+            _collection = null;
+            _exportDirectory = string.Empty;
+            Raise(nameof(HasExport));
+            NotifyCollection();
         }
         public override void Localize()
         {

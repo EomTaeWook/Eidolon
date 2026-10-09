@@ -7,10 +7,12 @@ namespace Eidolon.Core.Infrastructure
     public class AssetSheetExporter
     {
         private readonly JobStore _jobs;
+        private readonly AssetFrameRenderer _renderer;
 
-        public AssetSheetExporter(JobStore jobs)
+        public AssetSheetExporter(JobStore jobs, AssetFrameRenderer renderer)
         {
             _jobs = jobs;
+            _renderer = renderer;
         }
 
         public string Export(AssetCollection collection, string parentDirectory, CancellationToken token)
@@ -46,7 +48,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 token.ThrowIfCancellationRequested();
                 using SKBitmap bitmap = Decode(frame.ImagePath);
-                SKRectI subject = SubjectBounds(bitmap, token);
+                SKRectI subject = _renderer.MeasureSubjectBounds(bitmap, token);
                 bounds.Add(subject);
                 int canvasSize = Math.Max(bitmap.Width, bitmap.Height);
                 canvasSizes.Add(canvasSize);
@@ -78,15 +80,20 @@ namespace Eidolon.Core.Infrastructure
                 token.ThrowIfCancellationRequested();
                 AssetFrame frame = collection.Frames[index];
                 using SKBitmap original = Decode(frame.ImagePath);
-                using SKImage source = SKImage.FromBitmap(original);
                 SKRectI subject = bounds[index];
-                float frameWidth = (float)subject.Width / canvasSizes[index] * scale;
-                float frameHeight = (float)subject.Height / canvasSizes[index] * scale;
-                SKRect destination = SKRect.Create((collection.FrameWidth - frameWidth) / 2,
-                    collection.FrameHeight - frameHeight, frameWidth, frameHeight);
                 using SKBitmap normalized = new SKBitmap(collection.FrameWidth, collection.FrameHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using (SKCanvas canvas = new SKCanvas(normalized))
+                if (collection.Kind == AssetCreationKind.SpriteAnimation)
                 {
+                    _renderer.DrawSprite(normalized, original, subject, collection.PixelArt);
+                }
+                else
+                {
+                    float frameWidth = (float)subject.Width / canvasSizes[index] * scale;
+                    float frameHeight = (float)subject.Height / canvasSizes[index] * scale;
+                    SKRect destination = SKRect.Create((collection.FrameWidth - frameWidth) / 2,
+                        collection.FrameHeight - frameHeight, frameWidth, frameHeight);
+                    using SKImage source = SKImage.FromBitmap(original);
+                    using SKCanvas canvas = new SKCanvas(normalized);
                     canvas.Clear(SKColors.Transparent);
                     canvas.DrawImage(source, new SKRect(subject.Left, subject.Top, subject.Right, subject.Bottom), destination, sampling, null);
                 }
@@ -136,33 +143,6 @@ namespace Eidolon.Core.Infrastructure
                 throw new StudioException(StudioMessageCode.InvalidReferenceImage);
             }
             return bitmap;
-        }
-
-        private SKRectI SubjectBounds(SKBitmap bitmap, CancellationToken token)
-        {
-            int left = bitmap.Width;
-            int top = bitmap.Height;
-            int right = 0;
-            int bottom = 0;
-            for (int y = 0; y < bitmap.Height; y++)
-            {
-                token.ThrowIfCancellationRequested();
-                for (int x = 0; x < bitmap.Width; x++)
-                {
-                    if (bitmap.GetPixel(x, y).Alpha > 16)
-                    {
-                        left = Math.Min(left, x);
-                        right = Math.Max(right, x + 1);
-                        top = Math.Min(top, y);
-                        bottom = Math.Max(bottom, y + 1);
-                    }
-                }
-            }
-            if (right <= left || bottom <= top)
-            {
-                throw new StudioException(StudioMessageCode.BackgroundSubjectNotFound);
-            }
-            return new SKRectI(left, top, right, bottom);
         }
 
         private void SavePng(SKBitmap bitmap, string path)

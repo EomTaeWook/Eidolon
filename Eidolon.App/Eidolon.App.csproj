@@ -3,7 +3,7 @@
     <OutputType>WinExe</OutputType>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <AssemblyName>Eidolon</AssemblyName>
-    <Version>0.1.0</Version>
+    <Version>0.1.0-beta.1</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <NoWarn>$(NoWarn);AVLN3001</NoWarn>
@@ -17,6 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../Docs/ThirdPartyNotices.md" Link="ThirdPartyNotices.md" Visible="false" />
+    <EmbeddedResource Include="Resources/Codex/*.txt" LogicalName="Eidolon.Codex.%(Filename)%(Extension)" />
     <EmbeddedResource Include="../Datas/*.json" LogicalName="Eidolon.Datas.%(Filename)%(Extension)" Visible="false" />
     <Content Include="../Datas/*.json" Link="Datas\%(Filename)%(Extension)">
       <Visible>false</Visible>

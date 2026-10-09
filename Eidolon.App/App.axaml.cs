@@ -69,6 +69,11 @@ namespace Eidolon.App
             _serviceContainer.RegisterType<AtomicJsonFile, AtomicJsonFile>(LifeScope.Singleton);
             _serviceContainer.RegisterType<ProcessRunner, ProcessRunner>(LifeScope.Singleton);
             _serviceContainer.RegisterType<CodexExecutableLocator, CodexExecutableLocator>(LifeScope.Singleton);
+            _serviceContainer.RegisterType(new CodexInstructionTemplates(
+                PackagedResources.ReadText("Eidolon.Codex.ImageGeneration.txt"),
+                PackagedResources.ReadText("Eidolon.Codex.TransparentBackground.txt"),
+                PackagedResources.ReadText("Eidolon.Codex.Restyle.txt"),
+                PackagedResources.ReadText("Eidolon.Codex.Reimagine.txt")));
             _serviceContainer.RegisterType<CodexImageEngine, CodexImageEngine>(LifeScope.Singleton);
             _serviceContainer.RegisterType<CodexModelCatalog, CodexModelCatalog>(LifeScope.Singleton);
             _serviceContainer.RegisterType<RuntimeModuleReader, RuntimeModuleReader>(LifeScope.Singleton);
@@ -78,6 +83,7 @@ namespace Eidolon.App
             _serviceContainer.RegisterType<ISeedProvider, CryptoSeedProvider>(LifeScope.Singleton);
             _serviceContainer.RegisterType<LoraTrainer, LoraTrainer>(LifeScope.Singleton);
             _serviceContainer.RegisterType<StudioService, StudioService>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<AssetFrameRenderer, AssetFrameRenderer>(LifeScope.Singleton);
             _serviceContainer.RegisterType<AssetSheetExporter, AssetSheetExporter>(LifeScope.Singleton);
             _serviceContainer.RegisterType<AssetFrameImporter, AssetFrameImporter>(LifeScope.Singleton);
             _serviceContainer.RegisterType<AssetCreationService, AssetCreationService>(LifeScope.Singleton);

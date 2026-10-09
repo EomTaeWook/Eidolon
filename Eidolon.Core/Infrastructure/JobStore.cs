@@ -67,7 +67,7 @@ namespace Eidolon.Core.Infrastructure
                     {
                         throw new StudioException(StudioMessageCode.InvalidJobDirectory);
                     }
-                    EnsureRegularTrainingTree(path, token);
+                    EnsureRegularDirectoryTree(path, token);
                     targets.Add(path);
                 }
                 foreach (string target in targets)
@@ -96,7 +96,7 @@ namespace Eidolon.Core.Infrastructure
             }
         }
 
-        private void EnsureRegularTrainingTree(string directory, CancellationToken token)
+        private void EnsureRegularDirectoryTree(string directory, CancellationToken token)
         {
             EnsureRegularDirectoryParents(directory);
             foreach (string path in Directory.EnumerateFileSystemEntries(directory))
@@ -109,7 +109,7 @@ namespace Eidolon.Core.Infrastructure
                 }
                 if ((attributes & FileAttributes.Directory) != 0)
                 {
-                    EnsureRegularTrainingTree(path, token);
+                    EnsureRegularDirectoryTree(path, token);
                 }
             }
         }
@@ -164,6 +164,35 @@ namespace Eidolon.Core.Infrastructure
             }
         }
 
+        public void DeleteAssetCollection(string id, CancellationToken token)
+        {
+            lock (_gate)
+            {
+                string directory = Path.GetFullPath(DirectoryFor(id));
+                if (string.Equals(Path.GetDirectoryName(directory), _directory, StringComparison.OrdinalIgnoreCase) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+                }
+                EnsureRegularDirectoryTree(directory, token);
+                AssetCollection collection = LoadAssetCollection(id);
+                if (collection.State == JobState.Preparing)
+                {
+                    throw new StudioException(StudioMessageCode.GenerationRecordBusy);
+                }
+                if (collection.State == JobState.Running)
+                {
+                    throw new StudioException(StudioMessageCode.GenerationRecordBusy);
+                }
+                if (File.Exists(Path.Combine(directory, "Job.json")) == true)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+                }
+                token.ThrowIfCancellationRequested();
+                EnsureRegularDirectoryParents(directory);
+                Directory.Delete(directory, true);
+            }
+        }
+
         public AssetCollection LoadAssetCollection(string id)
         {
             lock (_gate)
@@ -187,9 +216,26 @@ namespace Eidolon.Core.Infrastructure
                 {
                     throw new StudioException(StudioMessageCode.InvalidAssetCollection);
                 }
-                if (collection.Kind != AssetCreationKind.SpriteAnimation && collection.Frames.Count != 3)
+                if (collection.Kind == AssetCreationKind.FourViews)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    if (collection.Frames.Count != AssetCreationInput.ViewCount)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                }
+                if (collection.Kind == AssetCreationKind.CharacterViews)
+                {
+                    if (collection.Frames.Count != 3)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                }
+                if (collection.Kind == AssetCreationKind.ObjectViews)
+                {
+                    if (collection.Frames.Count != 3)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
                 }
                 for (int index = 0; index < collection.Frames.Count; index++)
                 {
@@ -321,39 +367,43 @@ namespace Eidolon.Core.Infrastructure
                 }
                 if (metadata.Format != GenerationMetadata.DocumentFormat)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                 }
                 if (metadata.SchemaVersion != 1)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                 }
                 if (metadata.Model == null)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                 }
                 if (metadata.Loras == null)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                 }
                 if (metadata.Loras.Any(lora => lora == null) == true)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                 }
                 if (metadata.UserPrompt == null)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                 }
                 if (metadata.PositivePrompt == null)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                 }
                 if (metadata.NegativePrompt == null)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                 }
                 if (metadata.BasePositivePrompt == null)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                }
+                if (Enum.IsDefined(metadata.GenerationBackend) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                 }
                 if (metadata.ReferenceMode != GenerationReferenceMode.None)
                 {
@@ -361,24 +411,27 @@ namespace Eidolon.Core.Infrastructure
                     {
                         if (metadata.ReferenceMode != GenerationReferenceMode.Restyle)
                         {
-                            throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                            throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                         }
                     }
                     if (string.IsNullOrWhiteSpace(metadata.ReferenceImagePath) == true)
                     {
-                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                        throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
                     }
-                    if (double.IsFinite(metadata.Denoise) == false)
+                    if (metadata.GenerationBackend == GenerationBackend.ComfyUI)
                     {
-                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
-                    }
-                    if (metadata.Denoise < 0.05)
-                    {
-                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
-                    }
-                    if (metadata.Denoise > 0.95)
-                    {
-                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                        if (double.IsFinite(metadata.Denoise) == false)
+                        {
+                            throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                        }
+                        if (metadata.Denoise < 0.05)
+                        {
+                            throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                        }
+                        if (metadata.Denoise > 0.95)
+                        {
+                            throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                        }
                     }
                 }
                 return metadata;
