@@ -12,6 +12,34 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 Run the single `.exe` file. No extraction or separate .NET installation is required. For Codex, sign in to your installed Codex first. For ComfyUI, prepare the engine and models through the app.
 
+## Screenshots
+
+### Image generation
+
+![Eidolon Generate screen with the Codex backend, description and reference inputs, and a large result preview](Docs/images/generation.png)
+
+Describe the image and choose a reference and background options. Keep the inputs and result preview side by side while preparing your next request.
+
+### Results
+
+![Eidolon Results screen with an image gallery, selected image and generation details, and reuse, edit and training actions](Docs/images/results.png)
+
+Select an image in the gallery to read its prompt and generation settings. Save the result, reuse its prompt, edit it, or use it for training.
+
+### Asset creation
+
+![Eidolon Asset creation screen with a reference image, action, frame count and FPS settings, and knight sprite frame previews](Docs/images/assets.png)
+
+Generate sprite frames in sequence from a reference image, then compare and play the selected frames. Regenerate, replace, reorder, and export them from the same screen.
+
+### LoRA training
+
+![Eidolon LoRA training screen with image selection, name and trigger, and training steps, plus white and black background image lists](Docs/images/training.png)
+
+Add training images to the white or black background lists. Review the images, name and trigger, then configure training. The app prepares the dataset automatically.
+
+All screenshots show the actual Windows app using Korean and the light theme.
+
 ## Core experience
 
 - **Prompt-based generation**: Describe your subject and optionally add a reference image.
