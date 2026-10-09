@@ -16,6 +16,7 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="../LICENSE" Link="LICENSE" LogicalName="Eidolon.LICENSE" Visible="false" />
     <EmbeddedResource Include="../Docs/ThirdPartyNotices.md" Link="ThirdPartyNotices.md" Visible="false" />
     <EmbeddedResource Include="Resources/Codex/*.txt" LogicalName="Eidolon.Codex.%(Filename)%(Extension)" />
     <EmbeddedResource Include="../Datas/*.json" LogicalName="Eidolon.Datas.%(Filename)%(Extension)" Visible="false" />

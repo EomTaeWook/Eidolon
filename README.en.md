@@ -115,6 +115,17 @@ dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o ar
 
 The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. The beta was packaged for publication; separate automated tests and execution checks of the release executable were not performed.
 
+## License
+
+Eidolon is source-available software under the [Eidolon Source License 1.0](LICENSE).
+
+- Free use is permitted for personal, educational, internal business, and commercial game and asset production.
+- Modification and free redistribution are permitted when license and copyright notices are preserved, material changes are identified, and recipients receive the same terms.
+- Selling or charging for Eidolon, including modified, repackaged, or renamed apps based substantially on it, requires separate written permission from the copyright holder.
+- The app's resale restriction does not apply to user outputs such as generated images, sprites, sheets, or trained LoRAs. Model licenses, service terms, input permissions, and third-party rights still apply.
+
+Users are responsible for checking rights to inputs and outputs, their use, sale and distribution, and compliance with applicable laws and terms. The developer does not warrant the legality, ownership, or non-infringement of outputs and limits liability to the extent permitted by law. Liability that cannot lawfully be excluded remains unaffected. See [LICENSE](LICENSE) for the governing terms.
+
 ## Third-party components
 
 Eidolon uses Avalonia for its UI, ComfyUI for local generation, and sd-scripts for training. Models and additional weights retain their distributors' terms. See [Third-party notices](Docs/ThirdPartyNotices.md) for licenses, versions, and notices delivered during installation.

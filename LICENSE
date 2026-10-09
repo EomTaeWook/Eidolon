@@ -1,0 +1,76 @@
+Eidolon Source License 1.0
+
+Copyright (c) 2026 EomTaeWook
+
+1. Scope
+
+This license applies to the Eidolon source code, compiled application,
+documentation, and original assets distributed with this file (the "Software").
+Third-party components, models, and services remain subject to their own licenses
+and terms. This is a source-available license.
+
+2. Permission
+
+You may use, copy, compile, and modify the Software without charge for personal,
+educational, internal business, and commercial production purposes. This includes
+creating assets for commercial games and products and performing paid work for
+clients, provided that the Software itself is not sold as a deliverable.
+
+You may distribute the Software or a modified version without charge if you
+include this license and the copyright notice, clearly identify material changes,
+and provide recipients with the same terms.
+
+3. Restriction on selling Eidolon
+
+Without separate written permission from the copyright holder, you may not sell,
+rent, lease, or charge for copies of the Software. This restriction also applies
+to modified, repackaged, or renamed versions based substantially on Eidolon.
+Charging for work performed using Eidolon or for separate support services is
+permitted; charging for a copy of Eidolon is not.
+
+4. Inputs and outputs
+
+User-provided inputs are not the Software. Results created by users with the
+Software, including generated or edited images, sprites, sheets, exported asset
+data, and trained LoRA weights (the "Outputs"), are also not the Software. The
+restriction on selling Eidolon does not apply to these Outputs. This exclusion
+does not cover copies of the Software or its bundled assets merely exported or
+repackaged as an output.
+
+This license does not claim ownership of user inputs or Outputs, guarantee that
+Outputs qualify for intellectual property protection, or grant rights to
+third-party content. Applicable model licenses, service terms, input permissions,
+and third-party rights still govern the creation, use, sale, and distribution of
+Outputs.
+
+You are responsible for selecting inputs and models, obtaining necessary rights
+and permissions, reviewing Outputs, and ensuring that your use and distribution
+of inputs and Outputs comply with applicable laws and third-party terms. This
+includes copyright, trademark, privacy, and other rights. The copyright holder
+does not warrant the accuracy, originality, legality, ownership, fitness for a
+particular purpose, or non-infringement of inputs or Outputs. To the maximum
+extent permitted by applicable law, the copyright holder is not liable for claims
+or damages arising from your inputs, Outputs, or their use or distribution.
+
+5. Notices and name
+
+You may not remove or alter copyright and license notices. This license does not
+grant a right to use the Eidolon name or logo to imply endorsement by the
+copyright holder.
+
+6. Termination
+
+Your rights under this license end if you violate its terms. This does not end
+the rights of recipients who received the Software from you and remain compliant.
+
+7. Warranty and liability
+
+The Software is provided "as is", without warranties of any kind. To the maximum
+extent permitted by applicable law, the copyright holder is not liable for any
+claim or damages arising from the Software or its use.
+
+Nothing in this license excludes or limits liability that cannot lawfully be
+excluded or limited, including liability for intentional wrongdoing or gross
+negligence where such exclusion or limitation is prohibited.
+
+All rights not expressly granted above are reserved by the copyright holder.

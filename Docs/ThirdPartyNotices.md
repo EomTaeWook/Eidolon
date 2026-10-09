@@ -1,5 +1,7 @@
 # 외부 소프트웨어 고지
 
+Eidolon 자체의 소스·앱·문서와 원본 자산에는 [Eidolon Source License 1.0](../LICENSE)이 적용됩니다. 아래 고지는 외부 구성요소에 대한 것으로 Eidolon 자체의 라이선스를 대체하지 않습니다. 사용자 결과물의 이용조건과 책임은 해당 라이선스의 입력·결과물 조항을 따르며 모델·서비스·입력 자료의 조건과 제3자 권리는 별도로 적용됩니다.
+
 Eidolon의 UI·렌더링 구성요소에는 아래 소프트웨어가 포함됩니다. Python·학습 엔진·가중치는 실행 환경 설치 시 별도로 내려받으며 설치 폴더에 원본 고지를 보존합니다.
 
 | 구성요소 | 라이선스·원본 |
@@ -24,7 +26,7 @@ Eidolon의 UI·렌더링 구성요소에는 아래 소프트웨어가 포함됩�
 | RealVisXL 4.0 가중치 | Open RAIL++. [모델 카드](https://huggingface.co/SG161222/RealVisXL_V4.0/blob/26dfe44930964cd70d0a817b6d1cc945c130e38d/README.md), [기반 SDXL 라이선스](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/462165984030d82259a11f4367a4eed129e94a7b/LICENSE.md) |
 | Illustrious XL 0.1 가중치 | Fair AI Public License 1.0-SD 및 원본 이용조건. [모델 카드](https://huggingface.co/OnomaAIResearch/Illustrious-xl-early-release-v0/blob/dca0dac303e6dc4b0c31d8001bc685b89b5d0204/README.md), [라이선스](https://freedevproject.org/faipl-1.0-sd/), [이용조건](https://huggingface.co/OnomaAIResearch/Illustrious-xl-early-release-v0/blob/dca0dac303e6dc4b0c31d8001bc685b89b5d0204/TERM_OF_USE) |
 
-MIT 라이선스 고지:
+위 MIT 구성요소의 라이선스 고지:
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
