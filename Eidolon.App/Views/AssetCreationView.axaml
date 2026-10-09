@@ -149,7 +149,7 @@
               <Border Height="280" CornerRadius="8" ClipToBounds="True" IsVisible="{Binding Preview.IsSprite}">
                 <Grid>
                   <views:TransparencyBackground />
-                  <Image Source="{Binding Preview.Preview}" Stretch="Uniform" RenderOptions.BitmapInterpolationMode="{Binding Preview.Interpolation}" />
+                  <views:AssetPreviewImage Source="{Binding Preview.Preview}" Stretch="Uniform" Interpolation="{Binding Preview.Interpolation}" />
                 </Grid>
               </Border>
               <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding Preview.IsSprite}">
@@ -166,7 +166,7 @@
                       <Border CornerRadius="5" ClipToBounds="True">
                         <Grid>
                           <views:TransparencyBackground />
-                          <Image Source="{Binding Image}" Height="{ReflectionBinding $parent[UserControl].DataContext.Preview.ThumbnailHeight}" Stretch="Uniform" RenderOptions.BitmapInterpolationMode="{ReflectionBinding $parent[UserControl].DataContext.Preview.Interpolation}" />
+                          <views:AssetPreviewImage Source="{Binding Image}" Height="{ReflectionBinding $parent[UserControl].DataContext.Preview.ThumbnailHeight}" Stretch="Uniform" Interpolation="{ReflectionBinding $parent[UserControl].DataContext.Preview.Interpolation}" />
                         </Grid>
                       </Border>
                       <TextBlock Text="{Binding Caption}" FontSize="12" />
