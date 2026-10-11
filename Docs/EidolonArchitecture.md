@@ -1,6 +1,6 @@
 # Eidolon 아키텍처
 
-기준일: 2026-10-08. 현재 구현의 책임 경계와 실행 흐름을 기록한다. 작업 시 지켜야 할 사항은 [작업 규칙](WorkingRules.md), 다국어 생성 절차는 [문자열 데이터 변환](StringData.md)이 소유한다.
+기준일: 2026-10-11. 현재 구현의 책임 경계와 실행 흐름을 기록한다. 작업 시 지켜야 할 사항은 [작업 규칙](WorkingRules.md), 다국어 생성 절차는 [문자열 데이터 변환](StringData.md)이 소유한다.
 
 ## 제품 방향
 
@@ -31,12 +31,13 @@ flowchart LR
 |---|---|---|
 | `Eidolon.Core/Domain/Models`, `Domain` | 기능별 실행 설정·모델·작업·프리셋·진행 모델, 오류 계약 | `StudioSettings`, `ModelAsset`, `JobRecord`, `StudioException`, `WorkProgress` |
 | `Eidolon.Core/Application` | 생성·학습 유스케이스, FIFO 큐, seed 공급 계약 | `StudioService`, `StudioWorkQueue`, `ISeedProvider` |
-| `Eidolon.Core/Infrastructure` | 설치, ComfyUI 연결·실행, 학습 실행, 배경 제거, 파일과 자산 저장 | `RuntimeInstaller`, `ComfyEngine`, `ProcessRunner`, `LoraTrainer`, `BackgroundRemovalService`, `AssetLibrary`, `JobStore` |
+| `Eidolon.Core/Infrastructure` | 엔진 설치, ComfyUI 연결·실행, 학습 실행, 배경 제거, 파일과 자산 저장 | `RuntimeInstaller`, `ComfyEngine`, `ProcessRunner`, `LoraTrainer`, `BackgroundRemovalService`, `AssetLibrary`, `JobStore` |
 | `Eidolon.App` | Avalonia 진입점·화면, DI 조립, 템플릿 로딩, 앱 수명 | `Program`, `App`, `MainWindow`, `TemplateDataLoader` |
 | `Eidolon.App/ViewModels` | 루트 화면 조합과 기능별 사용자 입력·명령·결과 연결 | `StudioViewModel`, `GenerationViewModel`, `GalleryViewModel`, `TrainingViewModel`, `AssetsViewModel`, `EngineViewModel`, `SettingsViewModel` |
 | `Eidolon.App/ViewModels/Models`, `Eidolon.App/Models` | 기능별 화면 항목·선택·입력 모델과 사용자 설정 모델 | `AssetItem`, `GenerationItem`, `GenerationReferenceDraft`, `DesktopSettings` |
 | `Eidolon.App/Presenters` | 큐 진입, UI 스레드 복귀, 진행·취소와 예약 작업 수명 | `StudioWorkPresenter`, `StudioWorkState` |
 | `Eidolon.App/Services`, `Localization` | 대화상자, 사용자 설정, 언어·테마, 파일 로그와 메시지 번역 | `SettingsStore`, `DesktopSettings`, `StringHelper`, `StudioMessageTemplates` |
+| `Eidolon.App/Services/Updates`, `Models/Updates` | 앱 버전·릴리스 조회, 검증 다운로드, 실행 파일 교체·복원과 배포 모델 | `ApplicationUpdateService`, `ApplicationUpdateInstaller`, `ApplicationUpdateHelper`, `ApplicationReleaseVersion`, `ApplicationUpdateMessageCode` |
 | `DataContainer/Generated` | Excel에서 생성한 템플릿·컨테이너·로더 | `StringTemplate`, `TemplateContainer`, `TemplateLoader` |
 | `Eidolon.Mcp/Controllers`, `Transport`, `Protocol`, `Tools`, `Models` | HttpListener 전송, Dignus DI의 transient JSON-RPC 컨트롤러와 도구 등록·입력 계약 | `McpHttpServer`, `McpDispatcher`, `ToolsCallController`, `McpTool`, `McpServerOptions` |
 | `Eidolon.App/Mcp`, `ViewModels/Mcp` | `CreateTools()`·private 처리 메서드로 기존 생성·조회 경계를 연결하고 서버 수명·화면 상태 관리 | `McpService`, `McpViewModel` |
@@ -275,6 +276,10 @@ Core의 `TrainingImageInput`은 파일 경로와 배경을 소유한다. 요청 
 `DesktopLogging`은 프로세스 진입부터 종료까지 Dignus.Log 타깃을 관리한다. `ProcessLogFile`은 개별 프로세스 출력 파일 타깃을 관리한다. 로그는 일별 회전하고 최대 7개를 보관한다. 현재 상태와 진행률은 App이 Core의 메시지 코드를 번역해 하단에 표시한다.
 
 사용법 화면의 생성·이미지 편집·학습 안내는 각각 기존 탭 이동 명령에 연결한다. 편집 안내에는 필수 이미지와 그림체 설명, 모델·LoRA, 변경 강도, 원본 보존 및 생성 결과에서의 편집 연결을 설명한다.
+
+## 앱 업데이트
+
+앱 버전과 업데이트는 App이 소유하며 Core는 해당 타입·메시지 코드를 참조하지 않는다. 일반 설정의 `AppUpdateView`·`AppUpdateViewModel`이 현재 버전·정식 릴리스 조회·설치·진행·취소를 제공한다. App의 `Services/Updates`는 조회·검증 다운로드·설치 준비·보조 실행을 나누고 배포용 버전·업데이트 모델과 메시지 코드는 `Models/Updates`에 둔다. `ApplicationUpdateException`은 App의 독립 예외이며 `ApplicationUpdateMessageTemplates`·`StringHelper`가 번역한다. 업데이트 진행은 App의 `StudioSession` 표시 상태에 반영한다. HTTP와 DI는 기존 App 조립 경계를 사용한다. 설치는 기존 유지 관리 큐를 사용하고 App의 재시작 Presenter가 기존 닫기를 요청한다. `Program`은 정상 UI 종료 뒤에 설치를 승인한다. 보조 전용 진입점은 UI와 사용자 설정을 초기화하지 않으며 원래 프로세스가 종료된 뒤 파일을 교체한다. 단일 파일 배포와 교체·복원 계약은 [앱 업데이트](ApplicationUpdate.md)를 따른다.
 
 ## 다국어와 템플릿
 

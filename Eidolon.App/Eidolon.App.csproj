@@ -15,6 +15,9 @@
     <PackageReference Include="Avalonia.Desktop" Version="12.1.3" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
   </ItemGroup>
+  <ItemGroup Condition="'$(PublishSingleFile)' == 'true'">
+    <AssemblyMetadata Include="EidolonPublishedSingleFile" Value="true" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../LICENSE" Link="LICENSE" LogicalName="Eidolon.LICENSE" Visible="false" />
     <EmbeddedResource Include="../Docs/ThirdPartyNotices.md" Link="ThirdPartyNotices.md" Visible="false" />

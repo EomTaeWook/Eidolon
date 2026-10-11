@@ -2,6 +2,7 @@ using System.Globalization;
 using DataContainer.Generated;
 using Dignus.DependencyInjection.Attributes;
 using Dignus.Log;
+using Eidolon.App.Services;
 using Eidolon.Core.Application;
 using Eidolon.Core.Domain;
 
@@ -91,11 +92,20 @@ namespace Eidolon.App.Localization
 
         public string GetExceptionMessage(Exception error)
         {
+            if (error is ApplicationUpdateException updateFailure)
+            {
+                return Format(updateFailure.Code, updateFailure.Arguments);
+            }
             if (error is StudioException failure)
             {
                 return Format(failure.Code, failure.Arguments);
             }
             return TranslateMessage(error.Message);
+        }
+
+        public string Format(ApplicationUpdateMessageCode code, params object[] arguments)
+        {
+            return Format(ApplicationUpdateMessageTemplates.GetName(code), arguments);
         }
 
         public string GetJobError(JobRecord job)

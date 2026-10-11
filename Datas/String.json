@@ -6928,5 +6928,203 @@
     "Name": "EidolonText665",
     "Kor": "\uC124\uC815 \u2192 \uC77C\uBC18\uC5D0\uC11C \uC774\uBBF8\uC9C0 \uC800\uC7A5 \uD3F4\uB354\u00B7\uC5B8\uC5B4\u00B7\uD14C\uB9C8\uC640 MCP \uC5F0\uACB0\uC744 \uAD00\uB9AC\uD569\uB2C8\uB2E4. \uAE30\uBCF8 \uC774\uBBF8\uC9C0 \uD3F4\uB354\uB294 %LOCALAPPDATA%\\Eidolon\\Images\uC774\uBA70 PNG\uC640 \uAC19\uC740 \uC774\uB984\uC758 \uD504\uB86C\uD504\uD2B8 JSON\uC744 \uD568\uAED8 \uC800\uC7A5\uD569\uB2C8\uB2E4. \uC6D0\uBCF8\uACFC \uC2E4\uD589 \uB85C\uADF8\uB294 Jobs \uC544\uB798\uC5D0 \uBCF4\uC874\uD569\uB2C8\uB2E4. \uD559\uC2B5 \uB370\uC774\uD130\uB294 \uC124\uC815 \u2192 \uC5D4\uC9C4 \uC124\uCE58\u00B7\uC5F0\uACB0\uC5D0\uC11C \uC5F4\uAC70\uB098 \uBE44\uC6B8 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
     "Eng": "Manage the image folder, language, theme and MCP connection in Settings \u003E General. The default image folder is %LOCALAPPDATA%\\Eidolon\\Images; each PNG has a matching prompt JSON. Originals and job logs are preserved under Jobs. Open or clear prepared data"
+  },
+  {
+    "Id": 3745,
+    "Name": "EidolonText666",
+    "Kor": "\uC571 \uC5C5\uB370\uC774\uD2B8",
+    "Eng": "App updates"
+  },
+  {
+    "Id": 3746,
+    "Name": "EidolonText667",
+    "Kor": "\uD604\uC7AC \uBC84\uC804 {0}",
+    "Eng": "Current version {0}"
+  },
+  {
+    "Id": 3747,
+    "Name": "EidolonText668",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8 \uD655\uC778",
+    "Eng": "Check for updates"
+  },
+  {
+    "Id": 3748,
+    "Name": "EidolonText669",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8 \uD6C4 \uC7AC\uC2DC\uC791",
+    "Eng": "Update and restart"
+  },
+  {
+    "Id": 3749,
+    "Name": "EidolonText670",
+    "Kor": "\uB9B4\uB9AC\uC2A4 \uB0B4\uC6A9 \uBCF4\uAE30",
+    "Eng": "View release notes"
+  },
+  {
+    "Id": 3750,
+    "Name": "EidolonText671",
+    "Kor": "\uC0C8 \uBC84\uC804\uC744 \uD655\uC778\uD558\uB294 \uC911\u2026",
+    "Eng": "Checking for updates\u2026"
+  },
+  {
+    "Id": 3751,
+    "Name": "EidolonText672",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8\uB97C \uD655\uC778\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Updates have not been checked."
+  },
+  {
+    "Id": 3752,
+    "Name": "EidolonText673",
+    "Kor": "\uC0C8\uB85C\uC6B4 \uC815\uC2DD \uC5C5\uB370\uC774\uD2B8\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No newer stable update is available."
+  },
+  {
+    "Id": 3753,
+    "Name": "EidolonText674",
+    "Kor": "\uAC8C\uC2DC\uB41C \uC815\uC2DD \uB9B4\uB9AC\uC2A4\uAC00 \uC544\uC9C1 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No stable release has been published yet."
+  },
+  {
+    "Id": 3754,
+    "Name": "EidolonText675",
+    "Kor": "\uC0C8 \uBC84\uC804 {0}\uC744 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Version {0} is available."
+  },
+  {
+    "Id": 3755,
+    "Name": "EidolonText676",
+    "Kor": "\uACF5\uC2DD \uB9B4\uB9AC\uC2A4\uB97C \uD655\uC778\uD558\uACE0 \uC5C5\uB370\uC774\uD2B8\uD569\uB2C8\uB2E4. \uC124\uCE58\uAC00 \uB05D\uB098\uBA74 \uC571\uC774 \uB2E4\uC2DC \uC2DC\uC791\uB429\uB2C8\uB2E4.",
+    "Eng": "Check official releases and install updates. The app restarts after installation."
+  },
+  {
+    "Id": 3756,
+    "Name": "EidolonText677",
+    "Kor": "\uCDE8\uC18C",
+    "Eng": "Cancel"
+  },
+  {
+    "Id": 3757,
+    "Name": "EidolonText678",
+    "Kor": "\uC571 \uC5C5\uB370\uC774\uD2B8\uB294 Windows x64 \uB2E8\uC77C \uC2E4\uD589 \uD30C\uC77C \uBC30\uD3EC\uBCF8\uC5D0\uC11C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "App updates require the published Windows x64 single executable."
+  },
+  {
+    "Id": 3758,
+    "Name": "EidolonText679",
+    "Kor": "\uD604\uC7AC \uC571 \uBC84\uC804\uC744 \uD655\uC778\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The current application version could not be read."
+  },
+  {
+    "Id": 3759,
+    "Name": "EidolonText680",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8 \uC11C\uBC84 \uC694\uCCAD\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. (HTTP {0})",
+    "Eng": "The update server request failed. (HTTP {0})"
+  },
+  {
+    "Id": 3760,
+    "Name": "EidolonText681",
+    "Kor": "\uB9B4\uB9AC\uC2A4 \uC815\uBCF4\uB97C \uD655\uC778\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uB9B4\uB9AC\uC2A4 \uB0B4\uC6A9\uC744 \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The release information is invalid. Check the release notes."
+  },
+  {
+    "Id": 3761,
+    "Name": "EidolonText682",
+    "Kor": "\uB9B4\uB9AC\uC2A4\uC5D0 SHA-256 \uC815\uBCF4\uAC00 \uC5C6\uC5B4 \uC790\uB3D9 \uC124\uCE58\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uB9B4\uB9AC\uC2A4 \uB0B4\uC6A9\uC744 \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The release has no SHA-256 digest for automatic installation. Check the release notes."
+  },
+  {
+    "Id": 3762,
+    "Name": "EidolonText683",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8\uB97C \uD655\uC778\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC5F0\uACB0\uC744 \uD655\uC778\uD558\uACE0 \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "Updates could not be checked. Check your connection and try again."
+  },
+  {
+    "Id": 3763,
+    "Name": "EidolonText684",
+    "Kor": "Windows x64 \uC2E4\uD589 \uD30C\uC77C\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uB9B4\uB9AC\uC2A4 \uB0B4\uC6A9\uC744 \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "The Windows x64 executable could not be found. Check the release notes."
+  },
+  {
+    "Id": 3764,
+    "Name": "EidolonText685",
+    "Kor": "\uB2E4\uC6B4\uB85C\uB4DC\uAC00 \uC644\uB8CC\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The download is incomplete. Please try again."
+  },
+  {
+    "Id": 3765,
+    "Name": "EidolonText686",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8\uB97C \uB2E4\uC6B4\uB85C\uB4DC\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uC138\uC694.",
+    "Eng": "The update could not be downloaded. Please try again."
+  },
+  {
+    "Id": 3766,
+    "Name": "EidolonText687",
+    "Kor": "\uB2E4\uC6B4\uB85C\uB4DC\uD55C \uD30C\uC77C\uC758 SHA-256\uC774 \uC77C\uCE58\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uB2E4\uC6B4\uB85C\uB4DC\uD558\uC138\uC694.",
+    "Eng": "The downloaded file\u0027s SHA-256 does not match. Download it again."
+  },
+  {
+    "Id": 3767,
+    "Name": "EidolonText688",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8 \uC124\uCE58\uB97C \uC900\uBE44\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uD604\uC7AC \uC571\uC740 \uC720\uC9C0\uB429\uB2C8\uB2E4.",
+    "Eng": "The update could not be prepared. The current app is preserved."
+  },
+  {
+    "Id": 3768,
+    "Name": "EidolonText689",
+    "Kor": "\uC571 \uD30C\uC77C\uC744 \uAD50\uCCB4\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uAE30\uC874 \uBC84\uC804\uC73C\uB85C \uB2E4\uC2DC \uC2DC\uC791\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The app file could not be replaced. The previous version was restarted."
+  },
+  {
+    "Id": 3769,
+    "Name": "EidolonText690",
+    "Kor": "\uAE30\uC874 \uC571 \uD30C\uC77C\uC744 \uBCF5\uC6D0\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC124\uCE58 \uD3F4\uB354\uC758 \uBC31\uC5C5 \uD30C\uC77C\uC744 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The previous app file could not be restored. Its backup has been preserved in the installation folder."
+  },
+  {
+    "Id": 3770,
+    "Name": "EidolonText691",
+    "Kor": "\uC571\uC744 \uC815\uC0C1\uC801\uC73C\uB85C \uC885\uB8CC\uD560 \uC218 \uC5C6\uC5B4 \uC5C5\uB370\uC774\uD2B8\uB97C \uC911\uB2E8\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The update was stopped because the app could not close normally."
+  },
+  {
+    "Id": 3771,
+    "Name": "EidolonText692",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8 \uB2E4\uC6B4\uB85C\uB4DC \uC694\uCCAD\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. (HTTP {0})",
+    "Eng": "The update download request failed. (HTTP {0})"
+  },
+  {
+    "Id": 3772,
+    "Name": "EidolonText693",
+    "Kor": "\uC0C8 \uC571\uC744 \uC2E4\uD589\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uAE30\uC874 \uBC84\uC804\uC73C\uB85C \uB2E4\uC2DC \uC2DC\uC791\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The new app could not be started. The previous version was restarted."
+  },
+  {
+    "Id": 3773,
+    "Name": "EidolonText694",
+    "Kor": "\uC0DD\uC131\u00B7\uD559\uC2B5\u00B7\uB300\uAE30 \uC791\uC5C5\uC744 \uC644\uB8CC\uD55C \uB4A4 \uC5C5\uB370\uC774\uD2B8\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Complete generation, training and queued work before updating."
+  },
+  {
+    "Id": 3774,
+    "Name": "EidolonText695",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8 \uB2E4\uC6B4\uB85C\uB4DC \uC911 \u00B7 {0:0}%",
+    "Eng": "Downloading update \u00B7 {0:0}%"
+  },
+  {
+    "Id": 3775,
+    "Name": "EidolonText696",
+    "Kor": "\uB2E4\uC6B4\uB85C\uB4DC\uD55C \uD30C\uC77C\uC744 \uAC80\uC99D\uD558\uACE0 \uC7AC\uC2DC\uC791\uC744 \uC900\uBE44\uD558\uB294 \uC911\u2026",
+    "Eng": "Verifying the download and preparing to restart\u2026"
+  },
+  {
+    "Id": 3776,
+    "Name": "EidolonText697",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8\uB97C \uC900\uBE44\uD588\uC2B5\uB2C8\uB2E4. \uC571\uC744 \uC885\uB8CC\uD558\uACE0 \uB2E4\uC2DC \uC2DC\uC791\uD569\uB2C8\uB2E4.",
+    "Eng": "The update is ready. Closing and restarting the app."
+  },
+  {
+    "Id": 3777,
+    "Name": "EidolonText698",
+    "Kor": "\uC5C5\uB370\uC774\uD2B8 \uC791\uC5C5\uC744 \uCDE8\uC18C\uD588\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The update operation was cancelled."
   }
 ]

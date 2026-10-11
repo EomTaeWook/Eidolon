@@ -10,6 +10,7 @@ using Eidolon.App.ViewModels;
 using Eidolon.Core.Application;
 using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
+using System.Reflection;
 
 namespace Eidolon.App
 {
@@ -22,6 +23,8 @@ namespace Eidolon.App
         private ServiceContainer _serviceContainer;
         private HttpClient _downloadsHttp;
         private HttpClient _engineHttp;
+        private HttpClient _updateHttp;
+        private ApplicationUpdateRestartPresenter _updateRestart;
 
         public override void Initialize()
         {
@@ -37,7 +40,9 @@ namespace Eidolon.App
                     IServiceProvider services = CreateServices(desktop);
                     StringHelper strings = services.GetService<StringHelper>();
                     services.GetService<LanguageService>().Apply(strings.Language);
+                    _updateRestart = services.GetService<ApplicationUpdateRestartPresenter>();
                     desktop.MainWindow = services.GetService<MainWindow>();
+                    services.GetService<StudioViewModel>().Updates.ShowStartupFailure(desktop.Args);
                     desktop.Exit += OnExit;
                 }
                 catch
@@ -62,8 +67,24 @@ namespace Eidolon.App
                 Timeout = TimeSpan.FromSeconds(30)
             };
             _serviceContainer = new ServiceContainer();
+            _updateHttp = new HttpClient(new SocketsHttpHandler
+            {
+                AllowAutoRedirect = false,
+                UseCookies = false,
+                ConnectTimeout = TimeSpan.FromSeconds(30)
+            })
+            {
+                Timeout = TimeSpan.FromMinutes(20)
+            };
+            _updateHttp.DefaultRequestHeaders.UserAgent.ParseAdd("Eidolon-ApplicationUpdate/1.0");
             _serviceContainer.RegisterType<Application>(this);
             _serviceContainer.RegisterType(desktop);
+            _serviceContainer.RegisterType(CreateUpdateEnvironment());
+            _serviceContainer.RegisterType<ApplicationUpdateFiles, ApplicationUpdateFiles>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<ApplicationUpdateService>(provider => new ApplicationUpdateService(
+                provider.GetService<ApplicationUpdateEnvironment>(), _updateHttp, provider.GetService<ApplicationUpdateFiles>()), LifeScope.Singleton);
+            _serviceContainer.RegisterType<ApplicationUpdateInstaller, ApplicationUpdateInstaller>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<ApplicationUpdateRestartPresenter, ApplicationUpdateRestartPresenter>(LifeScope.Singleton);
             _serviceContainer.RegisterType(TimeProvider.System);
             _serviceContainer.RegisterType(new StringLanguageSelection(new DesktopSettings().Language));
             _serviceContainer.RegisterType<AtomicJsonFile, AtomicJsonFile>(LifeScope.Singleton);
@@ -112,7 +133,9 @@ namespace Eidolon.App
                 provider.GetService<DesktopDialogs>(), provider.GetService<ThemeService>(), provider.GetService<LanguageService>(),
                 provider.GetService<StringHelper>(), provider.GetService<StudioWorkPresenter>(),
                 provider.GetService<ISeedProvider>(), provider.GetService<CodexModelCatalog>(), dataDirectory,
-                provider.GetService<AssetCreationService>(), provider.GetService<AssetImageLoader>()), LifeScope.Singleton);
+                provider.GetService<AssetCreationService>(), provider.GetService<AssetImageLoader>(),
+                provider.GetService<ApplicationUpdateService>(), provider.GetService<ApplicationUpdateInstaller>(),
+                provider.GetService<ApplicationUpdateRestartPresenter>()), LifeScope.Singleton);
             _serviceContainer.RegisterDependencies(typeof(StringHelper).Assembly);
             return _serviceContainer.Build();
         }
@@ -122,8 +145,42 @@ namespace Eidolon.App
             DisposeClients();
         }
 
+        private ApplicationUpdateEnvironment CreateUpdateEnvironment()
+        {
+            Assembly assembly = typeof(App).Assembly;
+            AssemblyInformationalVersionAttribute version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            string currentVersion = string.Empty;
+            if (version != null)
+            {
+                currentVersion = version.InformationalVersion;
+            }
+            bool published = false;
+            foreach (AssemblyMetadataAttribute metadata in assembly.GetCustomAttributes<AssemblyMetadataAttribute>())
+            {
+                if (metadata.Key == "EidolonPublishedSingleFile")
+                {
+                    published = metadata.Value == "true";
+                }
+            }
+            return new ApplicationUpdateEnvironment(currentVersion, Environment.ProcessPath, published);
+        }
+
+        internal Task CompleteUpdateAfterShutdownAsync()
+        {
+            if (_updateRestart == null)
+            {
+                return Task.CompletedTask;
+            }
+            return _updateRestart.CompleteShutdownAsync();
+        }
+
         private void DisposeClients()
         {
+            if (_updateHttp != null)
+            {
+                _updateHttp.Dispose();
+                _updateHttp = null;
+            }
             if (_downloadsHttp != null)
             {
                 _downloadsHttp.Dispose();

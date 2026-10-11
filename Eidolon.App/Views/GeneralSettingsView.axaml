@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.GeneralSettingsView" x:DataType="vm:StudioViewModel">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GeneralSettingsView" x:DataType="vm:StudioViewModel">
   <Grid RowDefinitions="*,Auto" MaxWidth="920" Margin="0,18,12,0">
     <ScrollViewer AllowAutoHide="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,0,16">
       <StackPanel Spacing="16" HorizontalAlignment="Stretch">
@@ -44,6 +44,7 @@
             </StackPanel>
           </StackPanel>
         </Border>
+        <views:AppUpdateView DataContext="{Binding Updates}" />
         <Border Classes="card" DataContext="{Binding Mcp}" x:DataType="vm:McpViewModel">
           <StackPanel Spacing="12">
             <Grid ColumnDefinitions="*,Auto">

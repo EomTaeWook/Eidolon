@@ -11,6 +11,15 @@ namespace Eidolon.App
         private readonly StringHelper _strings;
         private bool _closeRequested;
         private bool _canClose;
+        private bool _shutdownCompleted;
+
+        internal bool ShutdownCompleted
+        {
+            get
+            {
+                return _shutdownCompleted;
+            }
+        }
 
         public MainWindow(StudioViewModel viewModel, StringHelper strings)
         {
@@ -44,6 +53,7 @@ namespace Eidolon.App
             try
             {
                 await _viewModel.DisposeAsync();
+                _shutdownCompleted = true;
             }
             finally
             {

@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.AppUpdateView" x:DataType="vm:AppUpdateViewModel">
+  <Border Classes="card">
+    <StackPanel Spacing="12">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{DynamicResource EidolonText666}" FontSize="20" FontWeight="SemiBold" />
+        <TextBlock Grid.Column="1" Text="{Binding CurrentVersionCaption}" Classes="muted" VerticalAlignment="Center" Margin="16,0,0,0" />
+      </Grid>
+      <TextBlock Text="{DynamicResource EidolonText676}" Classes="muted" FontSize="12" />
+      <StackPanel Spacing="4" MinHeight="42">
+        <TextBlock Text="{Binding StatusCaption}" />
+        <TextBlock Text="{Binding InstallHint}" Classes="muted" FontSize="12" />
+      </StackPanel>
+      <Grid Height="5">
+        <ProgressBar Value="{Binding Percentage}" Minimum="0" Maximum="100" IsIndeterminate="{Binding IsIndeterminate}" IsVisible="{Binding IsBusy}" />
+      </Grid>
+      <WrapPanel>
+        <Button Content="{DynamicResource EidolonText668}" Command="{Binding CheckCommand}" Margin="0,0,8,4" />
+        <Button Content="{DynamicResource EidolonText669}" Command="{Binding InstallCommand}" Classes="primary" IsVisible="{Binding HasUpdate}" Margin="0,0,8,4" />
+        <Button Content="{DynamicResource EidolonText677}" Command="{Binding CancelCommand}" IsVisible="{Binding IsBusy}" Margin="0,0,8,4" />
+        <Button Content="{DynamicResource EidolonText670}" Command="{Binding OpenReleaseCommand}" Margin="0,0,0,4" />
+      </WrapPanel>
+    </StackPanel>
+  </Border>
+</UserControl>
