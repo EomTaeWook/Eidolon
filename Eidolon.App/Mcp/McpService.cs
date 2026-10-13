@@ -17,6 +17,7 @@ namespace Eidolon.App.Mcp
         private readonly StudioSession _session;
         private readonly AssetsViewModel _assets;
         private readonly GenerationViewModel _generation;
+        private readonly TrainingViewModel _training;
         private readonly JobStore _jobs;
         private readonly ISeedProvider _seeds;
         private readonly StringHelper _strings;
@@ -25,11 +26,12 @@ namespace Eidolon.App.Mcp
         private readonly JsonSerializerOptions _assetJson = new JsonSerializerOptions { Converters = { new JsonStringEnumConverter() } };
 
         public McpService(StudioSession session, AssetsViewModel assets, GenerationViewModel generation,
-            JobStore jobs, ISeedProvider seeds, StringHelper strings, AssetCreationViewModel creation, AssetCreationService assetService)
+            JobStore jobs, ISeedProvider seeds, StringHelper strings, AssetCreationViewModel creation, AssetCreationService assetService, TrainingViewModel training)
         {
             _session = session;
             _assets = assets;
             _generation = generation;
+            _training = training;
             _jobs = jobs;
             _seeds = seeds;
             _strings = strings;
@@ -42,7 +44,7 @@ namespace Eidolon.App.Mcp
             return new[]
             {
                 new McpTool(new McpToolDefinition("eidolon_get_status",
-                    "Read Eidolon readiness, current work, pending queue, progress and error. Poll after enqueueing an image request.")
+                    "Read Eidolon readiness, current work, pending queue, progress and error. Poll after enqueueing an image or LoRA training request.")
                 {
                     ReadOnly = true,
                     Idempotent = true,
@@ -62,6 +64,9 @@ namespace Eidolon.App.Mcp
                     Idempotent = true,
                     OpenWorld = false
                 }, GetInstructionsAsync),
+                new McpTool(new McpToolDefinition("eidolon_train_lora",
+                    "Queue one new LoRA training job from local image files or folders without opening a file picker. Requires name, trigger_word and at least one image in white_images or black_images. Both background groups train together into one LoRA; only transparent areas are filled with the group's color. Folder paths include supported images in subfolders. Uses the local ComfyUI training runtime and requires an NVIDIA GPU, even when the saved image-generation backend is Codex. Omitting model_id uses the UI checkpoint; steps defaults to 1000. Optional description MUST be in English as detailed comma-separated tags or short tag phrases. Existing sibling .txt captions and Eidolon metadata take precedence over description. Original images and captions are preserved. Returns acceptance, not completion; poll eidolon_get_status, then eidolon_list_models for the trained LoRA. Does not change UI training inputs or saved settings.",
+                    TrainingSchema()), TrainLoraAsync),
                 new McpTool(new McpToolDefinition("eidolon_generate_image",
                     "Queue text-to-image generation, optionally with a reference image. All supplied prompts MUST be in English and use detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Specify the subject, appearance, pose, composition, viewpoint, style, materials, colors, lighting and background in relevant detail; put unwanted elements in negative_prompt. Returns accepted and the fixed seed, not a completed image. Poll eidolon_get_status then eidolon_list_images. Uses saved instructions unless positive_prompt or negative_prompt is provided. Omitting model_id uses the UI model; omitting lora_ids uses compatible selected UI LoRAs. An empty lora_ids array disables LoRAs for this request. Does not change UI inputs or saved settings.",
                     ImageSchema(false)), GenerateImageAsync),
@@ -133,6 +138,190 @@ namespace Eidolon.App.Mcp
                 ["required"] = required,
                 ["additionalProperties"] = false
             };
+        }
+
+        private JsonObject TrainingSchema()
+        {
+            return new JsonObject
+            {
+                ["type"] = "object",
+                ["properties"] = new JsonObject
+                {
+                    ["name"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["description"] = "Name of the new LoRA." },
+                    ["trigger_word"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["description"] = "Single trigger token without whitespace or commas. It will be prepended to training captions and automatically applied when this LoRA is selected for generation." },
+                    ["model_id"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 128, ["description"] = "Available local checkpoint ID from eidolon_list_models. Omit to use the UI checkpoint. Training uses this model regardless of the saved image-generation backend." },
+                    ["steps"] = new JsonObject { ["type"] = "integer", ["minimum"] = TrainingPreset.MinimumSteps, ["maximum"] = TrainingPreset.MaximumSteps, ["default"] = TrainingPreset.MaxSteps },
+                    ["description"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional fallback training caption in English using detailed comma-separated tags or short tag phrases. Translate the user's description into English. Existing sibling .txt captions and Eidolon image metadata are used first. Omit to use those captions or the descriptive filename." },
+                    ["white_images"] = new JsonObject
+                    {
+                        ["type"] = "array",
+                        ["items"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 },
+                        ["description"] = "Absolute paths to PNG, JPG, JPEG or BMP files, or folders containing them. Subfolders are included. Transparent areas are filled with white. Duplicates within this group are ignored."
+                    },
+                    ["black_images"] = new JsonObject
+                    {
+                        ["type"] = "array",
+                        ["items"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 },
+                        ["description"] = "Absolute paths to PNG, JPG, JPEG or BMP files, or folders containing them. Subfolders are included. Transparent areas are filled with black. Duplicates within this group are ignored. The same file may also appear in white_images to train both backgrounds into one LoRA."
+                    }
+                },
+                ["required"] = new JsonArray("name", "trigger_word"),
+                ["additionalProperties"] = false
+            };
+        }
+
+        private async Task<McpToolResult> TrainLoraAsync(JsonObject arguments, CancellationToken token)
+        {
+            try
+            {
+                List<TrainingImageInput> images = await Task.Run(() => ReadTrainingImages(arguments, token), token).ConfigureAwait(false);
+                return await OnUiAsync(() =>
+                {
+                    if (_session.CanQueue == false)
+                    {
+                        throw new ArgumentException("Eidolon is not ready to accept a LoRA training request.");
+                    }
+                    string name = arguments["name"].GetValue<string>().Trim();
+                    if (string.IsNullOrWhiteSpace(name) == true)
+                    {
+                        throw new ArgumentException("name must contain a LoRA name.");
+                    }
+                    string triggerWord = arguments["trigger_word"].GetValue<string>().Trim();
+                    if (string.IsNullOrWhiteSpace(triggerWord) == true)
+                    {
+                        throw new ArgumentException("trigger_word must contain a single trigger token.");
+                    }
+                    if (triggerWord.Any(char.IsWhiteSpace) == true)
+                    {
+                        throw new ArgumentException("trigger_word must not contain whitespace.");
+                    }
+                    if (triggerWord.Contains(',') == true)
+                    {
+                        throw new ArgumentException("trigger_word must not contain commas.");
+                    }
+                    AssetItem selectedModel = _assets.SelectedModel;
+                    if (arguments["model_id"] != null)
+                    {
+                        string modelId = arguments["model_id"].GetValue<string>();
+                        selectedModel = _assets.Models.FirstOrDefault(item => item.Asset.Id == modelId);
+                    }
+                    if (selectedModel == null)
+                    {
+                        throw new ArgumentException("Choose an available checkpoint from eidolon_list_models.");
+                    }
+                    if (selectedModel.Asset.Family == ModelFamily.Unknown)
+                    {
+                        throw new ArgumentException("The selected checkpoint must have a known supported model family.");
+                    }
+                    int steps = TrainingPreset.MaxSteps;
+                    if (arguments["steps"] != null)
+                    {
+                        steps = arguments["steps"].GetValue<int>();
+                    }
+                    string description = string.Empty;
+                    if (arguments["description"] != null)
+                    {
+                        description = arguments["description"].GetValue<string>().Trim();
+                    }
+                    DesktopSettings settings = _session.CreateActiveSettings(_session.Settings);
+                    if (ComfyServerAddress.UsesServerAssets(settings) == true)
+                    {
+                        throw new StudioException(StudioMessageCode.LocalTrainingRuntimeRequired);
+                    }
+                    TrainingInput input = new TrainingInput
+                    {
+                        Model = selectedModel.Asset.Copy(),
+                        Images = images,
+                        Name = name,
+                        TriggerWord = triggerWord,
+                        Description = description,
+                        Steps = steps
+                    };
+                    token.ThrowIfCancellationRequested();
+                    _training.EnqueueTraining(settings, input);
+                    return new JsonObject
+                    {
+                        ["accepted"] = true,
+                        ["name"] = input.Name,
+                        ["trigger_word"] = input.TriggerWord,
+                        ["model_id"] = input.Model.Id,
+                        ["steps"] = input.Steps,
+                        ["image_count"] = input.Images.Count
+                    };
+                }, token).ConfigureAwait(false);
+            }
+            catch (Exception error) when (error is StudioException || error is IOException || error is UnauthorizedAccessException)
+            {
+                string message = await Dispatcher.UIThread.InvokeAsync(() => _strings.GetExceptionMessage(error));
+                return new McpToolResult(message, true);
+            }
+        }
+
+        private List<TrainingImageInput> ReadTrainingImages(JsonObject arguments, CancellationToken token)
+        {
+            List<TrainingImageInput> images = new List<TrainingImageInput>();
+            string[] extensions = { ".png", ".jpg", ".jpeg", ".bmp" };
+            foreach (TrainingBackground background in new[] { TrainingBackground.White, TrainingBackground.Black })
+            {
+                string argumentName = "white_images";
+                if (background == TrainingBackground.Black)
+                {
+                    argumentName = "black_images";
+                }
+                if (arguments[argumentName] is not JsonArray requestedPaths)
+                {
+                    continue;
+                }
+                foreach (JsonNode requestedPath in requestedPaths)
+                {
+                    token.ThrowIfCancellationRequested();
+                    string path = requestedPath.GetValue<string>();
+                    if (Path.IsPathFullyQualified(path) == false)
+                    {
+                        throw new ArgumentException(argumentName + " must contain absolute image or folder paths: " + path);
+                    }
+                    string fullPath = Path.GetFullPath(path);
+                    bool isDirectory = Directory.Exists(fullPath);
+                    if (isDirectory == false)
+                    {
+                        if (File.Exists(fullPath) == false)
+                        {
+                            throw new ArgumentException("Training image or folder does not exist: " + fullPath);
+                        }
+                    }
+                    IEnumerable<string> imagePaths = new[] { fullPath };
+                    if (isDirectory == true)
+                    {
+                        imagePaths = Directory.EnumerateFiles(fullPath, "*", SearchOption.AllDirectories);
+                    }
+                    foreach (string imagePath in imagePaths)
+                    {
+                        token.ThrowIfCancellationRequested();
+                        if (extensions.Contains(Path.GetExtension(imagePath).ToLowerInvariant()) == false)
+                        {
+                            if (isDirectory == true)
+                            {
+                                continue;
+                            }
+                            throw new ArgumentException("Training images must be PNG, JPG, JPEG or BMP files: " + imagePath);
+                        }
+                        if (File.Exists(imagePath) == false)
+                        {
+                            throw new ArgumentException("Training image does not exist: " + imagePath);
+                        }
+                        if (images.Where(image => image.Background == background).Any(image => image.FilePath.Equals(imagePath, StringComparison.OrdinalIgnoreCase)) == true)
+                        {
+                            continue;
+                        }
+                        images.Add(new TrainingImageInput { FilePath = imagePath, Background = background });
+                    }
+                }
+            }
+            if (images.Count == 0)
+            {
+                throw new ArgumentException("Provide at least one supported image in white_images or black_images.");
+            }
+            return images;
         }
 
         private async Task<McpToolResult> GetStatusAsync(JsonObject arguments, CancellationToken token)

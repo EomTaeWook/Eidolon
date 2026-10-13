@@ -211,6 +211,10 @@ namespace Eidolon.App.ViewModels
             {
                 if (Set(ref _useRandomGenerationSeed, value) == true)
                 {
+                    if (value == false)
+                    {
+                        GenerationSeed = _seeds.Next().ToString(CultureInfo.InvariantCulture);
+                    }
                     RefreshCommands();
                 }
             }
@@ -571,8 +575,8 @@ namespace Eidolon.App.ViewModels
                 RefreshReferenceInputs();
                 return;
             }
-            GenerationSeed = job.Seed.ToString(CultureInfo.InvariantCulture);
             UseRandomGenerationSeed = false;
+            GenerationSeed = job.Seed.ToString(CultureInfo.InvariantCulture);
             Assets.SelectedModel = Assets.FindReusableAsset(Assets.Models, job.Model);
             bool missingAsset = Assets.SelectedModel == null;
             foreach (AssetItem lora in Assets.Loras)

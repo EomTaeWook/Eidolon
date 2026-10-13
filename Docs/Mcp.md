@@ -9,6 +9,7 @@
 | `eidolon_get_status` | 엔진·요청 가능 상태, 현재 작업, 대기 건수, 진행률과 오류 조회 |
 | `eidolon_list_models` | 사용할 체크포인트·LoRA의 ID, 이름, 계열과 트리거 조회 |
 | `eidolon_get_instructions` | 저장된 공통 생성 지침과 제외할 요소 조회 |
+| `eidolon_train_lora` | 흰색·검정색 배경별 이미지·폴더 경로로 새 LoRA 학습 요청 추가 |
 | `eidolon_generate_image` | 설명과 선택적 참고 이미지로 생성 요청 추가 |
 | `eidolon_edit_image` | 참고 이미지와 설명으로 그림체 편집 요청 추가 |
 | `eidolon_list_images` | 현재 출력 폴더의 PNG 경로와 저장된 생성 조건을 페이지로 조회 |
@@ -20,15 +21,41 @@
 | `eidolon_regenerate_asset_frame` | 선택 항목의 설명·시드로 그 항목만 다시 요청 |
 | `eidolon_export_asset_collection` | 개별 PNG·시트·좌표 메타데이터·원본 사본 내보내기 |
 
-이미지 요청은 UI와 같은 FIFO 큐에 추가한다. 반환되는 `accepted`·`seed`는 수락 사실과 고정한 시드이며 완료 결과가 아니다. 상태를 조회하고 결과 목록에서 이미지 경로·프롬프트·시드를 확인한다. HTTP 서버를 끄거나 클라이언트 연결을 닫아도 이미 추가한 생성 요청을 지우지 않는다. 대기 요청은 UI의 기존 대기열에서 관리한다. 이미지 전송은 파일 경로 조회이며 MCP 응답에 이미지 바이트를 포함하지 않는다. 학습·설치·파일 삭제 도구는 현재 제공하지 않는다.
+이미지·학습 요청은 UI와 같은 FIFO 큐에 추가한다. 반환되는 `accepted`·`seed`는 수락 사실과 고정한 생성 시드이며 완료 결과가 아니다. 상태를 조회하고 결과 목록에서 이미지 경로·프롬프트·시드를 확인한다. HTTP 서버를 끄거나 클라이언트 연결을 닫아도 이미 추가한 생성·학습 요청을 지우지 않는다. 대기 요청은 UI의 기존 대기열에서 관리한다. 이미지 전송은 파일 경로 조회이며 MCP 응답에 이미지 바이트를 포함하지 않는다. 설치·파일 삭제 도구는 현재 제공하지 않는다.
 
 `model_id`를 생략하면 UI에서 선택한 모델을 사용한다. `lora_ids`를 생략하면 선택 모델과 같은 계열의 현재 선택 LoRA를 사용하며 빈 배열을 주면 해당 요청에서 LoRA를 제외한다. 다른 모델·LoRA를 지정해도 UI의 선택은 변경하지 않는다.
 
 `positive_prompt`·`negative_prompt`를 제공하면 해당 요청의 지침만 대체한다. 빈 문자열은 해당 지침을 비운다. 생략한 지침은 저장된 설정을 사용한다. 저장 설정·프리셋·생성 및 편집 입력칸은 변경하지 않는다. LoRA 트리거 → 사용자 설명 → 요청 지침의 합성 순서는 기존 생성 서비스를 따른다.
 
-AI 클라이언트는 사용자 요청의 언어와 관계없이 모든 프롬프트를 반드시 영어로 작성한다. `prompt`·`positive_prompt`·`negative_prompt`·`action`·각 `frame_descriptions` 항목에 적용하며 선택 재생성도 동일하다. 대상·개수·외형·형태·포즈·동작·구도·카메라 각도·시점·그림체·재질·질감·색상·조명·배경 중 요청에 필요한 내용을 최대한 구체적인 영어 태그 또는 짧은 태그 구문으로 나누고 쉼표로 구분한다. 제외할 요소는 `negative_prompt`의 별도 영어 태그로 작성한다. 접속 안내와 도구·입력 스키마 설명으로 전달하는 작성 규칙이며 서버가 자동 번역하거나 언어를 판별해 거부하지는 않는다. 선택 입력의 생략·지침을 비우는 빈 문자열과 기존 저장 지침은 유지한다.
+AI 클라이언트는 사용자 요청의 언어와 관계없이 모든 프롬프트를 반드시 영어로 작성한다. `prompt`·`positive_prompt`·`negative_prompt`·`action`·각 `frame_descriptions` 항목과 학습의 선택적 `description`에 적용하며 선택 재생성도 동일하다. 대상·개수·외형·형태·포즈·동작·구도·카메라 각도·시점·그림체·재질·질감·색상·조명·배경 중 요청에 필요한 내용을 최대한 구체적인 영어 태그 또는 짧은 태그 구문으로 나누고 쉼표로 구분한다. 제외할 요소는 `negative_prompt`의 별도 영어 태그로 작성한다. 접속 안내와 도구·입력 스키마 설명으로 전달하는 작성 규칙이며 서버가 자동 번역하거나 언어를 판별해 거부하지는 않는다. 선택 입력의 생략·지침을 비우는 빈 문자열과 기존 저장 지침은 유지한다.
 
 `reference_path`는 읽을 수 있는 절대 파일 경로다. 입력 파일은 요청 추가 전에 바이트 사본으로 읽고 원본은 유지한다. 최대 입력은 기존 32 MiB·4천만 픽셀 경계를 사용하며 실제 디코딩은 기존 생성 서비스가 담당한다. 생성의 참고 강도는 기본 0.65, 편집은 0.35이며 0.05~0.95를 허용한다. 편집에서는 참고 이미지가 필수다.
+
+## LoRA 학습 호출
+
+`eidolon_train_lora`는 `name`·`trigger_word`와 `white_images`·`black_images` 중 한 곳 이상의 이미지가 필요하다. 각 목록은 절대 이미지 경로 또는 폴더 경로를 받으며 폴더는 하위 폴더까지 PNG·JPG·JPEG·BMP를 가져온다. 같은 목록의 중복 파일은 제외하고 같은 파일을 두 배경 목록에 넣는 것은 허용한다. 두 목록은 한 데이터셋으로 준비해 새 LoRA 하나를 만든다. 투명·반투명 영역만 목록의 배경색으로 채우며 기존 배경과 원본 파일·설명은 보존한다. 폴더 선택 창이나 UI 조작을 요구하지 않는다.
+
+`model_id`는 `eidolon_list_models`의 로컬 체크포인트 ID이며 생략하면 UI에서 선택한 모델을 사용한다. `steps`는 기본 1000, 허용 범위는 기존 학습 프리셋의 1~100000이다. `trigger_word`에는 공백·쉼표를 넣지 않는다. 선택적 `description`은 영어 태그로 작성한 공통 설명이며 같은 이름의 `.txt` → Eidolon 이미지 메타 정보 → 공통 설명 → 직접 붙인 파일명 순서로 사용한다. 설명 파일의 트리거 추가와 학습 데이터 준비는 기존 `LoraTrainer`가 학습 시작 시 처리한다.
+
+이미지 생성 방식을 Codex로 설정했어도 LoRA 학습은 로컬 ComfyUI 학습 환경·기반 모델·NVIDIA GPU를 사용한다. 요청은 화면의 학습 입력·선택 모델·설정을 변경하지 않고 입력 사본을 기존 큐에 넣는다. 실제 파일 내용은 학습 시작 시 복사한다. 접수 전에 경로·지원 확장자·이름·트리거·모델·단계 수를 확인하며 실행 환경 확인과 학습 오류는 기존 학습 서비스가 처리한다.
+
+예시 `tools/call`의 `params`:
+
+```json
+{
+  "name": "eidolon_train_lora",
+  "arguments": {
+    "name": "나의 수채화",
+    "trigger_word": "eidolon_watercolor",
+    "steps": 1000,
+    "description": "single object, centered composition, clear silhouette, plain background",
+    "white_images": ["D:\\LoRA\\White"],
+    "black_images": ["D:\\LoRA\\Black\\sword.png"]
+  }
+}
+```
+
+응답은 `accepted`·`name`·`trigger_word`·`model_id`·`steps`·`image_count`이며 완료 결과가 아니다. `eidolon_get_status`에서 현재 작업·대기열·진행률·오류를 확인하고 완료 뒤 `eidolon_list_models`에서 새 LoRA와 트리거를 조회한다. 학습 상태·남은 시간·취소는 기존 학습 화면에서도 사용한다. 엔진 정지·학습·등록·복구는 기존 `StudioService.TrainAsync`가 소유한다.
 
 ## 에셋 제작 호출
 
@@ -99,7 +126,7 @@ URL 예약 명령의 계약은 [Microsoft netsh http 문서](https://learn.micro
 
 JSON-RPC 메서드는 `Eidolon.Mcp/Controllers`의 `InitializeController`, `PingController`, `ServerDiscoverController`, `ToolsListController`, `ToolsCallController`, `NotificationsCancelledController`가 각각 처리한다. 컨트롤러는 transient이며 `McpDispatcher`가 메서드별 타입을 찾아 요청·알림마다 DI에서 새로 resolve한 뒤 공통 응답 메타데이터를 붙인다. 서버 옵션·도구 목록·콜백과 App의 `McpService`는 공유한다.
 
-App의 `Mcp/McpService.cs`는 `CreateTools()`에서 도구 정의와 private 처리 메서드를 등록하고 기존 Session·자산 선택·생성 ViewModel·JobStore에 연결한다. 호출 흐름은 `tools/call → ToolsCallController → McpService의 처리 메서드`다. UI 상태는 Avalonia UI 스레드에서 읽고 요청 사본을 만든다. `ViewModels/Mcp/McpViewModel`이 서버의 시작·정지·화면 상태를 소유하고 루트가 종료를 조합한다. Core는 MCP와 UI를 참조하지 않는다. 별도 설정 저장소, 생성 큐, 작업 이력이나 결과 인덱스를 만들지 않는다.
+App의 `Mcp/McpService.cs`는 `CreateTools()`에서 도구 정의와 private 처리 메서드를 등록하고 기존 Session·자산 선택·생성 및 학습 ViewModel·JobStore에 연결한다. 학습 요청은 `TrainingViewModel.EnqueueTraining`을 통해 UI와 같은 `TrainAsync` 실행 경로에 연결하며 별도 폴더 선택·학습 큐·데이터셋 저장소를 만들지 않는다. 호출 흐름은 `tools/call → ToolsCallController → McpService의 처리 메서드`다. UI 상태는 Avalonia UI 스레드에서 읽고 요청 사본을 만든다. `ViewModels/Mcp/McpViewModel`이 서버의 시작·정지·화면 상태를 소유하고 루트가 종료를 조합한다. Core는 MCP와 UI를 참조하지 않는다. 별도 설정 저장소, 생성 큐, 작업 이력이나 결과 인덱스를 만들지 않는다.
 
 현재 변경은 빌드·테스트·클라이언트 접속 검증을 수행하지 않았다.
 

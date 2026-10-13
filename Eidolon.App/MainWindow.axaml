@@ -144,35 +144,23 @@
               <StackPanel Spacing="20" IsEnabled="{Binding Session.CanEditGenerationInputs}">
                 <views:ReferenceImageInputsView />
                 <Border Height="1" Background="{DynamicResource BorderBrush}" />
-                <DropDownButton IsVisible="{Binding IsComfyGeneration}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinHeight="40" CornerRadius="6" Padding="12,8" ToolTip.Tip="{DynamicResource EidolonText369}">
-                  <TextBlock Text="{DynamicResource EidolonText369}" FontSize="13" />
-                  <DropDownButton.Flyout>
-                    <Flyout Placement="LeftEdgeAlignedTop">
-                      <StackPanel Width="260" Spacing="10">
-                        <TextBlock Text="{DynamicResource EidolonText369}" FontSize="14" FontWeight="SemiBold" />
-                        <CheckBox Content="{DynamicResource EidolonText419}" IsChecked="{Binding UseRandomGenerationSeed, Mode=TwoWay}" FontSize="13" />
-                        <TextBox Text="{Binding GenerationSeed, Mode=TwoWay}" IsVisible="{Binding !UseRandomGenerationSeed}" FontSize="14" />
-                        <TextBlock Text="{Binding GenerationSeedValidationHint}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding !IsGenerationSeedValid}" />
-                      </StackPanel>
-                    </Flyout>
-                  </DropDownButton.Flyout>
-                </DropDownButton>
+                <StackPanel Spacing="8" IsVisible="{Binding IsComfyGeneration}">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{DynamicResource EidolonText369}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <CheckBox Grid.Column="1" Content="{DynamicResource EidolonText419}" IsChecked="{Binding UseRandomGenerationSeed, Mode=TwoWay}" FontSize="12" />
+                  </Grid>
+                  <TextBox Text="{Binding GenerationSeed, Mode=TwoWay}" IsEnabled="{Binding !UseRandomGenerationSeed}" FontSize="14" MinHeight="38" AutomationProperties.Name="{DynamicResource EidolonText369}" />
+                  <TextBlock Text="{Binding GenerationSeedValidationHint}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding !IsGenerationSeedValid}" />
+                </StackPanel>
                 <CheckBox IsChecked="{Binding RemoveBackground, Mode=TwoWay}" Content="{DynamicResource EidolonText308}" ToolTip.Tip="{DynamicResource EidolonText309}" FontSize="13" MinHeight="28" />
-                <DropDownButton HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinHeight="40" CornerRadius="6" Padding="12,8" ToolTip.Tip="{DynamicResource EidolonText437}">
-                  <TextBlock Text="{DynamicResource EidolonText176}" FontSize="13" />
-                  <DropDownButton.Flyout>
-                    <Flyout Placement="LeftEdgeAlignedTop">
-                      <ScrollViewer Width="340" MaxHeight="240" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                        <StackPanel Spacing="10">
-                          <TextBlock Text="{DynamicResource EidolonText362}" FontSize="13" FontWeight="SemiBold" />
-                          <SelectableTextBlock Text="{Binding GenerationPositivePrompt}" TextWrapping="Wrap" FontSize="13" />
-                          <TextBlock Text="{DynamicResource EidolonText180}" FontSize="13" FontWeight="SemiBold" />
-                          <SelectableTextBlock Text="{Binding GenerationNegativePrompt}" TextWrapping="Wrap" FontSize="13" />
-                        </StackPanel>
-                      </ScrollViewer>
-                    </Flyout>
-                  </DropDownButton.Flyout>
-                </DropDownButton>
+                <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                <StackPanel Spacing="10" ToolTip.Tip="{DynamicResource EidolonText437}">
+                  <TextBlock Text="{DynamicResource EidolonText176}" FontSize="14" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource EidolonText362}" FontSize="12" Foreground="{DynamicResource MutedBrush}" />
+                  <SelectableTextBlock Text="{Binding GenerationPositivePrompt}" TextWrapping="Wrap" FontSize="13" />
+                  <TextBlock Text="{DynamicResource EidolonText180}" FontSize="12" Foreground="{DynamicResource MutedBrush}" />
+                  <SelectableTextBlock Text="{Binding GenerationNegativePrompt}" TextWrapping="Wrap" FontSize="13" />
+                </StackPanel>
               </StackPanel>
             </ScrollViewer>
           </Border>

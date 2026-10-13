@@ -92,7 +92,7 @@ dotnet run --project Eidolon.App/Eidolon.App.csproj
 
 ## MCP
 
-Enable the server in **Settings > General > MCP connection** and register `http://127.0.0.1:8190/mcp` with your client. Generation, editing, results, and asset creation use the same job queue as the UI. Per-request guidelines leave saved settings unchanged. See [MCP usage](Docs/Mcp.md) for examples and connection details.
+Enable the server in **Settings > General > MCP connection** and register `http://127.0.0.1:8190/mcp` with your client. Generation, editing, results, asset creation, and LoRA training use the same job queue as the UI. Training accepts absolute image or folder paths for white and black backgrounds directly and trains both groups into one LoRA. Per-request guidelines leave saved settings unchanged. See [MCP usage](Docs/Mcp.md) for examples and connection details.
 
 ## Technology
 

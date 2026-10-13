@@ -432,8 +432,17 @@ namespace Eidolon.App.ViewModels
             }
             TrainingInput input = CreateTrainingInput();
             DesktopSettings settings = Session.CreateActiveSettings(Session.Settings);
-            _work.Enqueue(_strings.GetString("EidolonText108") + " · " + input.Name, token => TrainAsync(settings, input, token));
+            EnqueueTraining(settings, input);
             return Task.CompletedTask;
+        }
+
+        internal void EnqueueTraining(DesktopSettings settings, TrainingInput input)
+        {
+            if (Session.CanQueue == false)
+            {
+                throw new InvalidOperationException("The application is not ready to queue a LoRA training request.");
+            }
+            _work.Enqueue(_strings.GetString("EidolonText108") + " · " + input.Name, token => TrainAsync(settings, input, token));
         }
 
         private TrainingInput CreateTrainingInput()
