@@ -1,45 +1,47 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.ReferenceImageInputsView" x:DataType="vm:GenerationViewModel" IsEnabled="{Binding Session.CanEditGenerationInputs}">
   <UserControl.Styles>
-    <Style Selector="Button.referenceAction:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-    </Style>
-    <Style Selector="Button.referenceAction:pressed /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Style Selector="Button.quiet">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="CornerRadius" Value="4" />
     </Style>
   </UserControl.Styles>
-  <StackPanel Spacing="10">
-    <TextBlock Text="{DynamicResource EidolonText440}" FontSize="13" FontWeight="SemiBold" />
-    <StackPanel Spacing="10" IsVisible="{Binding !HasReferenceImage}">
-      <Button Classes="referenceAction" Command="{Binding PickReferenceImageCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" MinHeight="92" Padding="16" FontSize="13" ToolTip.Tip="{Binding ReferenceImageHint}">
-        <StackPanel Spacing="10" VerticalAlignment="Center" HorizontalAlignment="Center">
-          <Path Data="{StaticResource EidolonIconImage}" Width="24" Height="24" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.5" HorizontalAlignment="Center" />
-          <TextBlock Text="{DynamicResource EidolonText441}" HorizontalAlignment="Center" />
-        </StackPanel>
-      </Button>
-      <TextBlock Text="{DynamicResource EidolonText459}" Classes="muted" FontSize="12" IsVisible="{Binding Navigation.IsEditingView}" />
-    </StackPanel>
+  <StackPanel Spacing="12">
+    <Button Command="{Binding PickReferenceImageCommand}" IsVisible="{Binding !HasReferenceImage}" Padding="12,8" MinHeight="40" CornerRadius="6" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" ToolTip.Tip="{Binding ReferenceImageHint}" AutomationProperties.Name="{DynamicResource EidolonText441}">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Path Data="{StaticResource EidolonIconImage}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.5" VerticalAlignment="Center" />
+        <TextBlock Text="{DynamicResource EidolonText441}" FontSize="13" VerticalAlignment="Center" />
+      </StackPanel>
+    </Button>
     <StackPanel Spacing="10" IsVisible="{Binding HasReferenceImage}">
-      <Grid ColumnDefinitions="72,12,*">
-        <Border Width="72" Height="72" CornerRadius="10" ClipToBounds="True" Background="{DynamicResource ButtonBrush}">
+      <Grid ColumnDefinitions="48,12,*">
+        <Border Width="48" Height="48" CornerRadius="4" ClipToBounds="True" Background="{DynamicResource ButtonBrush}">
           <Image Source="{Binding ReferenceThumbnail}" Stretch="Uniform" />
         </Border>
-        <StackPanel Grid.Column="2" Spacing="4" VerticalAlignment="Center">
-          <TextBlock Text="{Binding ReferenceImageName}" TextTrimming="CharacterEllipsis" FontSize="12" ToolTip.Tip="{Binding ReferenceImageName}" />
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <Button Classes="quiet" Content="{DynamicResource EidolonText442}" Command="{Binding PickReferenceImageCommand}" Padding="0,4" />
-            <Button Classes="quiet" Content="{DynamicResource EidolonText443}" Command="{Binding ClearReferenceImageCommand}" Padding="0,4" />
-          </StackPanel>
-        </StackPanel>
+        <TextBlock Grid.Column="2" Text="{Binding ReferenceImageName}" TextTrimming="CharacterEllipsis" FontSize="13" ToolTip.Tip="{Binding ReferenceImageName}" VerticalAlignment="Center" />
       </Grid>
-      <TextBlock Text="{Binding ReferenceImageHint}" Classes="muted" FontSize="12" />
-      <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsComfyGeneration}">
-        <TextBlock Text="{DynamicResource EidolonText448}" FontSize="12" />
-        <TextBlock Grid.Column="1" Text="{Binding ReferenceStrengthCaption}" Classes="muted" FontSize="12" />
+      <Grid ColumnDefinitions="*,Auto">
+        <Button Command="{Binding PickReferenceImageCommand}" Content="{DynamicResource EidolonText442}" Classes="quiet" HorizontalAlignment="Left" ToolTip.Tip="{Binding ReferenceImageHint}" />
+        <Button Grid.Column="1" Command="{Binding ClearReferenceImageCommand}" Classes="quiet" ToolTip.Tip="{DynamicResource EidolonText443}" AutomationProperties.Name="{DynamicResource EidolonText443}">
+          <Path Data="M4,4 L16,16 M16,4 L4,16" Width="14" Height="14" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.5" />
+        </Button>
       </Grid>
-      <Slider Minimum="0.05" Maximum="0.95" TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding ReferenceChangeStrength, Mode=TwoWay}" IsVisible="{Binding IsComfyGeneration}" />
-      <TextBlock Text="{DynamicResource EidolonText449}" Classes="muted" FontSize="11" IsVisible="{Binding IsComfyGeneration}" />
+      <DropDownButton IsVisible="{Binding IsComfyGeneration}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinHeight="40" CornerRadius="6" Padding="12,8" ToolTip.Tip="{DynamicResource EidolonText448}" AutomationProperties.Name="{DynamicResource EidolonText448}">
+        <TextBlock Text="{Binding ReferenceStrengthCaption}" FontSize="12" />
+        <DropDownButton.Flyout>
+          <Flyout Placement="LeftEdgeAlignedTop">
+            <StackPanel Width="260" Spacing="10">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{DynamicResource EidolonText448}" FontSize="13" />
+                <TextBlock Grid.Column="1" Text="{Binding ReferenceStrengthCaption}" Classes="muted" FontSize="12" />
+              </Grid>
+              <Slider Minimum="0.05" Maximum="0.95" TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding ReferenceChangeStrength, Mode=TwoWay}" ToolTip.Tip="{DynamicResource EidolonText449}" />
+            </StackPanel>
+          </Flyout>
+        </DropDownButton.Flyout>
+      </DropDownButton>
     </StackPanel>
   </StackPanel>
 </UserControl>

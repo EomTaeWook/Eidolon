@@ -1,84 +1,181 @@
 <Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.MainWindow" x:DataType="vm:StudioViewModel" Title="Eidolon" Icon="/Assets/AppIcon.ico" Width="1280" Height="900" MinWidth="1024" MinHeight="740" WindowStartupLocation="CenterScreen">
-  <Grid ColumnDefinitions="200,*" RowDefinitions="*,Auto">
-    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0" Padding="14,24,14,20">
-      <Grid RowDefinitions="Auto,28,*,24,Auto">
-        <Grid ColumnDefinitions="36,12,*" Margin="8,0">
-          <Image Source="/Assets/AppIcon.png" Width="36" Height="36" />
-          <TextBlock Grid.Column="2" Text="Eidolon" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
-        </Grid>
-        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-          <StackPanel Spacing="6">
-            <Button Command="{Binding Navigation.ShowGenerationCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsGenerationView}">
-              <Grid ColumnDefinitions="20,12,*">
-                <Path Data="{StaticResource EidolonIconImage}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="2" Text="{DynamicResource EidolonText106}" TextWrapping="Wrap" VerticalAlignment="Center" />
-              </Grid>
-            </Button>
-            <Button Command="{Binding Navigation.ShowEditingCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsEditingView}">
-              <Grid ColumnDefinitions="20,12,*">
-                <Path Data="{StaticResource EidolonIconEdit}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="2" Text="{DynamicResource EidolonText456}" TextWrapping="Wrap" VerticalAlignment="Center" />
-              </Grid>
-            </Button>
-            <Button Command="{Binding Navigation.ShowResultsCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsResultsView}">
-              <Grid ColumnDefinitions="20,12,*">
-                <Path Data="{StaticResource EidolonIconResults}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="2" Text="{DynamicResource EidolonText291}" TextWrapping="Wrap" VerticalAlignment="Center" />
-              </Grid>
-            </Button>
-            <Button Command="{Binding Navigation.ShowAssetCreationCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsAssetCreationView}">
-              <Grid ColumnDefinitions="20,12,*">
-                <Path Data="{StaticResource EidolonIconResults}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="2" Text="{DynamicResource EidolonText603}" TextWrapping="Wrap" VerticalAlignment="Center" />
-              </Grid>
-            </Button>
-            <Button Command="{Binding Navigation.ShowTrainingCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsTrainingView}">
-              <Grid ColumnDefinitions="20,12,*">
-                <Path Data="{StaticResource EidolonIconTraining}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="2" Text="{DynamicResource EidolonText108}" TextWrapping="Wrap" VerticalAlignment="Center" />
-              </Grid>
-            </Button>
-          </StackPanel>
-        </ScrollViewer>
-        <StackPanel Grid.Row="4" Spacing="6">
-          <Border Height="1" Background="{DynamicResource BorderBrush}" Margin="8,0,8,10" />
-          <Button Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsGenerationEnvironmentView}">
-            <Grid ColumnDefinitions="20,12,*">
-              <Path Data="{StaticResource EidolonIconLibrary}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
-              <TextBlock Grid.Column="2" Text="{DynamicResource EidolonText581}" TextWrapping="Wrap" VerticalAlignment="Center" />
-            </Grid>
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="20,10">
+      <Grid ColumnDefinitions="Auto,20,*,Auto">
+        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <Image Source="/Assets/AppIcon.png" Width="28" Height="28" />
+          <TextBlock Text="Eidolon" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+        </StackPanel>
+        <WrapPanel Grid.Column="2" VerticalAlignment="Center">
+          <Button Command="{Binding Navigation.ShowGenerationCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsGenerationView}" Padding="10,8" CornerRadius="6" FontSize="13" Margin="0,2,4,2">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Path Data="{StaticResource EidolonIconImage}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
+              <TextBlock Text="{DynamicResource EidolonText106}" VerticalAlignment="Center" />
+            </StackPanel>
           </Button>
-          <Button Command="{Binding Navigation.ShowSettingsCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsSettingsView}">
-            <Grid ColumnDefinitions="20,12,*">
-              <Path Data="{StaticResource EidolonIconSettings}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
-              <TextBlock Grid.Column="2" Text="{DynamicResource EidolonText110}" TextWrapping="Wrap" VerticalAlignment="Center" />
-            </Grid>
+          <Button Command="{Binding Navigation.ShowEditingCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsEditingView}" Padding="10,8" CornerRadius="6" FontSize="13" Margin="0,2,4,2">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Path Data="{StaticResource EidolonIconEdit}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
+              <TextBlock Text="{DynamicResource EidolonText456}" VerticalAlignment="Center" />
+            </StackPanel>
           </Button>
-          <Button Command="{Binding Navigation.ShowHelpCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsHelpView}">
-            <Grid ColumnDefinitions="20,12,*">
-              <Path Data="{StaticResource EidolonIconHelp}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
-              <TextBlock Grid.Column="2" Text="{DynamicResource EidolonText111}" TextWrapping="Wrap" VerticalAlignment="Center" />
-            </Grid>
+          <Button Command="{Binding Navigation.ShowResultsCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsResultsView}" Padding="10,8" CornerRadius="6" FontSize="13" Margin="0,2,4,2">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Path Data="{StaticResource EidolonIconResults}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
+              <TextBlock Text="{DynamicResource EidolonText291}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding Navigation.ShowAssetCreationCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsAssetCreationView}" Padding="10,8" CornerRadius="6" FontSize="13" Margin="0,2,4,2">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Path Data="{StaticResource EidolonIconResults}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
+              <TextBlock Text="{DynamicResource EidolonText603}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding Navigation.ShowTrainingCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsTrainingView}" Padding="10,8" CornerRadius="6" FontSize="13" Margin="0,2,4,2">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Path Data="{StaticResource EidolonIconTraining}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
+              <TextBlock Text="{DynamicResource EidolonText108}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </WrapPanel>
+        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center" Margin="12,0,0,0">
+          <Button Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsGenerationEnvironmentView}" Padding="8" CornerRadius="6" ToolTip.Tip="{DynamicResource EidolonText581}" AutomationProperties.Name="{DynamicResource EidolonText581}">
+            <Path Data="{StaticResource EidolonIconLibrary}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
+          </Button>
+          <Button Command="{Binding Navigation.ShowSettingsCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsSettingsView}" Padding="8" CornerRadius="6" ToolTip.Tip="{DynamicResource EidolonText110}" AutomationProperties.Name="{DynamicResource EidolonText110}">
+            <Path Data="{StaticResource EidolonIconSettings}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
+          </Button>
+          <Button Command="{Binding Navigation.ShowHelpCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsHelpView}" Padding="8" CornerRadius="6" ToolTip.Tip="{DynamicResource EidolonText111}" AutomationProperties.Name="{DynamicResource EidolonText111}">
+            <Path Data="{StaticResource EidolonIconHelp}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
           </Button>
         </StackPanel>
       </Grid>
     </Border>
-    <Grid Grid.Column="1" Margin="24">
+    <Grid Grid.Row="1" Margin="20">
       <Border IsVisible="{Binding Navigation.IsGenerationWorkspace}">
-        <Grid RowDefinitions="Auto,24,*">
-          <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Text="{Binding Generation.GenerationInputCaption}" Classes="title" VerticalAlignment="Center" />
-            <Button Grid.Column="1" Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" ToolTip.Tip="{DynamicResource EidolonText176}" AutomationProperties.Name="{DynamicResource EidolonText560}">
+        <Grid RowDefinitions="Auto,12,*,12,Auto" ColumnDefinitions="*,16,260">
+          <Grid Grid.ColumnSpan="3" ColumnDefinitions="*,Auto">
+            <WrapPanel VerticalAlignment="Center">
+              <TextBlock Text="{Binding Generation.GenerationInputCaption}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,20,0" />
+              <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding Generation.IsComfyGeneration}" VerticalAlignment="Center" Margin="0,2,12,2">
+                <ComboBox ItemsSource="{Binding Assets.Models}" SelectedItem="{Binding Assets.SelectedModel, Mode=TwoWay}" IsVisible="{Binding Assets.HasAvailableModels}" IsEnabled="{Binding Session.CanEditGenerationInputs}" Width="220" MinHeight="40" Background="{DynamicResource SurfaceBrush}" CornerRadius="6" ToolTip.Tip="{DynamicResource EidolonText359}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AssetItem">
+                      <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="13" ToolTip.Tip="{Binding Detail}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" IsVisible="{Binding !Assets.HasAvailableModels}" ToolTip.Tip="{Binding Assets.ModelSetupHint}" />
+                <DropDownButton Width="220" MinHeight="40" Padding="12,8" CornerRadius="6" Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" HorizontalContentAlignment="Stretch" IsEnabled="{Binding Session.CanEditGenerationInputs}" ToolTip.Tip="{Binding Assets.SelectedLoraNames}" AutomationProperties.Name="{DynamicResource EidolonText423}">
+                  <Grid>
+                    <TextBlock Text="{DynamicResource EidolonText423}" IsVisible="{Binding !Assets.HasSelectedLoras}" FontSize="13" />
+                    <TextBlock Text="{Binding Assets.SelectedLoraNames}" IsVisible="{Binding Assets.HasSelectedLoras}" TextTrimming="CharacterEllipsis" FontSize="13" />
+                  </Grid>
+                  <DropDownButton.Flyout>
+                    <Flyout Placement="BottomEdgeAlignedLeft">
+                      <StackPanel Width="320" Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                          <TextBlock Text="{DynamicResource EidolonText423}" FontSize="14" FontWeight="SemiBold" />
+                          <TextBlock Grid.Column="1" Text="{Binding Assets.SelectedLorasCaption}" IsVisible="{Binding Assets.HasSelectedLoras}" Classes="muted" FontSize="11" />
+                        </Grid>
+                        <TextBox Text="{Binding Assets.LoraSearch, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText432}" IsVisible="{Binding Assets.ShowLoraSearch}" FontSize="13" />
+                        <TextBlock Text="{DynamicResource EidolonText341}" IsVisible="{Binding !Assets.HasAvailableLoras}" Classes="muted" FontSize="12" />
+                        <Border IsVisible="{Binding Assets.HasAvailableLoras}">
+                          <TextBlock Text="{DynamicResource EidolonText433}" IsVisible="{Binding !Assets.HasMatchingLoras}" Classes="muted" FontSize="12" />
+                        </Border>
+                        <ScrollViewer MaxHeight="240" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" IsVisible="{Binding Assets.HasMatchingLoras}">
+                          <ItemsControl ItemsSource="{Binding Assets.FilteredLoras}">
+                            <ItemsControl.Styles>
+                              <Style Selector="ToggleButton.loraRow">
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="CornerRadius" Value="4" />
+                                <Setter Property="Padding" Value="10" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                              </Style>
+                              <Style Selector="ToggleButton.loraRow:checked">
+                                <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                              </Style>
+                              <Style Selector="ToggleButton.loraRow:checked /template/ ContentPresenter">
+                                <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                              </Style>
+                              <Style Selector="ToggleButton.loraRow:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                              </Style>
+                            </ItemsControl.Styles>
+                            <ItemsControl.ItemTemplate>
+                              <DataTemplate x:DataType="vm:AssetItem">
+                                <ToggleButton Classes="loraRow" IsChecked="{Binding IsSelected, Mode=TwoWay}" ToolTip.Tip="{Binding TriggerCaption}" AutomationProperties.Name="{Binding Label}">
+                                  <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="13" />
+                                    <TextBlock Grid.Column="1" Text="{DynamicResource EidolonText435}" Foreground="{DynamicResource AccentBrush}" IsVisible="{Binding IsSelected}" FontSize="11" Margin="12,0,0,0" VerticalAlignment="Center" />
+                                  </Grid>
+                                </ToggleButton>
+                              </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                          </ItemsControl>
+                        </ScrollViewer>
+                      </StackPanel>
+                    </Flyout>
+                  </DropDownButton.Flyout>
+                </DropDownButton>
+                <Button Content="{DynamicResource EidolonText410}" Command="{Binding Assets.ScanCommand}" Padding="10,8" ToolTip.Tip="{DynamicResource EidolonText125}" />
+              </StackPanel>
+              <TextBlock Text="{Binding Session.CodexModelCaption}" IsVisible="{Binding !Generation.IsComfyGeneration}" Classes="muted" FontSize="13" VerticalAlignment="Center" ToolTip.Tip="{DynamicResource EidolonText545}" />
+            </WrapPanel>
+            <Button Grid.Column="1" Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" CornerRadius="6" Padding="10,8" ToolTip.Tip="{DynamicResource EidolonText560}" AutomationProperties.Name="{DynamicResource EidolonText560}">
               <StackPanel Orientation="Horizontal" Spacing="8">
-                <Path Data="{StaticResource EidolonIconSettings}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
-                <TextBlock Text="{DynamicResource EidolonText560}" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Session.GenerationBackendCaption}" FontSize="13" VerticalAlignment="Center" />
+                <Path Data="{StaticResource EidolonIconSettings}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
           </Grid>
-          <Grid Grid.Row="2" ColumnDefinitions="300,20,*">
-            <views:GenerationInputsView Grid.Column="0" DataContext="{Binding Generation}" />
-            <views:GenerationPreviewView Grid.Column="2" DataContext="{Binding Gallery}" />
-          </Grid>
+          <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" ClipToBounds="True">
+            <views:GenerationPreviewView DataContext="{Binding Gallery}" />
+          </Border>
+          <views:GenerationInputsView Grid.Row="4" DataContext="{Binding Generation}" MaxWidth="960" HorizontalAlignment="Stretch" />
+          <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="16" DataContext="{Binding Generation}" x:DataType="vm:GenerationViewModel">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+              <StackPanel Spacing="20" IsEnabled="{Binding Session.CanEditGenerationInputs}">
+                <views:ReferenceImageInputsView />
+                <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                <DropDownButton IsVisible="{Binding IsComfyGeneration}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinHeight="40" CornerRadius="6" Padding="12,8" ToolTip.Tip="{DynamicResource EidolonText369}">
+                  <TextBlock Text="{DynamicResource EidolonText369}" FontSize="13" />
+                  <DropDownButton.Flyout>
+                    <Flyout Placement="LeftEdgeAlignedTop">
+                      <StackPanel Width="260" Spacing="10">
+                        <TextBlock Text="{DynamicResource EidolonText369}" FontSize="14" FontWeight="SemiBold" />
+                        <CheckBox Content="{DynamicResource EidolonText419}" IsChecked="{Binding UseRandomGenerationSeed, Mode=TwoWay}" FontSize="13" />
+                        <TextBox Text="{Binding GenerationSeed, Mode=TwoWay}" IsVisible="{Binding !UseRandomGenerationSeed}" FontSize="14" />
+                        <TextBlock Text="{Binding GenerationSeedValidationHint}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding !IsGenerationSeedValid}" />
+                      </StackPanel>
+                    </Flyout>
+                  </DropDownButton.Flyout>
+                </DropDownButton>
+                <CheckBox IsChecked="{Binding RemoveBackground, Mode=TwoWay}" Content="{DynamicResource EidolonText308}" ToolTip.Tip="{DynamicResource EidolonText309}" FontSize="13" MinHeight="28" />
+                <DropDownButton HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinHeight="40" CornerRadius="6" Padding="12,8" ToolTip.Tip="{DynamicResource EidolonText437}">
+                  <TextBlock Text="{DynamicResource EidolonText176}" FontSize="13" />
+                  <DropDownButton.Flyout>
+                    <Flyout Placement="LeftEdgeAlignedTop">
+                      <ScrollViewer Width="340" MaxHeight="240" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="10">
+                          <TextBlock Text="{DynamicResource EidolonText362}" FontSize="13" FontWeight="SemiBold" />
+                          <SelectableTextBlock Text="{Binding GenerationPositivePrompt}" TextWrapping="Wrap" FontSize="13" />
+                          <TextBlock Text="{DynamicResource EidolonText180}" FontSize="13" FontWeight="SemiBold" />
+                          <SelectableTextBlock Text="{Binding GenerationNegativePrompt}" TextWrapping="Wrap" FontSize="13" />
+                        </StackPanel>
+                      </ScrollViewer>
+                    </Flyout>
+                  </DropDownButton.Flyout>
+                </DropDownButton>
+              </StackPanel>
+            </ScrollViewer>
+          </Border>
         </Grid>
       </Border>
       <Border IsVisible="{Binding Navigation.IsResultsView}">
@@ -199,7 +296,7 @@
         </Grid>
       </Border>
     </Grid>
-    <Border Grid.Row="1" Grid.ColumnSpan="2" Background="{DynamicResource FooterBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="24,10">
+    <Border Grid.Row="2" Background="{DynamicResource FooterBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="24,10">
       <Grid RowDefinitions="20,6,3,4,16,Auto">
         <Grid ColumnDefinitions="*,Auto">
           <TextBlock Text="{Binding Session.Status}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Session.Status}" TextWrapping="NoWrap" VerticalAlignment="Center" />

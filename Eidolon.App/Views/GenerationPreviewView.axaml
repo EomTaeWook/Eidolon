@@ -1,17 +1,49 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationPreviewView" x:DataType="vm:GalleryViewModel">
-  <Border Classes="card" Padding="0">
+  <UserControl.Styles>
+    <Style Selector="Button">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Width" Value="36" />
+      <Setter Property="Height" Value="36" />
+      <Setter Property="Padding" Value="8" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+  </UserControl.Styles>
+  <Border>
     <Grid RowDefinitions="Auto,*,Auto">
-      <Grid ColumnDefinitions="*,Auto" Margin="24,20">
-        <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
-          <TextBlock Text="{DynamicResource EidolonText439}" FontSize="15" FontWeight="SemiBold" />
-            <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding SelectedGeneration.HasSeed, FallbackValue=False}">
-            <TextBlock Text="{DynamicResource EidolonText369}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
-            <SelectableTextBlock Text="{Binding SelectedGeneration.SeedCaption}" FontSize="12" Foreground="{DynamicResource MutedBrush}" />
+      <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="16,10" MinHeight="56">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Spacing="3" VerticalAlignment="Center" Margin="0,0,12,0">
+            <TextBlock Text="{DynamicResource EidolonText439}" FontSize="14" FontWeight="SemiBold" />
+            <WrapPanel IsVisible="{Binding HasPreview}">
+              <TextBlock Text="{Binding SelectedGeneration.DimensionsCaption, FallbackValue=''}" Classes="muted" FontSize="12" Margin="0,0,12,0" />
+              <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding SelectedGeneration.HasSeed, FallbackValue=False}">
+                <TextBlock Text="{DynamicResource EidolonText369}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
+                <SelectableTextBlock Text="{Binding SelectedGeneration.SeedCaption}" FontSize="12" Foreground="{DynamicResource MutedBrush}" />
+              </StackPanel>
+            </WrapPanel>
           </StackPanel>
-        </StackPanel>
-        <Button Grid.Column="1" Content="{DynamicResource EidolonText291}" Command="{Binding Navigation.ShowResultsCommand}" FontSize="12" Padding="10,6" />
-      </Grid>
-      <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" Margin="24,0,24,20" CornerRadius="12" ClipToBounds="True" Padding="20">
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding HasPreview}">
+              <Button Command="{Binding ExportCommand}" ToolTip.Tip="{DynamicResource EidolonText122}" AutomationProperties.Name="{DynamicResource EidolonText122}">
+                <Path Data="{StaticResource EidolonIconSave}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.6" />
+              </Button>
+              <Button Command="{Binding ReusePromptCommand}" ToolTip.Tip="{DynamicResource EidolonText121}" AutomationProperties.Name="{DynamicResource EidolonText121}">
+                <Path Data="{StaticResource EidolonIconPlay}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.6" />
+              </Button>
+              <Button Command="{Binding UseResultAsReferenceCommand}" ToolTip.Tip="{DynamicResource EidolonText455}" AutomationProperties.Name="{DynamicResource EidolonText455}">
+                <Path Data="{StaticResource EidolonIconEdit}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.6" />
+              </Button>
+              <Border Width="1" Height="18" Background="{DynamicResource BorderBrush}" Margin="6,0" VerticalAlignment="Center" />
+            </StackPanel>
+            <Button Command="{Binding Navigation.ShowResultsCommand}" ToolTip.Tip="{DynamicResource EidolonText291}" AutomationProperties.Name="{DynamicResource EidolonText291}">
+              <Path Data="{StaticResource EidolonIconResults}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.6" />
+            </Button>
+          </StackPanel>
+        </Grid>
+      </Border>
+      <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" ClipToBounds="True" Padding="28">
         <Grid>
           <StackPanel IsVisible="{Binding !HasPreview}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" MaxWidth="360">
             <Path Data="{StaticResource EidolonIconImage}" Width="48" Height="48" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.2" HorizontalAlignment="Center" Margin="0,0,0,8" />
@@ -19,16 +51,18 @@
             <TextBlock Text="{DynamicResource EidolonText119}" Classes="muted" FontSize="13" TextAlignment="Center" />
           </StackPanel>
           <Viewbox Stretch="Uniform" IsVisible="{Binding HasPreview}" MaxWidth="640" MaxHeight="640" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Grid Width="{Binding Preview.Size.Width, FallbackValue=1}" Height="{Binding Preview.Size.Height, FallbackValue=1}">
-              <views:TransparencyBackground />
-              <Image Source="{Binding Preview}" Stretch="Uniform" />
-            </Grid>
+            <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource SurfaceBrush}" CornerRadius="2" ClipToBounds="True">
+              <Grid Width="{Binding Preview.Size.Width, FallbackValue=1}" Height="{Binding Preview.Size.Height, FallbackValue=1}">
+                <views:TransparencyBackground />
+                <Image Source="{Binding Preview}" Stretch="Uniform" />
+              </Grid>
+            </Border>
           </Viewbox>
         </Grid>
       </Border>
-      <Border Grid.Row="2" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="16,4,16,8" IsVisible="{Binding HasPreview}">
+      <Border Grid.Row="2" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="16,0" IsVisible="{Binding HasPreview}">
         <StackPanel Spacing="0">
-          <ToggleButton x:Name="DetailsToggle" Classes="disclosure" IsChecked="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+          <ToggleButton x:Name="DetailsToggle" Classes="disclosure" IsChecked="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" FontSize="13" FontWeight="SemiBold" CornerRadius="4" Padding="0,10">
             <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
               <TextBlock Text="{DynamicResource EidolonText365}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
               <Path Grid.Column="1" Data="M 2 4 L 7 9 L 12 4" Width="12" Height="8" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" Margin="16,0,0,0" VerticalAlignment="Center" />

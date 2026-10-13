@@ -16,7 +16,7 @@ Run the single `.exe` file. No extraction or separate .NET installation is requi
 
 ### Image generation
 
-![Eidolon Generate screen with the Codex backend, description and reference inputs, and a large result preview](Docs/images/generation.png)
+![Eidolon left navigation and Generate screen with the Codex backend, description and reference inputs, and result preview](Docs/images/generation.png)
 
 Describe the image and choose a reference and background options. Keep the inputs and result preview side by side while preparing your next request.
 
@@ -34,11 +34,11 @@ Generate sprite frames in sequence from a reference image, then compare and play
 
 ### LoRA training
 
-![Eidolon LoRA training screen with image selection, name and trigger, and training steps, plus white and black background image lists](Docs/images/training.png)
+![Eidolon three-step LoRA training flow with separate white and black background image selection lists](Docs/images/training.png)
 
 Add training images to the white or black background lists. Review the images, name and trigger, then configure training. The app prepares the dataset automatically.
 
-All screenshots show the actual Windows app using Korean and the light theme.
+All screenshots capture the redesigned Windows app at 1600×1000 using Korean and the light theme, including the left navigation and shared bottom status area.
 
 ## Core experience
 
