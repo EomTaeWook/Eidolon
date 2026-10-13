@@ -1,7 +1,6 @@
 using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
 using SkiaSharp;
-using System.Globalization;
 
 namespace Eidolon.Core.Application
 {
@@ -12,20 +11,26 @@ namespace Eidolon.Core.Application
         private readonly TimeProvider _time;
         private readonly AssetSheetExporter _exporter;
         private readonly AssetFrameImporter _importer;
+        private readonly AssetFramePromptBuilder _prompts;
 
-        public AssetCreationService(StudioService studio, JobStore jobs, TimeProvider time, AssetSheetExporter exporter, AssetFrameImporter importer)
+        public AssetCreationService(StudioService studio, JobStore jobs, TimeProvider time, AssetSheetExporter exporter, AssetFrameImporter importer, AssetFramePromptBuilder prompts)
         {
             _studio = studio;
             _jobs = jobs;
             _time = time;
             _exporter = exporter;
             _importer = importer;
+            _prompts = prompts;
         }
 
         public AssetCollection Prepare(StudioSettings settings, ModelAsset model, IReadOnlyList<ModelAsset> loras,
             AssetCreationInput input, CancellationToken token)
         {
-            ValidateInput(input);
+            if (input == null)
+            {
+                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+            }
+            input.Validate();
             if (settings == null)
             {
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
@@ -85,7 +90,7 @@ namespace Eidolon.Core.Application
             token.ThrowIfCancellationRequested();
             AssetCollection collection = new AssetCollection
             {
-                Kind = input.Kind, Prompt = input.Prompt.Trim(), ActionPrompt = input.ActionPrompt.Trim(),
+                Kind = input.Kind, Prompt = _prompts.Subject(input.Prompt), ActionPrompt = input.ActionPrompt.Trim(),
                 Settings = settings.Copy(), Model = generationModel, Loras = generationLoras,
                 UseServerAssets = settings.UseServerAssets,
                 ReferenceName = Path.GetFileName(input.Reference.ImageName), ChangeStrength = input.Reference.ChangeStrength,
@@ -93,47 +98,23 @@ namespace Eidolon.Core.Application
                 FrameWidth = input.FrameWidth, FrameHeight = input.FrameHeight, Columns = input.Columns,
                 FramesPerSecond = input.FramesPerSecond, CreatedAtUtc = _time.GetUtcNow()
             };
-            string[] views = { "front", "side", "back", "top" };
             int count = AssetCreationInput.ViewCount;
             if (input.Kind == AssetCreationKind.SpriteAnimation)
             {
                 count = input.FrameCount;
+                collection.ActionPrompt = _prompts.Action(input.ActionPrompt, input.FrameDescriptions.Count > 0);
             }
             for (int index = 0; index < count; index++)
             {
-                string label = (index + 1).ToString(CultureInfo.InvariantCulture);
-                string instruction;
+                string pose = string.Empty;
                 if (input.Kind == AssetCreationKind.SpriteAnimation)
                 {
-                    instruction = "animation key pose " + (index + 1) + " of " + count + ", " + collection.ActionPrompt
-                        + ", phase " + ((double)index / count).ToString("P0", CultureInfo.InvariantCulture) + " of a looping motion";
                     if (input.FrameDescriptions.Count > 0)
                     {
-                        instruction = input.FrameDescriptions[index].Trim();
+                        pose = input.FrameDescriptions[index];
                     }
                 }
-                else
-                {
-                    label = views[index];
-                    instruction = views[index] + " view, orthographic projection, no perspective, neutral pose";
-                }
-                collection.Frames.Add(new AssetFrame
-                {
-                    Number = index + 1, Label = label, Seed = collection.Seed,
-                    Prompt = collection.Prompt + ", " + instruction
-                        + ", single subject, entire subject visible, consistent design and proportions, fixed camera, plain background"
-                });
-                if (input.Kind == AssetCreationKind.SpriteAnimation)
-                {
-                    collection.Frames.Last().Prompt += ", exactly one animation frame, no sprite sheet or collage"
-                        + ", keep the reference subject's head and body proportions, apparent size, camera distance and viewing angle unchanged"
-                        + ", use identical canvas framing and a fixed bottom-center ground baseline in every frame"
-                        + ", change only the requested pose, no zoom, no reframing, no cropping";
-                }
-                if (input.PixelArt == true)
-                {
-                    collection.Frames.Last().Prompt += ", pixel art, crisp pixel edges, no anti-aliasing";
-                }
+                collection.Frames.Add(_prompts.CreateFrame(collection, index, count, pose));
             }
             string directory = _jobs.DirectoryFor(collection.Id);
             if (collection.Frames.Any(frame => frame.Prompt.Length > 16000) == true)
@@ -316,60 +297,6 @@ namespace Eidolon.Core.Application
             {
                 collection.ErrorCode = known.Code;
                 collection.ErrorArguments = known.Arguments;
-            }
-        }
-
-        private void ValidateInput(AssetCreationInput input)
-        {
-            if (input == null || Enum.IsDefined(input.Kind) == false || string.IsNullOrWhiteSpace(input.Prompt) == true
-                || input.Prompt.Length > 16000 || input.ActionPrompt == null || input.ActionPrompt.Length > 2000 || input.FrameDescriptions == null)
-            {
-                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
-            }
-            if (input.Kind != AssetCreationKind.SpriteAnimation)
-            {
-                if (input.Kind != AssetCreationKind.FourViews)
-                {
-                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
-                }
-            }
-            if (input.Reference == null || input.Reference.ImageData == null || input.Reference.ImageData.Length == 0
-                || input.Reference.ImageData.Length > GenerationReferenceInput.MaximumImageBytes)
-            {
-                throw new StudioException(StudioMessageCode.InvalidReferenceImage);
-            }
-            if (double.IsFinite(input.Reference.ChangeStrength) == false || input.Reference.ChangeStrength < 0.05
-                || input.Reference.ChangeStrength > 0.95 || input.Seed < 0)
-            {
-                throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
-            }
-            if (input.FrameCount < 2 || input.FrameCount > AssetCreationInput.MaximumFrames
-                || input.FrameWidth < 16 || input.FrameWidth > AssetCreationInput.MaximumFrameSize
-                || input.FrameHeight < 16 || input.FrameHeight > AssetCreationInput.MaximumFrameSize
-                || input.Columns < 1 || input.Columns > AssetCreationInput.MaximumFrames
-                || input.FramesPerSecond < 1 || input.FramesPerSecond > 60)
-            {
-                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
-            }
-            if (input.Kind == AssetCreationKind.SpriteAnimation && string.IsNullOrWhiteSpace(input.ActionPrompt) == true)
-            {
-                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
-            }
-            if (input.FrameDescriptions.Count > 0 && (input.FrameDescriptions.Count != input.FrameCount
-                || input.FrameDescriptions.Any(text => string.IsNullOrWhiteSpace(text) == true || text.Length > 4000) == true))
-            {
-                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
-            }
-            int count = AssetCreationInput.ViewCount;
-            if (input.Kind == AssetCreationKind.SpriteAnimation)
-            {
-                count = input.FrameCount;
-            }
-            int columns = Math.Min(input.Columns, count);
-            int rows = (count + columns - 1) / columns;
-            if ((long)input.FrameWidth * input.FrameHeight * columns * rows > AssetCreationInput.MaximumSheetPixels)
-            {
-                throw new StudioException(StudioMessageCode.AssetSheetTooLarge);
             }
         }
     }

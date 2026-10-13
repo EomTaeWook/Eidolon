@@ -316,8 +316,7 @@ namespace Eidolon.App.ViewModels
             }
             return Session.CanQueue == true
                 && _preparing == false && HasReference == true
-                && _reference.AreOptionsValid == true && string.IsNullOrWhiteSpace(Prompt) == false
-                && (IsSprite == false || string.IsNullOrWhiteSpace(ActionPrompt) == false)
+                && _reference.AreOptionsValid == true
                 && FrameCount >= 2 && FrameCount <= AssetCreationInput.MaximumFrames
                 && FrameSize >= 16 && FrameSize <= AssetCreationInput.MaximumFrameSize
                 && Columns >= 1 && Columns <= AssetCreationInput.MaximumFrames && FramesPerSecond >= 1 && FramesPerSecond <= 60;

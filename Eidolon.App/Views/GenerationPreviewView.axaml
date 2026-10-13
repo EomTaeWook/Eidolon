@@ -1,7 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationPreviewView" x:DataType="vm:GalleryViewModel">
   <Border Classes="card" Padding="0">
     <Grid RowDefinitions="Auto,*,Auto">
-      <Grid ColumnDefinitions="*,Auto" Margin="20,16">
+      <Grid ColumnDefinitions="*,Auto" Margin="24,20">
         <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
           <TextBlock Text="{DynamicResource EidolonText439}" FontSize="15" FontWeight="SemiBold" />
             <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding SelectedGeneration.HasSeed, FallbackValue=False}">
@@ -11,12 +11,12 @@
         </StackPanel>
         <Button Grid.Column="1" Content="{DynamicResource EidolonText291}" Command="{Binding Navigation.ShowResultsCommand}" FontSize="12" Padding="10,6" />
       </Grid>
-      <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" Margin="20,0,20,16" CornerRadius="8" ClipToBounds="True" Padding="16">
+      <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" Margin="24,0,24,20" CornerRadius="12" ClipToBounds="True" Padding="20">
         <Grid>
           <StackPanel IsVisible="{Binding !HasPreview}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" MaxWidth="360">
-            <Path Data="{StaticResource EidolonIconImage}" Width="40" Height="40" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.2" HorizontalAlignment="Center" />
-            <TextBlock Text="{DynamicResource EidolonText118}" FontSize="18" TextAlignment="Center" TextWrapping="Wrap" />
-            <TextBlock Text="{DynamicResource EidolonText119}" Classes="muted" FontSize="12" TextAlignment="Center" />
+            <Path Data="{StaticResource EidolonIconImage}" Width="48" Height="48" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.2" HorizontalAlignment="Center" Margin="0,0,0,8" />
+            <TextBlock Text="{DynamicResource EidolonText118}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap" />
+            <TextBlock Text="{DynamicResource EidolonText119}" Classes="muted" FontSize="13" TextAlignment="Center" />
           </StackPanel>
           <Viewbox Stretch="Uniform" IsVisible="{Binding HasPreview}" MaxWidth="640" MaxHeight="640" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Grid Width="{Binding Preview.Size.Width, FallbackValue=1}" Height="{Binding Preview.Size.Height, FallbackValue=1}">
@@ -26,7 +26,7 @@
           </Viewbox>
         </Grid>
       </Border>
-      <Border Grid.Row="2" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="20,0,20,4" IsVisible="{Binding HasPreview}">
+      <Border Grid.Row="2" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="16,4,16,8" IsVisible="{Binding HasPreview}">
         <StackPanel Spacing="0">
           <ToggleButton x:Name="DetailsToggle" Classes="disclosure" IsChecked="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
             <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">

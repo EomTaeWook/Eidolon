@@ -108,6 +108,7 @@ namespace Eidolon.App
             _serviceContainer.RegisterType<AssetSheetExporter, AssetSheetExporter>(LifeScope.Singleton);
             _serviceContainer.RegisterType<AssetFrameImporter, AssetFrameImporter>(LifeScope.Singleton);
             _serviceContainer.RegisterType<AssetCreationService, AssetCreationService>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<AssetFramePromptBuilder, AssetFramePromptBuilder>(LifeScope.Singleton);
             _serviceContainer.RegisterType<StudioWorkQueue, StudioWorkQueue>(LifeScope.Singleton);
             _serviceContainer.RegisterType<ThemeService, ThemeService>(LifeScope.Singleton);
             _serviceContainer.RegisterType<LanguageService, LanguageService>(LifeScope.Singleton);

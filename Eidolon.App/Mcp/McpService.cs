@@ -63,10 +63,10 @@ namespace Eidolon.App.Mcp
                     OpenWorld = false
                 }, GetInstructionsAsync),
                 new McpTool(new McpToolDefinition("eidolon_generate_image",
-                    "Queue text-to-image generation, optionally with a reference image. Returns accepted and the fixed seed, not a completed image. Poll eidolon_get_status then eidolon_list_images. Uses saved instructions unless positive_prompt or negative_prompt is provided. Omitting model_id uses the UI model; omitting lora_ids uses compatible selected UI LoRAs. An empty lora_ids array disables LoRAs for this request. Does not change UI inputs or saved settings.",
+                    "Queue text-to-image generation, optionally with a reference image. All supplied prompts MUST be in English and use detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Specify the subject, appearance, pose, composition, viewpoint, style, materials, colors, lighting and background in relevant detail; put unwanted elements in negative_prompt. Returns accepted and the fixed seed, not a completed image. Poll eidolon_get_status then eidolon_list_images. Uses saved instructions unless positive_prompt or negative_prompt is provided. Omitting model_id uses the UI model; omitting lora_ids uses compatible selected UI LoRAs. An empty lora_ids array disables LoRAs for this request. Does not change UI inputs or saved settings.",
                     ImageSchema(false)), GenerateImageAsync),
                 new McpTool(new McpToolDefinition("eidolon_edit_image",
-                    "Queue a style edit using an existing local reference image. Requires reference_path. Lower change_strength preserves more of the original; default 0.35. Returns accepted and the fixed seed. Poll status and list_images for the result. Request instruction overrides do not change saved settings.",
+                    "Queue a style edit using an existing local reference image. Requires reference_path. All supplied prompts MUST be in English and use detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Describe the desired style, textures, colors, lighting and details to preserve from the reference; put unwanted elements in negative_prompt. Lower change_strength preserves more of the original; default 0.35. Returns accepted and the fixed seed. Poll status and list_images for the result. Request instruction overrides do not change saved settings.",
                     ImageSchema(true)), EditImageAsync),
                 new McpTool(new McpToolDefinition("eidolon_list_images",
                     "Read generated PNG paths and stored generation metadata from the current output folder, newest first. JSON metadata may be absent. Paths refer to local files; this tool does not transfer image bytes.")
@@ -86,10 +86,10 @@ namespace Eidolon.App.Mcp
                     OpenWorld = false
                 }, ListImagesAsync),
                 new McpTool(new McpToolDefinition("eidolon_create_sprite_animation",
-                    "Queue a sprite-animation draft from one reference image using the saved ComfyUI or Codex backend and shared instructions. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. Identity and a smooth loop are not guaranteed. Optional frame_descriptions has one pose description per frame. Returns collection_id immediately; poll eidolon_get_asset_collection. Export after reviewing all frames.",
+                    "Queue a sprite-animation draft from one reference image. Every supplied prompt, instruction, action and frame description MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Describe the subject and visual details, and separate motion, facing direction, limb positions and animation phase into specific tags. Only reference_path is required; prompt and action are optional. An omitted action uses a walk-in-place cycle with ordered automatic poses. Uses the saved ComfyUI or Codex backend and shared instructions. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. Identity and a smooth loop are not guaranteed. Optional frame_descriptions has one pose description per frame. Returns collection_id immediately; poll eidolon_get_asset_collection. Export after reviewing all frames.",
                     AssetCreationSchema(true)), CreateSpriteAnimationAsync),
                 new McpTool(new McpToolDefinition("eidolon_create_views",
-                    "Queue front, side, back and top images of the same subject using the saved ComfyUI or Codex backend. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. These are AI reference drafts, not a 3D model or geometrically verified projections. Returns collection_id; poll eidolon_get_asset_collection.",
+                    "Queue front, side, back and directly overhead top images of the same subject. All supplied prompts MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Describe the subject's appearance, proportions, materials, colors and style in relevant detail. Only reference_path is required; prompt is optional. Uses the saved ComfyUI or Codex backend. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. These are AI reference drafts, not a 3D model or geometrically verified projections. Returns collection_id; poll eidolon_get_asset_collection.",
                     AssetCreationSchema(false)), CreateViewsAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_asset_collection", "Read a collection state and ordered frame paths, prompts, seeds and errors.",
                     CollectionSchema()) { ReadOnly = true, Idempotent = true, OpenWorld = false }, GetAssetCollectionAsync),
@@ -97,7 +97,7 @@ namespace Eidolon.App.Mcp
                     { ReadOnly = true, Idempotent = true, OpenWorld = false }, ListAssetCollectionsAsync),
                 new McpTool(new McpToolDefinition("eidolon_resume_asset_collection", "Queue only unfinished frames using the collection's saved backend and generation conditions. Requires an idle queue.",
                     CollectionSchema()), ResumeAssetCollectionAsync),
-                new McpTool(new McpToolDefinition("eidolon_regenerate_asset_frame", "Queue a replacement for one frame or view using its captured reference, backend and generation conditions. Seed applies only to ComfyUI collections. Requires an idle queue. Keeps the old image if regeneration fails.",
+                new McpTool(new McpToolDefinition("eidolon_regenerate_asset_frame", "Queue a replacement for one frame or view using its captured reference, backend and generation conditions. The replacement prompt MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Specify the subject, pose, direction, viewpoint and desired visual details for this frame. Seed applies only to ComfyUI collections. Requires an idle queue. Keeps the old image if regeneration fails.",
                     RegenerateAssetSchema()), RegenerateAssetFrameAsync),
                 new McpTool(new McpToolDefinition("eidolon_export_asset_collection", "Export all reviewed frame images into a new subfolder: normalized Frames PNGs, Sheet.png, Sheet.json with frame rectangles, bottom-center pivots and FPS, and preserved Sources. All frames must have images. Does not overwrite existing files.",
                     ExportAssetSchema()), ExportAssetCollectionAsync)
@@ -116,7 +116,7 @@ namespace Eidolon.App.Mcp
                 ["type"] = "object",
                 ["properties"] = new JsonObject
                 {
-                    ["prompt"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 16000 },
+                    ["prompt"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 16000, ["description"] = "Required English-only image description as detailed comma-separated tags or short tag phrases. Translate the user's request into English. Separate subject and count, appearance, shape, pose and action, composition, camera angle, viewpoint, art style, materials, textures, colors, lighting and background into specific relevant tags. For edits, specify the desired changes and reference details to preserve." },
                     ["model_id"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 128 },
                     ["lora_ids"] = new JsonObject
                     {
@@ -125,8 +125,8 @@ namespace Eidolon.App.Mcp
                     },
                     ["seed"] = new JsonObject { ["type"] = "integer", ["minimum"] = 0, ["maximum"] = long.MaxValue },
                     ["remove_background"] = new JsonObject { ["type"] = "boolean" },
-                    ["positive_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000 },
-                    ["negative_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000 },
+                    ["positive_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional request-only instructions, written exclusively as detailed comma-separated English tags or short tag phrases for desired style, composition, lighting, background and quality. Omit to use saved instructions; an empty string clears them for this request." },
+                    ["negative_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional request-only exclusions, written exclusively as detailed comma-separated English tags naming unwanted elements and artifacts. Omit to use saved exclusions; an empty string clears them for this request." },
                     ["reference_path"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 },
                     ["change_strength"] = new JsonObject { ["type"] = "number", ["minimum"] = 0.05, ["maximum"] = 0.95 }
                 },
@@ -437,18 +437,18 @@ namespace Eidolon.App.Mcp
         {
             JsonObject schema = ImageSchema(false);
             JsonObject properties = schema["properties"].AsObject();
-            schema["required"].AsArray().Add("reference_path");
+            schema["required"] = new JsonArray("reference_path");
+            properties["prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional English-only subject description as detailed comma-separated tags or short tag phrases for appearance, proportions, materials, textures, colors, style, lighting and background. Translate the user's request into English. Omit to use the reference subject without an additional description." };
             properties["frame_size"] = new JsonObject { ["type"] = "integer", ["minimum"] = 16, ["maximum"] = AssetCreationInput.MaximumFrameSize };
             properties["columns"] = new JsonObject { ["type"] = "integer", ["minimum"] = 1, ["maximum"] = AssetCreationInput.MaximumFrames };
             properties["pixel_art"] = new JsonObject { ["type"] = "boolean" };
             if (sprite == true)
             {
-                properties["action"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 2000 };
+                properties["action"] = new JsonObject { ["type"] = "string", ["maxLength"] = 2000, ["description"] = "Optional English-only motion description as detailed comma-separated tags or short tag phrases for action, movement direction, facing, body and limb motion, timing and cycle. Omit to use the automatic walk-in-place cycle." };
                 properties["frame_count"] = new JsonObject { ["type"] = "integer", ["minimum"] = 2, ["maximum"] = AssetCreationInput.MaximumFrames };
                 properties["fps"] = new JsonObject { ["type"] = "integer", ["minimum"] = 1, ["maximum"] = 60 };
-                properties["frame_descriptions"] = new JsonObject { ["type"] = "array", ["maxItems"] = AssetCreationInput.MaximumFrames,
-                    ["items"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4000 } };
-                schema["required"].AsArray().Add("action");
+                properties["frame_descriptions"] = new JsonObject { ["type"] = "array", ["maxItems"] = AssetCreationInput.MaximumFrames, ["description"] = "Optional ordered pose descriptions, one per frame. Every entry MUST use detailed English tags or short tag phrases.",
+                    ["items"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4000, ["description"] = "English-only comma-separated tags specifying this frame's animation phase, pose, limb positions, facing direction, viewpoint and continuity with adjacent frames." } };
             }
             return schema;
         }
@@ -464,7 +464,7 @@ namespace Eidolon.App.Mcp
             JsonObject schema = CollectionSchema();
             JsonObject properties = schema["properties"].AsObject();
             properties["frame_number"] = new JsonObject { ["type"] = "integer", ["minimum"] = 1, ["maximum"] = AssetCreationInput.MaximumFrames };
-            properties["prompt"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 16000 };
+            properties["prompt"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 16000, ["description"] = "Required English-only replacement description as detailed comma-separated tags or short tag phrases for the subject, appearance, pose, limb positions, facing direction, camera angle, viewpoint, style, materials, colors, lighting and background. Translate the user's request into English before calling." };
             properties["seed"] = new JsonObject { ["type"] = "integer", ["minimum"] = 0, ["maximum"] = long.MaxValue };
             schema["required"].AsArray().Add("frame_number");
             schema["required"].AsArray().Add("prompt");
@@ -511,11 +511,15 @@ namespace Eidolon.App.Mcp
                 }
                 AssetCreationInput input = new AssetCreationInput
                 {
-                    Kind = kind, Prompt = arguments["prompt"].GetValue<string>(), Reference = reference, Seed = options.Seed,
+                    Kind = kind, Reference = reference, Seed = options.Seed,
                     RemoveBackground = options.RemoveBackground, FrameCount = ReadInteger(arguments, "frame_count", 8),
                     FrameWidth = ReadInteger(arguments, "frame_size", defaultSize), FrameHeight = ReadInteger(arguments, "frame_size", defaultSize),
                     Columns = ReadInteger(arguments, "columns", 4), FramesPerSecond = ReadInteger(arguments, "fps", 10)
                 };
+                if (arguments["prompt"] != null)
+                {
+                    input.Prompt = arguments["prompt"].GetValue<string>();
+                }
                 if (arguments["action"] != null)
                 {
                     input.ActionPrompt = arguments["action"].GetValue<string>();

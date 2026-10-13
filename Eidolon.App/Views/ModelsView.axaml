@@ -5,7 +5,7 @@
       <Setter Property="FontSize" Value="13" />
     </Style>
     <Style Selector="ListBox.assetLibrary ListBoxItem">
-      <Setter Property="Padding" Value="12" />
+      <Setter Property="Padding" Value="16" />
       <Setter Property="Margin" Value="0,0,0,8" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="VerticalContentAlignment" Value="Top" />
@@ -13,7 +13,7 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="Template">
         <ControlTemplate>
-          <Border Name="CardBorder" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="{TemplateBinding Padding}">
+          <Border Name="CardBorder" Background="{DynamicResource WindowBrush}" BorderBrush="Transparent" BorderThickness="1" CornerRadius="12" Padding="{TemplateBinding Padding}">
             <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Background="Transparent" Foreground="{DynamicResource TextBrush}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
           </Border>
         </ControlTemplate>
@@ -23,18 +23,18 @@
       <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
     </Style>
     <Style Selector="ListBox.assetLibrary ListBoxItem:selected /template/ Border#CardBorder">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="ListBox.assetLibrary ListBoxItem:focus-visible /template/ Border#CardBorder">
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
   </UserControl.Styles>
-  <ScrollViewer Margin="0,16,0,0" AllowAutoHide="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,16">
-    <StackPanel Spacing="16" MaxWidth="1000" HorizontalAlignment="Stretch">
+  <ScrollViewer Margin="0,20,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+    <StackPanel Spacing="20" MaxWidth="1000" HorizontalAlignment="Stretch">
       <Grid ColumnDefinitions="*,Auto" Margin="4,0,4,0">
         <StackPanel Spacing="5" Margin="0,0,20,0">
-          <TextBlock Text="{DynamicResource EidolonText123}" FontSize="20" FontWeight="SemiBold" />
+          <TextBlock Text="{DynamicResource EidolonText123}" FontSize="18" FontWeight="SemiBold" />
           <TextBlock Text="{DynamicResource EidolonText124}" Classes="muted" FontSize="12" />
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
@@ -54,13 +54,13 @@
         </StackPanel>
       </Grid>
       <TextBlock Text="{Binding ModelFoldersHint}" Classes="muted" FontSize="12" Margin="4,0,4,0" />
-      <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="3,0,0,0" CornerRadius="6" Padding="14" IsVisible="{Binding NeedsModelSetup}">
+      <Border Background="{DynamicResource BadgeBrush}" CornerRadius="12" Padding="20" IsVisible="{Binding NeedsModelSetup}">
         <StackPanel Spacing="5">
           <TextBlock Text="{Binding ModelSetupCaption}" FontSize="14" FontWeight="SemiBold" />
           <TextBlock Text="{Binding ModelSetupHint}" Classes="muted" FontSize="12" />
         </StackPanel>
       </Border>
-      <Border Classes="card" Padding="16" CornerRadius="10">
+      <Border Classes="card">
         <StackPanel Spacing="12">
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Text="{DynamicResource EidolonText411}" FontSize="18" FontWeight="SemiBold" />
@@ -123,7 +123,7 @@
           </Border>
         </StackPanel>
       </Border>
-      <Border Classes="card" Padding="16" CornerRadius="10">
+      <Border Classes="card">
         <StackPanel Spacing="12">
           <TextBlock Text="{DynamicResource EidolonText344}" FontSize="18" FontWeight="SemiBold" />
           <TextBlock Text="{Binding ModelDownloadHint}" Classes="muted" FontSize="12" />

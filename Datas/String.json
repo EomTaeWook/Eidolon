@@ -6596,8 +6596,8 @@
   {
     "Id": 3689,
     "Name": "EidolonText610",
-    "Kor": "\uB3D9\uC791 \uC124\uBA85",
-    "Eng": "Action"
+    "Kor": "\uB3D9\uC791 (\uC120\uD0DD)",
+    "Eng": "Action (optional)"
   },
   {
     "Id": 3690,
@@ -6782,14 +6782,14 @@
   {
     "Id": 3720,
     "Name": "EidolonText641",
-    "Kor": "\uC608: \uD30C\uB780 \uB9DD\uD1A0\uB97C \uC785\uC740 \uC791\uC740 \uAE30\uC0AC",
-    "Eng": "e.g. a small knight wearing a blue cape"
+    "Kor": "\uC124\uBA85 (\uC120\uD0DD) \u2014 \uC774\uBBF8\uC9C0\uC758 \uB300\uC0C1\uACFC \uADF8\uB9BC\uCCB4\uB97C \uADF8\uB300\uB85C \uC0AC\uC6A9\uD569\uB2C8\uB2E4.",
+    "Eng": "Optional description \u2014 use the subject and style from the image."
   },
   {
     "Id": 3721,
     "Name": "EidolonText642",
-    "Kor": "\uC608: \uC624\uB978\uCABD\uC73C\uB85C \uAC77\uAE30",
-    "Eng": "e.g. walking to the right"
+    "Kor": "\uBE44\uC6B0\uBA74 \uC81C\uC790\uB9AC \uAC77\uAE30 \uB3D9\uC791\uC744 \uB9CC\uB4ED\uB2C8\uB2E4.",
+    "Eng": "Leave empty for a walk-in-place cycle."
   },
   {
     "Id": 3722,

@@ -3,15 +3,20 @@
     <Style Selector="Button.trainingStep">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0,0,0,2" />
-      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="12" />
       <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
-      <Setter Property="Padding" Value="10,12" />
+      <Setter Property="Padding" Value="12,14" />
+      <Setter Property="Margin" Value="0,0,8,0" />
     </Style>
     <Style Selector="Button.trainingStep.current">
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Button.trainingStep.current:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.trainingStep:disabled">
@@ -35,7 +40,7 @@
     <Style Selector="Button.trainingAdd">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
-      <Setter Property="Height" Value="38" />
+      <Setter Property="Height" Value="44" />
       <Setter Property="Padding" Value="10,6" />
       <Setter Property="FontSize" Value="13" />
     </Style>
@@ -50,14 +55,14 @@
     </Style>
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,Auto,*,Auto" MaxWidth="1080" HorizontalAlignment="Stretch">
-    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,24">
       <StackPanel Spacing="6">
-        <TextBlock Text="{DynamicResource EidolonText137}" FontSize="24" FontWeight="SemiBold" />
+        <TextBlock Text="{DynamicResource EidolonText137}" Classes="title" />
         <TextBlock Text="{DynamicResource EidolonText504}" Classes="muted" FontSize="13" />
       </StackPanel>
       <TextBlock Grid.Column="1" Text="{Binding Workflow.PositionCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" Margin="20,0,0,0" />
     </Grid>
-    <Border Grid.Row="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Margin="0,0,0,18">
+    <Border Grid.Row="1" Margin="0,0,-8,24">
       <ItemsControl ItemsSource="{Binding Workflow.Steps}">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate>
@@ -66,7 +71,7 @@
           <DataTemplate x:DataType="vm:TrainingStepItem">
             <Button Classes="trainingStep" Classes.current="{Binding IsCurrent}" Command="{Binding SelectCommand}" IsEnabled="{Binding IsAvailable}" ToolTip.Tip="{Binding Title}">
               <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                <Border Width="26" Height="26" CornerRadius="13">
+                <Border Width="30" Height="30" CornerRadius="15">
                   <TextBlock Text="{Binding Number}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
                 <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
@@ -91,7 +96,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                   <DataTemplate x:DataType="vm:TrainingImageGroup">
-                    <Border Background="{DynamicResource WindowBrush}" CornerRadius="8" Padding="16" Margin="6,0">
+                    <Border Background="{DynamicResource WindowBrush}" CornerRadius="12" Padding="20" Margin="6,0">
                       <Grid RowDefinitions="Auto,8,*,8,Auto">
                         <Grid ColumnDefinitions="*,Auto">
                           <StackPanel Orientation="Horizontal" Spacing="8">
@@ -100,7 +105,7 @@
                           </StackPanel>
                           <TextBlock Grid.Column="1" Text="{Binding CountCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
                         </Grid>
-                        <Grid Grid.Row="2" MinHeight="160" MaxHeight="260">
+                        <Grid Grid.Row="2" MinHeight="180" MaxHeight="280">
                           <ScrollViewer IsVisible="{Binding HasImages}" AllowAutoHide="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{Binding Images}">
                               <ItemsControl.ItemTemplate>
@@ -117,7 +122,7 @@
                             </ItemsControl>
                           </ScrollViewer>
                           <StackPanel Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !HasImages}" Margin="12">
-                            <Path Data="{StaticResource EidolonIconImage}" Width="24" Height="24" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" HorizontalAlignment="Center" />
+                            <Path Data="{StaticResource EidolonIconImage}" Width="32" Height="32" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" HorizontalAlignment="Center" Margin="0,0,0,4" />
                             <TextBlock Text="{DynamicResource EidolonText467}" Classes="muted" FontSize="12" TextAlignment="Center" TextWrapping="Wrap" />
                           </StackPanel>
                           <ProgressBar Height="3" IsIndeterminate="True" VerticalAlignment="Bottom" IsVisible="{Binding IsLoading}" />
@@ -159,7 +164,7 @@
               <TextBlock Text="{DynamicResource EidolonText494}" Classes="muted" FontSize="12" />
             </StackPanel>
             <StackPanel Spacing="18" IsVisible="{Binding Workflow.IsTrainingStep}">
-              <Border Background="{DynamicResource WindowBrush}" CornerRadius="8" Padding="18">
+              <Border Background="{DynamicResource WindowBrush}" CornerRadius="12" Padding="20">
                 <Grid ColumnDefinitions="*,Auto">
                   <StackPanel Spacing="4">
                     <TextBlock Text="{Binding TrainingName}" FontSize="16" FontWeight="SemiBold" />
@@ -207,7 +212,7 @@
         <views:PendingWorkView DataContext="{Binding Session}" />
       </StackPanel>
     </ScrollViewer>
-    <Border Grid.Row="3" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,16,0,0" Margin="0,16,0,0">
+    <Border Grid.Row="3" Background="{DynamicResource SurfaceBrush}" CornerRadius="14" Padding="20,16" Margin="0,20,0,0">
       <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
         <TextBlock Text="{Binding Workflow.Hint}" Classes="muted" FontSize="12" VerticalAlignment="Center" Margin="0,0,20,0" />
         <Button Grid.Column="1" Content="{DynamicResource EidolonText489}" Command="{Binding Workflow.PreviousCommand}" IsVisible="{Binding !Workflow.IsImagesStep}" Margin="0,0,8,0" />

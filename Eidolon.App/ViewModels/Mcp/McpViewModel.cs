@@ -17,7 +17,7 @@ namespace Eidolon.App.ViewModels
         {
             _server = new McpHttpServer(new McpServerOptions
             {
-                Instructions = "Eidolon queues local image generation and style edits. Image tools return acceptance, not completion. Poll status and read result paths. Instruction overrides apply only to their request."
+                Instructions = "Eidolon queues local image generation and style edits. Mandatory prompt format: write every supplied prompt, positive_prompt, negative_prompt, action and frame_descriptions entry in English, regardless of the user's language. Translate the user's request before calling a tool. Use detailed comma-separated English tags or short tag phrases instead of vague summaries or long prose. Separate relevant details into subject and count, appearance and shape, pose and action, composition, camera angle and viewpoint, art style, materials and textures, colors, lighting and background. Describe each relevant detail as specifically as the user's request allows; do not invent unrelated requirements. Put unwanted elements and artifacts in negative_prompt as separate English tags. This also applies to frame regeneration. Optional prompt fields may still be omitted and instruction overrides may be empty to clear them. Image tools return acceptance, not completion. Poll status and read result paths. Instruction overrides apply only to their request."
             }, tools.CreateTools(), error => LogHelper.Error(error));
             _server.StateChanged += OnServerStateChanged;
             StartCommand = Command(StartAsync, () => Session.IsInitialized == true && Session.IsClosing == false && IsRunning == false);

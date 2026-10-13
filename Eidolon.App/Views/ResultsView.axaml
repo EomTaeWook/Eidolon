@@ -9,12 +9,17 @@
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="VerticalContentAlignment" Value="Top" />
       <Setter Property="VerticalAlignment" Value="Top" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Background="Transparent" Padding="{TemplateBinding Padding}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </ControlTemplate>
+      </Setter>
     </Style>
     <Style Selector="Border.resultCard">
       <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
       <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="CornerRadius" Value="14" />
       <Setter Property="ClipToBounds" Value="True" />
       <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
@@ -22,6 +27,10 @@
       <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
     </Style>
     <Style Selector="ListBoxItem:selected Border.resultCard">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem:focus-visible Border.resultCard">
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="GridSplitter.resultsSplitter">
@@ -41,7 +50,7 @@
       <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.resultAction">
-      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -68,7 +77,7 @@
   <Grid RowDefinitions="Auto,Auto,*">
     <Grid ColumnDefinitions="*,Auto">
       <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-        <TextBlock Text="{DynamicResource EidolonText372}" FontSize="22" FontWeight="SemiBold" />
+        <TextBlock Text="{DynamicResource EidolonText372}" Classes="title" />
         <TextBlock Text="{Binding GalleryCountCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
       </StackPanel>
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
@@ -82,7 +91,7 @@
         <Button Content="{DynamicResource EidolonText317}" Command="{Binding DeleteAllGenerationsCommand}" IsVisible="{Binding HasGenerations}" Padding="12,8" />
       </StackPanel>
     </Grid>
-    <StackPanel Grid.Row="1" Spacing="10" Margin="0,12,0,14">
+    <StackPanel Grid.Row="1" Spacing="10" Margin="0,12,0,24">
       <TextBlock Text="{DynamicResource EidolonText373}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
       <Border Background="{DynamicResource ErrorSurfaceBrush}" CornerRadius="8" Padding="12" IsVisible="{Binding HasGalleryError}">
         <StackPanel Spacing="6">
@@ -93,9 +102,9 @@
     </StackPanel>
     <Grid Grid.Row="2">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" MinWidth="440" />
+        <ColumnDefinition Width="*" MinWidth="280" />
         <ColumnDefinition Width="20" />
-        <ColumnDefinition Width="400" MinWidth="360" MaxWidth="640" />
+        <ColumnDefinition Width="320" MinWidth="280" MaxWidth="560" />
       </Grid.ColumnDefinitions>
       <Grid RowDefinitions="Auto,*,Auto">
         <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,8" IsVisible="{Binding HasGenerations}">
@@ -113,7 +122,7 @@
             <DataTemplate x:DataType="vm:GenerationItem">
               <Border Classes="resultCard" AutomationProperties.Name="{Binding Label}">
                 <Grid RowDefinitions="170,Auto">
-                  <Border Background="{DynamicResource WindowBrush}" CornerRadius="9,9,0,0" ClipToBounds="True">
+                  <Border Background="{DynamicResource WindowBrush}" CornerRadius="12,12,0,0" ClipToBounds="True">
                     <Grid>
                       <views:TransparencyBackground IsVisible="{Binding HasThumbnail}" />
                       <Image Source="{Binding Thumbnail}" Stretch="Uniform" IsVisible="{Binding HasThumbnail}" />
@@ -123,7 +132,7 @@
                       </StackPanel>
                     </Grid>
                   </Border>
-                  <StackPanel Grid.Row="1" Spacing="6" Margin="12,10">
+                  <StackPanel Grid.Row="1" Spacing="8" Margin="14,14">
                     <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FileName}" />
                     <TextBlock Text="{Binding Metadata.Model.Name, FallbackValue=''}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" IsVisible="{Binding HasMetadata}" />
                     <Grid ColumnDefinitions="*,Auto">
@@ -169,7 +178,7 @@
             <TextBlock Text="{Binding SelectedResult.DimensionsCaption}" Classes="muted" FontSize="12" />
           </WrapPanel>
         </StackPanel>
-        <Border Grid.Row="1" Height="280" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="10" ClipToBounds="True">
+        <Border Grid.Row="1" Height="260" Background="{DynamicResource SurfaceBrush}" CornerRadius="14" Padding="12" ClipToBounds="True">
           <Border.ContextMenu>
             <ContextMenu>
               <MenuItem Header="{DynamicResource EidolonText603}" Command="{Binding UseResultForAssetCreationCommand}" />
@@ -181,7 +190,7 @@
             <TextBlock Text="{DynamicResource EidolonText307}" Classes="muted" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="16" IsVisible="{Binding !HasPreview}" />
           </Grid>
         </Border>
-        <Grid Grid.Row="2" ColumnDefinitions="*,8,*" RowDefinitions="36,8,36" Margin="0,10,0,12">
+        <Grid Grid.Row="2" ColumnDefinitions="*,8,*" RowDefinitions="42,8,42" Margin="0,12,0,16">
           <Button Command="{Binding ExportCommand}" Classes="resultAction" ToolTip.Tip="{DynamicResource EidolonText122}">
             <Grid ColumnDefinitions="16,8,*">
               <Path Data="{StaticResource EidolonIconSave}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
@@ -207,7 +216,7 @@
             </Grid>
           </Button>
         </Grid>
-        <Border Grid.Row="3" Classes="card" Padding="14">
+        <Border Grid.Row="3" Classes="card" Padding="20">
           <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" AllowAutoHide="False">
             <StackPanel Spacing="12">
               <views:PromptDetailsView DataContext="{Binding SelectedResult}" />
