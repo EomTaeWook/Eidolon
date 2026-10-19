@@ -1,6 +1,6 @@
 # Eidolon MCP
 
-설정 → 일반 → MCP 연결에서 **서버 켜기**를 누른 뒤 MCP 클라이언트에 `http://127.0.0.1:8190/mcp`를 등록한다. Eidolon이 실행 중이고 초기화를 마쳐야 도구를 사용할 수 있다. 서버는 자동으로 켜지지 않으며 **서버 끄기**와 앱 종료에서 정리한다. 현재 앱 호스트는 같은 PC의 연결만 받고 브라우저의 다른 Origin은 거부한다.
+Eidolon 앱 초기화가 끝나면 MCP 서버가 자동으로 시작된다. MCP 클라이언트에 `http://127.0.0.1:8190/mcp`를 등록한다. 설정 왼쪽의 MCP 연결에서 서버 상태·주소를 확인하고 **서버 끄기**·**서버 켜기**로 수동 정지·재시작할 수 있다. **서버 실행 중**은 요청을 받을 수 있다는 뜻이며 AI 클라이언트의 연결 여부를 표시하지 않는다. 앱 종료 시 서버를 정리한다. 현재 앱 호스트는 같은 PC의 연결만 받고 브라우저의 다른 Origin은 거부한다.
 
 ## 도구
 
@@ -9,7 +9,7 @@
 | `eidolon_get_status` | 엔진·요청 가능 상태, 현재 작업, 대기 건수, 진행률과 오류 조회 |
 | `eidolon_list_models` | 사용할 체크포인트·LoRA의 ID, 이름, 계열과 트리거 조회 |
 | `eidolon_get_instructions` | 저장된 공통 생성 지침과 제외할 요소 조회 |
-| `eidolon_train_lora` | 흰색·검정색 배경별 이미지·폴더 경로로 새 LoRA 학습 요청 추가 |
+| `eidolon_train_lora` | 흰색·검정색 배경별 이미지·폴더 경로로 신규·기존 LoRA 추가 학습 요청 등록 |
 | `eidolon_generate_image` | 설명과 선택적 참고 이미지로 생성 요청 추가 |
 | `eidolon_edit_image` | 참고 이미지와 설명으로 그림체 편집 요청 추가 |
 | `eidolon_list_images` | 현재 출력 폴더의 PNG 경로와 저장된 생성 조건을 페이지로 조회 |
@@ -29,13 +29,30 @@
 
 AI 클라이언트는 사용자 요청의 언어와 관계없이 모든 프롬프트를 반드시 영어로 작성한다. `prompt`·`positive_prompt`·`negative_prompt`·`action`·각 `frame_descriptions` 항목과 학습의 선택적 `description`에 적용하며 선택 재생성도 동일하다. 대상·개수·외형·형태·포즈·동작·구도·카메라 각도·시점·그림체·재질·질감·색상·조명·배경 중 요청에 필요한 내용을 최대한 구체적인 영어 태그 또는 짧은 태그 구문으로 나누고 쉼표로 구분한다. 제외할 요소는 `negative_prompt`의 별도 영어 태그로 작성한다. 접속 안내와 도구·입력 스키마 설명으로 전달하는 작성 규칙이며 서버가 자동 번역하거나 언어를 판별해 거부하지는 않는다. 선택 입력의 생략·지침을 비우는 빈 문자열과 기존 저장 지침은 유지한다.
 
+생성·편집·에셋 제작 전에는 `eidolon_get_instructions`로 저장된 지침과 `generation_backend`·`selected_model_id`·`prompt_guidance`를 읽는다. ComfyUI이면 `eidolon_list_models`의 대상 체크포인트 항목에서 `engine_name`·`prompt_guidance`를 확인한다. `model_id`를 생략할 때는 응답의 `selected_model_id`에 해당하는 안내를 사용한다. 다른 체크포인트를 명시할 때는 그 항목의 안내를 사용하며 저장된 공통 지침과 충돌하는 태그는 요청별 `positive_prompt`·`negative_prompt` 사본으로 조정한다. 모델 목록 응답에도 현재 `generation_backend`를 표시한다. Codex일 때는 로컬 체크포인트 태그 안내를 적용하지 않는다. 프레임 재생성은 `eidolon_get_asset_collection`의 저장된 생성 방식·체크포인트를 기준으로 하며 현재 UI 선택을 대신 사용하지 않는다.
+
+기본 제공 체크포인트 안내는 파일명 전체와 모델 계열을 함께 비교한다. 표시 이름·파일명 일부·SDXL 호환성만으로 학습 태그를 추정하지 않는다. 파일명 일치는 가중치 해시 검증이나 임의로 이름을 바꾼 모델의 신원 확인을 뜻하지 않으며 응답에도 이 한계를 안내한다. 다른 버전·커스텀 파일은 해당 체크포인트의 모델 카드 확인을 요구하고, 확인되지 않은 품질·수위·출처 태그를 필수값으로 만들어 붙이지 않는다.
+
+| 체크포인트 | MCP 프롬프트 안내와 근거 |
+|---|---|
+| Illustrious XL 0.1 | Danbooru 형식의 영어 태그를 중심으로 관계 설명에 짧은 자연어를 사용한다. 선택적 품질 태그는 `best quality`·`masterpiece`, 제외 예시는 `worst quality`·`bad quality`·`lowres`로 안내하며 구도 충돌을 피한다. `score_9`·`rating_safe`·`source_anime`를 공통 기본값으로 간주하지 않는다. [공식 모델 카드](https://huggingface.co/OnomaAIResearch/Illustrious-xl-early-release-v0) |
+| RealVisXL 4.0 | 공식 카드의 실사 지향을 바탕으로 사진 요청에 대상·동작·구도·재질·조명·배경을 짧은 영어 구문으로 구체화하도록 권한다. 이는 앱의 작성 권고이며 모든 항목에 반드시 실사 스타일을 강제하지 않는다. 인물 제외 태그는 해당 요청에 맞을 때만 사용한다. [공식 모델 카드](https://huggingface.co/SG161222/RealVisXL_V4.0) |
+| SDXL Base 1.0 | 공식 카드의 자연어 예시를 바탕으로 짧은 영어 설명에 대상과 공간 관계를 명확히 표현하도록 안내한다. SDXL 계열이라는 이유로 Danbooru·점수·수위·출처 태그를 필수로 넣지 않는다. [공식 모델 카드](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0) |
+| Stable Diffusion 1.5 base | 공식 카드의 영어 캡션·자연어 예시를 바탕으로 주요 대상·동작과 관련 구도·스타일·조명·배경을 정리하도록 권한다. 다른 애니메이션 파생 모델의 특수 태그를 그대로 가져오지 않는다. [배포 모델 카드](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5) |
+
+태그 순서는 읽기 쉬운 구성 권고이며 앞쪽일수록 반드시 더 높은 가중치가 적용된다고 보장하지 않는다. 캐릭터·작가·스타일은 사용자 요청에 맞는 경우에만 추가한다. LoRA 항목은 대상 체크포인트 안내를 따르며 등록된 호출 단어의 자동 적용을 유지한다. 이 안내는 App의 기존 MCP 처리 메서드에서 제공하고 UI 입력·저장 설정·생성 프롬프트를 자동 변경하지 않는다. 별도 태그 저장소·모델 등록부·실행 시 모델 카드 다운로드는 추가하지 않는다.
+
 `reference_path`는 읽을 수 있는 절대 파일 경로다. 입력 파일은 요청 추가 전에 바이트 사본으로 읽고 원본은 유지한다. 최대 입력은 기존 32 MiB·4천만 픽셀 경계를 사용하며 실제 디코딩은 기존 생성 서비스가 담당한다. 생성의 참고 강도는 기본 0.65, 편집은 0.35이며 0.05~0.95를 허용한다. 편집에서는 참고 이미지가 필수다.
+
+ComfyUI 방식의 `eidolon_edit_image`는 UI 편집과 같은 Canny 외곽선·ControlNet 조건을 자동 적용한다. 기존 `reference_path`·`change_strength`를 사용하며 새 옵션은 요구하지 않는다. 관리 로컬 엔진은 첫 편집 때 필요한 SDXL 또는 SD 1.5 Canny 가중치를 준비하고, 외부 서버에 필요한 파일·노드가 없으면 작업 오류로 알린다. `eidolon_get_status`로 준비·작업 오류를 확인하고 `eidolon_list_images`의 `metadata.OutlineControlModel`·`metadata.OutlineControlStrength`로 실제 적용 조건을 확인한다. 이 조건은 원본 포즈·구도의 유지를 돕는 편집용이며, 참고 생성과 스프라이트·사면도에는 적용하지 않는다. Codex 편집은 기존 내장 이미지 편집을 사용한다.
 
 ## LoRA 학습 호출
 
 `eidolon_train_lora`는 `name`·`trigger_word`와 `white_images`·`black_images` 중 한 곳 이상의 이미지가 필요하다. 각 목록은 절대 이미지 경로 또는 폴더 경로를 받으며 폴더는 하위 폴더까지 PNG·JPG·JPEG·BMP를 가져온다. 같은 목록의 중복 파일은 제외하고 같은 파일을 두 배경 목록에 넣는 것은 허용한다. 두 목록은 한 데이터셋으로 준비해 새 LoRA 하나를 만든다. 투명·반투명 영역만 목록의 배경색으로 채우며 기존 배경과 원본 파일·설명은 보존한다. 폴더 선택 창이나 UI 조작을 요구하지 않는다.
 
 `model_id`는 `eidolon_list_models`의 로컬 체크포인트 ID이며 생략하면 UI에서 선택한 모델을 사용한다. `steps`는 기본 1000, 허용 범위는 기존 학습 프리셋의 1~100000이다. `trigger_word`에는 공백·쉼표를 넣지 않는다. 선택적 `description`은 영어 태그로 작성한 공통 설명이며 같은 이름의 `.txt` → Eidolon 이미지 메타 정보 → 공통 설명 → 직접 붙인 파일명 순서로 사용한다. 설명 파일의 트리거 추가와 학습 데이터 준비는 기존 `LoraTrainer`가 학습 시작 시 처리한다.
+
+선택적 `resume_lora_id`는 `eidolon_list_models`에 표시된 기존 로컬 LoRA의 ID다. 체크포인트와 같은 모델 계열·설치 환경인지 접수 전에 확인하고, 요청 사본의 기존 `TrainingInput.ResumeLora`에 연결한다. 지정하면 기존 가중치와 rank를 불러와 이번에 전달한 이미지로 추가 학습한다. 이전 학습 이미지는 자동으로 합치지 않으므로 함께 학습할 이미지는 `white_images`·`black_images`에 다시 포함한다. optimizer와 학습 스케줄은 새로 시작하며 `steps`는 이번에 추가할 단계 수다. 원본 LoRA를 보존하고 결과를 새 LoRA로 등록한다. 생략하면 UI의 이어 학습 선택과 관계없이 신규 학습을 요청한다. 접수 응답에는 지정한 `resume_lora_id`를 반환하며 완료 여부는 기존 상태·모델 조회로 확인한다.
 
 이미지 생성 방식을 Codex로 설정했어도 LoRA 학습은 로컬 ComfyUI 학습 환경·기반 모델·NVIDIA GPU를 사용한다. 요청은 화면의 학습 입력·선택 모델·설정을 변경하지 않고 입력 사본을 기존 큐에 넣는다. 실제 파일 내용은 학습 시작 시 복사한다. 접수 전에 경로·지원 확장자·이름·트리거·모델·단계 수를 확인하며 실행 환경 확인과 학습 오류는 기존 학습 서비스가 처리한다.
 
@@ -51,6 +68,22 @@ AI 클라이언트는 사용자 요청의 언어와 관계없이 모든 프롬�
     "description": "single object, centered composition, clear silhouette, plain background",
     "white_images": ["D:\\LoRA\\White"],
     "black_images": ["D:\\LoRA\\Black\\sword.png"]
+  }
+}
+```
+
+기존 LoRA에 추가 이미지를 학습하는 `params` 예시다. ID는 `eidolon_list_models`에서 조회한 실제 값으로 바꾼다.
+
+```json
+{
+  "name": "eidolon_train_lora",
+  "arguments": {
+    "name": "나의 수채화 추가 학습",
+    "trigger_word": "eidolon_watercolor",
+    "model_id": "<checkpoint ID>",
+    "resume_lora_id": "<existing LoRA ID>",
+    "steps": 300,
+    "white_images": ["D:\\LoRA\\Additional"]
   }
 }
 ```
@@ -126,7 +159,7 @@ URL 예약 명령의 계약은 [Microsoft netsh http 문서](https://learn.micro
 
 JSON-RPC 메서드는 `Eidolon.Mcp/Controllers`의 `InitializeController`, `PingController`, `ServerDiscoverController`, `ToolsListController`, `ToolsCallController`, `NotificationsCancelledController`가 각각 처리한다. 컨트롤러는 transient이며 `McpDispatcher`가 메서드별 타입을 찾아 요청·알림마다 DI에서 새로 resolve한 뒤 공통 응답 메타데이터를 붙인다. 서버 옵션·도구 목록·콜백과 App의 `McpService`는 공유한다.
 
-App의 `Mcp/McpService.cs`는 `CreateTools()`에서 도구 정의와 private 처리 메서드를 등록하고 기존 Session·자산 선택·생성 및 학습 ViewModel·JobStore에 연결한다. 학습 요청은 `TrainingViewModel.EnqueueTraining`을 통해 UI와 같은 `TrainAsync` 실행 경로에 연결하며 별도 폴더 선택·학습 큐·데이터셋 저장소를 만들지 않는다. 호출 흐름은 `tools/call → ToolsCallController → McpService의 처리 메서드`다. UI 상태는 Avalonia UI 스레드에서 읽고 요청 사본을 만든다. `ViewModels/Mcp/McpViewModel`이 서버의 시작·정지·화면 상태를 소유하고 루트가 종료를 조합한다. Core는 MCP와 UI를 참조하지 않는다. 별도 설정 저장소, 생성 큐, 작업 이력이나 결과 인덱스를 만들지 않는다.
+App의 `Mcp/McpService.cs`는 `CreateTools()`에서 도구 정의와 private 처리 메서드를 등록하고 기존 Session·자산 선택·생성 및 학습 ViewModel·JobStore에 연결한다. 학습 요청은 `TrainingViewModel.EnqueueTraining`을 통해 UI와 같은 `TrainAsync` 실행 경로에 연결하며 별도 폴더 선택·학습 큐·데이터셋 저장소를 만들지 않는다. 호출 흐름은 `tools/call → ToolsCallController → McpService의 처리 메서드`다. UI 상태는 Avalonia UI 스레드에서 읽고 요청 사본을 만든다. `ViewModels/Mcp/McpViewModel`이 서버의 시작·정지·화면 상태를 소유한다. 루트는 초기화 완료 후 기존 `StartCommand`를 실행하고 종료를 조합한다. 초기화 실패·종료 중·이미 실행 중이면 기존 명령 조건으로 시작하지 않으며 시작 오류는 기존 명령 오류 처리로 표시한다. Core는 MCP와 UI를 참조하지 않는다. 별도 설정 저장소, 생성 큐, 작업 이력이나 결과 인덱스를 만들지 않는다.
 
 현재 변경은 빌드·테스트·클라이언트 접속 검증을 수행하지 않았다.
 

@@ -318,6 +318,10 @@ namespace Eidolon.Core.Application
                 if (job.GenerationBackend == GenerationBackend.ComfyUI)
                 {
                     job.Denoise = reference.ChangeStrength;
+                    if (reference.Mode == GenerationReferenceMode.Restyle)
+                    {
+                        job.OutlineControlStrength = preset.OutlineStrength;
+                    }
                 }
                 token.ThrowIfCancellationRequested();
             }, token).ConfigureAwait(false);

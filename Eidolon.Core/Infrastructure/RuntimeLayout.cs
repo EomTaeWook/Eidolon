@@ -22,6 +22,7 @@ namespace Eidolon.Core.Infrastructure
         public string TrainingPython { get; private set; }
         public string ModelsDirectory { get; private set; }
         public string LorasDirectory { get; private set; }
+        public string ControlNetsDirectory { get; private set; }
         public string TrainingDataDirectory { get; private set; }
         public string LogDirectory { get; private set; }
         public string UvExecutable { get; private set; }
@@ -44,6 +45,7 @@ namespace Eidolon.Core.Infrastructure
             TrainingPython = Path.Combine(Root, "Environments", "Training", "Scripts", "python.exe");
             ModelsDirectory = Path.Combine(Root, "Models", "checkpoints");
             LorasDirectory = Path.Combine(Root, "Models", "loras");
+            ControlNetsDirectory = Path.Combine(ComfyDirectory, "models", "controlnet");
             TrainingDataDirectory = Path.Combine(Root, "TrainingData");
             LogDirectory = Path.Combine(Root, "Logs");
             UvExecutable = Path.Combine(Root, "Tools", "uv.exe");

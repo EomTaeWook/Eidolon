@@ -4088,8 +4088,8 @@
   {
     "Id": 3266,
     "Name": "EidolonText186",
-    "Kor": "1. \uC0DD\uC131 \uD658\uACBD \u2192 \uC0DD\uC131 \uBC29\uC2DD\u00B7\uC9C0\uCE68\uC5D0\uC11C ComfyUI \uB610\uB294 Codex\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4.\n2. Codex\uB97C \uC0AC\uC6A9\uD558\uB824\uBA74 \uC124\uCE58\uB41C Codex\uC5D0\uC11C \uBA3C\uC800 \uB85C\uADF8\uC778\uD558\uACE0 \uC2E4\uD589 \uBAA8\uB378\uC744 \uC120\uD0DD\uD569\uB2C8\uB2E4. \uAE30\uBCF8 \uBAA8\uB378\uC740 Codex\uC758 \uAE30\uBCF8\uAC12\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4.\n3. \uACF5\uD1B5 \uC0DD\uC131 \uC9C0\uCE68\u00B7\uC81C\uC678\uD560 \uC694\uC18C\uC640 \uD504\uB9AC\uC14B\uC744 \uC815\uD558\uACE0 \uC0DD\uC131 \uD658\uACBD \uC800\uC7A5\uC744 \uB204\uB985\uB2C8\uB2E4.",
-    "Eng": "1. Open Generation environment \u003E Generation method and guidelines and choose ComfyUI or Codex.\n2. For Codex, sign in to your installed Codex and select an execution model. Default model uses the CLI default.\n3. Set shared guidelines, exclusions and preset"
+    "Kor": "1. \uC0DD\uC131 \uD658\uACBD \u2192 \uC0DD\uC131 \uBC29\uC2DD\uC5D0\uC11C ComfyUI \uB610\uB294 Codex\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4.\n2. Codex\uB294 \uC124\uCE58\uB41C Codex\uC5D0\uC11C \uBA3C\uC800 \uB85C\uADF8\uC778\uD558\uACE0 \uC2E4\uD589 \uBAA8\uB378\uC744 \uC120\uD0DD\uD569\uB2C8\uB2E4. \uAE30\uBCF8 \uBAA8\uB378\uC740 CLI \uAE30\uBCF8\uAC12\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4.\n3. \uACF5\uD1B5 \uC0DD\uC131 \uC9C0\uCE68 \uBA54\uB274\uC5D0\uC11C \uC9C0\uCE68\u00B7\uC81C\uC678\uD560 \uC694\uC18C\uC640 \uD504\uB9AC\uC14B\uC744 \uC815\uD558\uACE0 \uC0DD\uC131 \uD658\uACBD \uC800\uC7A5\uC744 \uB204\uB985\uB2C8\uB2E4.",
+    "Eng": "1. In Generation environment \u003E Generation methods, choose ComfyUI or Codex.\n2. For Codex, sign in and select an execution model; Default model uses the CLI default.\n3. Open Shared generation instructions, edit guidelines and presets, then save."
   },
   {
     "Id": 3267,
@@ -6194,8 +6194,8 @@
   {
     "Id": 3622,
     "Name": "EidolonText542",
-    "Kor": "\uC800\uC7A5\uD558\uBA74 \uB2E4\uC74C \uC0DD\uC131\u00B7\uD3B8\uC9D1 \uC694\uCCAD\uBD80\uD130 \uC801\uC6A9\uB429\uB2C8\uB2E4. \uB300\uAE30 \uC911\uC778 \uC694\uCCAD\uC740 \uAE30\uC874 \uC124\uC815\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4.",
-    "Eng": "Saved settings apply to new generation and editing requests. Queued requests keep their original settings."
+    "Kor": "\uC0DD\uC131 \uBC29\uC2DD\u00B7\uACF5\uD1B5 \uC9C0\uCE68\u00B7\uD504\uB9AC\uC14B\uC744 \uD568\uAED8 \uC800\uC7A5\uD569\uB2C8\uB2E4. \uB2E4\uC74C \uC0DD\uC131\u00B7\uD3B8\uC9D1 \uC694\uCCAD\uBD80\uD130 \uC801\uC6A9\uB418\uBA70 \uB300\uAE30 \uC911\uC778 \uC694\uCCAD\uC740 \uAE30\uC874 \uC124\uC815\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4.",
+    "Eng": "Save the generation method, shared instructions and presets together. Changes apply to new generation and editing requests; queued requests keep their original settings."
   },
   {
     "Id": 3623,
@@ -6428,8 +6428,8 @@
   {
     "Id": 3661,
     "Name": "EidolonText582",
-    "Kor": "\uC0DD\uC131 \uBC29\uC2DD\uACFC \uC0AC\uC6A9\uD560 \uBAA8\uB378, \uBAA8\uB4E0 \uC774\uBBF8\uC9C0\uC5D0 \uC801\uC6A9\uD560 \uACF5\uD1B5 \uC9C0\uCE68\uC744 \uAD00\uB9AC\uD569\uB2C8\uB2E4.",
-    "Eng": "Manage generation methods, models, and instructions shared by all images."
+    "Kor": "\uC67C\uCABD \uBA54\uB274\uC5D0\uC11C \uC0DD\uC131 \uBC29\uC2DD, \uACF5\uD1B5 \uC0DD\uC131 \uC9C0\uCE68, \uBAA8\uB378\u00B7LoRA\uB97C \uC120\uD0DD\uD574 \uAD00\uB9AC\uD569\uB2C8\uB2E4.",
+    "Eng": "Use the left menu to manage generation methods, shared generation instructions, and models and LoRAs."
   },
   {
     "Id": 3662,
@@ -6512,8 +6512,8 @@
   {
     "Id": 3675,
     "Name": "EidolonText596",
-    "Kor": "\uC678\uBD80 AI \uB3C4\uAD6C\uC5D0\uC11C \uC774\uBBF8\uC9C0 \uC0DD\uC131\u00B7\uD3B8\uC9D1\uACFC \uACB0\uACFC \uC870\uD68C\uB97C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC0AC\uC6A9\uD560 \uB54C \uC11C\uBC84\uB97C \uCF1C\uC138\uC694.",
-    "Eng": "Use image generation, editing and result lookup from external AI tools. Start the server when you need it."
+    "Kor": "\uC678\uBD80 AI \uB3C4\uAD6C\uC5D0\uC11C \uC774\uBBF8\uC9C0 \uC0DD\uC131\u00B7\uD3B8\uC9D1\uACFC \uACB0\uACFC \uC870\uD68C\uB97C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC571 \uCD08\uAE30\uD654\uAC00 \uB05D\uB098\uBA74 \uC11C\uBC84\uAC00 \uC790\uB3D9\uC73C\uB85C \uC2DC\uC791\uB429\uB2C8\uB2E4.",
+    "Eng": "Use image generation, editing and result lookup from external AI tools. The server starts automatically after app initialization."
   },
   {
     "Id": 3676,
@@ -6524,8 +6524,8 @@
   {
     "Id": 3677,
     "Name": "EidolonText598",
-    "Kor": "\uC5F0\uACB0 \uB300\uAE30 \uC911",
-    "Eng": "Listening"
+    "Kor": "\uC11C\uBC84 \uC2E4\uD589 \uC911",
+    "Eng": "Server running"
   },
   {
     "Id": 3678,
@@ -6926,8 +6926,8 @@
   {
     "Id": 3744,
     "Name": "EidolonText665",
-    "Kor": "\uC124\uC815 \u2192 \uC77C\uBC18\uC5D0\uC11C \uC774\uBBF8\uC9C0 \uC800\uC7A5 \uD3F4\uB354\u00B7\uC5B8\uC5B4\u00B7\uD14C\uB9C8\uC640 MCP \uC5F0\uACB0\uC744 \uAD00\uB9AC\uD569\uB2C8\uB2E4. \uAE30\uBCF8 \uC774\uBBF8\uC9C0 \uD3F4\uB354\uB294 %LOCALAPPDATA%\\Eidolon\\Images\uC774\uBA70 PNG\uC640 \uAC19\uC740 \uC774\uB984\uC758 \uD504\uB86C\uD504\uD2B8 JSON\uC744 \uD568\uAED8 \uC800\uC7A5\uD569\uB2C8\uB2E4. \uC6D0\uBCF8\uACFC \uC2E4\uD589 \uB85C\uADF8\uB294 Jobs \uC544\uB798\uC5D0 \uBCF4\uC874\uD569\uB2C8\uB2E4. \uD559\uC2B5 \uB370\uC774\uD130\uB294 \uC124\uC815 \u2192 \uC5D4\uC9C4 \uC124\uCE58\u00B7\uC5F0\uACB0\uC5D0\uC11C \uC5F4\uAC70\uB098 \uBE44\uC6B8 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
-    "Eng": "Manage the image folder, language, theme and MCP connection in Settings \u003E General. The default image folder is %LOCALAPPDATA%\\Eidolon\\Images; each PNG has a matching prompt JSON. Originals and job logs are preserved under Jobs. Open or clear prepared data"
+    "Kor": "\uC124\uC815 \uC67C\uCABD \uBA54\uB274\uC5D0\uC11C \uC77C\uBC18\u00B7\uC5D4\uC9C4 \uC124\uCE58\u00B7\uC5F0\uACB0\u00B7MCP \uC5F0\uACB0\u00B7\uC571 \uC5C5\uB370\uC774\uD2B8\uB97C \uC120\uD0DD\uD569\uB2C8\uB2E4. \uC77C\uBC18\uC5D0\uC11C \uC774\uBBF8\uC9C0 \uC800\uC7A5 \uD3F4\uB354\u00B7\uC5B8\uC5B4\u00B7\uD14C\uB9C8\uB97C \uBCC0\uACBD\uD558\uACE0 \uC124\uC815 \uC800\uC7A5\uC744 \uB204\uB985\uB2C8\uB2E4. MCP \uC5F0\uACB0\uC5D0\uC11C\uB294 \uC11C\uBC84 \uC0C1\uD0DC\u00B7\uC8FC\uC18C\uC640 \uC2DC\uC791\u00B7\uC815\uC9C0\uB97C, \uC571 \uC5C5\uB370\uC774\uD2B8\uC5D0\uC11C\uB294 \uBC84\uC804 \uD655\uC778\u00B7\uC5C5\uB370\uC774\uD2B8\uB97C \uAD00\uB9AC\uD569\uB2C8\uB2E4. \uAE30\uBCF8 \uC774\uBBF8\uC9C0 \uD3F4\uB354\uB294 %LOCALAPPDATA%\\Eidolon\\Images\uC774\uBA70 PNG\uC640 \uAC19\uC740 \uC774\uB984\uC758 \uD504\uB86C\uD504\uD2B8 JSON\uC744 \uD568\uAED8 \uC800\uC7A5\uD569\uB2C8\uB2E4. \uD559\uC2B5 \uB370\uC774\uD130\uB294 \uC5D4\uC9C4 \uC124\uCE58\u00B7\uC5F0\uACB0\uC5D0\uC11C \uC5F4\uAC70\uB098 \uBE44\uC6B8 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Use the left menu in Settings to select General, Engine setup and connection, MCP connection or App updates. Change the image folder, language and theme in General, then save settings. MCP connection provides server status, address and start/stop controls"
   },
   {
     "Id": 3745,
@@ -7126,5 +7126,23 @@
     "Name": "EidolonText698",
     "Kor": "\uC5C5\uB370\uC774\uD2B8 \uC791\uC5C5\uC744 \uCDE8\uC18C\uD588\uC2B5\uB2C8\uB2E4.",
     "Eng": "The update operation was cancelled."
+  },
+  {
+    "Id": 3778,
+    "Name": "EidolonText699",
+    "Kor": "\uC678\uACFD\uC120 \uC720\uC9C0 \uBAA8\uB378\uC744 \uC900\uBE44\uD558\uB294 \uC911 \u00B7 {0}",
+    "Eng": "Preparing outline control model \u00B7 {0}"
+  },
+  {
+    "Id": 3779,
+    "Name": "EidolonText700",
+    "Kor": "\uD3B8\uC9D1\uC5D0 \uD544\uC694\uD55C {0} \uBAA8\uB378\uC774 \uC11C\uBC84\uC5D0 \uC5C6\uC2B5\uB2C8\uB2E4. ComfyUI\uC758 models/controlnet \uD3F4\uB354\uC5D0 \uC900\uBE44\uD574 \uC8FC\uC138\uC694.",
+    "Eng": "The server is missing {0}, required for style editing. Place it in ComfyUI models/controlnet."
+  },
+  {
+    "Id": 3780,
+    "Name": "EidolonText701",
+    "Kor": "\uC678\uACFD\uC120 \uC720\uC9C0\uC5D0 \uD544\uC694\uD55C {0} \uB178\uB4DC\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4. ComfyUI\uB97C \uC124\uCE58\u00B7\uBCF5\uAD6C\uD558\uAC70\uB098 \uC678\uBD80 \uC11C\uBC84\uC758 \uAE30\uBCF8 \uB178\uB4DC\uB97C \uD655\uC778\uD574 \uC8FC\uC138\uC694.",
+    "Eng": "The {0} node required for outline control is unavailable. Install or repair ComfyUI, or check the external server core nodes."
   }
 ]

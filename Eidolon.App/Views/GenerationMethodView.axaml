@@ -1,5 +1,5 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationMethodView" x:DataType="vm:SettingsViewModel">
-  <Grid RowDefinitions="*,Auto" MaxWidth="1000" Margin="0,20,0,0">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.GenerationMethodView" x:DataType="vm:SettingsViewModel">
+  <Grid RowDefinitions="*,Auto" MaxWidth="1000">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
       <StackPanel Spacing="20" HorizontalAlignment="Stretch">
         <Border Classes="card">
@@ -47,16 +47,9 @@
             </StackPanel>
           </StackPanel>
         </Border>
-        <Border Classes="card">
-          <StackPanel Spacing="12">
-            <TextBlock Text="{DynamicResource EidolonText176}" FontSize="18" FontWeight="SemiBold" />
-            <TextBlock Text="{DynamicResource EidolonText543}" Classes="muted" FontSize="12" />
-            <views:PromptSettingsView DataContext="{Binding Prompts}" />
-          </StackPanel>
-        </Border>
       </StackPanel>
     </ScrollViewer>
-    <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" CornerRadius="14" Padding="20,16" Margin="0,20,12,0">
+    <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="20,16" Margin="0,20,12,0">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Spacing="5" Margin="0,0,20,0" VerticalAlignment="Center">
           <TextBlock Text="{Binding Session.AppliedGenerationBackendCaption}" FontWeight="SemiBold" FontSize="13" />

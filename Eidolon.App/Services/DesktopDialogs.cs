@@ -142,8 +142,9 @@ namespace Eidolon.App.Services
                 ShowInTaskbar = false,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
-            Button delete = new Button { Content = _strings.GetString("EidolonText321") };
-            Button cancel = new Button { Content = _strings.GetString("EidolonText322") };
+            Button delete = new Button { Content = _strings.GetString("EidolonText321"), MinWidth = 96 };
+            delete.Classes.Add("primary");
+            Button cancel = new Button { Content = _strings.GetString("EidolonText322"), MinWidth = 96 };
             delete.Click += (sender, arguments) => dialog.Close(true);
             cancel.Click += (sender, arguments) => dialog.Close(false);
             StackPanel buttons = new StackPanel
@@ -154,10 +155,12 @@ namespace Eidolon.App.Services
             };
             buttons.Children.Add(cancel);
             buttons.Children.Add(delete);
-            StackPanel content = new StackPanel { Margin = new Avalonia.Thickness(24), Spacing = 20 };
+            StackPanel content = new StackPanel { Spacing = 24 };
             content.Children.Add(new TextBlock { Text = message, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
             content.Children.Add(buttons);
-            dialog.Content = content;
+            Border dialogContentBorder = new Border { Child = content, CornerRadius = new Avalonia.CornerRadius(0) };
+            dialogContentBorder.Classes.Add("card");
+            dialog.Content = dialogContentBorder;
             return await dialog.ShowDialog<bool>(_desktop.MainWindow);
         }
 

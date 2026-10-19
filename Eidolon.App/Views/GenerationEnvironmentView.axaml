@@ -1,15 +1,57 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationEnvironmentView" x:DataType="vm:StudioViewModel">
+  <UserControl.Styles>
+    <Style Selector="TabItem.environmentSection">
+      <Setter Property="Width" Value="192" />
+      <Setter Property="MinHeight" Value="48" />
+      <Setter Property="Margin" Value="0,0,0,8" />
+      <Setter Property="Padding" Value="16,12" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+  </UserControl.Styles>
   <Grid RowDefinitions="Auto,*">
     <StackPanel Spacing="8" Margin="0,0,0,24">
       <TextBlock Text="{DynamicResource EidolonText581}" Classes="title" />
       <TextBlock Text="{DynamicResource EidolonText582}" Classes="muted" FontSize="13" />
     </StackPanel>
-    <TabControl Grid.Row="1" SelectedIndex="{Binding Navigation.SelectedEnvironmentTab, Mode=TwoWay}">
-      <TabItem Header="{DynamicResource EidolonText583}">
-        <views:GenerationMethodView DataContext="{Binding Settings}" />
+    <TabControl Grid.Row="1" TabStripPlacement="Left" SelectedIndex="{Binding Navigation.SelectedEnvironmentTab, Mode=TwoWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+      <TabItem Classes="environmentSection" AutomationProperties.Name="{DynamicResource EidolonText583}">
+        <TabItem.Header>
+          <TextBlock Text="{DynamicResource EidolonText583}" MaxWidth="160" TextWrapping="Wrap" />
+        </TabItem.Header>
+        <views:GenerationMethodView DataContext="{Binding Settings}" Margin="24,0,0,0" />
       </TabItem>
-      <TabItem Header="{DynamicResource EidolonText107}">
-        <views:ModelsView DataContext="{Binding Assets}" />
+      <TabItem Classes="environmentSection" AutomationProperties.Name="{DynamicResource EidolonText176}">
+        <TabItem.Header>
+          <TextBlock Text="{DynamicResource EidolonText176}" MaxWidth="160" TextWrapping="Wrap" />
+        </TabItem.Header>
+        <Grid RowDefinitions="*,Auto" MaxWidth="1000" Margin="24,0,0,0" DataContext="{Binding Settings}" x:DataType="vm:SettingsViewModel">
+          <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+            <Border Classes="card">
+              <StackPanel Spacing="12">
+                <TextBlock Text="{DynamicResource EidolonText176}" FontSize="18" FontWeight="SemiBold" />
+                <TextBlock Text="{DynamicResource EidolonText543}" Classes="muted" FontSize="12" />
+                <views:PromptSettingsView DataContext="{Binding Prompts}" />
+              </StackPanel>
+            </Border>
+          </ScrollViewer>
+          <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="20,16" Margin="0,20,12,0">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="5" Margin="0,0,20,0" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Session.AppliedGenerationBackendCaption}" FontWeight="SemiBold" FontSize="13" />
+                <TextBlock Text="{DynamicResource EidolonText542}" Classes="muted" FontSize="12" />
+                <TextBlock Text="{DynamicResource EidolonText342}" Classes="muted" FontSize="12" IsVisible="{Binding !Session.IsIdle}" />
+              </StackPanel>
+              <Button Grid.Column="1" Content="{DynamicResource EidolonText561}" Command="{Binding SaveGenerationEnvironmentCommand}" Classes="primary" MinWidth="140" VerticalAlignment="Center" />
+            </Grid>
+          </Border>
+        </Grid>
+      </TabItem>
+      <TabItem Classes="environmentSection" AutomationProperties.Name="{DynamicResource EidolonText107}">
+        <TabItem.Header>
+          <TextBlock Text="{DynamicResource EidolonText107}" MaxWidth="160" TextWrapping="Wrap" />
+        </TabItem.Header>
+        <views:ModelsView DataContext="{Binding Assets}" Margin="24,0,0,0" />
       </TabItem>
     </TabControl>
   </Grid>

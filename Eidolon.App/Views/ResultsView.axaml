@@ -17,14 +17,14 @@
     </Style>
     <Style Selector="Border.resultCard">
       <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-      <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="14" />
       <Setter Property="ClipToBounds" Value="True" />
       <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
     <Style Selector="ListBoxItem:pointerover Border.resultCard">
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MutedBrush}" />
     </Style>
     <Style Selector="ListBoxItem:selected Border.resultCard">
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
@@ -50,28 +50,11 @@
       <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.resultAction">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Padding" Value="10,8" />
       <Setter Property="FontSize" Value="12" />
-    </Style>
-    <Style Selector="Button.resultAction:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-    </Style>
-    <Style Selector="Button.resultAction:pressed /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-    </Style>
-    <Style Selector="Button.resultAction:disabled">
-      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
-    </Style>
-    <Style Selector="Button.resultAction:disabled /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
     </Style>
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,Auto,*">
@@ -178,7 +161,7 @@
             <TextBlock Text="{Binding SelectedResult.DimensionsCaption}" Classes="muted" FontSize="12" />
           </WrapPanel>
         </StackPanel>
-        <Border Grid.Row="1" Height="260" Background="{DynamicResource SurfaceBrush}" CornerRadius="14" Padding="12" ClipToBounds="True">
+        <Border Grid.Row="1" Height="260" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="12" ClipToBounds="True">
           <Border.ContextMenu>
             <ContextMenu>
               <MenuItem Header="{DynamicResource EidolonText603}" Command="{Binding UseResultForAssetCreationCommand}" />

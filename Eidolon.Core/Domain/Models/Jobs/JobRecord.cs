@@ -23,6 +23,8 @@ namespace Eidolon.Core.Domain
         public string ReferenceImageName { get; set; } = string.Empty;
         public string ReferenceImagePath { get; set; } = string.Empty;
         public double Denoise { get; set; } = 1.0;
+        public string OutlineControlModel { get; set; } = string.Empty;
+        public double OutlineControlStrength { get; set; }
         public ModelAsset Model { get; set; } = new ModelAsset();
         public List<ModelAsset> Loras { get; set; } = new List<ModelAsset>();
         public long Seed { get; set; }

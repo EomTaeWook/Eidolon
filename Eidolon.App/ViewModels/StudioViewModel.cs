@@ -95,6 +95,7 @@ namespace Eidolon.App.ViewModels
                 Session.Error = _strings.GetString("EidolonText226") + _strings.GetExceptionMessage(error);
             }
             Session.RefreshAvailability();
+            Mcp.StartCommand.Execute(null);
         }
 
         private Task NavigateAsync(int tab)

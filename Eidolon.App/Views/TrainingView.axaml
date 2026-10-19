@@ -1,41 +1,61 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.TrainingView" x:DataType="vm:TrainingViewModel">
   <UserControl.Styles>
     <Style Selector="Button.trainingStep">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="12" />
-      <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="Padding" Value="12,14" />
       <Setter Property="Margin" Value="0,0,8,0" />
     </Style>
     <Style Selector="Button.trainingStep.current">
-      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.trainingStep.current:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+    </Style>
+    <Style Selector="Button.trainingStep.current:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
     </Style>
     <Style Selector="Button.trainingStep:disabled">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
-      <Setter Property="Opacity" Value="0.55" />
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
     <Style Selector="Button.trainingStep:disabled /template/ ContentPresenter">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    </Style>
+    <Style Selector="Button.trainingStep.current:disabled /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
     </Style>
     <Style Selector="Button.trainingStep Border">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
     </Style>
     <Style Selector="Button.trainingStep.current Border">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentTextBrush}" />
     </Style>
     <Style Selector="Button.trainingStep.current Border TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Button.trainingStep:disabled Border">
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
+    </Style>
+    <Style Selector="Button.trainingStep:disabled Border TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
     </Style>
     <Style Selector="Button.trainingAdd">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -45,13 +65,8 @@
       <Setter Property="FontSize" Value="13" />
     </Style>
     <Style Selector="Button.trainingSecondary">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="Padding" Value="4,6" />
+      <Setter Property="Padding" Value="8,6" />
       <Setter Property="FontSize" Value="12" />
-    </Style>
-    <Style Selector="Button.trainingSecondary:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
     </Style>
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,Auto,*,Auto" MaxWidth="1080" HorizontalAlignment="Stretch">

@@ -51,27 +51,27 @@ namespace Eidolon.App.Mcp
                     OpenWorld = false
                 }, GetStatusAsync),
                 new McpTool(new McpToolDefinition("eidolon_list_models",
-                    "List currently available checkpoints and LoRAs with asset IDs, model families and trigger words. Model and LoRA families must match.")
+                    "List available checkpoints and LoRAs with asset IDs, engine filenames, compatible families, trigger words and prompt_guidance. Before ComfyUI generation, editing or asset creation, read the target checkpoint's prompt_guidance, using selected_model_id when model_id is omitted. Guidance is matched by filename, not a verified weight identity; renamed or custom checkpoints require their own model card. A shared SDXL family does not imply shared quality, rating or source tags. Model and LoRA families must match.")
                 {
                     ReadOnly = true,
                     Idempotent = true,
                     OpenWorld = false
                 }, ListModelsAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_instructions",
-                    "Read the saved shared positive and negative generation instructions. A generate or edit call can override either instruction for that request only.")
+                    "Read saved positive and negative instructions, generation_backend, selected_model_id and prompt_guidance for the active backend and selected checkpoint. Read this before image generation, editing or asset creation. For a different ComfyUI checkpoint, read its prompt_guidance from eidolon_list_models. Resolve conflicting model-specific tags with request-only instruction overrides; saved settings remain unchanged.")
                 {
                     ReadOnly = true,
                     Idempotent = true,
                     OpenWorld = false
                 }, GetInstructionsAsync),
                 new McpTool(new McpToolDefinition("eidolon_train_lora",
-                    "Queue one new LoRA training job from local image files or folders without opening a file picker. Requires name, trigger_word and at least one image in white_images or black_images. Both background groups train together into one LoRA; only transparent areas are filled with the group's color. Folder paths include supported images in subfolders. Uses the local ComfyUI training runtime and requires an NVIDIA GPU, even when the saved image-generation backend is Codex. Omitting model_id uses the UI checkpoint; steps defaults to 1000. Optional description MUST be in English as detailed comma-separated tags or short tag phrases. Existing sibling .txt captions and Eidolon metadata take precedence over description. Original images and captions are preserved. Returns acceptance, not completion; poll eidolon_get_status, then eidolon_list_models for the trained LoRA. Does not change UI training inputs or saved settings.",
+                    "Queue one new or continued LoRA training job from local image files or folders without opening a file picker. Requires name, trigger_word and at least one image in white_images or black_images. Optional resume_lora_id is an existing LoRA ID from eidolon_list_models, with the same family and local runtime as the checkpoint. It loads the existing weights and rank, then trains on the supplied images; previous images are not automatically included. The optimizer and schedule start fresh, and the result is saved as a new LoRA while preserving the original. Omit resume_lora_id to start a new LoRA regardless of UI continuation settings. Both background groups train together into one LoRA; only transparent areas are filled with the group's color. Folder paths include supported images in subfolders. Uses the local ComfyUI training runtime and requires an NVIDIA GPU, even when the saved image-generation backend is Codex. Omitting model_id uses the UI checkpoint; steps defaults to 1000 and means additional steps when continuing. Optional description MUST be in English as detailed comma-separated tags or short tag phrases. Existing sibling .txt captions and Eidolon metadata take precedence over description. Original images and captions are preserved. Returns acceptance, not completion; poll eidolon_get_status, then eidolon_list_models for the trained LoRA. Does not change UI training inputs or saved settings.",
                     TrainingSchema()), TrainLoraAsync),
                 new McpTool(new McpToolDefinition("eidolon_generate_image",
-                    "Queue text-to-image generation, optionally with a reference image. All supplied prompts MUST be in English and use detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Specify the subject, appearance, pose, composition, viewpoint, style, materials, colors, lighting and background in relevant detail; put unwanted elements in negative_prompt. Returns accepted and the fixed seed, not a completed image. Poll eidolon_get_status then eidolon_list_images. Uses saved instructions unless positive_prompt or negative_prompt is provided. Omitting model_id uses the UI model; omitting lora_ids uses compatible selected UI LoRAs. An empty lora_ids array disables LoRAs for this request. Does not change UI inputs or saved settings.",
+                    "Queue text-to-image generation, optionally with a reference image. All supplied prompts MUST be in English and use detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Specify the subject, appearance, pose, composition, viewpoint, style, materials, colors, lighting and background in relevant detail; put unwanted elements in negative_prompt. Returns accepted and the fixed seed, not a completed image. Poll eidolon_get_status then eidolon_list_images. Uses saved instructions unless positive_prompt or negative_prompt is provided. Omitting model_id uses the UI model; omitting lora_ids uses compatible selected UI LoRAs. An empty lora_ids array disables LoRAs for this request. Does not change UI inputs or saved settings.",
                     ImageSchema(false)), GenerateImageAsync),
                 new McpTool(new McpToolDefinition("eidolon_edit_image",
-                    "Queue a style edit using an existing local reference image. Requires reference_path. All supplied prompts MUST be in English and use detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Describe the desired style, textures, colors, lighting and details to preserve from the reference; put unwanted elements in negative_prompt. Lower change_strength preserves more of the original; default 0.35. Returns accepted and the fixed seed. Poll status and list_images for the result. Request instruction overrides do not change saved settings.",
+                    "Queue a style edit using an existing local reference image. Requires reference_path. All supplied prompts MUST be in English and use detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe the desired style, textures, colors, lighting and details to preserve from the reference; put unwanted elements in negative_prompt. ComfyUI style edits automatically extract Canny edges and apply a compatible ControlNet to constrain the reference shape. The managed local runtime prepares the control weights on first use; external servers must provide the required Canny ControlNet and core nodes. Stored result metadata includes OutlineControlModel and OutlineControlStrength. Lower change_strength preserves more of the original; default 0.35. Returns accepted and the fixed seed. Poll status and list_images for completion or preparation errors. Request instruction overrides do not change saved settings.",
                     ImageSchema(true)), EditImageAsync),
                 new McpTool(new McpToolDefinition("eidolon_list_images",
                     "Read generated PNG paths and stored generation metadata from the current output folder, newest first. JSON metadata may be absent. Paths refer to local files; this tool does not transfer image bytes.")
@@ -91,10 +91,10 @@ namespace Eidolon.App.Mcp
                     OpenWorld = false
                 }, ListImagesAsync),
                 new McpTool(new McpToolDefinition("eidolon_create_sprite_animation",
-                    "Queue a sprite-animation draft from one reference image. Every supplied prompt, instruction, action and frame description MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Describe the subject and visual details, and separate motion, facing direction, limb positions and animation phase into specific tags. Only reference_path is required; prompt and action are optional. An omitted action uses a walk-in-place cycle with ordered automatic poses. Uses the saved ComfyUI or Codex backend and shared instructions. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. Identity and a smooth loop are not guaranteed. Optional frame_descriptions has one pose description per frame. Returns collection_id immediately; poll eidolon_get_asset_collection. Export after reviewing all frames.",
+                    "Queue a sprite-animation draft from one reference image. Every supplied prompt, instruction, action and frame description MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe the subject and visual details, and separate motion, facing direction, limb positions and animation phase into specific tags. Only reference_path is required; prompt and action are optional. An omitted action uses a walk-in-place cycle with ordered automatic poses. Uses the saved ComfyUI or Codex backend and shared instructions. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. Identity and a smooth loop are not guaranteed. Optional frame_descriptions has one pose description per frame. Returns collection_id immediately; poll eidolon_get_asset_collection. Export after reviewing all frames.",
                     AssetCreationSchema(true)), CreateSpriteAnimationAsync),
                 new McpTool(new McpToolDefinition("eidolon_create_views",
-                    "Queue front, side, back and directly overhead top images of the same subject. All supplied prompts MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Describe the subject's appearance, proportions, materials, colors and style in relevant detail. Only reference_path is required; prompt is optional. Uses the saved ComfyUI or Codex backend. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. These are AI reference drafts, not a 3D model or geometrically verified projections. Returns collection_id; poll eidolon_get_asset_collection.",
+                    "Queue front, side, back and directly overhead top images of the same subject. All supplied prompts MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe the subject's appearance, proportions, materials, colors and style in relevant detail. Only reference_path is required; prompt is optional. Uses the saved ComfyUI or Codex backend. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. These are AI reference drafts, not a 3D model or geometrically verified projections. Returns collection_id; poll eidolon_get_asset_collection.",
                     AssetCreationSchema(false)), CreateViewsAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_asset_collection", "Read a collection state and ordered frame paths, prompts, seeds and errors.",
                     CollectionSchema()) { ReadOnly = true, Idempotent = true, OpenWorld = false }, GetAssetCollectionAsync),
@@ -102,7 +102,7 @@ namespace Eidolon.App.Mcp
                     { ReadOnly = true, Idempotent = true, OpenWorld = false }, ListAssetCollectionsAsync),
                 new McpTool(new McpToolDefinition("eidolon_resume_asset_collection", "Queue only unfinished frames using the collection's saved backend and generation conditions. Requires an idle queue.",
                     CollectionSchema()), ResumeAssetCollectionAsync),
-                new McpTool(new McpToolDefinition("eidolon_regenerate_asset_frame", "Queue a replacement for one frame or view using its captured reference, backend and generation conditions. The replacement prompt MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Specify the subject, pose, direction, viewpoint and desired visual details for this frame. Seed applies only to ComfyUI collections. Requires an idle queue. Keeps the old image if regeneration fails.",
+                new McpTool(new McpToolDefinition("eidolon_regenerate_asset_frame", "Queue a replacement for one frame or view using its captured reference, backend and generation conditions. The replacement prompt MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Specify the subject, pose, direction, viewpoint and desired visual details for this frame. For regeneration, read eidolon_get_asset_collection and use its captured backend and checkpoint, not the current UI selection. Seed applies only to ComfyUI collections. Requires an idle queue. Keeps the old image if regeneration fails.",
                     RegenerateAssetSchema()), RegenerateAssetFrameAsync),
                 new McpTool(new McpToolDefinition("eidolon_export_asset_collection", "Export all reviewed frame images into a new subfolder: normalized Frames PNGs, Sheet.png, Sheet.json with frame rectangles, bottom-center pivots and FPS, and preserved Sources. All frames must have images. Does not overwrite existing files.",
                     ExportAssetSchema()), ExportAssetCollectionAsync)
@@ -121,7 +121,7 @@ namespace Eidolon.App.Mcp
                 ["type"] = "object",
                 ["properties"] = new JsonObject
                 {
-                    ["prompt"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 16000, ["description"] = "Required English-only image description as detailed comma-separated tags or short tag phrases. Translate the user's request into English. Separate subject and count, appearance, shape, pose and action, composition, camera angle, viewpoint, art style, materials, textures, colors, lighting and background into specific relevant tags. For edits, specify the desired changes and reference details to preserve." },
+                    ["prompt"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 16000, ["description"] = "Required English-only image description as detailed comma-separated tags or short tag phrases. Translate the user's request into English. For ComfyUI, use the target checkpoint prompt_guidance from eidolon_list_models; read the backend and saved instruction prefixes with eidolon_get_instructions first. Separate subject and count, appearance, shape, pose and action, composition, camera angle, viewpoint, art style, materials, textures, colors, lighting and background into specific relevant tags. For edits, specify the desired changes and reference details to preserve." },
                     ["model_id"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 128 },
                     ["lora_ids"] = new JsonObject
                     {
@@ -130,8 +130,8 @@ namespace Eidolon.App.Mcp
                     },
                     ["seed"] = new JsonObject { ["type"] = "integer", ["minimum"] = 0, ["maximum"] = long.MaxValue },
                     ["remove_background"] = new JsonObject { ["type"] = "boolean" },
-                    ["positive_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional request-only instructions, written exclusively as detailed comma-separated English tags or short tag phrases for desired style, composition, lighting, background and quality. Omit to use saved instructions; an empty string clears them for this request." },
-                    ["negative_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional request-only exclusions, written exclusively as detailed comma-separated English tags naming unwanted elements and artifacts. Omit to use saved exclusions; an empty string clears them for this request." },
+                    ["positive_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional request-only instructions, written exclusively as detailed comma-separated English tags or short tag phrases for desired style, composition, lighting, background and quality. Use only model-supported quality, rating and source tags from the target checkpoint prompt_guidance. Omit to use saved instructions; an empty string clears them for this request." },
+                    ["negative_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional request-only exclusions, written exclusively as detailed comma-separated English tags naming unwanted elements and artifacts. Follow checkpoint-specific negative guidance and avoid exclusions that conflict with the requested subject or style. Omit to use saved exclusions; an empty string clears them for this request." },
                     ["reference_path"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 },
                     ["change_strength"] = new JsonObject { ["type"] = "number", ["minimum"] = 0.05, ["maximum"] = 0.95 }
                 },
@@ -147,10 +147,11 @@ namespace Eidolon.App.Mcp
                 ["type"] = "object",
                 ["properties"] = new JsonObject
                 {
-                    ["name"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["description"] = "Name of the new LoRA." },
+                    ["name"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["description"] = "Name of the new output LoRA, including continued training. The original LoRA is preserved." },
                     ["trigger_word"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["description"] = "Single trigger token without whitespace or commas. It will be prepended to training captions and automatically applied when this LoRA is selected for generation." },
                     ["model_id"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 128, ["description"] = "Available local checkpoint ID from eidolon_list_models. Omit to use the UI checkpoint. Training uses this model regardless of the saved image-generation backend." },
-                    ["steps"] = new JsonObject { ["type"] = "integer", ["minimum"] = TrainingPreset.MinimumSteps, ["maximum"] = TrainingPreset.MaximumSteps, ["default"] = TrainingPreset.MaxSteps },
+                    ["resume_lora_id"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 128, ["description"] = "Optional existing local LoRA ID from eidolon_list_models. Must match the checkpoint family and local runtime. Loads its weights and rank for additional training on the supplied images. Previous images are not automatically included; optimizer and schedule start fresh. Output is a new LoRA. Omit to start new training; UI continuation selection is ignored." },
+                    ["steps"] = new JsonObject { ["type"] = "integer", ["minimum"] = TrainingPreset.MinimumSteps, ["maximum"] = TrainingPreset.MaximumSteps, ["default"] = TrainingPreset.MaxSteps, ["description"] = "Training steps for this request. With resume_lora_id, these are additional steps from the existing weights." },
                     ["description"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional fallback training caption in English using detailed comma-separated tags or short tag phrases. Translate the user's description into English. Existing sibling .txt captions and Eidolon image metadata are used first. Omit to use those captions or the descriptive filename." },
                     ["white_images"] = new JsonObject
                     {
@@ -228,9 +229,33 @@ namespace Eidolon.App.Mcp
                     {
                         throw new StudioException(StudioMessageCode.LocalTrainingRuntimeRequired);
                     }
+                    ModelAsset resumeLora = null;
+                    if (arguments["resume_lora_id"] != null)
+                    {
+                        string resumeLoraId = arguments["resume_lora_id"].GetValue<string>();
+                        AssetItem selectedResumeLora = _assets.Library.FirstOrDefault(item => item.Asset.Id == resumeLoraId);
+                        if (selectedResumeLora == null)
+                        {
+                            throw new ArgumentException("resume_lora_id must identify an available local LoRA from eidolon_list_models.");
+                        }
+                        if (selectedResumeLora.Asset.Kind != AssetKind.Lora)
+                        {
+                            throw new ArgumentException("resume_lora_id must identify a LoRA, not a checkpoint.");
+                        }
+                        if (selectedResumeLora.Asset.Family != selectedModel.Asset.Family)
+                        {
+                            throw new StudioException(StudioMessageCode.ModelFamilyMismatch);
+                        }
+                        if (string.Equals(selectedResumeLora.Asset.RuntimeRoot, selectedModel.Asset.RuntimeRoot, StringComparison.OrdinalIgnoreCase) == false)
+                        {
+                            throw new ArgumentException("resume_lora_id must use the same local runtime as the training checkpoint.");
+                        }
+                        resumeLora = selectedResumeLora.Asset.Copy();
+                    }
                     TrainingInput input = new TrainingInput
                     {
                         Model = selectedModel.Asset.Copy(),
+                        ResumeLora = resumeLora,
                         Images = images,
                         Name = name,
                         TriggerWord = triggerWord,
@@ -239,7 +264,7 @@ namespace Eidolon.App.Mcp
                     };
                     token.ThrowIfCancellationRequested();
                     _training.EnqueueTraining(settings, input);
-                    return new JsonObject
+                    JsonObject result = new JsonObject
                     {
                         ["accepted"] = true,
                         ["name"] = input.Name,
@@ -248,6 +273,11 @@ namespace Eidolon.App.Mcp
                         ["steps"] = input.Steps,
                         ["image_count"] = input.Images.Count
                     };
+                    if (input.ResumeLora != null)
+                    {
+                        result["resume_lora_id"] = input.ResumeLora.Id;
+                    }
+                    return result;
                 }, token).ConfigureAwait(false);
             }
             catch (Exception error) when (error is StudioException || error is IOException || error is UnauthorizedAccessException)
@@ -356,7 +386,9 @@ namespace Eidolon.App.Mcp
                         ["name"] = asset.Name,
                         ["kind"] = asset.Kind.ToString(),
                         ["family"] = asset.Family.ToString(),
-                        ["trigger"] = asset.TriggerWord
+                        ["trigger"] = asset.TriggerWord,
+                        ["engine_name"] = asset.EngineName,
+                        ["prompt_guidance"] = GetModelPromptGuidance(asset)
                     });
                 }
                 string selected = string.Empty;
@@ -364,16 +396,70 @@ namespace Eidolon.App.Mcp
                 {
                     selected = _assets.SelectedModel.Asset.Id;
                 }
-                return new JsonObject { ["assets"] = models, ["selected_model_id"] = selected };
+                return new JsonObject { ["assets"] = models, ["selected_model_id"] = selected, ["generation_backend"] = _session.Settings.GenerationBackend.ToString() };
             }, token);
+        }
+
+        private string GetModelPromptGuidance(ModelAsset model)
+        {
+            if (model == null)
+            {
+                return "No ComfyUI checkpoint is selected. Read eidolon_list_models and choose a checkpoint before using model-specific tags.";
+            }
+            if (model.Kind != AssetKind.Checkpoint)
+            {
+                return "This is an adapter, not a checkpoint. For generation, follow the target checkpoint's prompt_guidance. The service adds registered LoRA trigger words automatically; do not duplicate them.";
+            }
+            string fileName = Path.GetFileName(model.EngineName);
+            if (model.Family == ModelFamily.Sdxl)
+            {
+                if (fileName.Equals("Illustrious-XL-v0.1.safetensors", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return "Filename-matched guidance for Illustrious XL v0.1: prefer detailed comma-separated Danbooru-style English tags; short natural-language phrases can clarify relationships. Suggested organization, not a guaranteed weighting order: optional supported quality tags, subject/count/identity, one consistent framing/viewpoint and pose, appearance/clothing, background/lighting, requested style. Supported quality examples include best quality and masterpiece; relevant negatives include worst quality, bad quality and lowres. Avoid conflicting composition tags. Do not assume score_9, score_8_up, rating_safe or source_anime are supported defaults. Add character or artist names only when requested. Other Illustrious versions and derivatives need their own guidance. Source: https://huggingface.co/OnomaAIResearch/Illustrious-xl-early-release-v0";
+                }
+                if (fileName.Equals("RealVisXL_V4.0.safetensors", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return "Filename-matched guidance for RealVisXL 4.0: the model targets photorealism. When photography is requested, use comma-separated descriptive English phrases for subject/action, framing, materials, lighting and setting; preserve the user's requested style. For relevant human portraits, the model card suggests face asymmetry, eyes asymmetry and deformed eyes as possible negative terms. Do not suppress an open mouth when it is requested. No universal Danbooru, score_9, rating_* or source_* prefix is prescribed. These photographic phrasing suggestions are an application recommendation based on the model's stated focus. Source: https://huggingface.co/SG161222/RealVisXL_V4.0";
+                }
+                if (fileName.Equals("sd_xl_base_1.0.safetensors", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return "Filename-matched guidance for SDXL Base 1.0: the model card uses natural-language descriptions. Use detailed comma-separated English phrases describing the subject and action, spatial relationships, composition, style, materials, lighting and background. State relationships clearly instead of listing disconnected nouns. Do not assume Danbooru quality, score_9, rating_* or source_* tags are required because the family is SDXL. Put only relevant unwanted features in negative_prompt. Source: https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0";
+                }
+            }
+            if (model.Family == ModelFamily.StableDiffusion15)
+            {
+                if (fileName.Equals("v1-5-pruned-emaonly.safetensors", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return "Filename-matched guidance for Stable Diffusion 1.5 base: use focused English descriptive phrases, separated by commas, with the main subject/action first and relevant composition, style, lighting and background details. This is a practical organization based on the model card's English-caption and natural-language examples, not a guaranteed tag weighting rule. Do not inherit anime-finetune or Pony-style quality, rating or source tags from the SD1.5 family alone. Put relevant unwanted features in negative_prompt. Source: https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5";
+                }
+            }
+            return "No checkpoint-specific prompt guidance is registered for this filename and family. Consult the exact checkpoint's model card; do not infer its training vocabulary from an editable display name, a filename substring, SDXL/SD1.5 compatibility or another version. Until confirmed, use detailed comma-separated English descriptive phrases and relevant negatives without inventing score, rating, source or mandatory quality prefixes. Treat ordering as organization advice, not guaranteed priority.";
         }
 
         private async Task<McpToolResult> GetInstructionsAsync(JsonObject arguments, CancellationToken token)
         {
-            return await OnUiAsync(() => new JsonObject
+            return await OnUiAsync(() =>
             {
-                ["positive_prompt"] = _session.Settings.PositivePrompt,
-                ["negative_prompt"] = _session.Settings.NegativePrompt
+                string selected = string.Empty;
+                string guidance = "The saved backend is Codex. ComfyUI checkpoint families, Danbooru quality prefixes and local LoRA selection do not apply to this backend. Use detailed comma-separated English descriptive phrases expressing the requested content, relationships, style and constraints, and preserve the saved instructions unless a request-only override is needed.";
+                if (_session.Settings.GenerationBackend == GenerationBackend.ComfyUI)
+                {
+                    ModelAsset model = null;
+                    if (_assets.SelectedModel != null)
+                    {
+                        model = _assets.SelectedModel.Asset;
+                        selected = model.Id;
+                    }
+                    guidance = GetModelPromptGuidance(model);
+                }
+                return new JsonObject
+                {
+                    ["positive_prompt"] = _session.Settings.PositivePrompt,
+                    ["negative_prompt"] = _session.Settings.NegativePrompt,
+                    ["generation_backend"] = _session.Settings.GenerationBackend.ToString(),
+                    ["selected_model_id"] = selected,
+                    ["prompt_guidance"] = guidance
+                };
             }, token);
         }
 
@@ -627,7 +713,7 @@ namespace Eidolon.App.Mcp
             JsonObject schema = ImageSchema(false);
             JsonObject properties = schema["properties"].AsObject();
             schema["required"] = new JsonArray("reference_path");
-            properties["prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional English-only subject description as detailed comma-separated tags or short tag phrases for appearance, proportions, materials, textures, colors, style, lighting and background. Translate the user's request into English. Omit to use the reference subject without an additional description." };
+            properties["prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional English-only subject description as detailed comma-separated tags or short tag phrases for appearance, proportions, materials, textures, colors, style, lighting and background. Translate the user's request into English. For ComfyUI, use the target checkpoint prompt_guidance from eidolon_list_models; read the backend and saved instruction prefixes with eidolon_get_instructions first. Omit to use the reference subject without an additional description." };
             properties["frame_size"] = new JsonObject { ["type"] = "integer", ["minimum"] = 16, ["maximum"] = AssetCreationInput.MaximumFrameSize };
             properties["columns"] = new JsonObject { ["type"] = "integer", ["minimum"] = 1, ["maximum"] = AssetCreationInput.MaximumFrames };
             properties["pixel_art"] = new JsonObject { ["type"] = "boolean" };
@@ -653,7 +739,7 @@ namespace Eidolon.App.Mcp
             JsonObject schema = CollectionSchema();
             JsonObject properties = schema["properties"].AsObject();
             properties["frame_number"] = new JsonObject { ["type"] = "integer", ["minimum"] = 1, ["maximum"] = AssetCreationInput.MaximumFrames };
-            properties["prompt"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 16000, ["description"] = "Required English-only replacement description as detailed comma-separated tags or short tag phrases for the subject, appearance, pose, limb positions, facing direction, camera angle, viewpoint, style, materials, colors, lighting and background. Translate the user's request into English before calling." };
+            properties["prompt"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 16000, ["description"] = "Required English-only replacement description as detailed comma-separated tags or short tag phrases for the subject, appearance, pose, limb positions, facing direction, camera angle, viewpoint, style, materials, colors, lighting and background. Translate the user's request into English before calling. Use the captured collection checkpoint's prompt_guidance, not a different selected UI checkpoint's guidance." };
             properties["seed"] = new JsonObject { ["type"] = "integer", ["minimum"] = 0, ["maximum"] = long.MaxValue };
             schema["required"].AsArray().Add("frame_number");
             schema["required"].AsArray().Add("prompt");

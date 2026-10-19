@@ -12,6 +12,7 @@ namespace Eidolon.App.ViewModels
     {
         private readonly AssetLibrary _assets;
         private readonly ComfyEngine _engine;
+        private int _assetLoadRequest;
         private string _loraSearch = string.Empty;
         private AssetItem _selectedModel;
         private AssetItem _selectedAsset;
@@ -501,12 +502,18 @@ namespace Eidolon.App.ViewModels
             });
         }
 
-        private async Task UpdateAssetAsync(CancellationToken token)
+        private Task UpdateAssetAsync()
         {
-            token.ThrowIfCancellationRequested();
-            await _assets.UpdateAsync(SelectedAsset.Asset, SelectedFamily.Value, AssetTrigger);
-            await RefreshAssetsAsync();
-            Session.Status = _strings.GetString("EidolonText239");
+            ModelAsset asset = SelectedAsset.Asset.Copy();
+            ModelFamily family = SelectedFamily.Value;
+            string trigger = AssetTrigger;
+            return Session.WorkAsync(async token =>
+            {
+                token.ThrowIfCancellationRequested();
+                await _assets.UpdateAsync(asset, family, trigger);
+                await RefreshAssetsAsync();
+                Session.Status = _strings.GetString("EidolonText239");
+            });
         }
 
         public bool CanDeleteSelectedAsset
@@ -551,11 +558,49 @@ namespace Eidolon.App.ViewModels
 
         internal async Task RefreshAssetsAsync()
         {
-            List<ModelAsset> assets = await _assets.ListAsync(Session.CreateActiveSettings(Session.Settings));
+            int request = ++_assetLoadRequest;
+            DesktopSettings settings = Session.CreateActiveSettings(Session.Settings);
+            List<ModelAsset> assets;
+            try
+            {
+                assets = await _assets.ListAsync(settings);
+            }
+            catch
+            {
+                if (Session.IsClosing == true)
+                {
+                    return;
+                }
+                if (request != _assetLoadRequest)
+                {
+                    return;
+                }
+                throw;
+            }
+            if (Session.IsClosing == true)
+            {
+                return;
+            }
+            if (request != _assetLoadRequest)
+            {
+                return;
+            }
             string selectedAssetId = string.Empty;
+            string assetTrigger = AssetTrigger;
+            ModelFamily selectedFamily = ModelFamily.Unknown;
+            if (SelectedFamily != null)
+            {
+                selectedFamily = SelectedFamily.Value;
+            }
+            bool hasAssetDraft = false;
             if (SelectedAsset != null)
             {
                 selectedAssetId = SelectedAsset.Asset.Id;
+                hasAssetDraft = AssetTrigger != SelectedAsset.Asset.TriggerWord;
+                if (selectedFamily != SelectedAsset.Asset.Family)
+                {
+                    hasAssetDraft = true;
+                }
             }
             string selectedId = string.Empty;
             if (SelectedModel != null)
@@ -579,7 +624,7 @@ namespace Eidolon.App.ViewModels
                     Models.Add(item);
                 }
             }
-            bool localAssets = ComfyServerAddress.UsesServerAssets(Session.CreateActiveSettings(Session.Settings)) == false;
+            bool localAssets = ComfyServerAddress.UsesServerAssets(settings) == false;
             foreach (ModelDownloadItem item in DownloadableModels)
             {
                 item.IsInstalled = localAssets == true && assets.Any(asset => asset.Kind == AssetKind.Checkpoint
@@ -588,6 +633,18 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(HasAvailableModels));
             SelectedAsset = Library.FirstOrDefault(item => item.Asset.Id == selectedAssetId);
             RefreshAvailableFamilies();
+            if (hasAssetDraft == true)
+            {
+                if (SelectedAsset != null)
+                {
+                    AssetTrigger = assetTrigger;
+                    FamilyChoice family = AvailableFamilies.FirstOrDefault(item => item.Value == selectedFamily);
+                    if (family != null)
+                    {
+                        SelectedFamily = family;
+                    }
+                }
+            }
             SelectedModel = Models.FirstOrDefault(item => item.Asset.Id == selectedId);
             if (SelectedModel == null)
             {
@@ -725,7 +782,14 @@ namespace Eidolon.App.ViewModels
             OpenModelDirectoryCommand = Command(() => _dialogs.OpenFolderAsync(ModelDirectory), () => CanOpenModelDirectories);
             OpenLoraDirectoryCommand = Command(() => _dialogs.OpenFolderAsync(LoraDirectory), () => CanOpenModelDirectories);
             ScanCommand = Command(() => Session.WorkAsync(ScanAssetsAsync));
-            UpdateAssetCommand = Command(() => Session.WorkAsync(UpdateAssetAsync), () => Session.IsIdle == true && SelectedAsset != null);
+            UpdateAssetCommand = Command(UpdateAssetAsync, () =>
+            {
+                if (Session.IsIdle == false)
+                {
+                    return false;
+                }
+                return SelectedAsset != null;
+            });
             DeleteAssetCommand = Command(DeleteSelectedAssetAsync, () => CanDeleteSelectedAsset);
         }
 

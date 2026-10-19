@@ -113,5 +113,6 @@ namespace Eidolon.App
         {
             LogHelper.Error(arguments.Exception);
         }
+
     }
 }

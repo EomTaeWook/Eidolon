@@ -479,7 +479,7 @@ namespace Eidolon.App.ViewModels
             {
                 return;
             }
-            Navigation.SelectedSettingsTab = 0;
+            Navigation.SelectedSettingsTab = 3;
             Navigation.SelectedTab = 4;
             if (_failure != null)
             {

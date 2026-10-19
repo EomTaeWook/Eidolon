@@ -53,6 +53,36 @@ namespace Eidolon.Core.Infrastructure
                 Add("8", "LoadImage", new JsonObject { ["image"] = referenceImage });
                 Add("4", "VAEEncode", new JsonObject { ["pixels"] = Link("8", 0), ["vae"] = Link("1", 2) });
             }
+            string positiveNode = "2";
+            string negativeNode = "3";
+            int negativeSlot = 0;
+            if (job.ReferenceMode == GenerationReferenceMode.Restyle)
+            {
+                if (string.IsNullOrWhiteSpace(job.OutlineControlModel) == true)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                }
+                if (job.OutlineControlStrength <= 0)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                }
+                Add("9", "Canny", new JsonObject { ["image"] = Link("8", 0), ["low_threshold"] = 0.4, ["high_threshold"] = 0.8 });
+                Add("10", "ControlNetLoader", new JsonObject { ["control_net_name"] = job.OutlineControlModel });
+                Add("11", "ControlNetApplyAdvanced", new JsonObject
+                {
+                    ["positive"] = Link("2", 0),
+                    ["negative"] = Link("3", 0),
+                    ["control_net"] = Link("10", 0),
+                    ["image"] = Link("9", 0),
+                    ["vae"] = Link("1", 2),
+                    ["strength"] = job.OutlineControlStrength,
+                    ["start_percent"] = 0.0,
+                    ["end_percent"] = 1.0
+                });
+                positiveNode = "11";
+                negativeNode = "11";
+                negativeSlot = 1;
+            }
             Add("5", "KSampler", new JsonObject
             {
                 ["model"] = Link(modelNode, 0),
@@ -61,8 +91,8 @@ namespace Eidolon.Core.Infrastructure
                 ["cfg"] = job.Guidance,
                 ["sampler_name"] = job.Sampler,
                 ["scheduler"] = job.Scheduler,
-                ["positive"] = Link("2", 0),
-                ["negative"] = Link("3", 0),
+                ["positive"] = Link(positiveNode, 0),
+                ["negative"] = Link(negativeNode, negativeSlot),
                 ["latent_image"] = Link("4", 0),
                 ["denoise"] = job.Denoise
             });

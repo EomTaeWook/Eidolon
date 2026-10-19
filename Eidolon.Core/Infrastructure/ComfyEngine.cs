@@ -160,6 +160,11 @@ namespace Eidolon.Core.Infrastructure
             IProgress<WorkProgress> progress, CancellationToken cancellationToken)
         {
             await EnsureReadyAsync(settings, progress, cancellationToken).ConfigureAwait(false);
+            if (job.ReferenceMode == GenerationReferenceMode.Restyle)
+            {
+                job.OutlineControlModel = await PrepareOutlineControlAsync(settings, job.Model.Family, progress, cancellationToken).ConfigureAwait(false);
+                jobs.Save(job);
+            }
             string referenceImage = string.Empty;
             if (job.ReferenceMode != GenerationReferenceMode.None)
             {
@@ -465,6 +470,53 @@ namespace Eidolon.Core.Infrastructure
             await assets.SynchronizeExternalAsync(settings, checkpoints, loras, token).ConfigureAwait(false);
         }
 
+        private async Task<string> PrepareOutlineControlAsync(StudioSettings settings, ModelFamily family, IProgress<WorkProgress> progress, CancellationToken cancellationToken)
+        {
+            ModelDownload controlModel;
+            switch (family)
+            {
+                case ModelFamily.Sdxl:
+                    controlModel = new ModelDownload("SDXL Canny Control-LoRA", family, "stabilityai/control-lora", "75590eb0e7868d3d0f1581b5126d487b33c7fdb4", "control-LoRAs-rank256/control-lora-canny-rank256.safetensors", 774450192, "21f79f7368eff07f57bcd507ca91c0fc89070d7da182960ff24ed1d58310c3a7", "https://huggingface.co/stabilityai/control-lora/resolve/75590eb0e7868d3d0f1581b5126d487b33c7fdb4/LICENSE.MD", "License-ControlLoRA-SDXL.md");
+                    break;
+                case ModelFamily.StableDiffusion15:
+                    controlModel = new ModelDownload("SD 1.5 Canny ControlNet", family, "comfyanonymous/ControlNet-v1-1_fp16_safetensors", "ab830a51c5c573a5b85bfdbaa3ae0ab7e1baf5f7", "control_v11p_sd15_canny_fp16.safetensors", 722601100, "8932b66e15aae835b3490dbf989f56c253104cee08a88bf21283762f557c9f10", "https://huggingface.co/spaces/CompVis/stable-diffusion-license/resolve/14d42d09bffd871b1666a084fc954a50cff72ac0/license.txt", "License-ControlNet-SD15.txt");
+                    break;
+                default:
+                    throw new StudioException(StudioMessageCode.UnsupportedGenerationFamily);
+            }
+            foreach (string nodeName in new[] { "Canny", "ControlNetLoader", "ControlNetApplyAdvanced" })
+            {
+                JsonObject definition;
+                try
+                {
+                    definition = await GetAsync(settings, "object_info/" + nodeName, cancellationToken).ConfigureAwait(false);
+                }
+                catch (HttpRequestException error) when (error.StatusCode == HttpStatusCode.NotFound)
+                {
+                    throw new StudioException(StudioMessageCode.OutlineControlNodeRequired, error, nodeName);
+                }
+                if (definition[nodeName] == null)
+                {
+                    throw new StudioException(StudioMessageCode.OutlineControlNodeRequired, nodeName);
+                }
+            }
+            string modelFileName = Path.GetFileName(controlModel.FileName);
+            if (Connection.UsesLocalAssets == true)
+            {
+                RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+                progress.Report(new WorkProgress(StudioMessageCode.PreparingOutlineControl, 0, true, controlModel.Name));
+                await _downloader.DownloadAsync(controlModel.DownloadUrl, Path.Combine(layout.ControlNetsDirectory, modelFileName), controlModel.Sha256, progress, cancellationToken).ConfigureAwait(false);
+                await _downloader.DownloadAsync(controlModel.LicenseUrl, Path.Combine(layout.ControlNetsDirectory, controlModel.LicenseFileName), string.Empty, progress, cancellationToken).ConfigureAwait(false);
+                await _downloader.DownloadAsync(controlModel.ModelCardUrl, Path.Combine(layout.ControlNetsDirectory, modelFileName + ".md"), string.Empty, progress, cancellationToken).ConfigureAwait(false);
+            }
+            List<string> modelNames = await GetModelNamesAsync(settings, "controlnet", cancellationToken).ConfigureAwait(false);
+            if (modelNames.Contains(modelFileName, StringComparer.OrdinalIgnoreCase) == false)
+            {
+                throw new StudioException(StudioMessageCode.OutlineControlModelRequired, modelFileName);
+            }
+            return modelNames.First(name => name.Equals(modelFileName, StringComparison.OrdinalIgnoreCase));
+        }
+
         private async Task<List<string>> GetModelNamesAsync(StudioSettings settings, string folder, CancellationToken token)
         {
             using HttpResponseMessage response = await _http.GetAsync(Address(settings, "models/" + folder), token).ConfigureAwait(false);
@@ -476,6 +528,11 @@ namespace Eidolon.Core.Infrastructure
                 {
                     node = "LoraLoader";
                     field = "lora_name";
+                }
+                if (folder == "controlnet")
+                {
+                    node = "ControlNetLoader";
+                    field = "control_net_name";
                 }
                 JsonObject definition = await GetAsync(settings, "object_info/" + node, token).ConfigureAwait(false);
                 JsonArray alternatives = definition[node]["input"]["required"][field][0].AsArray();

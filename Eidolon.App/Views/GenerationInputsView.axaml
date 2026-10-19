@@ -16,15 +16,20 @@
     <StackPanel Spacing="12">
       <StackPanel Spacing="8" IsEnabled="{Binding Session.CanEditGenerationInputs}" IsVisible="{Binding Navigation.IsGenerationView}">
         <TextBlock Text="{DynamicResource EidolonText112}" FontSize="14" FontWeight="SemiBold" />
-        <TextBox Text="{Binding Prompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80" MaxHeight="140" PlaceholderText="{DynamicResource EidolonText114}" />
+        <TextBox Text="{Binding Prompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="80" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="{DynamicResource EidolonText114}" />
       </StackPanel>
       <views:EditingInputsView IsVisible="{Binding Navigation.IsEditingView}" />
-        <Button Classes="primary" Command="{Binding GenerationSubmitCommand}" MinWidth="140" MinHeight="42" CornerRadius="6" FontSize="14" HorizontalAlignment="Right" ToolTip.Tip="{DynamicResource EidolonText248}">
+      <Grid ColumnDefinitions="*,Auto" MinHeight="42">
+        <Border IsVisible="{Binding Navigation.IsEditingView}" Margin="0,0,16,0" VerticalAlignment="Center">
+          <TextBlock Text="{DynamicResource EidolonText459}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding !HasReferenceImage}" />
+        </Border>
+        <Button Grid.Column="1" Classes="primary" Command="{Binding GenerationSubmitCommand}" Width="160" Height="42" CornerRadius="6" FontSize="14" HorizontalAlignment="Right" HorizontalContentAlignment="Center" ToolTip.Tip="{DynamicResource EidolonText248}">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <Path Data="{StaticResource EidolonIconPlay}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
             <TextBlock Text="{Binding GenerationActionCaption}" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
+      </Grid>
       <SelectableTextBlock Text="{Binding QueuedGenerationSeedCaption}" IsVisible="{Binding HasQueuedGenerationSeed}" Foreground="{DynamicResource MutedBrush}" FontSize="11" TextWrapping="Wrap" />
       <views:PendingWorkView DataContext="{Binding Session}" />
     </StackPanel>

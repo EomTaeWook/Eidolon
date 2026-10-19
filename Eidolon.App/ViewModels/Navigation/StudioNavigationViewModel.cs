@@ -167,7 +167,7 @@ namespace Eidolon.App.ViewModels
 
         internal Task OpenModelsAsync()
         {
-            SelectedEnvironmentTab = 1;
+            SelectedEnvironmentTab = 2;
             return NavigateAsync(3);
         }
 

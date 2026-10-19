@@ -65,10 +65,10 @@ Sprites and four views are reference-based drafts. Review generated motion, appe
 ### Run the release
 
 1. Save the Windows x64 executable from Releases and run it.
-2. Open **Generation environment > Generation method and guidelines**, then choose ComfyUI or Codex.
+2. Open **Generation environment > Generation methods**, then choose ComfyUI or Codex.
 3. For Codex, sign in to your installed Codex. Choose an execution model from the retrieved list; Default model uses the CLI default. Select `codex.exe` if the app cannot locate it.
 4. For ComfyUI, prepare the engine in **Settings > Engine setup and connection**. Install a model in **Generation environment > Models and LoRAs**, or put `.safetensors` files in Model folder or LoRA folder and refresh.
-5. Set shared guidelines and exclusions, save the generation environment, and submit a description in **Generate**.
+5. Open **Generation environment > Shared generation instructions**, set guidelines, exclusions and presets, save the generation environment, and submit a description in **Generate**.
 
 Settings and job data are stored under `%LOCALAPPDATA%\Eidolon`. Replacing the executable for an update preserves this data.
 
@@ -92,7 +92,7 @@ dotnet run --project Eidolon.App/Eidolon.App.csproj
 
 ## MCP
 
-Enable the server in **Settings > General > MCP connection** and register `http://127.0.0.1:8190/mcp` with your client. Generation, editing, results, asset creation, and LoRA training use the same job queue as the UI. Training accepts absolute image or folder paths for white and black backgrounds directly and trains both groups into one LoRA. Per-request guidelines leave saved settings unchanged. See [MCP usage](Docs/Mcp.md) for examples and connection details.
+The MCP server starts automatically after app initialization. Register `http://127.0.0.1:8190/mcp` with your client. View the server status or manually stop and start it in **Settings > MCP connection**. Generation, editing, results, asset creation, and LoRA training use the same job queue as the UI. Training accepts absolute image or folder paths for white and black backgrounds directly and trains both groups into one LoRA. Per-request guidelines leave saved settings unchanged. See [MCP usage](Docs/Mcp.md) for examples and connection details.
 
 ## Technology
 

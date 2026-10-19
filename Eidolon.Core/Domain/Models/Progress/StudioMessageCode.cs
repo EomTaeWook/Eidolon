@@ -140,6 +140,9 @@ namespace Eidolon.Core.Domain
         AssetCreationFailed,
         AssetExportIncomplete,
         AssetSheetTooLarge,
-        InvalidGenerationMetadata
+        InvalidGenerationMetadata,
+        PreparingOutlineControl,
+        OutlineControlModelRequired,
+        OutlineControlNodeRequired
     }
 }

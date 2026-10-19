@@ -12,7 +12,7 @@
       <Setter Property="FontSize" Value="13" />
     </Style>
   </UserControl.Styles>
-  <Grid RowDefinitions="Auto,Auto,*" Margin="0,20,0,0">
+  <Grid RowDefinitions="Auto,Auto,*">
     <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="20,16" Margin="0,0,12,20">
       <Grid ColumnDefinitions="Auto,28,*,Auto">
         <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
@@ -24,7 +24,7 @@
           <Path Data="{StaticResource EidolonIconLibrary}" Width="15" Height="15" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.7" />
           <TextBlock Text="{Binding Assets.ModelSetupCaption}" FontSize="13" VerticalAlignment="Center" />
         </StackPanel>
-        <Button Grid.Column="3" Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" IsVisible="{Binding !Assets.NeedsModelSetup}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource AccentBrush}" Padding="10,6" />
+        <Button Grid.Column="3" Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" IsVisible="{Binding !Assets.NeedsModelSetup}" Padding="10,6" />
       </Grid>
     </Border>
     <Border Grid.Row="1" Background="{DynamicResource BadgeBrush}" CornerRadius="12" Padding="20" Margin="0,0,12,20" IsVisible="{Binding Assets.NeedsModelSetup}">

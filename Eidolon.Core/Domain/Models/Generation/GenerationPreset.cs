@@ -5,6 +5,7 @@ namespace Eidolon.Core.Domain
         public int Resolution { get; private set; }
         public int Steps { get; private set; }
         public double Guidance { get; private set; }
+        public double OutlineStrength { get; private set; } = 1.0;
         public string Sampler { get; private set; } = "dpmpp_2m";
         public string Scheduler { get; private set; } = "karras";
 

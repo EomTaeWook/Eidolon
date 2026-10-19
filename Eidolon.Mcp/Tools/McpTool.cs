@@ -55,7 +55,7 @@ namespace Eidolon.Mcp
         {
             token.ThrowIfCancellationRequested();
             McpToolSchema.ValidateArguments(_definition.InputSchema, arguments, "arguments");
-            McpToolResult result = await Task.Run(() => _execute(arguments, token), token).WaitAsync(token).ConfigureAwait(false);
+            McpToolResult result = await Task.Run(() => _execute(arguments, token), token).ConfigureAwait(false);
             if (result == null)
             {
                 throw new InvalidOperationException("The MCP tool returned no result: " + Name);

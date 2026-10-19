@@ -66,7 +66,7 @@
                   </ComboBox.ItemTemplate>
                 </ComboBox>
                 <Button Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" IsVisible="{Binding !Assets.HasAvailableModels}" ToolTip.Tip="{Binding Assets.ModelSetupHint}" />
-                <DropDownButton Width="220" MinHeight="40" Padding="12,8" CornerRadius="6" Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" HorizontalContentAlignment="Stretch" IsEnabled="{Binding Session.CanEditGenerationInputs}" ToolTip.Tip="{Binding Assets.SelectedLoraNames}" AutomationProperties.Name="{DynamicResource EidolonText423}">
+                <DropDownButton Width="220" MinHeight="40" Padding="12,8" CornerRadius="6" HorizontalContentAlignment="Stretch" IsEnabled="{Binding Session.CanEditGenerationInputs}" ToolTip.Tip="{Binding Assets.SelectedLoraNames}" AutomationProperties.Name="{DynamicResource EidolonText423}">
                   <Grid>
                     <TextBlock Text="{DynamicResource EidolonText423}" IsVisible="{Binding !Assets.HasSelectedLoras}" FontSize="13" />
                     <TextBlock Text="{Binding Assets.SelectedLoraNames}" IsVisible="{Binding Assets.HasSelectedLoras}" TextTrimming="CharacterEllipsis" FontSize="13" />
@@ -138,7 +138,7 @@
           <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" ClipToBounds="True">
             <views:GenerationPreviewView DataContext="{Binding Gallery}" />
           </Border>
-          <views:GenerationInputsView Grid.Row="4" DataContext="{Binding Generation}" MaxWidth="960" HorizontalAlignment="Stretch" />
+          <views:GenerationInputsView Grid.Row="4" DataContext="{Binding Generation}" HorizontalAlignment="Stretch" />
           <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="16" DataContext="{Binding Generation}" x:DataType="vm:GenerationViewModel">
             <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
               <StackPanel Spacing="20" IsEnabled="{Binding Session.CanEditGenerationInputs}">

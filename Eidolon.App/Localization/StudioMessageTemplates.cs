@@ -8,6 +8,12 @@ namespace Eidolon.App.Localization
         {
             switch (code)
             {
+                case StudioMessageCode.PreparingOutlineControl:
+                    return "EidolonText699";
+                case StudioMessageCode.OutlineControlModelRequired:
+                    return "EidolonText700";
+                case StudioMessageCode.OutlineControlNodeRequired:
+                    return "EidolonText701";
                 case StudioMessageCode.CodexExecutableNotFound:
                     return "EidolonText534";
                 case StudioMessageCode.CodexGenerating:

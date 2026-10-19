@@ -4,33 +4,8 @@
       <Setter Property="Padding" Value="12,8" />
       <Setter Property="FontSize" Value="13" />
     </Style>
-    <Style Selector="ListBox.assetLibrary ListBoxItem">
-      <Setter Property="Padding" Value="16" />
-      <Setter Property="Margin" Value="0,0,0,8" />
-      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-      <Setter Property="VerticalContentAlignment" Value="Top" />
-      <Setter Property="VerticalAlignment" Value="Top" />
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Template">
-        <ControlTemplate>
-          <Border Name="CardBorder" Background="{DynamicResource WindowBrush}" BorderBrush="Transparent" BorderThickness="1" CornerRadius="12" Padding="{TemplateBinding Padding}">
-            <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Background="Transparent" Foreground="{DynamicResource TextBrush}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
-          </Border>
-        </ControlTemplate>
-      </Setter>
-    </Style>
-    <Style Selector="ListBox.assetLibrary ListBoxItem:pointerover /template/ Border#CardBorder">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
-    </Style>
-    <Style Selector="ListBox.assetLibrary ListBoxItem:selected /template/ Border#CardBorder">
-      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-    </Style>
-    <Style Selector="ListBox.assetLibrary ListBoxItem:focus-visible /template/ Border#CardBorder">
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-    </Style>
   </UserControl.Styles>
-  <ScrollViewer Margin="0,20,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,16">
     <StackPanel Spacing="20" MaxWidth="1000" HorizontalAlignment="Stretch">
       <Grid ColumnDefinitions="*,Auto" Margin="4,0,4,0">
         <StackPanel Spacing="5" Margin="0,0,20,0">
@@ -70,6 +45,39 @@
           </Grid>
           <TextBlock Text="{DynamicResource EidolonText418}" Classes="muted" FontSize="13" IsVisible="{Binding !HasLibrary}" MinHeight="48" VerticalAlignment="Center" />
           <ListBox Classes="assetLibrary" ItemsSource="{Binding Library}" SelectedItem="{Binding SelectedAsset, Mode=TwoWay}" Background="Transparent" BorderThickness="0" IsVisible="{Binding HasLibrary}" MaxHeight="260" VerticalAlignment="Top" ScrollViewer.AllowAutoHide="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemContainerTheme>
+              <ControlTheme TargetType="ListBoxItem">
+                <Setter Property="Padding" Value="16" />
+                <Setter Property="Margin" Value="0,0,0,8" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Top" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+                <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                <Setter Property="Template">
+                  <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="12" Padding="{TemplateBinding Padding}">
+                      <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Background="Transparent" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                  </ControlTemplate>
+                </Setter>
+                <Style Selector="^:pointerover">
+                  <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+                </Style>
+                <Style Selector="^:selected">
+                  <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+                  <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                </Style>
+                <Style Selector="^:selected:pointerover">
+                  <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+                </Style>
+                <Style Selector="^:focus-visible">
+                  <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                </Style>
+              </ControlTheme>
+            </ListBox.ItemContainerTheme>
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="vm:AssetItem">
                 <Grid ColumnDefinitions="40,*" MinHeight="48">
@@ -80,10 +88,10 @@
                     </Grid>
                   </Border>
                   <StackPanel Grid.Column="1" Spacing="6">
-                    <TextBlock Text="{Binding Label}" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Label}" />
+                    <TextBlock Text="{Binding Label}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Label}" />
                     <StackPanel Orientation="Horizontal" Spacing="8">
                       <TextBlock Text="{Binding KindCaption}" Classes="muted" FontSize="12" />
-                      <TextBlock Text="{Binding FamilyCaption}" Foreground="{DynamicResource AccentBrush}" FontSize="12" />
+                      <TextBlock Text="{Binding FamilyCaption}" Classes="muted" FontSize="12" />
                     </StackPanel>
                     <TextBlock Text="{Binding TriggerCaption}" Classes="muted" FontSize="11" IsVisible="{Binding HasTriggerWord}" TextWrapping="Wrap" />
                   </StackPanel>

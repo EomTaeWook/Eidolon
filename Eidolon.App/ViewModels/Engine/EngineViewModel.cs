@@ -278,7 +278,7 @@ namespace Eidolon.App.ViewModels
                 }
                 else
                 {
-                    Navigation.SelectedEnvironmentTab = 1;
+                    Navigation.SelectedEnvironmentTab = 2;
                     Navigation.SelectedTab = 3;
                 }
             }

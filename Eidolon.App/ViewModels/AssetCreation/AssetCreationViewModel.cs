@@ -57,6 +57,7 @@ namespace Eidolon.App.ViewModels
             ReplaceCommand = Command(ReplaceAsync, () => Preview.CanEditSelection == true && Preview.SelectedFrame != null);
             CancelCommand = Command(_work.CancelCurrentAsync, () => _running == true && Session.IsClosing == false);
             Localize();
+            KindIndex = 1;
         }
 
         public AssetsViewModel Assets { get; private set; }

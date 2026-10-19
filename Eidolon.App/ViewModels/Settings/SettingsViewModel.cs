@@ -237,7 +237,10 @@ namespace Eidolon.App.ViewModels
             {
                 if (Session.IsClosing == false)
                 {
-                    _codexModelError = _strings.GetExceptionMessage(error);
+                    if (path == CodexExecutablePath.Trim())
+                    {
+                        _codexModelError = _strings.GetExceptionMessage(error);
+                    }
                 }
             }
             finally
@@ -461,22 +464,27 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        private Task SaveSettingsAsync(CancellationToken token)
+        private Task SaveSettingsAsync()
         {
-            token.ThrowIfCancellationRequested();
             DesktopSettings settings = Session.Settings.Copy();
             settings.Theme = Session.SettingsDraft.Theme;
             settings.Language = Session.SettingsDraft.Language;
             settings.GenerationDirectory = GenerationDirectory.Trim();
-            Session.SaveSettings(settings);
-            GenerationDirectory = settings.GenerationDirectory;
-            Session.Status = _strings.GetString("EidolonText235");
-            return Task.CompletedTask;
+            return Session.WorkAsync(token =>
+            {
+                token.ThrowIfCancellationRequested();
+                Session.SaveSettings(settings);
+                if (GenerationDirectory.Trim() == settings.GenerationDirectory)
+                {
+                    GenerationDirectory = settings.GenerationDirectory;
+                }
+                Session.Status = _strings.GetString("EidolonText235");
+                return Task.CompletedTask;
+            });
         }
 
-        private async Task SaveGenerationEnvironmentAsync(CancellationToken token)
+        private Task SaveGenerationEnvironmentAsync()
         {
-            token.ThrowIfCancellationRequested();
             DesktopSettings settings = Session.Settings.Copy();
             settings.GenerationBackend = Session.SettingsDraft.GenerationBackend;
             settings.CodexExecutablePath = CodexExecutablePath.Trim();
@@ -485,14 +493,24 @@ namespace Eidolon.App.ViewModels
             settings.NegativePrompt = Session.SettingsDraft.NegativePrompt;
             settings.PromptPresets = new ObservableCollection<PromptPreset>(Session.SettingsDraft.PromptPresets.Select(preset => preset.Copy()));
             settings.ActivePromptPresetId = Session.SettingsDraft.ActivePromptPresetId;
-            Session.SaveSettings(settings);
-            CodexExecutablePath = settings.CodexExecutablePath;
-            CodexModel = settings.CodexModel;
-            if (settings.GenerationBackend == GenerationBackend.ComfyUI)
+            return Session.WorkAsync(async token =>
             {
-                await Assets.RefreshAssetsAsync();
-            }
-            Session.Status = _strings.GetString("EidolonText235");
+                token.ThrowIfCancellationRequested();
+                Session.SaveSettings(settings);
+                if (CodexExecutablePath.Trim() == settings.CodexExecutablePath)
+                {
+                    CodexExecutablePath = settings.CodexExecutablePath;
+                }
+                if (CodexModel.Trim() == settings.CodexModel)
+                {
+                    CodexModel = settings.CodexModel;
+                }
+                if (settings.GenerationBackend == GenerationBackend.ComfyUI)
+                {
+                    await Assets.RefreshAssetsAsync();
+                }
+                Session.Status = _strings.GetString("EidolonText235");
+            });
         }
 
         internal DesktopSettings CreateEngineSettings()
@@ -549,8 +567,8 @@ namespace Eidolon.App.ViewModels
             PickInstallCommand = Command(PickInstallAsync);
             PickGenerationDirectoryCommand = Command(PickGenerationDirectoryAsync, () => Session.IsClosing == false);
             OpenGenerationDirectoryCommand = Command(OpenGenerationDirectoryAsync, () => Session.IsClosing == false);
-            SaveSettingsCommand = Command(() => Session.WorkAsync(SaveSettingsAsync));
-            SaveGenerationEnvironmentCommand = Command(() => Session.WorkAsync(SaveGenerationEnvironmentAsync));
+            SaveSettingsCommand = Command(SaveSettingsAsync);
+            SaveGenerationEnvironmentCommand = Command(SaveGenerationEnvironmentAsync);
             OpenLogsCommand = Command(() => _dialogs.OpenFolderAsync(Path.Combine(Session.DataDirectory, "Logs")), () => true);
             OpenDataCommand = Command(() => _dialogs.OpenFolderAsync(Session.DataDirectory), () => true);
         }
