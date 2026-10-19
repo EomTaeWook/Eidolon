@@ -1,6 +1,6 @@
 # Eidolon.Mcp
 
-`HttpListener`로 MCP 도구 서버를 제공하는 .NET 10 클래스 라이브러리다. 컨트롤러 생성에는 `Dignus` 1.3.0의 DI를 사용한다. 외부 패키지 제한에서 Dignus는 허용하며 ASP.NET Core, Avalonia와 Eidolon Core/App에 의존하지 않는다. 프로젝트별 기능은 `McpTool`의 실행 핸들러로 등록한다.
+`HttpListener`로 MCP 도구 서버를 제공하는 .NET 10 클래스 라이브러리다. 컨트롤러 생성에는 `Dignus` 1.4.1의 DI를 사용한다. 외부 패키지 제한에서 Dignus는 허용하며 ASP.NET Core, Avalonia와 Eidolon Core/App에 의존하지 않는다. 프로젝트별 기능은 `McpTool`의 실행 핸들러로 등록한다.
 
 ## 사용
 
