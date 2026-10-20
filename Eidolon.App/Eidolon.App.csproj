@@ -3,7 +3,7 @@
     <OutputType>WinExe</OutputType>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <AssemblyName>Eidolon</AssemblyName>
-    <Version>0.1.0-beta.2</Version>
+    <Version>0.1.0-beta.3</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <NoWarn>$(NoWarn);AVLN3001</NoWarn>
