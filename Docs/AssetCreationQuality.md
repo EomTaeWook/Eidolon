@@ -53,7 +53,13 @@
 
 캡처 후 최신 일반 앱을 다시 실행하고 실제 창이 열린 것을 확인했다. 실행 중인 앱의 MCP 조회에서 `initialized=true`, `idle=true`, 대기 요청 0개와 빈 오류를 확인했으며, `eidolon_create_views` 제공과 `eidolon_create_sprite_animation` 제거를 확인했다.
 
-이 검증 뒤 제작 화면의 남은 프레임·동작 문구를 이미지·시점 기준으로 정리하고 Excel 원본에서 JSON·C#을 다시 생성했다. 영어 사용법 안내도 변환 결과가 잘리지 않도록 줄였다. 이 마지막 문구 수정 후에는 추가 빌드·실행·캡처를 수행하지 않았다. 이번 커밋·푸시 작업에서는 실행 파일 생성과 GitHub 릴리스 게시를 수행하지 않는다.
+제작 화면의 남은 프레임·동작 문구를 이미지·시점 기준으로 정리하고 Excel 원본에서 JSON·C#을 다시 생성했다. 영어 사용법 안내도 변환 결과가 잘리지 않도록 줄였다. 후속 릴리즈 점검에서 이 문구를 포함한 Release 빌드·실행·캡처를 수행했다.
+
+언어 전환 시 갤러리 필터의 펼친 항목은 번역되지만 접힌 선택 표시는 이전 언어로 남는 문제를 재현했다. `ResultsView`의 선택 표시 템플릿이 현재 선택 항목의 `Content`를 직접 읽도록 수정했다. 필터를 다시 선택하거나 결과를 다시 조회해 표시를 보정하지 않는다.
+
+전체·일반 이미지·다면도 각각에서 한국어→영어·영어→한국어 전환을 확인했다. 실제 표시되는 문구와 펼친 메뉴의 세 항목이 모두 현재 언어를 따르며, 선택된 필터·묶음·미리보기 이미지와 결과 수를 유지했다. 최소 창 1024×740의 라이트·블랙 화면과 기존 필터 전환·방향 선택도 다시 확인했다. 수정한 앱·캡처 프로그램의 Release 빌드는 경고·오류 0개로 완료했다.
+
+Windows x64 단일 EXE 후보를 기존 배포 프로필로 생성하고, EXE 한 파일만 둔 폴더와 빈 작업 디렉터리에서 실제 실행했다. 창 생성·초기화·엔진 및 MCP 연결·대기 요청 0개·빈 오류와 정상 종료 코드 0을 확인했다. 사용자 모델 삭제나 학습은 수행하지 않았다. 이 결과는 로컬 배포 후보 검증이며 GitHub 릴리스 게시를 뜻하지 않는다.
 
 ## 로컬 결과
 
@@ -62,6 +68,9 @@
 - [생성 결과 화면](../artifacts/quality-tests/20261021/views-results.png)
 - [최소 창 화면](../artifacts/quality-tests/20261021/views-results-minimum.png)
 - [묶음·필터 검사 결과](../artifacts/quality-tests/20261021/gallery-checks.json)
+- [필터 3종의 한국어·영어 전환 검사 결과](../artifacts/quality-tests/20261021/filter-language-check.json)
+- [수정 후 영어·블랙 최소 창](../artifacts/quality-tests/20261021/readiness-results-english-black-minimum.png)
+- [단일 EXE 실행·종료 검사 결과](../artifacts/release-readiness/20261021/standalone-checks.json)
 - 실행 입력·검사 코드: `artifacts/quality-tests/20261021/harness`
 
 이전 2026-10-12 비교 자료는 기존 로컬 폴더에 보존한다. 스프라이트 생성 비교는 현재 제공 기능의 검증 결과로 사용하지 않는다.

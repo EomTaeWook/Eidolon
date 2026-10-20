@@ -63,6 +63,11 @@
         <TextBlock Text="{DynamicResource EidolonText372}" Classes="title" />
         <TextBlock Text="{Binding GalleryCountCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
         <ComboBox SelectedIndex="{Binding GalleryFilterIndex, Mode=TwoWay}" MinWidth="160" MinHeight="38" VerticalAlignment="Center">
+          <ComboBox.SelectionBoxItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{ReflectionBinding $parent[ComboBox].SelectedItem.Content}" />
+            </DataTemplate>
+          </ComboBox.SelectionBoxItemTemplate>
           <ComboBoxItem Content="{DynamicResource EidolonText704}" />
           <ComboBoxItem Content="{DynamicResource EidolonText705}" />
           <ComboBoxItem Content="{DynamicResource EidolonText606}" />
