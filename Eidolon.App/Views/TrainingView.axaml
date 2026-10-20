@@ -1,30 +1,41 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.TrainingView" x:DataType="vm:TrainingViewModel">
   <UserControl.Styles>
     <Style Selector="Button.trainingStep">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
-      <Setter Property="HorizontalContentAlignment" Value="Left" />
-      <Setter Property="Padding" Value="12,14" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="MinHeight" Value="60" />
+      <Setter Property="Padding" Value="14,10" />
       <Setter Property="Margin" Value="0,0,8,0" />
     </Style>
     <Style Selector="Button.trainingStep.current">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Button.trainingStep:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Button.trainingStep:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.trainingStep.current:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.trainingStep.current:pressed /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.trainingStep:disabled">
       <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
@@ -43,13 +54,16 @@
       <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
     </Style>
     <Style Selector="Button.trainingStep Border">
-      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
+    </Style>
+    <Style Selector="Button.trainingStep Border TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
     </Style>
     <Style Selector="Button.trainingStep.current Border">
-      <Setter Property="Background" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.trainingStep.current Border TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
     </Style>
     <Style Selector="Button.trainingStep:disabled Border">
       <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
@@ -60,7 +74,7 @@
     <Style Selector="Button.trainingAdd">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
-      <Setter Property="Height" Value="44" />
+      <Setter Property="MinHeight" Value="40" />
       <Setter Property="Padding" Value="10,6" />
       <Setter Property="FontSize" Value="13" />
     </Style>
@@ -70,14 +84,16 @@
     </Style>
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,Auto,*,Auto" MaxWidth="1080" HorizontalAlignment="Stretch">
-    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,24">
-      <StackPanel Spacing="6">
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+      <StackPanel Spacing="6" Margin="0,0,16,0">
         <TextBlock Text="{DynamicResource EidolonText137}" Classes="title" />
         <TextBlock Text="{DynamicResource EidolonText504}" Classes="muted" FontSize="13" />
       </StackPanel>
-      <TextBlock Grid.Column="1" Text="{Binding Workflow.PositionCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" Margin="20,0,0,0" />
+      <Border Grid.Column="1" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12,6" VerticalAlignment="Top">
+        <TextBlock Text="{Binding Workflow.PositionCaption}" Classes="muted" FontSize="12" />
+      </Border>
     </Grid>
-    <Border Grid.Row="1" Margin="0,0,-8,24">
+    <Border Grid.Row="1" Margin="0,0,-8,20">
       <ItemsControl ItemsSource="{Binding Workflow.Steps}">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate>
@@ -85,12 +101,12 @@
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:TrainingStepItem">
             <Button Classes="trainingStep" Classes.current="{Binding IsCurrent}" Command="{Binding SelectCommand}" IsEnabled="{Binding IsAvailable}" ToolTip.Tip="{Binding Title}">
-              <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                <Border Width="30" Height="30" CornerRadius="15">
-                  <TextBlock Text="{Binding Number}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+              <Grid ColumnDefinitions="32,10,*" VerticalAlignment="Center">
+                <Border Width="32" Height="32" CornerRadius="10" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding Number}" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
-                <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
-              </StackPanel>
+                <TextBlock Grid.Column="2" Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
+              </Grid>
             </Button>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
@@ -98,9 +114,9 @@
     </Border>
     <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
       <StackPanel Spacing="14">
-        <Border Classes="card" Padding="24" VerticalAlignment="Top">
+        <Border Classes="card" Padding="20" VerticalAlignment="Top">
           <StackPanel Spacing="20">
-            <TextBlock Text="{Binding Workflow.Title}" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding Workflow.Title}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
             <StackPanel Spacing="16" IsVisible="{Binding Workflow.IsImagesStep}" IsEnabled="{Binding CanEditTrainingInputs}">
               <TextBlock Text="{DynamicResource EidolonText492}" Classes="muted" FontSize="13" />
               <ItemsControl ItemsSource="{Binding TrainingImageGroups}" Margin="-6,0">
@@ -111,27 +127,32 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                   <DataTemplate x:DataType="vm:TrainingImageGroup">
-                    <Border Background="{DynamicResource WindowBrush}" CornerRadius="12" Padding="20" Margin="6,0">
-                      <Grid RowDefinitions="Auto,8,*,8,Auto">
+                    <Border Background="{DynamicResource WindowBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="14" Margin="6,0">
+                      <Grid RowDefinitions="Auto,12,*,12,Auto">
                         <Grid ColumnDefinitions="*,Auto">
-                          <StackPanel Orientation="Horizontal" Spacing="8">
+                          <Grid ColumnDefinitions="18,8,*" Margin="0,0,8,0">
                             <Border Width="18" Height="18" CornerRadius="4" Background="{Binding Swatch}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding Label}" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" />
-                          </StackPanel>
+                            <TextBlock Grid.Column="2" Text="{Binding Label}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap" />
+                          </Grid>
                           <TextBlock Grid.Column="1" Text="{Binding CountCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
                         </Grid>
-                        <Grid Grid.Row="2" MinHeight="180" MaxHeight="280">
+                        <Grid Grid.Row="2" MinHeight="168" MaxHeight="272">
                           <ScrollViewer IsVisible="{Binding HasImages}" AllowAutoHide="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                            <ItemsControl ItemsSource="{Binding Images}">
+                            <ItemsControl ItemsSource="{Binding Images}" Margin="-4,0,0,0">
+                              <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                              </ItemsControl.ItemsPanel>
                               <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:TrainingImageItem">
-                                  <Grid ColumnDefinitions="44,8,*,Auto" Margin="0,4">
-                                    <Border Width="44" Height="44" CornerRadius="5" ClipToBounds="True" Background="{ReflectionBinding $parent[ItemsControl].DataContext.Swatch}">
-                                      <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
-                                    </Border>
-                                    <TextBlock Grid.Column="2" Text="{Binding FileName}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FilePath}" VerticalAlignment="Center" FontSize="12" />
-                                    <Button Grid.Column="3" Classes="trainingSecondary" Content="{DynamicResource EidolonText443}" Command="{ReflectionBinding $parent[ItemsControl].DataContext.RemoveImageCommand}" CommandParameter="{Binding}" FontSize="11" Padding="6,4" Margin="4,0,0,0" VerticalAlignment="Center" />
-                                  </Grid>
+                                  <Border Width="112" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="6" Margin="4,0,4,8">
+                                    <StackPanel Spacing="6">
+                                      <Border Height="88" CornerRadius="6" ClipToBounds="True" Background="{ReflectionBinding $parent[ItemsControl].DataContext.Swatch}">
+                                        <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
+                                      </Border>
+                                      <TextBlock Text="{Binding FileName}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FilePath}" FontSize="12" />
+                                      <Button Classes="trainingSecondary" Content="{DynamicResource EidolonText443}" Command="{ReflectionBinding $parent[ItemsControl].DataContext.RemoveImageCommand}" CommandParameter="{Binding}" FontWeight="Normal" Padding="6,4" MinHeight="28" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                                    </StackPanel>
+                                  </Border>
                                 </DataTemplate>
                               </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -149,10 +170,10 @@
                               <TextBlock Text="{DynamicResource EidolonText463}" VerticalAlignment="Center" />
                             </StackPanel>
                           </Button>
-                          <Grid ColumnDefinitions="*,Auto">
-                            <Button Classes="trainingSecondary" Content="{DynamicResource EidolonText464}" Command="{Binding AddFolderCommand}" HorizontalAlignment="Left" />
-                            <Button Grid.Column="1" Classes="trainingSecondary" Content="{DynamicResource EidolonText469}" Command="{Binding ClearCommand}" IsVisible="{Binding HasImages}" />
-                          </Grid>
+                          <WrapPanel Orientation="Horizontal">
+                            <Button Classes="trainingSecondary" Content="{DynamicResource EidolonText464}" Command="{Binding AddFolderCommand}" Margin="0,0,8,4" />
+                            <Button Classes="trainingSecondary" Content="{DynamicResource EidolonText469}" Command="{Binding ClearCommand}" IsVisible="{Binding HasImages}" Margin="0,0,0,4" />
+                          </WrapPanel>
                         </StackPanel>
                       </Grid>
                     </Border>
@@ -161,38 +182,40 @@
               </ItemsControl>
               <TextBlock Text="{DynamicResource EidolonText468}" Classes="muted" FontSize="12" />
             </StackPanel>
-            <StackPanel Spacing="14" IsVisible="{Binding Workflow.IsIdentityStep}" IsEnabled="{Binding CanEditTrainingInputs}">
+            <StackPanel Spacing="16" IsVisible="{Binding Workflow.IsIdentityStep}" IsEnabled="{Binding CanEditTrainingInputs}">
               <TextBlock Text="{DynamicResource EidolonText493}" Classes="muted" FontSize="13" />
-              <Grid ColumnDefinitions="*,24,*">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="{DynamicResource EidolonText143}" Classes="label" />
-                  <TextBox Text="{Binding TrainingName}" PlaceholderText="{DynamicResource EidolonText144}" />
+              <Grid ColumnDefinitions="*,20,*">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="{DynamicResource EidolonText143}" Classes="label" FontSize="13" Margin="0" TextWrapping="Wrap" />
+                  <TextBox Text="{Binding TrainingName}" PlaceholderText="{DynamicResource EidolonText144}" MinHeight="42" />
                 </StackPanel>
-                <StackPanel Grid.Column="2" Spacing="6">
-                  <TextBlock Text="{DynamicResource EidolonText145}" Classes="label" />
-                  <TextBox Text="{Binding TrainingTrigger}" PlaceholderText="{DynamicResource EidolonText146}" />
+                <StackPanel Grid.Column="2" Spacing="8">
+                  <TextBlock Text="{DynamicResource EidolonText145}" Classes="label" FontSize="13" Margin="0" TextWrapping="Wrap" />
+                  <TextBox Text="{Binding TrainingTrigger}" PlaceholderText="{DynamicResource EidolonText146}" MinHeight="42" />
                 </StackPanel>
               </Grid>
               <TextBlock Text="{DynamicResource EidolonText337}" Classes="muted" FontSize="12" />
-              <TextBlock Text="{DynamicResource EidolonText147}" Classes="label" Margin="0,10,0,0" />
-              <TextBox Text="{Binding TrainingDescription}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="100" PlaceholderText="{DynamicResource EidolonText148}" />
-              <TextBlock Text="{DynamicResource EidolonText494}" Classes="muted" FontSize="12" />
+              <StackPanel Spacing="8" Margin="0,4,0,0">
+                <TextBlock Text="{DynamicResource EidolonText147}" Classes="label" FontSize="13" Margin="0" TextWrapping="Wrap" />
+                <TextBox Text="{Binding TrainingDescription}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="112" MaxHeight="168" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="{DynamicResource EidolonText148}" />
+                <TextBlock Text="{DynamicResource EidolonText494}" Classes="muted" FontSize="12" />
+              </StackPanel>
             </StackPanel>
-            <StackPanel Spacing="18" IsVisible="{Binding Workflow.IsTrainingStep}">
-              <Border Background="{DynamicResource WindowBrush}" CornerRadius="12" Padding="20">
-                <Grid ColumnDefinitions="*,Auto">
-                  <StackPanel Spacing="4">
-                    <TextBlock Text="{Binding TrainingName}" FontSize="16" FontWeight="SemiBold" />
+            <StackPanel Spacing="20" IsVisible="{Binding Workflow.IsTrainingStep}">
+              <Border Background="{DynamicResource WindowBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+                <Grid ColumnDefinitions="*,*">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="{Binding TrainingName}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
                     <TextBlock Text="{Binding TrainingImageSummary}" Classes="muted" FontSize="12" />
                   </StackPanel>
-                  <TextBlock Grid.Column="1" Text="{Binding TrainingTrigger}" FontSize="12" Foreground="{DynamicResource AccentBrush}" Margin="20,0,0,0" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{Binding TrainingTrigger}" FontSize="12" Foreground="{DynamicResource AccentBrush}" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" TextWrapping="Wrap" />
                 </Grid>
               </Border>
               <TextBlock Text="{DynamicResource EidolonText574}" Classes="muted" FontSize="12" />
-              <Grid ColumnDefinitions="*,24,*" IsEnabled="{Binding CanEditTrainingInputs}">
-                <StackPanel Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText139}" Classes="label" />
-                  <ComboBox ItemsSource="{Binding Assets.Models}" SelectedItem="{Binding Assets.SelectedModel}">
+              <Grid ColumnDefinitions="*,20,*" IsEnabled="{Binding CanEditTrainingInputs}">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="{DynamicResource EidolonText139}" Classes="label" FontSize="13" Margin="0" TextWrapping="Wrap" />
+                  <ComboBox ItemsSource="{Binding Assets.Models}" SelectedItem="{Binding Assets.SelectedModel}" MinHeight="42">
                     <ComboBox.ItemTemplate>
                       <DataTemplate x:DataType="vm:AssetItem"><TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" /></DataTemplate>
                     </ComboBox.ItemTemplate>
@@ -200,20 +223,24 @@
                   <TextBlock Text="{DynamicResource EidolonText507}" Classes="muted" FontSize="12" />
                   <Button Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" IsVisible="{Binding !Assets.HasAvailableModels}" HorizontalAlignment="Left" />
                 </StackPanel>
-                <StackPanel Grid.Column="2" Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText335}" Classes="label" />
-                  <NumericUpDown Value="{Binding TrainingSteps, Mode=TwoWay}" Minimum="{Binding MinimumTrainingSteps}" Maximum="{Binding MaximumTrainingSteps}" Increment="100" FormatString="0" />
+                <StackPanel Grid.Column="2" Spacing="8">
+                  <TextBlock Text="{DynamicResource EidolonText335}" Classes="label" FontSize="13" Margin="0" TextWrapping="Wrap" />
+                  <NumericUpDown Value="{Binding TrainingSteps, Mode=TwoWay}" Minimum="{Binding MinimumTrainingSteps}" Maximum="{Binding MaximumTrainingSteps}" Increment="100" FormatString="0" MinHeight="42" />
                   <Grid ColumnDefinitions="*,8,*">
-                    <Button Content="{DynamicResource EidolonText326}" Command="{Binding QuickTrainingCommand}" HorizontalAlignment="Stretch" />
-                    <Button Grid.Column="2" Content="{DynamicResource EidolonText336}" Command="{Binding StandardTrainingCommand}" HorizontalAlignment="Stretch" />
+                    <Button Command="{Binding QuickTrainingCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" MinHeight="38" Padding="10,8" FontSize="13">
+                      <TextBlock Text="{DynamicResource EidolonText326}" TextWrapping="Wrap" TextAlignment="Center" />
+                    </Button>
+                    <Button Grid.Column="2" Command="{Binding StandardTrainingCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" MinHeight="38" Padding="10,8" FontSize="13">
+                      <TextBlock Text="{DynamicResource EidolonText336}" TextWrapping="Wrap" TextAlignment="Center" />
+                    </Button>
                   </Grid>
                   <TextBlock Text="{Binding TrainingSpeedCaption}" Classes="muted" FontSize="12" />
                 </StackPanel>
               </Grid>
-              <Expander Header="{DynamicResource EidolonText508}" HorizontalContentAlignment="Stretch" IsEnabled="{Binding CanEditTrainingInputs}">
+              <Expander Header="{DynamicResource EidolonText508}" HorizontalContentAlignment="Stretch" IsEnabled="{Binding CanEditTrainingInputs}" Background="{DynamicResource WindowBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10">
                 <StackPanel Spacing="10" Margin="0,12,0,0">
                   <CheckBox IsChecked="{Binding ContinueTraining}" Content="{DynamicResource EidolonText259}" />
-                  <ComboBox ItemsSource="{Binding Assets.Loras}" SelectedItem="{Binding SelectedResumeLora}" IsVisible="{Binding ContinueTraining}">
+                  <ComboBox ItemsSource="{Binding Assets.Loras}" SelectedItem="{Binding SelectedResumeLora}" IsVisible="{Binding ContinueTraining}" MinHeight="42">
                     <ComboBox.ItemTemplate>
                       <DataTemplate x:DataType="vm:AssetItem"><TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" /></DataTemplate>
                     </ComboBox.ItemTemplate>
@@ -227,13 +254,15 @@
         <views:PendingWorkView DataContext="{Binding Session}" />
       </StackPanel>
     </ScrollViewer>
-    <Border Grid.Row="3" Background="{DynamicResource SurfaceBrush}" CornerRadius="14" Padding="20,16" Margin="0,20,0,0">
-      <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+    <Border Grid.Row="3" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="0,16,0,0">
+      <Grid ColumnDefinitions="2*,3*">
         <TextBlock Text="{Binding Workflow.Hint}" Classes="muted" FontSize="12" VerticalAlignment="Center" Margin="0,0,20,0" />
-        <Button Grid.Column="1" Content="{DynamicResource EidolonText489}" Command="{Binding Workflow.PreviousCommand}" IsVisible="{Binding !Workflow.IsImagesStep}" Margin="0,0,8,0" />
-        <Button Grid.Column="2" Content="{Binding CancelTrainingCaption}" Command="{Binding CancelTrainingCommand}" IsVisible="{Binding ShowTrainingCancel}" Margin="0,0,8,0" />
-        <Button Grid.Column="3" Content="{DynamicResource EidolonText490}" Command="{Binding Workflow.NextCommand}" IsVisible="{Binding !Workflow.IsTrainingStep}" Classes="primary" Padding="24,10" />
-        <Button Grid.Column="4" Content="{DynamicResource EidolonText474}" Command="{Binding TrainCommand}" IsVisible="{Binding Workflow.IsTrainingStep}" Classes="primary" Padding="24,10" />
+        <WrapPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+          <Button Content="{DynamicResource EidolonText489}" Command="{Binding Workflow.PreviousCommand}" IsVisible="{Binding !Workflow.IsImagesStep}" MinHeight="42" MinWidth="88" Margin="8,4,0,4" />
+          <Button Content="{Binding CancelTrainingCaption}" Command="{Binding CancelTrainingCommand}" IsVisible="{Binding ShowTrainingCancel}" MinHeight="42" Margin="8,4,0,4" />
+          <Button Content="{DynamicResource EidolonText490}" Command="{Binding Workflow.NextCommand}" IsVisible="{Binding !Workflow.IsTrainingStep}" Classes="primary" MinHeight="42" MinWidth="132" Padding="24,10" Margin="8,4,0,4" />
+          <Button Content="{DynamicResource EidolonText474}" Command="{Binding TrainCommand}" IsVisible="{Binding Workflow.IsTrainingStep}" Classes="primary" MinHeight="42" MinWidth="132" Padding="24,10" Margin="8,4,0,4" />
+        </WrapPanel>
       </Grid>
     </Border>
   </Grid>
