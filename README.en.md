@@ -4,7 +4,7 @@
 
 **Eidolon is a desktop app for generating and editing images, creating game assets, and training LoRAs from prompts and reference images.**
 
-Choose ComfyUI or your installed Codex, then work with shared generation guidelines, saved results, sprites, and four-view sheets in one app.
+Choose ComfyUI or your installed Codex, then work with shared generation guidelines, saved results and five-view sheets in one app.
 
 ## Download
 
@@ -28,9 +28,7 @@ Select an image in the gallery to read its prompt and generation settings. Save 
 
 ### Asset creation
 
-![Eidolon Asset creation screen with a reference image, action, frame count and FPS settings, and knight sprite frame previews](Docs/images/assets.png)
-
-Generate sprite frames in sequence from a reference image, then compare and play the selected frames. Regenerate, replace, reorder, and export them from the same screen.
+Generate front, right, left, back, and top views from a reference image, then compare them. Regenerate, replace, and export individual images from the same screen.
 
 ### LoRA training
 
@@ -38,27 +36,27 @@ Generate sprite frames in sequence from a reference image, then compare and play
 
 Add training images to the white or black background lists. Review the images, name and trigger, then configure training. The app prepares the dataset automatically.
 
-All screenshots capture the redesigned Windows app at 1600×1000 using Korean and the light theme, including the left navigation and shared bottom status area.
+Screenshots capture the actual Windows app using Korean and the light theme, including the left navigation and shared bottom status area.
 
 ## Core experience
 
 - **Prompt-based generation**: Describe your subject and optionally add a reference image.
 - **Shared style guidelines**: Save guidelines, exclusions, and presets for both generation and editing.
 - **Continue from a result**: Inspect generation settings, reuse a prompt, edit an image, or use it for training or asset creation.
-- **Game assets**: Create sprite frames or front, side, back, and top views from a reference, then compare and export them.
+- **Game assets**: Create front, right, left, back, and top views from a reference, then compare and export them.
 - **Train with your images**: Let the app prepare a dataset and use the completed LoRA when generating.
 
 ## Features
 
 - **Generation and editing**: ComfyUI or Codex, reference images, source-image editing, and transparent backgrounds
-- **Results**: PNG gallery, saved prompts and settings, reuse, export, and selected-image deletion
-- **Sprites and four views**: Playback, reordering, per-item regeneration and replacement, resume, and PNG, sheet, coordinate, and FPS JSON export
+- **Results**: Image and multi-view filters, grouped views with per-direction preview, saved prompts and settings, reuse, export, and selected-image deletion
+- **Multiple views**: Five directions, per-item regeneration and replacement, resume, and PNG, sheet, and coordinate JSON export
 - **Models and LoRAs**: safetensors folder scanning, SD 1.5 and SDXL families, compatible LoRA selection, and automatic trigger words
 - **LoRA training**: Automatic dataset preparation, new or continued training, quick settings, cancellation, and estimated time remaining
 - **Jobs**: A shared queue, additional requests while running, cancellation, pending-request cleanup, and preserved originals and logs
 - **Settings and connections**: Korean and English, light and black themes, output folder, external ComfyUI servers, and MCP
 
-Sprites and four views are reference-based drafts. Review generated motion, appearance, and viewpoints for your use case. The current distribution targets Windows x64.
+Multiple views are reference-based drafts. Review generated appearance and viewpoints for your use case. The current distribution targets Windows x64.
 
 ## Run
 
@@ -76,7 +74,7 @@ Settings and job data are stored under `%LOCALAPPDATA%\Eidolon`. Replacing the e
 
 **Edit** takes a source image and edit instructions, then saves a new image. **Results** lets you reuse a prompt, edit, or train from an image. Right-click the large result image to send it to asset creation.
 
-**Asset creation** makes sprites using an action, frame count, and FPS, or four views covering front, side, back, and top. Preview and export use the same size normalization. Deleting a collection removes its record and internal working files while preserving generated PNGs, prompt JSON, and exported files.
+**Asset creation** makes five views covering front, right, left, back, and top. Preview shows the generated originals, while export fits them to a shared output size. Deleting a collection removes its record and internal working files while preserving generated PNGs, prompt JSON, and exported files.
 
 **LoRA training** guides you through image selection, name and trigger review, and training settings. It requires a local ComfyUI runtime, a base model, and an NVIDIA GPU. A saved LoRA trigger is applied automatically when generating. Local checkpoints, LoRAs, seeds, and change strength do not apply to Codex generation.
 

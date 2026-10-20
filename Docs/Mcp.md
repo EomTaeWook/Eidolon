@@ -8,20 +8,20 @@ Eidolon 앱 초기화가 끝나면 MCP 서버가 자동으로 시작된다. MCP 
 |---|---|
 | `eidolon_get_status` | 엔진·요청 가능 상태, 현재 작업, 대기 건수, 진행률과 오류 조회 |
 | `eidolon_list_models` | 사용할 체크포인트·LoRA의 ID, 이름, 계열과 트리거 조회 |
+| `eidolon_delete_model` | 명시적 승인 후 관리 로컬 체크포인트·LoRA의 실제 파일 삭제 요청 등록 |
 | `eidolon_get_instructions` | 저장된 공통 생성 지침과 제외할 요소 조회 |
 | `eidolon_train_lora` | 흰색·검정색 배경별 이미지·폴더 경로로 신규·기존 LoRA 추가 학습 요청 등록 |
 | `eidolon_generate_image` | 설명과 선택적 참고 이미지로 생성 요청 추가 |
 | `eidolon_edit_image` | 참고 이미지와 설명으로 그림체 편집 요청 추가 |
 | `eidolon_list_images` | 현재 출력 폴더의 PNG 경로와 저장된 생성 조건을 페이지로 조회 |
-| `eidolon_create_sprite_animation` | 기준 이미지로 스프라이트 프레임 초안 제작 요청 추가; 대상·동작 설명은 선택 입력 |
-| `eidolon_create_views` | 정면·측면·후면·윗면 사면도 초안 제작 요청 추가 |
+| `eidolon_create_views` | 정면·우측·좌측·후면·윗면 5방향 다면도 초안 제작 요청 추가 |
 | `eidolon_get_asset_collection` | 묶음 상태와 항목별 이미지·설명·시드·오류 조회 |
 | `eidolon_list_asset_collections` | 최근 제작 묶음 20개의 ID·상태·완료 수 조회 |
 | `eidolon_resume_asset_collection` | 미완성 묶음의 남은 항목만 다시 요청 |
 | `eidolon_regenerate_asset_frame` | 선택 항목의 설명·시드로 그 항목만 다시 요청 |
 | `eidolon_export_asset_collection` | 개별 PNG·시트·좌표 메타데이터·원본 사본 내보내기 |
 
-이미지·학습 요청은 UI와 같은 FIFO 큐에 추가한다. 반환되는 `accepted`·`seed`는 수락 사실과 고정한 생성 시드이며 완료 결과가 아니다. 상태를 조회하고 결과 목록에서 이미지 경로·프롬프트·시드를 확인한다. HTTP 서버를 끄거나 클라이언트 연결을 닫아도 이미 추가한 생성·학습 요청을 지우지 않는다. 대기 요청은 UI의 기존 대기열에서 관리한다. 이미지 전송은 파일 경로 조회이며 MCP 응답에 이미지 바이트를 포함하지 않는다. 설치·파일 삭제 도구는 현재 제공하지 않는다.
+이미지·학습 요청은 UI와 같은 FIFO 큐에 추가한다. 반환되는 `accepted`·`seed`는 수락 사실과 고정한 생성 시드이며 완료 결과가 아니다. 상태를 조회하고 결과 목록에서 이미지 경로·프롬프트·시드를 확인한다. HTTP 서버를 끄거나 클라이언트 연결을 닫아도 이미 추가한 생성·학습 요청을 지우지 않는다. 대기 요청은 UI의 기존 대기열에서 관리한다. 이미지 전송은 파일 경로 조회이며 MCP 응답에 이미지 바이트를 포함하지 않는다. 설치 도구는 현재 제공하지 않는다.
 
 `model_id`를 생략하면 UI에서 선택한 모델을 사용한다. `lora_ids`를 생략하면 선택 모델과 같은 계열의 현재 선택 LoRA를 사용하며 빈 배열을 주면 해당 요청에서 LoRA를 제외한다. 다른 모델·LoRA를 지정해도 UI의 선택은 변경하지 않는다.
 
@@ -44,7 +44,29 @@ AI 클라이언트는 사용자 요청의 언어와 관계없이 모든 프롬�
 
 `reference_path`는 읽을 수 있는 절대 파일 경로다. 입력 파일은 요청 추가 전에 바이트 사본으로 읽고 원본은 유지한다. 최대 입력은 기존 32 MiB·4천만 픽셀 경계를 사용하며 실제 디코딩은 기존 생성 서비스가 담당한다. 생성의 참고 강도는 기본 0.65, 편집은 0.35이며 0.05~0.95를 허용한다. 편집에서는 참고 이미지가 필수다.
 
-ComfyUI 방식의 `eidolon_edit_image`는 UI 편집과 같은 Canny 외곽선·ControlNet 조건을 자동 적용한다. 기존 `reference_path`·`change_strength`를 사용하며 새 옵션은 요구하지 않는다. 관리 로컬 엔진은 첫 편집 때 필요한 SDXL 또는 SD 1.5 Canny 가중치를 준비하고, 외부 서버에 필요한 파일·노드가 없으면 작업 오류로 알린다. `eidolon_get_status`로 준비·작업 오류를 확인하고 `eidolon_list_images`의 `metadata.OutlineControlModel`·`metadata.OutlineControlStrength`로 실제 적용 조건을 확인한다. 이 조건은 원본 포즈·구도의 유지를 돕는 편집용이며, 참고 생성과 스프라이트·사면도에는 적용하지 않는다. Codex 편집은 기존 내장 이미지 편집을 사용한다.
+ComfyUI 방식의 `eidolon_edit_image`는 UI 편집과 같은 Canny 외곽선·ControlNet 조건을 자동 적용한다. 기존 `reference_path`·`change_strength`를 사용하며 새 옵션은 요구하지 않는다. 관리 로컬 엔진은 첫 편집 때 필요한 SDXL 또는 SD 1.5 Canny 가중치를 준비하고, 외부 서버에 필요한 파일·노드가 없으면 작업 오류로 알린다. `eidolon_get_status`로 준비·작업 오류를 확인하고 `eidolon_list_images`의 `metadata.OutlineControlModel`·`metadata.OutlineControlStrength`로 실제 적용 조건을 확인한다. 이 조건은 원본 포즈·구도의 유지를 돕는 편집용이며, 참고 생성과 다면도에는 적용하지 않는다. Codex 편집은 기존 내장 이미지 편집을 사용한다.
+
+## 모델·LoRA 삭제
+
+`eidolon_delete_model`은 등록된 관리 로컬 체크포인트 또는 LoRA의 실제 파일을 삭제한다. 복구할 수 없는 파일 삭제이므로 사용자가 해당 대상의 실제 파일 삭제를 명시적으로 승인한 경우에만 `confirm=true`로 호출한다.
+
+필수 인자는 `eidolon_list_models`에서 조회한 실제 ID인 `asset_id`(문자열)와 `confirm`(불리언, `true`만 허용)이며 추가 속성은 허용하지 않는다. 임의 경로나 외부 서버 자산은 대상이 아니다.
+
+현재 작업·대기 요청이 있거나 초기화 미완료·종료 중 등 기존 유지 관리 조건을 만족하지 않으면 거절한다. UI와 같은 기존 유지 관리 FIFO에서 `AssetLibrary` 삭제, 기본 모델 설정 정리와 목록 새로고침을 수행하며 화면의 선택을 다른 대상으로 바꾸지 않는다.
+
+해당 대상의 실제 파일 삭제를 승인받은 뒤 사용하는 `tools/call`의 `params` 예시다. `<asset ID>`는 조회한 체크포인트 또는 LoRA의 실제 ID로 바꾼다.
+
+```json
+{
+  "name": "eidolon_delete_model",
+  "arguments": {
+    "asset_id": "<asset ID>",
+    "confirm": true
+  }
+}
+```
+
+응답의 `accepted=true`와 `asset_id`는 접수 사실이며 완료를 뜻하지 않는다. `eidolon_get_status`로 진행·오류를 확인하고, 완료 후 `eidolon_list_models`에서 대상이 제거되었는지 확인한다.
 
 ## LoRA 학습 호출
 
@@ -92,9 +114,9 @@ ComfyUI 방식의 `eidolon_edit_image`는 UI 편집과 같은 Canny 외곽선·C
 
 ## 에셋 제작 호출
 
-제작 요청에는 `reference_path`만 필수다. `prompt`와 스프라이트의 `action`은 선택 입력이다. 대상 설명이 없으면 기준 이미지의 같은 대상을 요청하며 동작을 생략하면 제자리 걷기의 연속 포즈를 지정한다. `frame_count`는 기본 8, 2~32이며 `fps`는 기본 10, 1~60이다. `frame_descriptions`를 주면 프레임 수와 같은 개수의 포즈 설명을 전달한다. 사면도는 캐릭터·물체 구분 없이 정면·측면·후면·윗면의 4항목을 만들며 별도 시점 종류를 입력하지 않는다.
+`eidolon_create_views`에는 `reference_path`만 필수이며 `prompt`는 선택 입력이다. 대상 설명이 없으면 기준 이미지의 같은 대상을 요청한다. 캐릭터·물체 구분 없이 정면·우측·좌측·후면·윗면의 5항목을 만들며 방향 종류나 장수를 입력하지 않는다. 우측·좌측은 대상 자신의 면을 뜻하며 각각의 실제 방향을 요청한다. 스프라이트 생성 도구와 `action`·`frame_count`·`fps`·`frame_descriptions` 인자는 제공하지 않는다.
 
-두 제작 호출은 저장된 ComfyUI 또는 Codex 생성 방식과 지침 사본을 사용한다. ComfyUI는 이미지 생성과 같은 `model_id`·`lora_ids`·`seed`를 사용하며 참고 강도 기본값은 0.45다. Codex는 체크포인트 없이 제작하며 `model_id`·`lora_ids`·`seed`·`change_strength`를 지정하면 오류를 반환한다. 배경 투명화 기본값은 true이며 Codex는 내장 이미지 생성에 알파 출력을 요청한다. `frame_size`는 내보낼 정사각형 크기(스프라이트 기본 256, 사면도 기본 1024, 16~2048), `columns`는 시트 열 수(기본 4, 1~32), `pixel_art`는 픽셀 아트 설명과 nearest 보간을 지정한다. ComfyUI 생성 해상도는 기존 모델 프리셋을 따른다. 이 호출은 참고 생성 초안이며 자연스러운 반복 동작·대상 유지·기하학적으로 정확한 사면도를 보장하지 않는다.
+다면도 제작은 저장된 ComfyUI 또는 Codex 생성 방식과 지침 사본을 사용한다. ComfyUI는 이미지 생성과 같은 `model_id`·`lora_ids`·`seed`를 사용하며 참고 강도 기본값은 0.45다. Codex는 체크포인트 없이 제작하며 `model_id`·`lora_ids`·`seed`·`change_strength`를 지정하면 오류를 반환한다. 배경 투명화 기본값은 true이며 Codex는 내장 이미지 생성에 알파 출력을 요청한다. `frame_size`는 내보낼 정사각형 크기(기본 1024, 16~2048), `columns`는 시트 열 수(기본 5, 1~32), `pixel_art`는 픽셀 아트 설명과 nearest 보간을 지정한다. ComfyUI 생성 해상도는 기존 모델 프리셋을 따른다. 이 호출은 참고 생성 초안이며 대상 유지·기하학적으로 정확한 다면도를 보장하지 않는다.
 
 응답의 `accepted`·`collection_id`·`generation_backend`는 요청 접수와 생성 방식이다. ComfyUI 응답에는 `seed`, Codex 응답에는 `codex_model`을 포함한다. `eidolon_get_asset_collection`에 `collection_id`를 주어 완료를 조회한다. 조회 결과는 묶음 DTO의 `Settings`·`State`·`Frames`와 항목의 `Number`·`ImagePath`·`SourceJobId`·`Seed`(요청 시드)·`ImageSeed`(현재 이미지의 실제 시드)·`ErrorCode`·`ErrorArguments`를 포함한다. Codex의 DTO 시드 필드는 0이며 적용된 시드를 뜻하지 않는다. 묶음 조건은 요청 당시의 사본이며 나중의 설정 변경에 영향받지 않는다.
 
