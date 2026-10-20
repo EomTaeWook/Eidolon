@@ -8,7 +8,7 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 ## Download
 
-[Download Eidolon v0.1.0-beta.3 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v0.1.0-beta.3/Eidolon-0.1.0-beta.3-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v0.1.0-beta.3)
+[Download Eidolon v0.1.0-beta.4 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v0.1.0-beta.4/Eidolon-0.1.0-beta.4-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v0.1.0-beta.4)
 
 Run the single `.exe` file. No extraction or separate .NET installation is required. For Codex, sign in to your installed Codex first. For ComfyUI, prepare the engine and models through the app.
 
@@ -111,7 +111,7 @@ Publish the self-contained Windows x64 executable with:
 dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o artifacts\win-x64 -m:1 /p:UseSharedCompilation=false
 ```
 
-The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. The beta was packaged for publication; separate automated tests and execution checks of the release executable were not performed.
+The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. This beta was checked with a Release build, standalone executable startup, MCP connectivity, clean shutdown, and Korean/English switching for all three gallery filters. See the [validation record](Docs/AssetCreationQuality.md) for the scope and the [release notes](Docs/Releases/0.1.0-beta.4.md) for changes.
 
 ## License
 
