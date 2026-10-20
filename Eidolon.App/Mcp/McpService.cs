@@ -57,6 +57,7 @@ namespace Eidolon.App.Mcp
                     Idempotent = true,
                     OpenWorld = false
                 }, ListModelsAsync),
+                new McpTool(new McpToolDefinition("eidolon_delete_model", "Queue permanent deletion of one registered local checkpoint or LoRA file by asset_id from eidolon_list_models. This deletes the actual file, not only its library entry. Set confirm=true only after the user explicitly approves deleting this exact asset's real file; do not infer permission from a generic cleanup request. Arbitrary paths and external server assets are not accepted. Requires initialization, an idle current work and pending queue, and an installed local runtime using local assets. Busy or unavailable requests are rejected. Returns only accepted=true and asset_id, meaning queue acceptance, not completed deletion. Poll eidolon_get_status for completion or errors, then eidolon_list_models to refresh the available assets. Does not change the UI selection to choose the deletion target.", DeleteModelSchema()) { Destructive = true, ReadOnly = false, OpenWorld = false }, DeleteModelAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_instructions",
                     "Read saved positive and negative instructions, generation_backend, selected_model_id and prompt_guidance for the active backend and selected checkpoint. Read this before image generation, editing or asset creation. For a different ComfyUI checkpoint, read its prompt_guidance from eidolon_list_models. Resolve conflicting model-specific tags with request-only instruction overrides; saved settings remain unchanged.")
                 {
@@ -90,12 +91,7 @@ namespace Eidolon.App.Mcp
                     Idempotent = true,
                     OpenWorld = false
                 }, ListImagesAsync),
-                new McpTool(new McpToolDefinition("eidolon_create_sprite_animation",
-                    "Queue a sprite-animation draft from one reference image. Every supplied prompt, instruction, action and frame description MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe the subject and visual details, and separate motion, facing direction, limb positions and animation phase into specific tags. Only reference_path is required; prompt and action are optional. An omitted action uses a walk-in-place cycle with ordered automatic poses. Uses the saved ComfyUI or Codex backend and shared instructions. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. Identity and a smooth loop are not guaranteed. Optional frame_descriptions has one pose description per frame. Returns collection_id immediately; poll eidolon_get_asset_collection. Export after reviewing all frames.",
-                    AssetCreationSchema(true)), CreateSpriteAnimationAsync),
-                new McpTool(new McpToolDefinition("eidolon_create_views",
-                    "Queue front, side, back and directly overhead top images of the same subject. All supplied prompts MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe the subject's appearance, proportions, materials, colors and style in relevant detail. Only reference_path is required; prompt is optional. Uses the saved ComfyUI or Codex backend. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. These are AI reference drafts, not a 3D model or geometrically verified projections. Returns collection_id; poll eidolon_get_asset_collection.",
-                    AssetCreationSchema(false)), CreateViewsAsync),
+                new McpTool(new McpToolDefinition("eidolon_create_views", "Queue exactly five views in this order: front, anatomical right side, anatomical left side, back, directly overhead top. Only the camera moves; preserve the reference pose, geometry, proportions and equipment on their original anatomical sides. Right and left are separate true side views, never mirrored copies. Side cameras are exactly 90 degrees from the front, back is 180 degrees and top looks vertically down at 90 degrees; no diagonal or mixed views. All supplied prompts MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe appearance, materials, colors and style without changing the required viewpoints or pose. Only reference_path is required; prompt is optional. Frame size defaults to 1024. Uses the saved ComfyUI or Codex backend. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. These are AI reference images, not geometrically verified projections; review each result. Returns collection_id; poll eidolon_get_asset_collection.", AssetCreationSchema()), CreateViewsAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_asset_collection", "Read a collection state and ordered frame paths, prompts, seeds and errors.",
                     CollectionSchema()) { ReadOnly = true, Idempotent = true, OpenWorld = false }, GetAssetCollectionAsync),
                 new McpTool(new McpToolDefinition("eidolon_list_asset_collections", "List the latest 20 asset collections with IDs and completion counts.")
@@ -104,9 +100,42 @@ namespace Eidolon.App.Mcp
                     CollectionSchema()), ResumeAssetCollectionAsync),
                 new McpTool(new McpToolDefinition("eidolon_regenerate_asset_frame", "Queue a replacement for one frame or view using its captured reference, backend and generation conditions. The replacement prompt MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Specify the subject, pose, direction, viewpoint and desired visual details for this frame. For regeneration, read eidolon_get_asset_collection and use its captured backend and checkpoint, not the current UI selection. Seed applies only to ComfyUI collections. Requires an idle queue. Keeps the old image if regeneration fails.",
                     RegenerateAssetSchema()), RegenerateAssetFrameAsync),
-                new McpTool(new McpToolDefinition("eidolon_export_asset_collection", "Export all reviewed frame images into a new subfolder: normalized Frames PNGs, Sheet.png, Sheet.json with frame rectangles, bottom-center pivots and FPS, and preserved Sources. All frames must have images. Does not overwrite existing files.",
-                    ExportAssetSchema()), ExportAssetCollectionAsync)
+                new McpTool(new McpToolDefinition("eidolon_export_asset_collection", "Export all reviewed view images into a new subfolder: Frames PNGs on a common canvas, Sheet.png, Sheet.json with frame rectangles, bottom-center pivots and Loop=false, and preserved Sources. All views must have images. Does not overwrite existing files. Sprite-animation collections are not supported.", ExportAssetSchema()), ExportAssetCollectionAsync)
             };
+        }
+
+        private JsonObject DeleteModelSchema()
+        {
+            return new JsonObject
+            {
+                ["type"] = "object",
+                ["properties"] = new JsonObject
+                {
+                    ["asset_id"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 128, ["description"] = "The actual registered local checkpoint or LoRA ID returned by eidolon_list_models. Do not supply a file path or external server asset ID." },
+                    ["confirm"] = new JsonObject { ["type"] = "boolean", ["enum"] = new JsonArray(JsonValue.Create(true)), ["description"] = "Must be true. Set true only when the user has explicitly authorized permanent deletion of this exact asset's real file." }
+                },
+                ["required"] = new JsonArray("asset_id", "confirm"),
+                ["additionalProperties"] = false
+            };
+        }
+
+        private Task<McpToolResult> DeleteModelAsync(JsonObject arguments, CancellationToken cancellationToken)
+        {
+            return ExecuteAssetAsync(async () =>
+            {
+                if (arguments["confirm"].GetValue<bool>() == false)
+                {
+                    throw new ArgumentException("confirm must be true after explicit user approval to delete this asset's real file.");
+                }
+                string assetId = arguments["asset_id"].GetValue<string>();
+                Task acceptance = await Dispatcher.UIThread.InvokeAsync<Task>(() =>
+                {
+                    EnsureAvailable(cancellationToken);
+                    return _assets.EnqueueDeleteAssetAsync(assetId);
+                });
+                await acceptance.ConfigureAwait(false);
+                return new McpToolResult(new JsonObject { ["accepted"] = true, ["asset_id"] = assetId });
+            });
         }
 
         private JsonObject ImageSchema(bool editing)
@@ -708,7 +737,7 @@ namespace Eidolon.App.Mcp
             return seed;
         }
 
-        private JsonObject AssetCreationSchema(bool sprite)
+        private JsonObject AssetCreationSchema()
         {
             JsonObject schema = ImageSchema(false);
             JsonObject properties = schema["properties"].AsObject();
@@ -717,14 +746,6 @@ namespace Eidolon.App.Mcp
             properties["frame_size"] = new JsonObject { ["type"] = "integer", ["minimum"] = 16, ["maximum"] = AssetCreationInput.MaximumFrameSize };
             properties["columns"] = new JsonObject { ["type"] = "integer", ["minimum"] = 1, ["maximum"] = AssetCreationInput.MaximumFrames };
             properties["pixel_art"] = new JsonObject { ["type"] = "boolean" };
-            if (sprite == true)
-            {
-                properties["action"] = new JsonObject { ["type"] = "string", ["maxLength"] = 2000, ["description"] = "Optional English-only motion description as detailed comma-separated tags or short tag phrases for action, movement direction, facing, body and limb motion, timing and cycle. Omit to use the automatic walk-in-place cycle." };
-                properties["frame_count"] = new JsonObject { ["type"] = "integer", ["minimum"] = 2, ["maximum"] = AssetCreationInput.MaximumFrames };
-                properties["fps"] = new JsonObject { ["type"] = "integer", ["minimum"] = 1, ["maximum"] = 60 };
-                properties["frame_descriptions"] = new JsonObject { ["type"] = "array", ["maxItems"] = AssetCreationInput.MaximumFrames, ["description"] = "Optional ordered pose descriptions, one per frame. Every entry MUST use detailed English tags or short tag phrases.",
-                    ["items"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4000, ["description"] = "English-only comma-separated tags specifying this frame's animation phase, pose, limb positions, facing direction, viewpoint and continuity with adjacent frames." } };
-            }
             return schema;
         }
         private JsonObject CollectionSchema()
@@ -760,56 +781,39 @@ namespace Eidolon.App.Mcp
             }
             return (int)arguments[name].GetValue<double>();
         }
-        private Task<McpToolResult> CreateSpriteAnimationAsync(JsonObject arguments, CancellationToken token)
+        private Task<McpToolResult> CreateViewsAsync(JsonObject arguments, CancellationToken cancellationToken)
         {
-            return ExecuteAssetAsync(() => CreateAssetAsync(arguments, AssetCreationKind.SpriteAnimation, token));
+            return ExecuteAssetAsync(() => CreateAssetAsync(arguments, cancellationToken));
         }
-        private Task<McpToolResult> CreateViewsAsync(JsonObject arguments, CancellationToken token)
+        private async Task<McpToolResult> CreateAssetAsync(JsonObject arguments, CancellationToken cancellationToken)
         {
-            return ExecuteAssetAsync(() => CreateAssetAsync(arguments, AssetCreationKind.FourViews, token));
-        }
-        private async Task<McpToolResult> CreateAssetAsync(JsonObject arguments, AssetCreationKind kind, CancellationToken token)
-        {
-            GenerationReferenceInput reference = await ReadReferenceAsync(arguments, false, token).ConfigureAwait(false);
+            GenerationReferenceInput reference = await ReadReferenceAsync(arguments, false, cancellationToken).ConfigureAwait(false);
             if (arguments["change_strength"] == null)
             {
                 reference.ChangeStrength = 0.45;
             }
-            Task<AssetCollection> queued = await Dispatcher.UIThread.InvokeAsync<Task<AssetCollection>>(() =>
+            Task<AssetCollection> queuedCollectionTask = await Dispatcher.UIThread.InvokeAsync<Task<AssetCollection>>(() =>
             {
-                EnsureAvailable(token);
-                McpGenerationOptions options = CreateGenerationOptions(arguments, true);
-                int defaultSize = AssetCreationInput.DefaultViewFrameSize;
-                if (kind == AssetCreationKind.SpriteAnimation)
-                {
-                    defaultSize = AssetCreationInput.DefaultSpriteFrameSize;
-                }
+                EnsureAvailable(cancellationToken);
+                McpGenerationOptions generationOptions = CreateGenerationOptions(arguments, true);
                 AssetCreationInput input = new AssetCreationInput
                 {
-                    Kind = kind, Reference = reference, Seed = options.Seed,
-                    RemoveBackground = options.RemoveBackground, FrameCount = ReadInteger(arguments, "frame_count", 8),
-                    FrameWidth = ReadInteger(arguments, "frame_size", defaultSize), FrameHeight = ReadInteger(arguments, "frame_size", defaultSize),
-                    Columns = ReadInteger(arguments, "columns", 4), FramesPerSecond = ReadInteger(arguments, "fps", 10)
+                    Kind = AssetCreationKind.FiveViews, Reference = reference, Seed = generationOptions.Seed,
+                    RemoveBackground = generationOptions.RemoveBackground,
+                    FrameWidth = ReadInteger(arguments, "frame_size", AssetCreationInput.DefaultViewFrameSize), FrameHeight = ReadInteger(arguments, "frame_size", AssetCreationInput.DefaultViewFrameSize),
+                    Columns = ReadInteger(arguments, "columns", AssetCreationInput.ViewCount)
                 };
                 if (arguments["prompt"] != null)
                 {
                     input.Prompt = arguments["prompt"].GetValue<string>();
                 }
-                if (arguments["action"] != null)
-                {
-                    input.ActionPrompt = arguments["action"].GetValue<string>();
-                }
                 if (arguments["pixel_art"] != null)
                 {
                     input.PixelArt = arguments["pixel_art"].GetValue<bool>();
                 }
-                if (arguments["frame_descriptions"] is JsonArray descriptions)
-                {
-                    input.FrameDescriptions = descriptions.Select(item => item.GetValue<string>()).ToList();
-                }
-                return _creation.EnqueueAsync(options.Settings, options.Model, options.Loras, input, token);
+                return _creation.EnqueueAsync(generationOptions.Settings, generationOptions.Model, generationOptions.Loras, input, cancellationToken);
             });
-            AssetCollection collection = await queued.ConfigureAwait(false);
+            AssetCollection collection = await queuedCollectionTask.ConfigureAwait(false);
             JsonObject result = new JsonObject { ["accepted"] = true, ["collection_id"] = collection.Id,
                 ["generation_backend"] = collection.Settings.GenerationBackend.ToString(),
                 ["frame_count"] = collection.Frames.Count, ["state"] = "Preparing" };
@@ -856,13 +860,17 @@ namespace Eidolon.App.Mcp
         {
             return ExecuteAssetAsync(() => QueueExistingAssetAsync(arguments, true, token));
         }
-        private async Task<McpToolResult> QueueExistingAssetAsync(JsonObject arguments, bool regenerate, CancellationToken token)
+        private async Task<McpToolResult> QueueExistingAssetAsync(JsonObject arguments, bool regenerate, CancellationToken cancellationToken)
         {
-            string id = arguments["collection_id"].GetValue<string>();
+            string collectionId = arguments["collection_id"].GetValue<string>();
+            AssetCollection collection = await Task.Run(() => _jobs.LoadAssetCollection(collectionId), cancellationToken).ConfigureAwait(false);
+            if (collection.Kind == AssetCreationKind.SpriteAnimation)
+            {
+                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+            }
             long seed = 0;
             if (regenerate == true)
             {
-                AssetCollection collection = await Task.Run(() => _jobs.LoadAssetCollection(id), token).ConfigureAwait(false);
                 if (collection.Settings.GenerationBackend == GenerationBackend.Codex)
                 {
                     if (arguments.ContainsKey("seed") == true)
@@ -875,18 +883,17 @@ namespace Eidolon.App.Mcp
                     seed = ReadSeed(arguments);
                 }
             }
-            Task queued = await Dispatcher.UIThread.InvokeAsync<Task>(() =>
+            Task queuedTask = await Dispatcher.UIThread.InvokeAsync<Task>(() =>
             {
-                EnsureAvailable(token);
+                EnsureAvailable(cancellationToken);
                 if (regenerate == true)
                 {
-                    return _creation.EnqueueExistingAsync(id, ReadInteger(arguments, "frame_number", 0),
-                        arguments["prompt"].GetValue<string>(), seed);
+                    return _creation.EnqueueExistingAsync(collectionId, ReadInteger(arguments, "frame_number", 0), arguments["prompt"].GetValue<string>(), seed);
                 }
-                return _creation.EnqueueExistingAsync(id);
+                return _creation.EnqueueExistingAsync(collectionId);
             });
-            await queued.ConfigureAwait(false);
-            return new McpToolResult(new JsonObject { ["accepted"] = true, ["collection_id"] = id });
+            await queuedTask.ConfigureAwait(false);
+            return new McpToolResult(new JsonObject { ["accepted"] = true, ["collection_id"] = collectionId });
         }
         private Task<McpToolResult> ExportAssetCollectionAsync(JsonObject arguments, CancellationToken token)
         {

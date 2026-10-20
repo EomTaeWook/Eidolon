@@ -42,6 +42,9 @@ namespace Eidolon.Core.Domain
         public string Format { get; set; } = string.Empty;
         public int SchemaVersion { get; set; } = 1;
         public string SourceJobId { get; set; } = string.Empty;
+        public string AssetCollectionId { get; set; } = string.Empty;
+        public int AssetFrameNumber { get; set; }
+        public string AssetFrameLabel { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string UserPrompt { get; set; } = string.Empty;
         public string BasePositivePrompt { get; set; } = string.Empty;

@@ -1,9 +1,11 @@
 using Avalonia;
+using Dignus.DependencyInjection.Attributes;
 using Eidolon.App.Localization;
 using Eidolon.Core.Domain;
 
 namespace Eidolon.App.Services
 {
+    [Injectable(Dignus.DependencyInjection.LifeScope.Singleton)]
     public class LanguageService
     {
         private readonly Application _application;

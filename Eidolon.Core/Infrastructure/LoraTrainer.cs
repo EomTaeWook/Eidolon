@@ -27,7 +27,7 @@ namespace Eidolon.Core.Infrastructure
             IProgress<WorkProgress> progress, CancellationToken cancellationToken)
         {
             RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
-            layout.EnsureInstalled(true);
+            _installer.EnsureInstalled(layout, true);
             if (settings.UseCpu == true)
             {
                 throw new StudioException(StudioMessageCode.TrainingGpuRequired);

@@ -1,10 +1,12 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
+using Dignus.DependencyInjection.Attributes;
 using Dignus.Log;
 using Eidolon.App.Services;
 
 namespace Eidolon.App.Presenters
 {
+    [Injectable(Dignus.DependencyInjection.LifeScope.Singleton)]
     public class ApplicationUpdateRestartPresenter
     {
         private readonly ApplicationUpdateInstaller _installer;

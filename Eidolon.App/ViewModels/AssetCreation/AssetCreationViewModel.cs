@@ -17,26 +17,18 @@ namespace Eidolon.App.ViewModels
         private readonly ISeedProvider _seeds;
         private readonly AssetImageLoader _images;
         private readonly GenerationReferenceDraft _reference = new GenerationReferenceDraft(GenerationReferenceMode.Reimagine, 0.45);
-        private int _kindIndex;
-        private int _frameCount = 8;
-        private int _frameSize = AssetCreationInput.DefaultSpriteFrameSize;
-        private int _columns = 4;
-        private int _fps = 10;
+        private int _frameSize = AssetCreationInput.DefaultViewFrameSize;
+        private int _columns = AssetCreationInput.ViewCount;
         private string _prompt = string.Empty;
-        private string _actionPrompt = string.Empty;
-        private string _frameDescriptions = string.Empty;
         private bool _removeBackground = true;
         private bool _pixelArt;
         private bool _running;
         private bool _preparing;
-        private bool _localizing;
         private AssetCollectionChoice _selectedCollection;
         private string _activeId = string.Empty;
         private int _shownFrame;
 
-        public AssetCreationViewModel(StudioSession session, StudioNavigationViewModel navigation, StudioWorkPresenter work,
-            StringHelper strings, DesktopDialogs dialogs, AssetsViewModel assets, AssetCreationService service, JobStore jobs,
-            ISeedProvider seeds, AssetImageLoader images) : base(session, navigation, work, strings, dialogs)
+        public AssetCreationViewModel(StudioSession session, StudioNavigationViewModel navigation, StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs, AssetsViewModel assets, AssetCreationService service, JobStore jobs, ISeedProvider seeds, AssetImageLoader images) : base(session, navigation, work, strings, dialogs)
         {
             Assets = assets;
             _service = service;
@@ -49,20 +41,67 @@ namespace Eidolon.App.ViewModels
             _work.ProgressChanged += OnProgressChanged;
             CreateCommand = Command(CreateAsync, CanCreate);
             PickReferenceCommand = Command(PickReferenceAsync, () => Session.CanEditGenerationInputs == true);
-            RefreshCollectionsCommand = Command(RefreshCollectionsAsync, () => Session.IsInitialized == true && Session.IsClosing == false);
+            RefreshCollectionsCommand = Command(RefreshCollectionsAsync, () =>
+            {
+                if (Session.IsInitialized == false)
+                {
+                    return false;
+                }
+                return Session.IsClosing == false;
+            });
             DeleteCollectionCommand = Command(DeleteCollectionAsync, CanDeleteCollection);
-            ResumeCommand = Command(ResumeAsync, () => Preview.CanEditSelection == true && Preview.HasCollection == true
-                && Preview.Frames.Any(frame => frame.Frame.State != JobState.Completed || File.Exists(frame.Frame.ImagePath) == false) == true);
-            RegenerateCommand = Command(RegenerateAsync, () => Preview.CanEditSelection == true && Preview.SelectedFrame != null);
-            ReplaceCommand = Command(ReplaceAsync, () => Preview.CanEditSelection == true && Preview.SelectedFrame != null);
-            CancelCommand = Command(_work.CancelCurrentAsync, () => _running == true && Session.IsClosing == false);
+            ResumeCommand = Command(ResumeAsync, () =>
+            {
+                if (Preview.CanEditSelection == false)
+                {
+                    return false;
+                }
+                if (Preview.HasCollection == false)
+                {
+                    return false;
+                }
+                foreach (AssetFrameItem frame in Preview.Frames)
+                {
+                    if (frame.Frame.State != JobState.Completed)
+                    {
+                        return true;
+                    }
+                    if (File.Exists(frame.Frame.ImagePath) == false)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            });
+            RegenerateCommand = Command(RegenerateAsync, () =>
+            {
+                if (Preview.CanEditSelection == false)
+                {
+                    return false;
+                }
+                return Preview.SelectedFrame != null;
+            });
+            ReplaceCommand = Command(ReplaceAsync, () =>
+            {
+                if (Preview.CanEditSelection == false)
+                {
+                    return false;
+                }
+                return Preview.SelectedFrame != null;
+            });
+            CancelCommand = Command(_work.CancelCurrentAsync, () =>
+            {
+                if (_running == false)
+                {
+                    return false;
+                }
+                return Session.IsClosing == false;
+            });
             Localize();
-            KindIndex = 1;
         }
 
         public AssetsViewModel Assets { get; private set; }
         public AssetPreviewViewModel Preview { get; private set; }
-        public ObservableCollection<string> Kinds { get; private set; } = new ObservableCollection<string>();
         public ObservableCollection<AssetCollectionChoice> Collections { get; private set; } = new ObservableCollection<AssetCollectionChoice>();
         public AsyncCommand CreateCommand { get; private set; }
         public AsyncCommand PickReferenceCommand { get; private set; }
@@ -72,13 +111,6 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand RegenerateCommand { get; private set; }
         public AsyncCommand ReplaceCommand { get; private set; }
         public AsyncCommand CancelCommand { get; private set; }
-        public bool IsSprite
-        {
-            get
-            {
-                return _kindIndex == 0;
-            }
-        }
         public bool IsRunning
         {
             get
@@ -107,40 +139,6 @@ namespace Eidolon.App.ViewModels
                 return _reference.ImageName;
             }
         }
-        public int KindIndex
-        {
-            get
-            {
-                return _kindIndex;
-            }
-            set
-            {
-                if (_localizing == true)
-                {
-                    return;
-                }
-                if (value < 0)
-                {
-                    return;
-                }
-                if (value > 1)
-                {
-                    return;
-                }
-                if (Set(ref _kindIndex, value) == true)
-                {
-                    Raise(nameof(IsSprite));
-                    if (IsSprite == false)
-                    {
-                        if (FrameSize == AssetCreationInput.DefaultSpriteFrameSize)
-                        {
-                            FrameSize = AssetCreationInput.DefaultViewFrameSize;
-                        }
-                    }
-                    RefreshCommands();
-                }
-            }
-        }
         public string Prompt
         {
             get
@@ -153,44 +151,6 @@ namespace Eidolon.App.ViewModels
                 {
                     RefreshCommands();
                 }
-            }
-        }
-        public string ActionPrompt
-        {
-            get
-            {
-                return _actionPrompt;
-            }
-            set
-            {
-                if (Set(ref _actionPrompt, value) == true)
-                {
-                    RefreshCommands();
-                }
-            }
-        }
-        public string FrameDescriptions
-        {
-            get
-            {
-                return _frameDescriptions;
-            }
-            set
-            {
-                Set(ref _frameDescriptions, value);
-                RefreshCommands();
-            }
-        }
-        public int FrameCount
-        {
-            get
-            {
-                return _frameCount;
-            }
-            set
-            {
-                Set(ref _frameCount, value);
-                RefreshCommands();
             }
         }
         public int FrameSize
@@ -214,18 +174,6 @@ namespace Eidolon.App.ViewModels
             set
             {
                 Set(ref _columns, value);
-                RefreshCommands();
-            }
-        }
-        public int FramesPerSecond
-        {
-            get
-            {
-                return _fps;
-            }
-            set
-            {
-                Set(ref _fps, value);
                 RefreshCommands();
             }
         }
@@ -300,13 +248,37 @@ namespace Eidolon.App.ViewModels
 
         private bool CanCreate()
         {
-            if (IsSprite == true && string.IsNullOrWhiteSpace(FrameDescriptions) == false)
+            if (Session.CanQueue == false)
             {
-                string[] descriptions = FrameDescriptions.Replace("\r", string.Empty).Split('\n');
-                if (descriptions.Length != FrameCount || descriptions.Any(text => string.IsNullOrWhiteSpace(text) == true) == true)
-                {
-                    return false;
-                }
+                return false;
+            }
+            if (_preparing == true)
+            {
+                return false;
+            }
+            if (HasReference == false)
+            {
+                return false;
+            }
+            if (_reference.AreOptionsValid == false)
+            {
+                return false;
+            }
+            if (FrameSize < 16)
+            {
+                return false;
+            }
+            if (FrameSize > AssetCreationInput.MaximumFrameSize)
+            {
+                return false;
+            }
+            if (Columns < 1)
+            {
+                return false;
+            }
+            if (Columns > AssetCreationInput.ViewCount)
+            {
+                return false;
             }
             if (IsComfyAssetCreation == true)
             {
@@ -315,12 +287,7 @@ namespace Eidolon.App.ViewModels
                     return false;
                 }
             }
-            return Session.CanQueue == true
-                && _preparing == false && HasReference == true
-                && _reference.AreOptionsValid == true
-                && FrameCount >= 2 && FrameCount <= AssetCreationInput.MaximumFrames
-                && FrameSize >= 16 && FrameSize <= AssetCreationInput.MaximumFrameSize
-                && Columns >= 1 && Columns <= AssetCreationInput.MaximumFrames && FramesPerSecond >= 1 && FramesPerSecond <= 60;
+            return true;
         }
 
         private async Task PickReferenceAsync()
@@ -370,11 +337,6 @@ namespace Eidolon.App.ViewModels
 
         private async Task CreateAsync()
         {
-            AssetCreationKind kind = AssetCreationKind.SpriteAnimation;
-            if (IsSprite == false)
-            {
-                kind = AssetCreationKind.FourViews;
-            }
             DesktopSettings settings = Session.CreateActiveSettings(Session.Settings);
             ModelAsset model = null;
             List<ModelAsset> loras = new List<ModelAsset>();
@@ -387,28 +349,31 @@ namespace Eidolon.App.ViewModels
             }
             AssetCreationInput input = new AssetCreationInput
             {
-                Kind = kind, Prompt = Prompt, ActionPrompt = ActionPrompt,
-                FrameCount = FrameCount, FrameWidth = FrameSize, FrameHeight = FrameSize, Columns = Columns,
-                FramesPerSecond = FramesPerSecond, RemoveBackground = RemoveBackground, PixelArt = PixelArt, Seed = seed,
+                Kind = AssetCreationKind.FiveViews, Prompt = Prompt,
+                FrameWidth = FrameSize, FrameHeight = FrameSize, Columns = Columns,
+                RemoveBackground = RemoveBackground, PixelArt = PixelArt, Seed = seed,
                 Reference = new GenerationReferenceInput
                 {
                     ImageData = _reference.ImageData.ToArray(), ImageName = _reference.ImageName,
                     ChangeStrength = ChangeStrength, Mode = GenerationReferenceMode.Reimagine
                 }
             };
-            if (IsSprite == true && string.IsNullOrWhiteSpace(FrameDescriptions) == false)
-            {
-                input.FrameDescriptions = FrameDescriptions.Replace("\r", string.Empty).Split('\n').Select(text => text.Trim()).ToList();
-            }
             await EnqueueAsync(settings, model, loras, input, Session.Lifetime);
         }
 
-        internal async Task<AssetCollection> EnqueueAsync(StudioSettings settings, ModelAsset model, List<ModelAsset> loras,
-            AssetCreationInput input, CancellationToken token)
+        internal async Task<AssetCollection> EnqueueAsync(StudioSettings settings, ModelAsset model, List<ModelAsset> loras, AssetCreationInput input, CancellationToken token)
         {
-            if (Session.CanQueue == false || _preparing == true)
+            if (Session.CanQueue == false)
             {
                 throw new StudioException(StudioMessageCode.GenerationRecordBusy);
+            }
+            if (_preparing == true)
+            {
+                throw new StudioException(StudioMessageCode.GenerationRecordBusy);
+            }
+            if (input.Kind != AssetCreationKind.FiveViews)
+            {
+                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
             _preparing = true;
             RefreshCommands();
@@ -422,18 +387,20 @@ namespace Eidolon.App.ViewModels
                 {
                     throw new StudioException(StudioMessageCode.GenerationRecordBusy);
                 }
-                string id = collection.Id;
-                _work.Enqueue(_strings.GetString("EidolonText603") + " · " + collection.Prompt,
-                    workToken => RunAsync(id, null, workToken), () => _service.Discard(id));
+                string collectionId = collection.Id;
+                _work.Enqueue(_strings.GetString("EidolonText603") + " · " + collection.Prompt, workToken => RunAsync(collectionId, null, workToken), () => _service.Discard(collectionId));
                 accepted = true;
-                await UpdatePreviewAsync(id);
+                await UpdatePreviewAsync(collectionId);
                 return collection;
             }
             catch
             {
-                if (accepted == false && collection != null)
+                if (accepted == false)
                 {
-                    _service.Discard(collection.Id);
+                    if (collection != null)
+                    {
+                        _service.Discard(collection.Id);
+                    }
                 }
                 throw;
             }
@@ -446,18 +413,41 @@ namespace Eidolon.App.ViewModels
 
         internal Task EnqueueExistingAsync(string id, int number = 0, string prompt = null, long seed = 0)
         {
-            if (Session.IsIdle == false || _preparing == true)
+            if (Session.IsIdle == false)
+            {
+                throw new StudioException(StudioMessageCode.GenerationRecordBusy);
+            }
+            if (_preparing == true)
             {
                 throw new StudioException(StudioMessageCode.GenerationRecordBusy);
             }
             AssetCollection collection = _jobs.LoadAssetCollection(id);
-            if (number < 0 || number > collection.Frames.Count || seed < 0)
+            if (collection.Kind == AssetCreationKind.SpriteAnimation)
             {
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
-            if (number > 0 && (string.IsNullOrWhiteSpace(prompt) == true || prompt.Length > 16000))
+            if (number < 0)
             {
-                throw new StudioException(StudioMessageCode.PromptRequired);
+                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+            }
+            if (number > collection.Frames.Count)
+            {
+                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+            }
+            if (seed < 0)
+            {
+                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+            }
+            if (number > 0)
+            {
+                if (string.IsNullOrWhiteSpace(prompt) == true)
+                {
+                    throw new StudioException(StudioMessageCode.PromptRequired);
+                }
+                if (prompt.Length > 16000)
+                {
+                    throw new StudioException(StudioMessageCode.PromptRequired);
+                }
             }
             collection.State = JobState.Preparing;
             _jobs.SaveAssetCollection(collection);
@@ -466,8 +456,7 @@ namespace Eidolon.App.ViewModels
             {
                 action = token => _service.RegenerateAsync(id, number, prompt, seed, _work.Progress, token);
             }
-            _work.Enqueue(_strings.GetString("EidolonText603") + " · " + collection.Prompt,
-                token => RunAsync(id, action, token), () => _service.Discard(id));
+            _work.Enqueue(_strings.GetString("EidolonText603") + " · " + collection.Prompt, token => RunAsync(id, action, token), () => _service.Discard(id));
             return Task.CompletedTask;
         }
 
@@ -661,6 +650,10 @@ namespace Eidolon.App.ViewModels
             Collections.Clear();
             foreach (AssetCollection collection in collections)
             {
+                if (collection.Kind == AssetCreationKind.SpriteAnimation)
+                {
+                    continue;
+                }
                 Collections.Add(new AssetCollectionChoice(collection));
             }
             _selectedCollection = Collections.FirstOrDefault(item => item.Id == selectedId);
@@ -716,16 +709,6 @@ namespace Eidolon.App.ViewModels
         }
         public override void Localize()
         {
-            int kind = _kindIndex;
-            _localizing = true;
-            Kinds.Clear();
-            foreach (string key in new[] { "EidolonText605", "EidolonText606" })
-            {
-                Kinds.Add(_strings.GetString(key));
-            }
-            _kindIndex = kind;
-            _localizing = false;
-            Raise(nameof(KindIndex));
             Preview.Localize();
             base.Localize();
         }

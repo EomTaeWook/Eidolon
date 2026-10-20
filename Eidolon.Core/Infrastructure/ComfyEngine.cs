@@ -95,7 +95,7 @@ namespace Eidolon.Core.Infrastructure
                 {
                     throw new StudioException(StudioMessageCode.InstallDirectoryRequired);
                 }
-                layout.EnsureInstalled();
+                _installer.EnsureInstalled(layout);
                 progress.Report(new WorkProgress(StudioMessageCode.EngineStarting));
                 _engineLifetime?.Dispose();
                 _engineLifetime = new CancellationTokenSource();

@@ -16,14 +16,145 @@ namespace Eidolon.App.ViewModels
             _strings = strings;
             Image = image;
             Label = Path.GetFileNameWithoutExtension(image.FilePath);
-            if (image.Metadata != null && string.IsNullOrWhiteSpace(image.Metadata.Title) == false)
+            if (image.Metadata != null)
             {
-                Label = image.Metadata.Title;
+                if (string.IsNullOrWhiteSpace(image.Metadata.Title) == false)
+                {
+                    Label = image.Metadata.Title;
+                }
             }
+            foreach (GenerationImage collectionImage in image.CollectionImages)
+            {
+                GenerationItem previous = null;
+                if (collectionImage.Metadata != null)
+                {
+                    if (string.IsNullOrEmpty(collectionImage.Metadata.AssetFrameLabel) == false)
+                    {
+                        previous = CollectionImages.FirstOrDefault(item =>
+                        {
+                            if (item.Metadata == null)
+                            {
+                                return false;
+                            }
+                            return item.Metadata.AssetFrameLabel == collectionImage.Metadata.AssetFrameLabel;
+                        });
+                    }
+                    else if (collectionImage.Metadata.AssetFrameNumber > 0)
+                    {
+                        previous = CollectionImages.FirstOrDefault(item =>
+                        {
+                            if (item.Metadata == null)
+                            {
+                                return false;
+                            }
+                            return item.Metadata.AssetFrameNumber == collectionImage.Metadata.AssetFrameNumber;
+                        });
+                    }
+                }
+                if (previous != null)
+                {
+                    DateTimeOffset previousCreatedAtUtc = previous.Image.CreatedAtUtc;
+                    if (previous.Metadata != null)
+                    {
+                        if (previous.Metadata.GeneratedAtUtc != default)
+                        {
+                            previousCreatedAtUtc = previous.Metadata.GeneratedAtUtc;
+                        }
+                    }
+                    DateTimeOffset createdAtUtc = collectionImage.CreatedAtUtc;
+                    if (collectionImage.Metadata != null)
+                    {
+                        if (collectionImage.Metadata.GeneratedAtUtc != default)
+                        {
+                            createdAtUtc = collectionImage.Metadata.GeneratedAtUtc;
+                        }
+                    }
+                    if (previousCreatedAtUtc >= createdAtUtc)
+                    {
+                        continue;
+                    }
+                    CollectionImages.Remove(previous);
+                    previous.Dispose();
+                }
+                CollectionImages.Add(new GenerationItem(collectionImage, strings));
+            }
+            CollectionImages = CollectionImages.OrderBy(item =>
+            {
+                if (item.Metadata == null)
+                {
+                    return 0;
+                }
+                return item.Metadata.AssetFrameNumber;
+            }).ToList();
             Localize();
         }
 
         public GenerationImage Image { get; private set; }
+        public List<GenerationItem> CollectionImages { get; private set; } = new List<GenerationItem>();
+        public bool IsAssetCollection
+        {
+            get
+            {
+                return CollectionImages.Count > 0;
+            }
+        }
+        public bool IsCollectionImage
+        {
+            get
+            {
+                if (Metadata == null)
+                {
+                    return false;
+                }
+                return string.IsNullOrEmpty(Metadata.AssetCollectionId) == false;
+            }
+        }
+        public string CollectionCaption
+        {
+            get
+            {
+                return _strings.Format("EidolonText706", CollectionImages.Count);
+            }
+        }
+        public string ViewCaption
+        {
+            get
+            {
+                if (Metadata == null)
+                {
+                    return string.Empty;
+                }
+                if (string.IsNullOrEmpty(Metadata.AssetCollectionId) == true)
+                {
+                    return string.Empty;
+                }
+                if (Metadata.AssetFrameLabel == "front")
+                {
+                    return _strings.GetString("EidolonText637");
+                }
+                if (Metadata.AssetFrameLabel == "right")
+                {
+                    return _strings.GetString("EidolonText702");
+                }
+                if (Metadata.AssetFrameLabel == "left")
+                {
+                    return _strings.GetString("EidolonText703");
+                }
+                if (Metadata.AssetFrameLabel == "side")
+                {
+                    return _strings.GetString("EidolonText638");
+                }
+                if (Metadata.AssetFrameLabel == "back")
+                {
+                    return _strings.GetString("EidolonText639");
+                }
+                if (Metadata.AssetFrameLabel == "top")
+                {
+                    return _strings.GetString("EidolonText640");
+                }
+                return _strings.Format("EidolonText620", Metadata.AssetFrameNumber);
+            }
+        }
         public GenerationMetadata Metadata
         {
             get
@@ -52,9 +183,15 @@ namespace Eidolon.App.ViewModels
             get
             {
                 DateTimeOffset time = Image.CreatedAtUtc;
-                if (HasMetadata == true && Metadata.GeneratedAtUtc != default)
+                if (IsAssetCollection == false)
                 {
-                    time = Metadata.GeneratedAtUtc;
+                    if (HasMetadata == true)
+                    {
+                        if (Metadata.GeneratedAtUtc != default)
+                        {
+                            time = Metadata.GeneratedAtUtc;
+                        }
+                    }
                 }
                 return time.ToLocalTime().ToString("MM/dd HH:mm", CultureInfo.InvariantCulture);
             }
@@ -177,6 +314,29 @@ namespace Eidolon.App.ViewModels
 
         public void Localize()
         {
+            foreach (GenerationItem collectionImage in CollectionImages)
+            {
+                collectionImage.Localize();
+            }
+            if (IsAssetCollection == true)
+            {
+                Label = _strings.GetString("EidolonText606");
+                if (Metadata != null)
+                {
+                    if (string.IsNullOrWhiteSpace(Metadata.ReferenceImageName) == false)
+                    {
+                        string referenceImageName = Path.GetFileName(Metadata.ReferenceImageName);
+                        if (string.IsNullOrWhiteSpace(referenceImageName) == false)
+                        {
+                            Label = referenceImageName;
+                        }
+                    }
+                }
+            }
+            else if (IsCollectionImage == true)
+            {
+                Label = ViewCaption;
+            }
             StateCaption = _strings.GetString("EidolonText383");
             if (HasMetadata == true)
             {
@@ -188,10 +348,13 @@ namespace Eidolon.App.ViewModels
                 ErrorMessage = _strings.GetString("EidolonText384") + "\n" + _strings.GetExceptionMessage(Image.MetadataError);
             }
             Raise(nameof(StateCaption));
+            Raise(nameof(Label));
             Raise(nameof(ErrorMessage));
             Raise(nameof(HasError));
             Raise(nameof(ThumbnailCaption));
             Raise(nameof(ReferenceCaption));
+            Raise(nameof(CollectionCaption));
+            Raise(nameof(ViewCaption));
         }
 
         public void BeginThumbnailLoad()
@@ -214,6 +377,10 @@ namespace Eidolon.App.ViewModels
 
         public void Dispose()
         {
+            foreach (GenerationItem collectionImage in CollectionImages)
+            {
+                collectionImage.Dispose();
+            }
             SetThumbnail(null);
         }
     }

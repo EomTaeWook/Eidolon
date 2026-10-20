@@ -1,7 +1,9 @@
 using System.Security.Cryptography;
+using Dignus.DependencyInjection.Attributes;
 
 namespace Eidolon.App.Services
 {
+    [Injectable(Dignus.DependencyInjection.LifeScope.Singleton)]
     public class ApplicationUpdateFiles
     {
         private static readonly string[] _ownedNames = { "download.partial", "verified.exe", "helper.exe", "install.json", "ready", "authorized", "cancel" };

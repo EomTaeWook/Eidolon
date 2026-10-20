@@ -27,6 +27,7 @@ namespace Eidolon.App.ViewModels
         private int _galleryPageCount = 1;
         private int _generationCount;
         private int _galleryLoadRequest;
+        private int _galleryFilterIndex;
         private bool _isGalleryLoading;
         private bool _hasMigratedGenerationMetadata;
         private string _galleryError = string.Empty;
@@ -35,6 +36,110 @@ namespace Eidolon.App.ViewModels
         private Bitmap _preview;
         private string _previewPath = string.Empty;
         public ObservableCollection<GenerationItem> Generations { get; private set; } = new ObservableCollection<GenerationItem>();
+
+        public int GalleryFilterIndex
+        {
+            get
+            {
+                return _galleryFilterIndex;
+            }
+            set
+            {
+                if (value < 0)
+                {
+                    return;
+                }
+                if (value > 2)
+                {
+                    return;
+                }
+                if (Set(ref _galleryFilterIndex, value) == false)
+                {
+                    return;
+                }
+                GallerySelection.Clear();
+                SelectedGeneration = null;
+                SelectedResult = null;
+                _ = LoadGalleryPageAsync(1, false, false, true);
+            }
+        }
+
+        public bool HasAssetCollectionSelection
+        {
+            get
+            {
+                foreach (GenerationItem item in GallerySelection)
+                {
+                    if (item.IsAssetCollection == true)
+                    {
+                        return true;
+                    }
+                    if (item.IsCollectionImage == true)
+                    {
+                        return true;
+                    }
+                }
+                if (SelectedGeneration != null)
+                {
+                    if (SelectedGeneration.IsAssetCollection == true)
+                    {
+                        return true;
+                    }
+                }
+                if (SelectedResult != null)
+                {
+                    if (SelectedResult.Metadata != null)
+                    {
+                        return string.IsNullOrEmpty(SelectedResult.Metadata.AssetCollectionId) == false;
+                    }
+                }
+                return false;
+            }
+        }
+
+        public bool CanDeleteGallerySelection
+        {
+            get
+            {
+                if (Session.IsIdle == false)
+                {
+                    return false;
+                }
+                if (IsGalleryLoading == true)
+                {
+                    return false;
+                }
+                if (HasAssetCollectionSelection == true)
+                {
+                    return false;
+                }
+                return HasGallerySelection;
+            }
+        }
+
+        public bool CanDeleteAllGenerations
+        {
+            get
+            {
+                if (Session.IsIdle == false)
+                {
+                    return false;
+                }
+                if (IsGalleryLoading == true)
+                {
+                    return false;
+                }
+                if (HasAssetCollectionSelection == true)
+                {
+                    return false;
+                }
+                if (GalleryFilterIndex == 2)
+                {
+                    return false;
+                }
+                return HasGenerations;
+            }
+        }
 
         public bool IsGalleryLoading
         {
@@ -140,10 +245,32 @@ namespace Eidolon.App.ViewModels
             }
             set
             {
+                if (value != null)
+                {
+                    if (value.IsAssetCollection == true)
+                    {
+                        if (value.CollectionImages.Contains(_selectedResult) == true)
+                        {
+                            value = _selectedResult;
+                        }
+                        else
+                        {
+                            value = value.CollectionImages.FirstOrDefault();
+                        }
+                    }
+                }
                 if (Set(ref _selectedResult, value) == true)
                 {
                     Raise(nameof(HasSelectedResult));
-                    Set(ref _selectedGeneration, value, nameof(SelectedGeneration));
+                    bool keepCollection = false;
+                    if (_selectedGeneration != null)
+                    {
+                        keepCollection = _selectedGeneration.CollectionImages.Contains(value);
+                    }
+                    if (keepCollection == false)
+                    {
+                        Set(ref _selectedGeneration, value, nameof(SelectedGeneration));
+                    }
                     ShowPreview(value);
                     RefreshCommands();
                 }
@@ -206,12 +333,28 @@ namespace Eidolon.App.ViewModels
 
         private async Task DeleteGenerationsAsync(bool all)
         {
+            if (HasAssetCollectionSelection == true)
+            {
+                return;
+            }
             string directory = _jobs.OutputDirectory(Session.Settings.GenerationDirectory);
             List<string> paths = new List<string>();
             if (all == true)
             {
                 CancellationToken token = Session.Lifetime;
-                paths.AddRange(await Task.Run(() => _jobs.LoadGenerationPaths(directory, token), token));
+                paths.AddRange(await Task.Run(() =>
+                {
+                    List<string> imagePaths = new List<string>();
+                    GenerationPage page = _jobs.LoadGenerationPage(directory, 1, GalleryPageSize, token, true, false, true);
+                    imagePaths.AddRange(page.Images.Select(image => image.FilePath));
+                    for (int pageNumber = 2; pageNumber <= page.PageCount; pageNumber++)
+                    {
+                        token.ThrowIfCancellationRequested();
+                        GenerationPage nextPage = _jobs.LoadGenerationPage(directory, pageNumber, GalleryPageSize, token, true, false, true);
+                        imagePaths.AddRange(nextPage.Images.Select(image => image.FilePath));
+                    }
+                    return imagePaths;
+                }, token));
                 if (Session.IsClosing == true)
                 {
                     return;
@@ -219,6 +362,13 @@ namespace Eidolon.App.ViewModels
             }
             else
             {
+                foreach (GenerationItem item in GallerySelection)
+                {
+                    if (item.IsAssetCollection == true)
+                    {
+                        return;
+                    }
+                }
                 paths.AddRange(GallerySelection.Select(item => item.Image.FilePath));
             }
             if (paths.Count == 0)
@@ -231,6 +381,10 @@ namespace Eidolon.App.ViewModels
                 message = _strings.Format("EidolonText320", paths.Count);
             }
             if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText318"), message) == false)
+            {
+                return;
+            }
+            if (HasAssetCollectionSelection == true)
             {
                 return;
             }
@@ -266,7 +420,17 @@ namespace Eidolon.App.ViewModels
         {
             if (parameter is GenerationItem item)
             {
-                SelectedGeneration = item;
+                GenerationItem collection = Generations.FirstOrDefault(generation => generation.CollectionImages.Contains(item));
+                if (collection != null)
+                {
+                    Set(ref _selectedGeneration, collection, nameof(SelectedGeneration));
+                    SelectedResult = item;
+                    RefreshCommands();
+                }
+                else
+                {
+                    SelectedGeneration = item;
+                }
             }
             return Task.CompletedTask;
         }
@@ -283,39 +447,70 @@ namespace Eidolon.App.ViewModels
             return LoadGalleryPageAsync(_requestedGalleryPageNumber, true, markInterrupted);
         }
 
-        private Task LoadGalleryPageAsync(int number, bool refreshSelection = false, bool markInterrupted = false)
+        private Task LoadGalleryPageAsync(int number, bool refreshSelection = false, bool markInterrupted = false, bool clearSelection = false)
         {
             if (Session.IsClosing == true)
             {
                 return _galleryLoadTask;
             }
             _requestedGalleryPageNumber = number;
-            int request = ++_galleryLoadRequest;
+            int requestNumber = ++_galleryLoadRequest;
             _galleryLoadCancellation?.Cancel();
-            Task previous = _galleryLoadTask;
-            _galleryLoadTask = LoadGalleryPageCoreAsync(previous, request, number, refreshSelection, markInterrupted);
+            Task previousLoad = _galleryLoadTask;
+            bool includeImages = GalleryFilterIndex != 2;
+            bool includeAssetCollections = GalleryFilterIndex != 1;
+            _galleryLoadTask = LoadGalleryPageCoreAsync(previousLoad, requestNumber, number, refreshSelection, markInterrupted, includeImages, includeAssetCollections, clearSelection);
             return _galleryLoadTask;
         }
 
-        private async Task LoadGalleryPageCoreAsync(Task previous, int request, int number,
-            bool refreshSelection, bool markInterrupted)
+        private async Task LoadGalleryPageCoreAsync(Task previousLoad, int requestNumber, int pageNumber, bool refreshSelection, bool markInterrupted, bool includeImages, bool includeAssetCollections, bool clearSelection)
         {
-            await previous;
-            if (Session.IsClosing == true || request != _galleryLoadRequest)
+            await previousLoad;
+            if (Session.IsClosing == true)
+            {
+                return;
+            }
+            if (requestNumber != _galleryLoadRequest)
             {
                 return;
             }
             using CancellationTokenSource lifetime = CancellationTokenSource.CreateLinkedTokenSource(Session.Lifetime);
             _galleryLoadCancellation = lifetime;
-            CancellationToken token = lifetime.Token;
+            CancellationToken cancellationToken = lifetime.Token;
             List<Bitmap> thumbnails = new List<Bitmap>();
             IsGalleryLoading = true;
             GalleryError = string.Empty;
             string directory = Session.Settings.GenerationDirectory;
             GenerationImage remembered = null;
-            if (SelectedGeneration != null)
+            if (SelectedResult != null)
             {
-                remembered = SelectedGeneration.Image;
+                remembered = SelectedResult.Image;
+            }
+            if (remembered != null)
+            {
+                bool rememberedCollection = false;
+                if (SelectedGeneration != null)
+                {
+                    rememberedCollection = SelectedGeneration.IsAssetCollection;
+                }
+                if (remembered.Metadata != null)
+                {
+                    if (string.IsNullOrEmpty(remembered.Metadata.AssetCollectionId) == false)
+                    {
+                        rememberedCollection = true;
+                    }
+                }
+                if (rememberedCollection == true)
+                {
+                    if (includeAssetCollections == false)
+                    {
+                        remembered = null;
+                    }
+                }
+                else if (includeImages == false)
+                {
+                    remembered = null;
+                }
             }
             try
             {
@@ -323,29 +518,43 @@ namespace Eidolon.App.ViewModels
                 {
                     if (markInterrupted == true)
                     {
-                        _jobs.MarkInterrupted(token);
+                        _jobs.MarkInterrupted(cancellationToken);
                     }
                     if (_hasMigratedGenerationMetadata == false)
                     {
-                        _jobs.MigrateGenerationMetadata(directory, token);
+                        _jobs.MigrateGenerationMetadata(directory, cancellationToken);
                     }
-                    GenerationPage page = _jobs.LoadGenerationPage(directory, number, GalleryPageSize, token);
+                    GenerationPage page = _jobs.LoadGenerationPage(directory, pageNumber, GalleryPageSize, cancellationToken, includeImages, includeAssetCollections, true);
+                    if (clearSelection == true)
+                    {
+                        return (page, (GenerationImage)null);
+                    }
                     GenerationImage preview = remembered;
-                    if (refreshSelection == true && remembered != null)
+                    if (refreshSelection == true)
                     {
-                        preview = _jobs.FindGenerationImage(Path.GetDirectoryName(remembered.FilePath), remembered.FilePath, token);
-                    }
-                    if (preview == null && string.IsNullOrEmpty(page.LatestImagePath) == false)
-                    {
-                        preview = page.Images.FirstOrDefault(image => image.FilePath == page.LatestImagePath);
-                        if (preview == null)
+                        if (remembered != null)
                         {
-                            preview = _jobs.FindGenerationImage(directory, page.LatestImagePath, token);
+                            preview = _jobs.FindGenerationImage(Path.GetDirectoryName(remembered.FilePath), remembered.FilePath, cancellationToken);
+                        }
+                    }
+                    if (preview == null)
+                    {
+                        if (string.IsNullOrEmpty(page.LatestImagePath) == false)
+                        {
+                            preview = page.Images.FirstOrDefault(image => image.FilePath == page.LatestImagePath);
+                            if (preview == null)
+                            {
+                                preview = _jobs.FindGenerationImage(directory, page.LatestImagePath, cancellationToken);
+                            }
                         }
                     }
                     return (page, preview);
-                }, token);
-                if (token.IsCancellationRequested == true || request != _galleryLoadRequest)
+                }, cancellationToken);
+                if (cancellationToken.IsCancellationRequested == true)
+                {
+                    return;
+                }
+                if (requestNumber != _galleryLoadRequest)
                 {
                     return;
                 }
@@ -370,47 +579,98 @@ namespace Eidolon.App.ViewModels
                 Raise(nameof(GalleryCountCaption));
                 Raise(nameof(HasGenerations));
                 Raise(nameof(IsGalleryEmpty));
-                if (refreshSelection == true || SelectedGeneration == null)
+                bool selectPreview = refreshSelection;
+                if (SelectedGeneration == null)
+                {
+                    selectPreview = true;
+                }
+                if (clearSelection == true)
+                {
+                    selectPreview = false;
+                }
+                if (selectPreview == true)
                 {
                     GenerationItem selected = null;
+                    GenerationItem selectedImage = null;
                     if (snapshot.Preview != null)
                     {
-                        selected = items.FirstOrDefault(item => item.Image.FilePath == snapshot.Preview.FilePath);
+                        foreach (GenerationItem item in items)
+                        {
+                            GenerationItem collectionImage = item.CollectionImages.FirstOrDefault(image => image.Image.FilePath == snapshot.Preview.FilePath);
+                            if (collectionImage != null)
+                            {
+                                selected = item;
+                                selectedImage = collectionImage;
+                                break;
+                            }
+                            if (item.Image.FilePath == snapshot.Preview.FilePath)
+                            {
+                                selected = item;
+                                break;
+                            }
+                        }
                         if (selected == null)
                         {
                             selected = new GenerationItem(snapshot.Preview, _strings);
                         }
                     }
-                    SelectedGeneration = selected;
-                    SelectedResult = selected;
+                    Set(ref _selectedGeneration, selected, nameof(SelectedGeneration));
+                    if (selectedImage != null)
+                    {
+                        SelectedResult = selectedImage;
+                    }
+                    else
+                    {
+                        SelectedResult = selected;
+                    }
                 }
                 if (Navigation.IsResultsView == true)
                 {
+                    List<GenerationItem> thumbnailItems = new List<GenerationItem>();
                     foreach (GenerationItem item in items)
+                    {
+                        if (item.IsAssetCollection == true)
+                        {
+                            thumbnailItems.AddRange(item.CollectionImages);
+                        }
+                        else
+                        {
+                            thumbnailItems.Add(item);
+                        }
+                    }
+                    foreach (GenerationItem item in thumbnailItems)
                     {
                         item.BeginThumbnailLoad();
                     }
-                    thumbnails = await Task.Run(() => LoadGalleryThumbnails(snapshot.Page.Images, token), token);
-                    if (token.IsCancellationRequested == true || request != _galleryLoadRequest)
+                    List<GenerationImage> thumbnailImages = thumbnailItems.Select(item => item.Image).ToList();
+                    thumbnails = await Task.Run(() => LoadGalleryThumbnails(thumbnailImages, cancellationToken), cancellationToken);
+                    if (cancellationToken.IsCancellationRequested == true)
                     {
                         return;
                     }
-                    for (int index = 0; index < items.Count; index++)
+                    if (requestNumber != _galleryLoadRequest)
                     {
-                        items[index].SetThumbnail(thumbnails[index]);
+                        return;
+                    }
+                    for (int index = 0; index < thumbnailItems.Count; index++)
+                    {
+                        thumbnailItems[index].SetThumbnail(thumbnails[index]);
                         thumbnails[index] = null;
                     }
                 }
             }
-            catch (OperationCanceledException) when (token.IsCancellationRequested == true)
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested == true)
             {
             }
             catch (Exception error)
             {
-                if (Session.IsClosing == false && request == _galleryLoadRequest)
+                if (Session.IsClosing == false)
                 {
-                    LogHelper.Error(error);
-                    GalleryError = _strings.GetExceptionMessage(error);
+                    if (requestNumber == _galleryLoadRequest)
+                    {
+                        LogHelper.Error(error);
+                        GalleryError = _strings.GetExceptionMessage(error);
+                    }
                 }
             }
             finally
@@ -423,7 +683,7 @@ namespace Eidolon.App.ViewModels
                 {
                     _galleryLoadCancellation = null;
                 }
-                if (request == _galleryLoadRequest)
+                if (requestNumber == _galleryLoadRequest)
                 {
                     IsGalleryLoading = false;
                 }
@@ -484,9 +744,7 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        public GalleryViewModel(StudioSession session, StudioNavigationViewModel navigation,
-            StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs,
-            GenerationViewModel generation, TrainingViewModel training, JobStore jobs, AssetCreationViewModel creation) : base(session, navigation, work, strings, dialogs)
+        public GalleryViewModel(StudioSession session, StudioNavigationViewModel navigation, StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs, GenerationViewModel generation, TrainingViewModel training, JobStore jobs, AssetCreationViewModel creation) : base(session, navigation, work, strings, dialogs)
         {
             Generation = generation;
             Training = training;
@@ -512,10 +770,8 @@ namespace Eidolon.App.ViewModels
                 return Task.CompletedTask;
             }, () => Session.IsClosing == false && HasGallerySelection == true);
             ExportCommand = Command(() => _dialogs.ExportImageAsync(_previewPath), () => Session.IsClosing == false && HasPreview == true);
-            DeleteGenerationCommand = Command(() => DeleteGenerationsAsync(false),
-                () => Session.IsIdle == true && IsGalleryLoading == false && HasGallerySelection == true);
-            DeleteAllGenerationsCommand = Command(() => DeleteGenerationsAsync(true),
-                () => Session.IsIdle == true && IsGalleryLoading == false && HasGenerations == true);
+            DeleteGenerationCommand = Command(() => DeleteGenerationsAsync(false), () => CanDeleteGallerySelection);
+            DeleteAllGenerationsCommand = Command(() => DeleteGenerationsAsync(true), () => CanDeleteAllGenerations);
             ReusePromptCommand = Command(() => Generation.ReusePromptAsync(SelectedResult.Metadata),
                 () => Session.IsClosing == false && SelectedResult != null && SelectedResult.HasMetadata == true);
             UseResultForTrainingCommand = Command(() => Training.UseResultForTrainingAsync(SelectedResult, _previewPath),

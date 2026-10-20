@@ -467,33 +467,74 @@ namespace Eidolon.App.ViewModels
         private async Task DeleteAssetAsync(ModelAsset model, bool downloadedOnly)
         {
             DesktopSettings settings = Session.CreateActiveSettings(Session.Settings);
-            string path = new RuntimeLayout(settings.InstallDirectory).AssetPath(model);
-            string id = model.Id;
-            string name = model.Name;
-            if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText556"),
-                _strings.Format("EidolonText557", name, path)) == false)
+            ModelAsset asset = model.Copy();
+            string path = new RuntimeLayout(settings.InstallDirectory).AssetPath(asset);
+            if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText556"), _strings.Format("EidolonText557", asset.Name, path)) == false)
             {
                 return;
             }
-            await Session.WorkAsync(async token =>
+            await EnqueueDeleteAssetAsync(settings, asset, downloadedOnly);
+        }
+
+        internal Task EnqueueDeleteAssetAsync(string assetId)
+        {
+            if (Session.CanQueue == false)
+            {
+                throw new ArgumentException("Eidolon is not ready to accept a model deletion request.");
+            }
+            if (CanManageDownloadedModels == false)
+            {
+                throw new ArgumentException("Model deletion requires an idle queue and an installed local runtime using local assets.");
+            }
+            AssetItem item = Library.FirstOrDefault(assetItem => assetItem.Asset.Id == assetId);
+            if (item == null)
+            {
+                throw new ArgumentException("asset_id must identify a registered local checkpoint or LoRA from eidolon_list_models.");
+            }
+            ModelAsset asset = item.Asset.Copy();
+            if (ComfyServerAddress.IsExternalAsset(asset) == true)
+            {
+                throw new ArgumentException("External server assets cannot be deleted.");
+            }
+            if (asset.Kind != AssetKind.Checkpoint)
+            {
+                if (asset.Kind != AssetKind.Lora)
+                {
+                    throw new ArgumentException("asset_id must identify a checkpoint or LoRA.");
+                }
+            }
+            DesktopSettings settings = Session.CreateActiveSettings(Session.Settings);
+            RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+            if (string.Equals(asset.RuntimeRoot, layout.Root, StringComparison.OrdinalIgnoreCase) == false)
+            {
+                throw new StudioException(StudioMessageCode.AssetSourceMismatch);
+            }
+            return EnqueueDeleteAssetAsync(settings, asset, false);
+        }
+
+        private Task EnqueueDeleteAssetAsync(DesktopSettings settings, ModelAsset asset, bool downloadedOnly)
+        {
+            string assetId = asset.Id;
+            string assetName = asset.Name;
+            return Session.WorkAsync(async cancellationToken =>
             {
                 try
                 {
                     if (downloadedOnly == true)
                     {
-                        await _assets.DeleteDownloadedAsync(settings, id, token);
+                        await _assets.DeleteDownloadedAsync(settings, assetId, cancellationToken);
                     }
                     else
                     {
-                        await _assets.DeleteAsync(settings, id, token);
+                        await _assets.DeleteAsync(settings, assetId, cancellationToken);
                     }
-                    if (Session.Settings.DefaultModelId == id)
+                    if (Session.Settings.DefaultModelId == assetId)
                     {
                         Session.Settings.DefaultModelId = string.Empty;
                         Session.SettingsDraft.DefaultModelId = string.Empty;
                         Session.SaveSettings(Session.Settings);
                     }
-                    Session.Status = _strings.Format("EidolonText558", name);
+                    Session.Status = _strings.Format("EidolonText558", assetName);
                 }
                 finally
                 {

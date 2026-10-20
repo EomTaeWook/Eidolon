@@ -10,5 +10,6 @@ namespace Eidolon.Core.Domain
         public DateTimeOffset CreatedAtUtc { get; set; }
         public GenerationMetadata Metadata { get; set; }
         public Exception MetadataError { get; set; }
+        public List<GenerationImage> CollectionImages { get; set; } = new List<GenerationImage>();
     }
 }

@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Eidolon.Core.Domain;
 
 namespace Eidolon.Core.Infrastructure
@@ -67,37 +66,5 @@ namespace Eidolon.Core.Infrastructure
             return path;
         }
 
-        public void EnsureInstalled(bool needsTraining = false)
-        {
-            if (OperatingSystem.IsWindows() == false || RuntimeInformation.ProcessArchitecture != Architecture.X64)
-            {
-                throw new StudioException(StudioMessageCode.UnsupportedRuntimePlatform);
-            }
-            RuntimeManifest manifest = new AtomicJsonFile().Read<RuntimeManifest>(Path.Combine(Root, "Runtime.json"));
-            if (manifest == null)
-            {
-                throw new StudioException(StudioMessageCode.RuntimeNotInstalled);
-            }
-            if (manifest.State != "Ready")
-            {
-                throw new StudioException(StudioMessageCode.RuntimeIncomplete);
-            }
-            if (manifest.Owner != "Eidolon" || manifest.SchemaVersion != 1)
-            {
-                throw new StudioException(StudioMessageCode.UnsupportedRuntimeSchema);
-            }
-            if (manifest.ComfyVersion != ComfyVersion || manifest.TrainingVersion != TrainingVersion)
-            {
-                throw new StudioException(StudioMessageCode.RuntimeVersionMismatch);
-            }
-            if (File.Exists(ComfyPython) == false || File.Exists(Path.Combine(ComfyDirectory, "main.py")) == false)
-            {
-                throw new StudioException(StudioMessageCode.GenerationRuntimeMissing);
-            }
-            if (needsTraining == true && File.Exists(TrainingPython) == false)
-            {
-                throw new StudioException(StudioMessageCode.TrainingRuntimeMissing);
-            }
-        }
     }
 }

@@ -21,6 +21,58 @@ namespace Eidolon.Core.Infrastructure
             _modules = modules;
         }
 
+        public void EnsureInstalled(RuntimeLayout runtimeLayout, bool needsTraining = false)
+        {
+            if (OperatingSystem.IsWindows() == false)
+            {
+                throw new StudioException(StudioMessageCode.UnsupportedRuntimePlatform);
+            }
+            if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
+            {
+                throw new StudioException(StudioMessageCode.UnsupportedRuntimePlatform);
+            }
+            RuntimeManifest runtimeManifest = _json.Read<RuntimeManifest>(Path.Combine(runtimeLayout.Root, "Runtime.json"));
+            if (runtimeManifest == null)
+            {
+                throw new StudioException(StudioMessageCode.RuntimeNotInstalled);
+            }
+            if (runtimeManifest.State != "Ready")
+            {
+                throw new StudioException(StudioMessageCode.RuntimeIncomplete);
+            }
+            if (runtimeManifest.Owner != "Eidolon")
+            {
+                throw new StudioException(StudioMessageCode.UnsupportedRuntimeSchema);
+            }
+            if (runtimeManifest.SchemaVersion != 1)
+            {
+                throw new StudioException(StudioMessageCode.UnsupportedRuntimeSchema);
+            }
+            if (runtimeManifest.ComfyVersion != RuntimeLayout.ComfyVersion)
+            {
+                throw new StudioException(StudioMessageCode.RuntimeVersionMismatch);
+            }
+            if (runtimeManifest.TrainingVersion != RuntimeLayout.TrainingVersion)
+            {
+                throw new StudioException(StudioMessageCode.RuntimeVersionMismatch);
+            }
+            if (File.Exists(runtimeLayout.ComfyPython) == false)
+            {
+                throw new StudioException(StudioMessageCode.GenerationRuntimeMissing);
+            }
+            if (File.Exists(Path.Combine(runtimeLayout.ComfyDirectory, "main.py")) == false)
+            {
+                throw new StudioException(StudioMessageCode.GenerationRuntimeMissing);
+            }
+            if (needsTraining == true)
+            {
+                if (File.Exists(runtimeLayout.TrainingPython) == false)
+                {
+                    throw new StudioException(StudioMessageCode.TrainingRuntimeMissing);
+                }
+            }
+        }
+
         public IReadOnlyList<RuntimeModule> ReadModules(string installDirectory, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();

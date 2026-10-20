@@ -16,20 +16,20 @@ namespace Eidolon.Core.Application
         private readonly ISeedProvider _seeds;
         private readonly BackgroundRemovalService _backgroundRemoval;
         private readonly CodexImageEngine _codex;
+        private readonly RuntimeInstaller _runtimeInstaller;
         private readonly SemaphoreSlim _gpuGate = new SemaphoreSlim(1, 1);
 
-        public StudioService(AssetLibrary assets, JobStore jobs, ComfyEngine engine,
-            LoraTrainer trainer, TimeProvider time, ISeedProvider seeds, BackgroundRemovalService backgroundRemoval,
-            CodexImageEngine codex)
+        public StudioService(AssetLibrary assetLibrary, JobStore jobStore, ComfyEngine comfyEngine, LoraTrainer loraTrainer, TimeProvider timeProvider, ISeedProvider seedProvider, BackgroundRemovalService backgroundRemovalService, CodexImageEngine codexImageEngine, RuntimeInstaller runtimeInstaller)
         {
-            _assets = assets;
-            _jobs = jobs;
-            _engine = engine;
-            _trainer = trainer;
-            _time = time;
-            _seeds = seeds;
-            _backgroundRemoval = backgroundRemoval;
-            _codex = codex;
+            _assets = assetLibrary;
+            _jobs = jobStore;
+            _engine = comfyEngine;
+            _trainer = loraTrainer;
+            _time = timeProvider;
+            _seeds = seedProvider;
+            _backgroundRemoval = backgroundRemovalService;
+            _codex = codexImageEngine;
+            _runtimeInstaller = runtimeInstaller;
         }
 
         public async Task<JobRecord> GenerateAsync(StudioSettings settings, string prompt, ModelAsset model,
@@ -529,7 +529,7 @@ namespace Eidolon.Core.Application
                 return;
             }
             RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
-            layout.EnsureInstalled();
+            _runtimeInstaller.EnsureInstalled(layout);
             if (asset.RuntimeRoot.Equals(layout.Root, StringComparison.OrdinalIgnoreCase) == false)
             {
                 throw new StudioException(StudioMessageCode.AssetSourceMismatch);

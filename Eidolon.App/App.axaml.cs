@@ -80,11 +80,8 @@ namespace Eidolon.App
             _serviceContainer.RegisterType<Application>(this);
             _serviceContainer.RegisterType(desktop);
             _serviceContainer.RegisterType(CreateUpdateEnvironment());
-            _serviceContainer.RegisterType<ApplicationUpdateFiles, ApplicationUpdateFiles>(LifeScope.Singleton);
             _serviceContainer.RegisterType<ApplicationUpdateService>(provider => new ApplicationUpdateService(
                 provider.GetService<ApplicationUpdateEnvironment>(), _updateHttp, provider.GetService<ApplicationUpdateFiles>()), LifeScope.Singleton);
-            _serviceContainer.RegisterType<ApplicationUpdateInstaller, ApplicationUpdateInstaller>(LifeScope.Singleton);
-            _serviceContainer.RegisterType<ApplicationUpdateRestartPresenter, ApplicationUpdateRestartPresenter>(LifeScope.Singleton);
             _serviceContainer.RegisterType(TimeProvider.System);
             _serviceContainer.RegisterType(new StringLanguageSelection(new DesktopSettings().Language));
             _serviceContainer.RegisterType<AtomicJsonFile, AtomicJsonFile>(LifeScope.Singleton);
@@ -110,8 +107,6 @@ namespace Eidolon.App
             _serviceContainer.RegisterType<AssetCreationService, AssetCreationService>(LifeScope.Singleton);
             _serviceContainer.RegisterType<AssetFramePromptBuilder, AssetFramePromptBuilder>(LifeScope.Singleton);
             _serviceContainer.RegisterType<StudioWorkQueue, StudioWorkQueue>(LifeScope.Singleton);
-            _serviceContainer.RegisterType<ThemeService, ThemeService>(LifeScope.Singleton);
-            _serviceContainer.RegisterType<LanguageService, LanguageService>(LifeScope.Singleton);
             _serviceContainer.RegisterType<MainWindow, MainWindow>(LifeScope.Singleton);
             _serviceContainer.RegisterType<FileDownloader>(provider => new FileDownloader(
                 _downloadsHttp, provider.GetService<TimeProvider>()), LifeScope.Singleton);
@@ -119,11 +114,8 @@ namespace Eidolon.App
                 provider.GetService<FileDownloader>(), Path.Combine(dataDirectory, "Models", "BackgroundRemoval")), LifeScope.Singleton);
             _serviceContainer.RegisterType<SettingsStore>(provider => new SettingsStore(
                 dataDirectory, provider.GetService<AtomicJsonFile>(), provider.GetService<StringHelper>()), LifeScope.Singleton);
-            _serviceContainer.RegisterType<JobStore>(provider => new JobStore(
-                dataDirectory, provider.GetService<AtomicJsonFile>()), LifeScope.Singleton);
-            _serviceContainer.RegisterType<AssetLibrary>(provider => new AssetLibrary(
-                dataDirectory, provider.GetService<AtomicJsonFile>(), provider.GetService<SafetensorsInspector>(),
-                provider.GetService<FileDownloader>(), provider.GetService<TimeProvider>()), LifeScope.Singleton);
+            _serviceContainer.RegisterType<JobStore>(provider => new JobStore(dataDirectory, provider.GetService<AtomicJsonFile>(), provider.GetService<RuntimeInstaller>()), LifeScope.Singleton);
+            _serviceContainer.RegisterType<AssetLibrary>(provider => new AssetLibrary(dataDirectory, provider.GetService<AtomicJsonFile>(), provider.GetService<SafetensorsInspector>(), provider.GetService<FileDownloader>(), provider.GetService<TimeProvider>(), provider.GetService<RuntimeInstaller>()), LifeScope.Singleton);
             _serviceContainer.RegisterType<ComfyEngine>(provider => new ComfyEngine(
                 _engineHttp, provider.GetService<ProcessRunner>(), provider.GetService<RuntimeInstaller>(),
                 provider.GetService<ComfyWorkflowBuilder>(), provider.GetService<FileDownloader>(),

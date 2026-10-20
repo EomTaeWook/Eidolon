@@ -22,13 +22,13 @@ namespace Eidolon.App.Services
 
         public async Task<string> PickFolderAsync(string title)
         {
-            IReadOnlyList<IStorageFolder> folders = await _desktop.MainWindow.StorageProvider.OpenFolderPickerAsync(
-                new FolderPickerOpenOptions { Title = title, AllowMultiple = false });
+            IReadOnlyList<IStorageFolder> folders = await _desktop.MainWindow.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = title, AllowMultiple = false });
             if (folders.Count == 0)
             {
                 return string.Empty;
             }
-            string path = folders[0].TryGetLocalPath();
+            using IStorageFolder selectedFolder = folders[0];
+            string path = selectedFolder.TryGetLocalPath();
             if (string.IsNullOrEmpty(path) == true)
             {
                 throw new InvalidOperationException(_strings.GetString("EidolonText202"));
@@ -48,7 +48,8 @@ namespace Eidolon.App.Services
             {
                 return string.Empty;
             }
-            string path = files[0].TryGetLocalPath();
+            using IStorageFile executableFile = files[0];
+            string path = executableFile.TryGetLocalPath();
             if (string.IsNullOrEmpty(path) == true)
             {
                 throw new StudioException(StudioMessageCode.CodexExecutableNotFound);
@@ -71,7 +72,8 @@ namespace Eidolon.App.Services
             {
                 return string.Empty;
             }
-            string path = files[0].TryGetLocalPath();
+            using IStorageFile referenceFile = files[0];
+            string path = referenceFile.TryGetLocalPath();
             if (string.IsNullOrEmpty(path) == true)
             {
                 throw new StudioException(StudioMessageCode.InvalidReferenceImage);
@@ -90,22 +92,32 @@ namespace Eidolon.App.Services
                     Patterns = new[] { "*.png", "*.jpg", "*.jpeg", "*.bmp" }
                 } }
             });
-            List<string> paths = new List<string>();
-            foreach (IStorageFile file in files)
+            try
             {
-                string path = file.TryGetLocalPath();
-                if (string.IsNullOrEmpty(path) == true)
+                List<string> paths = new List<string>();
+                foreach (IStorageFile file in files)
                 {
-                    throw new StudioException(StudioMessageCode.TrainingImagesMissing);
+                    string path = file.TryGetLocalPath();
+                    if (string.IsNullOrEmpty(path) == true)
+                    {
+                        throw new StudioException(StudioMessageCode.TrainingImagesMissing);
+                    }
+                    paths.Add(path);
                 }
-                paths.Add(path);
+                return paths;
             }
-            return paths;
+            finally
+            {
+                foreach (IStorageFile file in files)
+                {
+                    file.Dispose();
+                }
+            }
         }
 
         public async Task ExportImageAsync(string source)
         {
-            IStorageFile target = await _desktop.MainWindow.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            using IStorageFile target = await _desktop.MainWindow.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = _strings.GetString("EidolonText205"),
                 SuggestedFileName = Path.GetFileName(source),
@@ -118,9 +130,12 @@ namespace Eidolon.App.Services
                 return;
             }
             string targetPath = target.TryGetLocalPath();
-            if (targetPath != null && Path.GetFullPath(targetPath).Equals(Path.GetFullPath(source), StringComparison.OrdinalIgnoreCase) == true)
+            if (targetPath != null)
             {
-                return;
+                if (Path.GetFullPath(targetPath).Equals(Path.GetFullPath(source), StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return;
+                }
             }
             await using Stream input = File.OpenRead(source);
             await using Stream output = await target.OpenWriteAsync();

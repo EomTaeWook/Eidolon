@@ -2,19 +2,22 @@ using Dignus.Log;
 using Eidolon.Core.Application;
 using Eidolon.Core.Domain;
 using System.Globalization;
+using System.Text.Json.Nodes;
 
 namespace Eidolon.Core.Infrastructure
 {
     public class JobStore
     {
         private readonly AtomicJsonFile _json;
+        private readonly RuntimeInstaller _runtimeInstaller;
         private readonly string _directory;
         private readonly string _imagesDirectory;
         private readonly object _gate = new object();
 
-        public JobStore(string dataDirectory, AtomicJsonFile json)
+        public JobStore(string dataDirectory, AtomicJsonFile atomicJsonFile, RuntimeInstaller runtimeInstaller)
         {
-            _json = json;
+            _json = atomicJsonFile;
+            _runtimeInstaller = runtimeInstaller;
             _directory = Path.GetFullPath(Path.Combine(dataDirectory, "Jobs"));
             _imagesDirectory = Path.GetFullPath(Path.Combine(dataDirectory, "Images"));
         }
@@ -45,7 +48,7 @@ namespace Eidolon.Core.Infrastructure
         public int ClearTrainingDatasets(StudioSettings settings, CancellationToken token)
         {
             RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
-            layout.EnsureInstalled();
+            _runtimeInstaller.EnsureInstalled(layout);
             string root = Path.GetFullPath(layout.TrainingDataDirectory);
             EnsureRegularDirectoryParents(root);
             if (Directory.Exists(root) == false)
@@ -164,17 +167,21 @@ namespace Eidolon.Core.Infrastructure
             }
         }
 
-        public void DeleteAssetCollection(string id, CancellationToken token)
+        public void DeleteAssetCollection(string collectionId, CancellationToken cancellationToken)
         {
             lock (_gate)
             {
-                string directory = Path.GetFullPath(DirectoryFor(id));
+                string directory = Path.GetFullPath(DirectoryFor(collectionId));
                 if (string.Equals(Path.GetDirectoryName(directory), _directory, StringComparison.OrdinalIgnoreCase) == false)
                 {
                     throw new StudioException(StudioMessageCode.InvalidJobDirectory);
                 }
-                EnsureRegularDirectoryTree(directory, token);
-                AssetCollection collection = LoadAssetCollection(id);
+                EnsureRegularDirectoryTree(directory, cancellationToken);
+                AssetCollection collection = LoadAssetCollection(collectionId);
+                if (collection.Kind == AssetCreationKind.SpriteAnimation)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
                 if (collection.State == JobState.Preparing)
                 {
                     throw new StudioException(StudioMessageCode.GenerationRecordBusy);
@@ -187,38 +194,170 @@ namespace Eidolon.Core.Infrastructure
                 {
                     throw new StudioException(StudioMessageCode.InvalidJobDirectory);
                 }
-                token.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
                 EnsureRegularDirectoryParents(directory);
                 Directory.Delete(directory, true);
             }
         }
 
-        public AssetCollection LoadAssetCollection(string id)
+        public AssetCollection LoadAssetCollection(string collectionId)
         {
             lock (_gate)
             {
-                AssetCollection collection = _json.Read<AssetCollection>(Path.Combine(DirectoryFor(id), "AssetCollection.json"));
-                if (collection == null || collection.Id != id || collection.Format != AssetCollection.DocumentFormat
-                    || collection.SchemaVersion != 1 || collection.Frames == null || collection.Model == null
-                    || collection.Loras == null || collection.Settings == null || Enum.IsDefined(collection.Kind) == false
-                    || collection.Frames.Count < 2 || collection.Frames.Count > AssetCreationInput.MaximumFrames
-                    || collection.Frames.Any(frame => frame == null || frame.ImagePath == null || frame.Prompt == null
-                        || frame.Label == null || frame.Seed < 0 || frame.ImageSeed < 0 || frame.ErrorArguments == null
-                        || Enum.IsDefined(frame.State) == false || Enum.IsDefined(frame.ErrorCode) == false) == true
-                    || collection.Loras.Any(lora => lora == null) == true
-                    || string.IsNullOrWhiteSpace(collection.Prompt) == true || collection.Seed < 0
-                    || Enum.IsDefined(collection.State) == false || Enum.IsDefined(collection.ErrorCode) == false || collection.ErrorArguments == null
-                    || collection.FrameWidth < 16 || collection.FrameWidth > AssetCreationInput.MaximumFrameSize
-                    || collection.FrameHeight < 16 || collection.FrameHeight > AssetCreationInput.MaximumFrameSize
-                    || collection.Columns < 1 || collection.Columns > AssetCreationInput.MaximumFrames
-                    || collection.FramesPerSecond < 1 || collection.FramesPerSecond > 60
-                    || double.IsFinite(collection.ChangeStrength) == false || collection.ChangeStrength < 0.05 || collection.ChangeStrength > 0.95)
+                AssetCollection collection = _json.Read<AssetCollection>(Path.Combine(DirectoryFor(collectionId), "AssetCollection.json"));
+                if (collection == null)
                 {
                     throw new StudioException(StudioMessageCode.InvalidAssetCollection);
                 }
-                if (collection.Kind == AssetCreationKind.FourViews)
+                if (collection.Id != collectionId)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Format != AssetCollection.DocumentFormat)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.SchemaVersion != 1)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Frames == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Model == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Loras == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Settings == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (Enum.IsDefined(collection.Kind) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Frames.Count < 2)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Frames.Count > AssetCreationInput.MaximumFrames)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                foreach (AssetFrame frame in collection.Frames)
+                {
+                    if (frame == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                    if (frame.ImagePath == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                    if (frame.Prompt == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                    if (frame.Label == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                    if (frame.Seed < 0)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                    if (frame.ImageSeed < 0)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                    if (frame.ErrorArguments == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                    if (Enum.IsDefined(frame.State) == false)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                    if (Enum.IsDefined(frame.ErrorCode) == false)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                }
+                if (collection.Loras.Any(lora => lora == null) == true)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (string.IsNullOrWhiteSpace(collection.Prompt) == true)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Seed < 0)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (Enum.IsDefined(collection.State) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (Enum.IsDefined(collection.ErrorCode) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.ErrorArguments == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.FrameWidth < 16)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.FrameWidth > AssetCreationInput.MaximumFrameSize)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.FrameHeight < 16)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.FrameHeight > AssetCreationInput.MaximumFrameSize)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Columns < 1)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Columns > AssetCreationInput.MaximumFrames)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (double.IsFinite(collection.ChangeStrength) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.ChangeStrength < 0.05)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.ChangeStrength > 0.95)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Kind == AssetCreationKind.FiveViews)
                 {
                     if (collection.Frames.Count != AssetCreationInput.ViewCount)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                }
+                if (collection.Kind == AssetCreationKind.FourViews)
+                {
+                    if (collection.Frames.Count != 4)
                     {
                         throw new StudioException(StudioMessageCode.InvalidAssetCollection);
                     }
@@ -237,9 +376,9 @@ namespace Eidolon.Core.Infrastructure
                         throw new StudioException(StudioMessageCode.InvalidAssetCollection);
                     }
                 }
-                for (int index = 0; index < collection.Frames.Count; index++)
+                for (int frameIndex = 0; frameIndex < collection.Frames.Count; frameIndex++)
                 {
-                    if (collection.Frames[index].Number != index + 1)
+                    if (collection.Frames[frameIndex].Number != frameIndex + 1)
                     {
                         throw new StudioException(StudioMessageCode.InvalidAssetCollection);
                     }
@@ -249,7 +388,7 @@ namespace Eidolon.Core.Infrastructure
             }
         }
 
-        public List<AssetCollection> LoadAssetCollections(CancellationToken token)
+        public List<AssetCollection> LoadAssetCollections(CancellationToken cancellationToken)
         {
             lock (_gate)
             {
@@ -260,14 +399,19 @@ namespace Eidolon.Core.Infrastructure
                 }
                 foreach (string directory in Directory.EnumerateDirectories(_directory))
                 {
-                    token.ThrowIfCancellationRequested();
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (File.Exists(Path.Combine(directory, "AssetCollection.json")) == false)
                     {
                         continue;
                     }
                     try
                     {
-                        collections.Add(LoadAssetCollection(Path.GetFileName(directory)));
+                        AssetCollection collection = LoadAssetCollection(Path.GetFileName(directory));
+                        if (collection.Kind == AssetCreationKind.SpriteAnimation)
+                        {
+                            continue;
+                        }
+                        collections.Add(collection);
                     }
                     catch (Exception error) when (error is not OperationCanceledException)
                     {
@@ -286,8 +430,7 @@ namespace Eidolon.Core.Infrastructure
             }
         }
 
-        public GenerationPage LoadGenerationPage(string generationDirectory, int number, int pageSize,
-            CancellationToken token)
+        public GenerationPage LoadGenerationPage(string generationDirectory, int number, int pageSize, CancellationToken token, bool includeImages = true, bool includeAssetCollections = true, bool groupAssetCollections = false)
         {
             if (number < 1)
             {
@@ -300,22 +443,111 @@ namespace Eidolon.Core.Infrastructure
             lock (_gate)
             {
                 List<FileInfo> files = ReadImageFiles(generationDirectory, token);
-                GenerationPage page = new GenerationPage();
-                page.TotalCount = files.Count;
-                page.PageCount = Math.Max(1, (files.Count + pageSize - 1) / pageSize);
-                page.Number = Math.Min(number, page.PageCount);
-                if (files.Count > 0)
+                if (includeImages == true)
                 {
-                    page.LatestImagePath = files[0].FullName;
-                }
-                foreach (FileInfo file in files.Skip((page.Number - 1) * pageSize).Take(pageSize))
-                {
-                    GenerationImage image = FindGenerationImage(generationDirectory, file.FullName, token);
-                    if (image != null)
+                    if (includeAssetCollections == true)
                     {
-                        page.Images.Add(image);
+                        if (groupAssetCollections == false)
+                        {
+                            GenerationPage rawPage = new GenerationPage();
+                            rawPage.TotalCount = files.Count;
+                            rawPage.PageCount = Math.Max(1, (files.Count + pageSize - 1) / pageSize);
+                            rawPage.Number = Math.Min(number, rawPage.PageCount);
+                            if (files.Count > 0)
+                            {
+                                rawPage.LatestImagePath = files[0].FullName;
+                            }
+                            foreach (FileInfo file in files.Skip((rawPage.Number - 1) * pageSize).Take(pageSize))
+                            {
+                                GenerationImage image = FindGenerationImage(generationDirectory, file.FullName, token);
+                                if (image != null)
+                                {
+                                    rawPage.Images.Add(image);
+                                }
+                            }
+                            return rawPage;
+                        }
                     }
                 }
+                List<GenerationImage> visibleImages = new List<GenerationImage>();
+                List<GenerationImage> collectionImages = new List<GenerationImage>();
+                foreach (FileInfo file in files)
+                {
+                    token.ThrowIfCancellationRequested();
+                    GenerationImage image = FindGenerationImage(generationDirectory, file.FullName, token);
+                    if (image == null)
+                    {
+                        continue;
+                    }
+                    bool belongsToCollection = false;
+                    if (image.Metadata != null)
+                    {
+                        belongsToCollection = Guid.TryParseExact(image.Metadata.AssetCollectionId, "N", out _);
+                        if (image.Metadata.AssetFrameNumber < 1)
+                        {
+                            belongsToCollection = false;
+                        }
+                        if (image.Metadata.AssetFrameNumber > AssetCreationInput.ViewCount)
+                        {
+                            belongsToCollection = false;
+                        }
+                        if (string.IsNullOrWhiteSpace(image.Metadata.AssetFrameLabel) == true)
+                        {
+                            belongsToCollection = false;
+                        }
+                    }
+                    if (belongsToCollection == true)
+                    {
+                        if (includeAssetCollections == true)
+                        {
+                            collectionImages.Add(image);
+                        }
+                        continue;
+                    }
+                    if (includeImages == true)
+                    {
+                        visibleImages.Add(image);
+                    }
+                }
+                if (groupAssetCollections == true)
+                {
+                    foreach (IGrouping<string, GenerationImage> collectionGroup in collectionImages.GroupBy(image => image.Metadata.AssetCollectionId, StringComparer.OrdinalIgnoreCase))
+                    {
+                        token.ThrowIfCancellationRequested();
+                        List<GenerationImage> members = collectionGroup.OrderByDescending(image => image.CreatedAtUtc).ThenBy(image => image.FilePath, StringComparer.OrdinalIgnoreCase).ToList();
+                        GenerationImage representative = members.FirstOrDefault(image => string.Equals(image.Metadata.AssetFrameLabel, "front", StringComparison.OrdinalIgnoreCase));
+                        if (representative == null)
+                        {
+                            representative = members.FirstOrDefault(image => image.Metadata.AssetFrameNumber == 1);
+                        }
+                        if (representative == null)
+                        {
+                            representative = members[0];
+                        }
+                        visibleImages.Add(new GenerationImage
+                        {
+                            FilePath = representative.FilePath,
+                            CreatedAtUtc = members[0].CreatedAtUtc,
+                            Metadata = representative.Metadata,
+                            MetadataError = representative.MetadataError,
+                            CollectionImages = members
+                        });
+                    }
+                }
+                else
+                {
+                    visibleImages.AddRange(collectionImages);
+                }
+                visibleImages = visibleImages.OrderByDescending(image => image.CreatedAtUtc).ThenBy(image => image.FilePath, StringComparer.OrdinalIgnoreCase).ToList();
+                GenerationPage page = new GenerationPage();
+                page.TotalCount = visibleImages.Count;
+                page.PageCount = Math.Max(1, (visibleImages.Count + pageSize - 1) / pageSize);
+                page.Number = Math.Min(number, page.PageCount);
+                if (visibleImages.Count > 0)
+                {
+                    page.LatestImagePath = visibleImages[0].FilePath;
+                }
+                page.Images = visibleImages.Skip((page.Number - 1) * pageSize).Take(pageSize).ToList();
                 return page;
             }
         }
@@ -435,6 +667,148 @@ namespace Eidolon.Core.Infrastructure
                     }
                 }
                 return metadata;
+            }
+        }
+
+        internal void SaveAssetFrameMetadata(AssetCollection collection, AssetFrame frame, JobRecord sourceJob, string imagePath, CancellationToken cancellationToken)
+        {
+            lock (_gate)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (collection.Kind == AssetCreationKind.SpriteAnimation)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (Guid.TryParseExact(collection.Id, "N", out _) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (frame.Number < 1)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (frame.Number > collection.Frames.Count)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (collection.Frames[frame.Number - 1] != frame)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (string.IsNullOrWhiteSpace(frame.Label) == true)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                if (sourceJob.Kind != JobKind.Generation)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (sourceJob.State != JobState.Completed)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                if (string.IsNullOrWhiteSpace(sourceJob.OutputDirectory) == true)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationDirectory);
+                }
+                string outputDirectory = OutputDirectory(sourceJob.OutputDirectory);
+                string publishedImagePath = ValidateImagePath(outputDirectory, imagePath);
+                EnsureRegularDirectoryParents(outputDirectory);
+                if (File.Exists(publishedImagePath) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidJobImagePath);
+                }
+                if ((File.GetAttributes(publishedImagePath) & FileAttributes.ReparsePoint) != 0)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidJobImagePath);
+                }
+                bool matchesSourceImage = false;
+                foreach (string relativeImagePath in sourceJob.ImageFiles)
+                {
+                    if (string.Equals(ImagePath(sourceJob, relativeImagePath), publishedImagePath, StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                        matchesSourceImage = true;
+                        break;
+                    }
+                }
+                if (matchesSourceImage == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                }
+                string metadataPath = Path.ChangeExtension(publishedImagePath, ".json");
+                if (File.Exists(metadataPath) == false)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                }
+                if ((File.GetAttributes(metadataPath) & FileAttributes.ReparsePoint) != 0)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidJobImagePath);
+                }
+                string metadataBackupPath = metadataPath + ".bak";
+                if (File.Exists(metadataBackupPath) == true)
+                {
+                    if ((File.GetAttributes(metadataBackupPath) & FileAttributes.ReparsePoint) != 0)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidJobImagePath);
+                    }
+                }
+                GenerationMetadata metadata = ReadGenerationMetadata(publishedImagePath);
+                if (metadata == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                }
+                if (metadata.SourceJobId != sourceJob.Id)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                }
+                if (string.IsNullOrEmpty(metadata.AssetCollectionId) == false)
+                {
+                    if (metadata.AssetCollectionId != collection.Id)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                    }
+                }
+                if (metadata.AssetFrameNumber != 0)
+                {
+                    if (metadata.AssetFrameNumber != frame.Number)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                    }
+                }
+                if (string.IsNullOrEmpty(metadata.AssetFrameLabel) == false)
+                {
+                    if (metadata.AssetFrameLabel != frame.Label)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                    }
+                }
+                bool needsUpdate = false;
+                if (metadata.AssetCollectionId != collection.Id)
+                {
+                    needsUpdate = true;
+                }
+                if (metadata.AssetFrameNumber != frame.Number)
+                {
+                    needsUpdate = true;
+                }
+                if (metadata.AssetFrameLabel != frame.Label)
+                {
+                    needsUpdate = true;
+                }
+                if (needsUpdate == false)
+                {
+                    return;
+                }
+                JsonObject metadataDocument = _json.Read<JsonObject>(metadataPath);
+                if (metadataDocument == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                }
+                metadataDocument[nameof(GenerationMetadata.AssetCollectionId)] = collection.Id;
+                metadataDocument[nameof(GenerationMetadata.AssetFrameNumber)] = frame.Number;
+                metadataDocument[nameof(GenerationMetadata.AssetFrameLabel)] = frame.Label;
+                cancellationToken.ThrowIfCancellationRequested();
+                _json.Write(metadataPath, metadataDocument);
             }
         }
 
@@ -559,8 +933,19 @@ namespace Eidolon.Core.Infrastructure
                 foreach (JobHeader header in ReadHeaders(token))
                 {
                     token.ThrowIfCancellationRequested();
-                    if (header.Kind != JobKind.Generation || header.HasImageMetadata == true
-                        || header.State == JobState.Preparing || header.State == JobState.Running)
+                    if (header.Kind != JobKind.Generation)
+                    {
+                        continue;
+                    }
+                    if (header.HasImageMetadata == true)
+                    {
+                        continue;
+                    }
+                    if (header.State == JobState.Preparing)
+                    {
+                        continue;
+                    }
+                    if (header.State == JobState.Running)
                     {
                         continue;
                     }
@@ -595,7 +980,11 @@ namespace Eidolon.Core.Infrastructure
                                 if (File.Exists(legacyMetadataPath) == true)
                                 {
                                     GenerationMetadata existing = _json.Read<GenerationMetadata>(legacyMetadataPath);
-                                    if (existing.Format != GenerationMetadata.DocumentFormat || existing.SourceJobId != job.Id)
+                                    if (existing.Format != GenerationMetadata.DocumentFormat)
+                                    {
+                                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                                    }
+                                    if (existing.SourceJobId != job.Id)
                                     {
                                         throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
                                     }
@@ -646,6 +1035,80 @@ namespace Eidolon.Core.Infrastructure
                         }
                         job.HasImageMetadata = true;
                         Save(job);
+                    }
+                    catch (Exception error) when (error is not OperationCanceledException)
+                    {
+                        LogHelper.Error(error);
+                    }
+                }
+                MigrateAssetFrameMetadata(generationDirectory, token);
+            }
+        }
+
+        private void MigrateAssetFrameMetadata(string generationDirectory, CancellationToken cancellationToken)
+        {
+            string outputDirectory = OutputDirectory(generationDirectory);
+            if (Directory.Exists(outputDirectory) == false)
+            {
+                return;
+            }
+            foreach (AssetCollection collection in LoadAssetCollections(cancellationToken))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    string collectionDirectory = DirectoryFor(collection.Id);
+                    EnsureRegularDirectoryParents(collectionDirectory);
+                    string collectionPath = Path.Combine(collectionDirectory, "AssetCollection.json");
+                    if ((File.GetAttributes(collectionPath) & FileAttributes.ReparsePoint) != 0)
+                    {
+                        continue;
+                    }
+                }
+                catch (Exception error) when (error is not OperationCanceledException)
+                {
+                    LogHelper.Error(error);
+                    continue;
+                }
+                foreach (AssetFrame frame in collection.Frames)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (Guid.TryParseExact(frame.SourceJobId, "N", out _) == false)
+                    {
+                        continue;
+                    }
+                    if (string.IsNullOrWhiteSpace(frame.ImagePath) == true)
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        string imagePath = ValidateImagePath(outputDirectory, frame.ImagePath);
+                        if (File.Exists(imagePath) == false)
+                        {
+                            continue;
+                        }
+                        string sourceJobDirectory = DirectoryFor(frame.SourceJobId);
+                        EnsureRegularDirectoryParents(sourceJobDirectory);
+                        string sourceJobPath = Path.Combine(sourceJobDirectory, "Job.json");
+                        if (File.Exists(sourceJobPath) == false)
+                        {
+                            continue;
+                        }
+                        if ((File.GetAttributes(sourceJobPath) & FileAttributes.ReparsePoint) != 0)
+                        {
+                            continue;
+                        }
+                        JobRecord sourceJob = Load(frame.SourceJobId);
+                        if (string.IsNullOrWhiteSpace(sourceJob.OutputDirectory) == true)
+                        {
+                            continue;
+                        }
+                        if (string.Equals(OutputDirectory(sourceJob.OutputDirectory), outputDirectory, StringComparison.OrdinalIgnoreCase) == false)
+                        {
+                            continue;
+                        }
+                        SaveAssetFrameMetadata(collection, frame, sourceJob, imagePath, cancellationToken);
                     }
                     catch (Exception error) when (error is not OperationCanceledException)
                     {

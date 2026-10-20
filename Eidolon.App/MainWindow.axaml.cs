@@ -62,6 +62,8 @@ namespace Eidolon.App
             finally
             {
                 PropVariantClear(ref propertyValue);
+                System.Diagnostics.Debug.Assert(OperatingSystem.IsWindows());
+                Marshal.ReleaseComObject(propertyStore);
             }
         }
 

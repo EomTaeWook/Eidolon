@@ -1,10 +1,12 @@
 using Avalonia;
 using Avalonia.Styling;
+using Dignus.DependencyInjection.Attributes;
 using Eidolon.Core.Domain;
 using Eidolon.App.Localization;
 
 namespace Eidolon.App.Services
 {
+    [Injectable(Dignus.DependencyInjection.LifeScope.Singleton)]
     public class ThemeService
     {
         private readonly Application _application;

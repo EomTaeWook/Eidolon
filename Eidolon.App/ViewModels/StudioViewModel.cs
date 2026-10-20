@@ -16,6 +16,7 @@ namespace Eidolon.App.ViewModels
         private readonly ComfyEngine _engine;
         private readonly StudioWorkPresenter _work;
         private readonly StringHelper _strings;
+        private Task _refreshAfterWork = Task.CompletedTask;
         public StudioSession Session { get; private set; }
         public StudioNavigationViewModel Navigation { get; private set; }
         public AssetsViewModel Assets { get; private set; }
@@ -124,16 +125,37 @@ namespace Eidolon.App.ViewModels
             return Task.CompletedTask;
         }
 
-        private async void OnWorkFinished(StudioWorkState state, Exception failure)
+        private void OnWorkFinished(StudioWorkState state, Exception failure)
+        {
+            if (Session.IsClosing == true)
+            {
+                return;
+            }
+            _refreshAfterWork = RefreshAfterWorkAsync(_refreshAfterWork);
+        }
+
+        private async Task RefreshAfterWorkAsync(Task previousRefresh)
         {
             try
             {
+                await previousRefresh;
+                if (Session.IsClosing == true)
+                {
+                    return;
+                }
                 await Gallery.RefreshGalleryAsync();
+                if (Session.IsClosing == true)
+                {
+                    return;
+                }
                 await AssetCreation.RefreshCollectionsAsync();
             }
             catch (Exception error)
             {
-                Session.ReportError(error);
+                if (Session.IsClosing == false)
+                {
+                    Session.ReportError(error);
+                }
             }
         }
 
@@ -156,26 +178,43 @@ namespace Eidolon.App.ViewModels
             Session.BeginClosing();
             try
             {
-                await Task.WhenAll(Gallery.WaitForLoadAsync(), Settings.WaitForModelsAsync(), Training.WaitForDescriptionAsync(),
-                    _work.DisposeAsync().AsTask(), Mcp.CloseAsync(), AssetCreation.Preview.CloseAsync(), Updates.CloseAsync());
+                await Task.WhenAll(_refreshAfterWork, Gallery.WaitForLoadAsync(), Settings.WaitForModelsAsync(), Training.WaitForDescriptionAsync(), _work.DisposeAsync().AsTask(), Mcp.CloseAsync(), AssetCreation.Preview.CloseAsync(), Updates.CloseAsync());
             }
             finally
             {
                 Generation.ImageGenerated -= Gallery.ShowGeneratedImage;
                 Settings.LanguageChanged -= Localize;
                 _work.Finished -= OnWorkFinished;
-                await Updates.DiscardPreparedAsync();
-                Updates.Dispose();
-                Gallery.Dispose();
-                Mcp.Dispose();
-                AssetCreation.Dispose();
-                Generation.Dispose();
-                Training.Dispose();
-                Engine.Dispose();
-                Settings.Dispose();
-                Assets.Dispose();
-                await _engine.DisposeAsync();
-                Session.Dispose();
+                try
+                {
+                    await Updates.DiscardPreparedAsync();
+                }
+                finally
+                {
+                    try
+                    {
+                        Updates.Dispose();
+                        Gallery.Dispose();
+                        Mcp.Dispose();
+                        AssetCreation.Dispose();
+                        Generation.Dispose();
+                        Training.Dispose();
+                        Engine.Dispose();
+                        Settings.Dispose();
+                        Assets.Dispose();
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            await _engine.DisposeAsync();
+                        }
+                        finally
+                        {
+                            Session.Dispose();
+                        }
+                    }
+                }
             }
         }
     }

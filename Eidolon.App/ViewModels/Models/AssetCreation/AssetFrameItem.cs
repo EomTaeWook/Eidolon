@@ -26,6 +26,14 @@ namespace Eidolon.App.ViewModels
             {
                 Caption = strings.GetString("EidolonText637");
             }
+            if (frame.Label == "right")
+            {
+                Caption = strings.GetString("EidolonText702");
+            }
+            if (frame.Label == "left")
+            {
+                Caption = strings.GetString("EidolonText703");
+            }
             if (frame.Label == "side")
             {
                 Caption = strings.GetString("EidolonText638");
@@ -51,7 +59,15 @@ namespace Eidolon.App.ViewModels
             {
                 StateCaption = strings.GetString("EidolonText625");
             }
-            if (frame.State == JobState.Failed || frame.State == JobState.Cancelled || frame.State == JobState.Interrupted)
+            if (frame.State == JobState.Failed)
+            {
+                StateCaption = strings.GetString("EidolonText626");
+            }
+            if (frame.State == JobState.Cancelled)
+            {
+                StateCaption = strings.GetString("EidolonText626");
+            }
+            if (frame.State == JobState.Interrupted)
             {
                 StateCaption = strings.GetString("EidolonText626");
             }

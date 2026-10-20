@@ -9,6 +9,7 @@ namespace Eidolon.Core.Infrastructure
         private readonly SafetensorsInspector _inspector;
         private readonly FileDownloader _downloader;
         private readonly TimeProvider _time;
+        private readonly RuntimeInstaller _runtimeInstaller;
         private readonly string _path;
         private readonly IReadOnlyList<ModelDownload> _downloads;
         private readonly SemaphoreSlim _gate = new SemaphoreSlim(1, 1);
@@ -21,14 +22,14 @@ namespace Eidolon.Core.Infrastructure
             }
         }
 
-        public AssetLibrary(string dataDirectory, AtomicJsonFile json, SafetensorsInspector inspector,
-            FileDownloader downloader, TimeProvider time)
+        public AssetLibrary(string dataDirectory, AtomicJsonFile atomicJsonFile, SafetensorsInspector safetensorsInspector, FileDownloader fileDownloader, TimeProvider timeProvider, RuntimeInstaller runtimeInstaller)
         {
             _path = Path.Combine(dataDirectory, "Assets.json");
-            _json = json;
-            _inspector = inspector;
-            _downloader = downloader;
-            _time = time;
+            _json = atomicJsonFile;
+            _inspector = safetensorsInspector;
+            _downloader = fileDownloader;
+            _time = timeProvider;
+            _runtimeInstaller = runtimeInstaller;
             const string sdxlLicense = "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/462165984030d82259a11f4367a4eed129e94a7b/LICENSE.md";
             _downloads = Array.AsReadOnly(new ModelDownload[]
             {
@@ -103,7 +104,7 @@ namespace Eidolon.Core.Infrastructure
                 throw new StudioException(StudioMessageCode.ExternalAssetImportUnsupported);
             }
             RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
-            layout.EnsureInstalled();
+            _runtimeInstaller.EnsureInstalled(layout);
             if (Path.GetExtension(sourcePath).Equals(".safetensors", StringComparison.OrdinalIgnoreCase) == false)
             {
                 throw new StudioException(StudioMessageCode.SafetensorsRequired);
@@ -189,7 +190,7 @@ namespace Eidolon.Core.Infrastructure
             CancellationToken cancellationToken)
         {
             RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
-            layout.EnsureInstalled();
+            _runtimeInstaller.EnsureInstalled(layout);
             await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
@@ -301,7 +302,7 @@ namespace Eidolon.Core.Infrastructure
                 throw new StudioException(StudioMessageCode.ExternalAssetImportUnsupported);
             }
             RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
-            layout.EnsureInstalled();
+            _runtimeInstaller.EnsureInstalled(layout);
             await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
@@ -372,7 +373,7 @@ namespace Eidolon.Core.Infrastructure
             }
             ModelDownload model = Downloads.Single(item => item.FileName == fileName);
             RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
-            layout.EnsureInstalled();
+            _runtimeInstaller.EnsureInstalled(layout);
             string destination = Path.Combine(layout.ModelsDirectory, model.FileName);
             await _downloader.DownloadAsync(model.DownloadUrl, destination,
                 model.Sha256, progress, cancellationToken).ConfigureAwait(false);

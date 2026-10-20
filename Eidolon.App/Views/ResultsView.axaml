@@ -62,6 +62,11 @@
       <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
         <TextBlock Text="{DynamicResource EidolonText372}" Classes="title" />
         <TextBlock Text="{Binding GalleryCountCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
+        <ComboBox SelectedIndex="{Binding GalleryFilterIndex, Mode=TwoWay}" MinWidth="160" MinHeight="38" VerticalAlignment="Center">
+          <ComboBoxItem Content="{DynamicResource EidolonText704}" />
+          <ComboBoxItem Content="{DynamicResource EidolonText705}" />
+          <ComboBoxItem Content="{DynamicResource EidolonText606}" />
+        </ComboBox>
       </StackPanel>
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
         <Button Command="{Binding OpenImageFolderCommand}" Padding="12,8">
@@ -105,7 +110,7 @@
             <DataTemplate x:DataType="vm:GenerationItem">
               <Border Classes="resultCard" AutomationProperties.Name="{Binding Label}">
                 <Grid RowDefinitions="170,Auto">
-                  <Border Background="{DynamicResource WindowBrush}" CornerRadius="12,12,0,0" ClipToBounds="True">
+                  <Border Background="{DynamicResource WindowBrush}" CornerRadius="12,12,0,0" ClipToBounds="True" IsVisible="{Binding !IsAssetCollection}">
                     <Grid>
                       <views:TransparencyBackground IsVisible="{Binding HasThumbnail}" />
                       <Image Source="{Binding Thumbnail}" Stretch="Uniform" IsVisible="{Binding HasThumbnail}" />
@@ -115,8 +120,32 @@
                       </StackPanel>
                     </Grid>
                   </Border>
+                  <Border Background="{DynamicResource WindowBrush}" CornerRadius="12,12,0,0" ClipToBounds="True" IsVisible="{Binding IsAssetCollection}" Padding="5">
+                    <ItemsControl ItemsSource="{Binding CollectionImages}">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:GenerationItem">
+                          <Button Command="{ReflectionBinding $parent[UserControl].DataContext.SelectGenerationCommand}" CommandParameter="{Binding}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" Padding="3" Margin="3" ToolTip.Tip="{Binding ViewCaption}">
+                            <StackPanel Spacing="4">
+                              <Border Height="48" CornerRadius="4" ClipToBounds="True">
+                                <Grid>
+                                  <views:TransparencyBackground IsVisible="{Binding HasThumbnail}" />
+                                  <Image Source="{Binding Thumbnail}" Stretch="Uniform" IsVisible="{Binding HasThumbnail}" />
+                                  <Path Data="{StaticResource EidolonIconImage}" Width="20" Height="20" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !HasThumbnail}" />
+                                </Grid>
+                              </Border>
+                              <TextBlock Text="{Binding ViewCaption}" TextAlignment="Center" TextTrimming="CharacterEllipsis" FontSize="11" />
+                            </StackPanel>
+                          </Button>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </Border>
                   <StackPanel Grid.Row="1" Spacing="8" Margin="14,14">
                     <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FileName}" />
+                    <TextBlock Text="{Binding CollectionCaption}" Foreground="{DynamicResource AccentBrush}" FontSize="12" IsVisible="{Binding IsAssetCollection}" />
                     <TextBlock Text="{Binding Metadata.Model.Name, FallbackValue=''}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" IsVisible="{Binding HasMetadata}" />
                     <Grid ColumnDefinitions="*,Auto">
                       <TextBlock Text="{Binding CreatedCaption}" Classes="muted" FontSize="11" />
