@@ -127,7 +127,7 @@ namespace Eidolon.Core.Infrastructure
                 int frameX = frameIndex % columnCount * collection.FrameWidth;
                 int frameY = frameIndex / columnCount * collection.FrameHeight;
                 using SKImage cell = SKImage.FromBitmap(frameCanvas);
-                sheetCanvas.DrawImage(cell, frameX, frameY);
+                sheetCanvas.DrawImage(cell, frameX, frameY, SKSamplingOptions.Default, null);
                 File.Copy(frame.ImagePath, Path.Combine(exportDirectory, "Sources", frameNumberText + ".png"), false);
                 string sourceMetadataPath = Path.ChangeExtension(frame.ImagePath, ".json");
                 if (File.Exists(sourceMetadataPath) == true)

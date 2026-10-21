@@ -74,7 +74,7 @@ namespace Eidolon.Core.Infrastructure
                         canvas.RotateDegrees(270);
                         break;
                 }
-                canvas.DrawBitmap(decoded, 0, 0);
+                canvas.DrawBitmap(decoded, 0, 0, SKSamplingOptions.Default, null);
             }
             token.ThrowIfCancellationRequested();
             string path = Path.Combine(_jobs.DirectoryFor(collectionId), "Replacement-" + Guid.NewGuid().ToString("N") + ".png");

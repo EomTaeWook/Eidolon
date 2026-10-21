@@ -333,7 +333,7 @@ namespace Eidolon.Core.Infrastructure
                     using (SKCanvas canvas = new SKCanvas(result))
                     {
                         canvas.Clear(color);
-                        canvas.DrawImage(image, 0, 0);
+                        canvas.DrawImage(image, 0, 0, SKSamplingOptions.Default, null);
                     }
                     token.ThrowIfCancellationRequested();
                     using SKData png = result.Encode(SKEncodedImageFormat.Png, 100);
