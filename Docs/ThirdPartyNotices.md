@@ -8,6 +8,7 @@ Eidolon의 UI·렌더링 구성요소에는 아래 소프트웨어가 포함됩�
 |---|---|
 | Avalonia | MIT, Copyright © 2013–2026 The AvaloniaUI Project. [라이선스](https://github.com/AvaloniaUI/Avalonia/blob/12.1.4/licence.md) |
 | Dignus / Dignus.Log | MIT, Copyright © 2021–2026 EomTaeWook. [라이선스](https://github.com/EomTaeWook/Dignus-Public/blob/main/LICENSE) |
+| Dignus.Actor.Core / Dignus.Actor.Abstractions | MIT, Copyright © 2026 EomTaeWook. MCP 요청 액터 런타임·메시지 계약입니다. [라이선스](https://github.com/EomTaeWook/Dignus.ActorServer/blob/4ae7647d68a0594e04c9ae37e822be62ef686d05/LICENSE) |
 | MCP.Core | MIT, Copyright © 2026 EomTaeWook. 독립 MCP 서버 모듈이며 Eidolon 자체의 소스 라이선스와 구분합니다. [라이선스](../Mcp.Core/LICENSE) |
 | SkiaSharp | MIT, Copyright © Microsoft Corporation. [라이선스](https://github.com/mono/SkiaSharp/blob/main/LICENSE.md) |
 | ONNX Runtime | MIT, Copyright © Microsoft Corporation. [라이선스](https://github.com/microsoft/onnxruntime/blob/v1.31.0/LICENSE) |

@@ -4,7 +4,7 @@ using Eidolon.App.Localization;
 using Eidolon.App.Mcp;
 using Eidolon.App.Presenters;
 using Eidolon.App.Services;
-using MCP.Core;
+using MCP.Core.Models.Server;
 using MCP.Core.Transport;
 
 namespace Eidolon.App.ViewModels
