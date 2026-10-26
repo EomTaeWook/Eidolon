@@ -24,6 +24,7 @@ namespace Eidolon.App.ViewModels
         public ObservableCollection<RuntimeModuleItem> CustomNodes { get; private set; } = new ObservableCollection<RuntimeModuleItem>();
         public AsyncCommand InstallCommand { get; private set; }
         public AsyncCommand InstallPromptConverterCommand { get; private set; }
+        public AsyncCommand DeletePromptConverterCommand { get; private set; }
         public AsyncCommand StartEngineCommand { get; private set; }
         public AsyncCommand StopEngineCommand { get; private set; }
         public AsyncCommand OpenRuntimeCommand { get; private set; }
@@ -61,6 +62,23 @@ namespace Eidolon.App.ViewModels
             }
         }
 
+        public bool CanDeletePromptConverter
+        {
+            get
+            {
+                if (Session.IsIdle == false)
+                {
+                    return false;
+                }
+                string installDirectory = PromptConverterInstallDirectory;
+                if (Path.IsPathFullyQualified(installDirectory) == false)
+                {
+                    return false;
+                }
+                return _installer.CanDeletePromptConverter(installDirectory);
+            }
+        }
+
         public string PromptConverterStatus
         {
             get
@@ -94,6 +112,29 @@ namespace Eidolon.App.ViewModels
             {
                 RefreshCommands();
             }
+        }
+
+        private async Task DeletePromptConverterAsync()
+        {
+            DesktopSettings requestedSettings = Session.Settings.Copy();
+            requestedSettings.InstallDirectory = PromptConverterInstallDirectory;
+            RuntimeLayout runtimeLayout = new RuntimeLayout(requestedSettings.InstallDirectory);
+            if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText718"), _strings.Format("EidolonText719", Path.GetDirectoryName(runtimeLayout.PromptConverterModelPath), Path.GetDirectoryName(runtimeLayout.PromptConverterExecutable))) == false)
+            {
+                return;
+            }
+            await Session.WorkAsync(async cancellationToken =>
+            {
+                try
+                {
+                    await Task.Run(() => _installer.DeletePromptConverter(requestedSettings, cancellationToken), cancellationToken);
+                    Session.Status = _strings.GetString("EidolonText720");
+                }
+                finally
+                {
+                    RefreshCommands();
+                }
+            });
         }
 
         public bool CanOpenTrainingData
@@ -468,6 +509,7 @@ namespace Eidolon.App.ViewModels
                 requestedSettings.InstallDirectory = PromptConverterInstallDirectory;
                 return Session.WorkAsync(cancellationToken => InstallPromptConverterAsync(requestedSettings, cancellationToken));
             }, () => CanInstallPromptConverter);
+            DeletePromptConverterCommand = Command(DeletePromptConverterAsync, () => CanDeletePromptConverter);
             StartEngineCommand = Command(() =>
             {
                 _work.CancelScheduled();
@@ -529,6 +571,7 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(CanInstallEngine));
             Raise(nameof(PromptConverterInstallDirectory));
             Raise(nameof(CanInstallPromptConverter));
+            Raise(nameof(CanDeletePromptConverter));
             Raise(nameof(PromptConverterStatus));
             Raise(nameof(CanOpenTrainingData));
             Raise(nameof(CanClearTrainingData));

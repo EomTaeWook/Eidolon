@@ -120,7 +120,10 @@
               </Grid>
               <TextBlock Text="{DynamicResource EidolonText717}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
             </StackPanel>
-            <Button Content="{DynamicResource EidolonText715}" Command="{Binding InstallPromptConverterCommand}" HorizontalAlignment="Left" />
+            <WrapPanel Orientation="Horizontal">
+              <Button Content="{DynamicResource EidolonText715}" Command="{Binding InstallPromptConverterCommand}" Margin="0,0,8,8" />
+              <Button Content="{DynamicResource EidolonText718}" Command="{Binding DeletePromptConverterCommand}" Margin="0,0,0,8" />
+            </WrapPanel>
             <TextBlock Text="{DynamicResource EidolonText716}" Classes="muted" FontSize="13" TextWrapping="Wrap" />
           </StackPanel>
         </Border>

@@ -305,6 +305,117 @@ namespace Eidolon.Core.Infrastructure
             return HasPromptConverterFiles(runtimeLayout, runtimeManifest);
         }
 
+        public bool CanDeletePromptConverter(string installDirectory)
+        {
+            if (string.IsNullOrWhiteSpace(installDirectory) == true)
+            {
+                return false;
+            }
+            RuntimeLayout runtimeLayout = new RuntimeLayout(installDirectory);
+            string manifestPath = Path.Combine(runtimeLayout.Root, "Runtime.json");
+            EnsurePromptConverterPath(manifestPath);
+            RuntimeManifest runtimeManifest = _json.Read<RuntimeManifest>(manifestPath);
+            if (runtimeManifest == null)
+            {
+                return false;
+            }
+            if (runtimeManifest.Owner != "Eidolon")
+            {
+                return false;
+            }
+            if (runtimeManifest.SchemaVersion != 1)
+            {
+                return false;
+            }
+            return runtimeManifest.PromptConverterVersion == RuntimeLayout.PromptConverterVersion;
+        }
+
+        public void DeletePromptConverter(StudioSettings settings, CancellationToken cancellationToken)
+        {
+            settings.Validate();
+            cancellationToken.ThrowIfCancellationRequested();
+            RuntimeLayout runtimeLayout = new RuntimeLayout(settings.InstallDirectory);
+            string manifestPath = Path.Combine(runtimeLayout.Root, "Runtime.json");
+            EnsurePromptConverterPath(manifestPath);
+            EnsurePromptConverterPath(manifestPath + ".bak");
+            RuntimeManifest runtimeManifest = _json.Read<RuntimeManifest>(manifestPath);
+            if (runtimeManifest == null)
+            {
+                throw new StudioException(StudioMessageCode.PromptConverterNotInstalled);
+            }
+            if (runtimeManifest.Owner != "Eidolon")
+            {
+                throw new StudioException(StudioMessageCode.InvalidInstallationOwner);
+            }
+            if (runtimeManifest.SchemaVersion != 1)
+            {
+                throw new StudioException(StudioMessageCode.InvalidInstallationOwner);
+            }
+            if (string.IsNullOrEmpty(runtimeManifest.PromptConverterVersion) == true)
+            {
+                throw new StudioException(StudioMessageCode.PromptConverterNotInstalled);
+            }
+            if (runtimeManifest.PromptConverterVersion != RuntimeLayout.PromptConverterVersion)
+            {
+                throw new StudioException(StudioMessageCode.RuntimeVersionMismatch);
+            }
+            string executableDirectory = Path.GetDirectoryName(runtimeLayout.PromptConverterExecutable);
+            string modelDirectory = Path.GetDirectoryName(runtimeLayout.PromptConverterModelPath);
+            List<string> directories = new List<string> { executableDirectory, modelDirectory };
+            string archivePath = Path.Combine(runtimeLayout.Root, "Downloads", "llama-" + RuntimeLayout.PromptConverterVersion + "-bin-win-cpu-x64.zip");
+            List<string> files = new List<string> { archivePath, archivePath + ".part" };
+            for (int directoryIndex = 0; directoryIndex < directories.Count; directoryIndex++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                string directory = directories[directoryIndex];
+                EnsurePromptConverterPath(directory);
+                if (Directory.Exists(directory) == false)
+                {
+                    continue;
+                }
+                foreach (string entry in Directory.EnumerateFileSystemEntries(directory))
+                {
+                    EnsurePromptConverterPath(entry);
+                    if (Directory.Exists(entry) == true)
+                    {
+                        directories.Add(entry);
+                    }
+                    else
+                    {
+                        files.Add(entry);
+                    }
+                }
+            }
+            foreach (string file in files)
+            {
+                EnsurePromptConverterPath(file);
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            runtimeManifest.PromptConverterInstalled = false;
+            _json.Write(manifestPath, runtimeManifest);
+            foreach (string file in files)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                EnsurePromptConverterPath(file);
+                File.Delete(file);
+            }
+            foreach (string directory in directories.OrderByDescending(directory => directory.Length))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                EnsurePromptConverterPath(directory);
+                if (Directory.Exists(directory) == true)
+                {
+                    Directory.Delete(directory);
+                }
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            EnsurePromptConverterPath(manifestPath);
+            EnsurePromptConverterPath(manifestPath + ".bak");
+            runtimeManifest.PromptConverterVersion = string.Empty;
+            runtimeManifest.PromptConverterFiles = new List<string>();
+            _json.Write(manifestPath, runtimeManifest);
+        }
+
         public async Task InstallPromptConverterAsync(StudioSettings settings, IProgress<WorkProgress> progress, CancellationToken cancellationToken)
         {
             if (OperatingSystem.IsWindows() == false)

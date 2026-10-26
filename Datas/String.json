@@ -7240,5 +7240,23 @@
     "Name": "EidolonText717",
     "Kor": "\uC800\uC7A5\uB41C \uC5D4\uC9C4 \uACBD\uB85C\uB97C \uC0AC\uC6A9\uD569\uB2C8\uB2E4. \uACBD\uB85C \uBCC0\uACBD\uC740 \uC5D4\uC9C4 \uC124\uC815\uC5D0\uC11C \uC801\uC6A9\uD558\uC138\uC694.",
     "Eng": "Uses the saved engine location. Apply location changes in engine settings."
+  },
+  {
+    "Id": 3797,
+    "Name": "EidolonText718",
+    "Kor": "\uBCC0\uD658 \uBAA8\uB378 \uC0AD\uC81C",
+    "Eng": "Delete converter"
+  },
+  {
+    "Id": 3798,
+    "Name": "EidolonText719",
+    "Kor": "\uC544\uB798\uC758 \uBCC0\uD658 \uBAA8\uB378\u00B7\uC2E4\uD589\uAE30 \uD3F4\uB354\uC640 \uC124\uCE58\uC6A9 \uC555\uCD95\u00B7\uBD80\uBD84 \uB2E4\uC6B4\uB85C\uB4DC \uD30C\uC77C\uC744 \uC601\uAD6C \uC0AD\uC81C\uD569\uB2C8\uB2E4.\n{0}\n{1}\nComfyUI\u00B7\uC0DD\uC131 \uBAA8\uB378\u00B7LoRA\uB294 \uC720\uC9C0\uD569\uB2C8\uB2E4. \uC0AD\uC81C \uD6C4\uC5D0\uB294 \uC785\uB825\uD55C \uC124\uBA85\uC73C\uB85C \uC0DD\uC131\uD569\uB2C8\uB2E4.",
+    "Eng": "Permanently delete these converter model/runtime folders and their installer archive and partial downloads:\n{0}\n{1}\nComfyUI, checkpoints and LoRAs are preserved. Generation then uses your original input."
+  },
+  {
+    "Id": 3799,
+    "Name": "EidolonText720",
+    "Kor": "\uBCC0\uD658 \uBAA8\uB378\uC744 \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4. \uC785\uB825\uD55C \uC124\uBA85\uC73C\uB85C \uC0DD\uC131\uD569\uB2C8\uB2E4.",
+    "Eng": "Converter removed. Generation now uses your original input."
   }
 ]
