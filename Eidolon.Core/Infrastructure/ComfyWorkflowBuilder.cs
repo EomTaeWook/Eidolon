@@ -16,7 +16,7 @@ namespace Eidolon.Core.Infrastructure
 
         public JsonObject Build(JobRecord job, string referenceImage)
         {
-            JsonObject workflow = new JsonObject();
+            JsonObject workflow = new();
             Add("1", "CheckpointLoaderSimple", new JsonObject { ["ckpt_name"] = job.Model.EngineName });
             string modelNode = "1";
             string clipNode = "1";

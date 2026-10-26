@@ -8,7 +8,7 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 ## Download
 
-[Download Eidolon v0.1.0-beta.4 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v0.1.0-beta.4/Eidolon-0.1.0-beta.4-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v0.1.0-beta.4)
+[Download Eidolon v0.1.0-beta.5 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v0.1.0-beta.5/Eidolon-0.1.0-beta.5-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v0.1.0-beta.5)
 
 Run the single `.exe` file. No extraction or separate .NET installation is required. For Codex, sign in to your installed Codex first. For ComfyUI, prepare the engine and models through the app.
 
@@ -48,6 +48,7 @@ Screenshots capture the actual Windows app using Korean and the light theme, inc
 
 ## Features
 
+- **Local English-tag conversion**: Install the model in Engine setup to automatically convert Korean/English input before standard and reference generation while preserving the original
 - **Generation and editing**: ComfyUI or Codex, reference images, source-image editing, and transparent backgrounds
 - **Results**: Image and multi-view filters, grouped views with per-direction preview, saved prompts and settings, reuse, export, and selected-image deletion
 - **Multiple views**: Five directions, per-item regeneration and replacement, resume, and PNG, sheet, and coordinate JSON export
@@ -111,7 +112,7 @@ Publish the self-contained Windows x64 executable with:
 dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o artifacts\win-x64 -m:1 /p:UseSharedCompilation=false
 ```
 
-The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. This beta was checked with a Release build, standalone executable startup, MCP connectivity, clean shutdown, and Korean/English switching for all three gallery filters. See the [validation record](Docs/AssetCreationQuality.md) for the scope and the [release notes](Docs/Releases/0.1.0-beta.4.md) for changes.
+The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. See [local prompt conversion](Docs/PromptConversion.md) for installation, conversion and generation checks and limitations, the earlier [multi-view validation record](Docs/AssetCreationQuality.md), and the [release notes](Docs/Releases/0.1.0-beta.5.md) for this update.
 
 ## License
 

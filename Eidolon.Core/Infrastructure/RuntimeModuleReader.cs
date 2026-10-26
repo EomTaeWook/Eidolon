@@ -24,7 +24,7 @@ namespace Eidolon.Core.Infrastructure
             string generationEnvironment = Path.Combine(layout.Root, "Environments", "ComfyUI");
             string trainingEnvironment = Path.Combine(layout.Root, "Environments", "Training");
             string sitePackages = Path.Combine(generationEnvironment, "Lib", "site-packages");
-            List<RuntimeModule> modules = new List<RuntimeModule>();
+            List<RuntimeModule> modules = new();
             Add(modules, RuntimeModuleKind.ComfyUi, comfyDirectory, comfyVersion,
                 File.Exists(Path.Combine(comfyDirectory, "main.py")));
             Add(modules, RuntimeModuleKind.GenerationPython, layout.ComfyPython, PythonVersion(generationEnvironment),
@@ -76,7 +76,7 @@ namespace Eidolon.Core.Infrastructure
 
         private void Add(List<RuntimeModule> modules, RuntimeModuleKind kind, string location, string version, bool installed)
         {
-            RuntimeModule module = new RuntimeModule { Kind = kind, Location = location };
+            RuntimeModule module = new() { Kind = kind, Location = location };
             if (installed == true)
             {
                 module.State = RuntimeModuleState.Installed;
@@ -192,7 +192,7 @@ namespace Eidolon.Core.Infrastructure
                 {
                     version = ReadDeclaredVersion(Path.Combine(path, "pyproject.toml"), "version", "[project]", token);
                 }
-                RuntimeModule module = new RuntimeModule
+                RuntimeModule module = new()
                 {
                     Kind = RuntimeModuleKind.CustomNode,
                     State = RuntimeModuleState.Installed,

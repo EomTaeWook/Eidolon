@@ -37,7 +37,7 @@
       </Grid>
     </Border>
     <ScrollViewer Grid.Row="2" Classes="engineContent" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
-      <Grid ColumnDefinitions="*,20,*" RowDefinitions="Auto,20,Auto,20,Auto">
+      <Grid ColumnDefinitions="*,20,*" RowDefinitions="Auto,20,Auto,20,Auto,20,Auto">
         <Border Classes="card" VerticalAlignment="Top">
           <StackPanel Spacing="18">
             <StackPanel Spacing="6">
@@ -103,6 +103,28 @@
           </StackPanel>
         </Border>
         <Border Grid.Row="2" Grid.ColumnSpan="3" Classes="card">
+          <StackPanel Spacing="14">
+            <StackPanel Spacing="6">
+              <TextBlock Text="{DynamicResource EidolonText712}" Classes="sectionTitle" />
+              <TextBlock Text="{DynamicResource EidolonText713}" Classes="muted" FontSize="13" TextWrapping="Wrap" />
+            </StackPanel>
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Text="{DynamicResource EidolonText714}" FontSize="13" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,16,0" />
+              <TextBlock Grid.Column="1" Text="{Binding PromptConverterStatus}" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+            </Grid>
+            <StackPanel Spacing="8">
+              <TextBlock Text="{DynamicResource EidolonText154}" FontSize="13" FontWeight="SemiBold" />
+              <Grid ColumnDefinitions="*,Auto">
+                <SelectableTextBlock Text="{Binding PromptConverterInstallDirectory}" Classes="muted" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0" />
+                <Button Grid.Column="1" Content="{DynamicResource EidolonText142}" Command="{Binding Settings.PickInstallCommand}" />
+              </Grid>
+              <TextBlock Text="{DynamicResource EidolonText717}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+            </StackPanel>
+            <Button Content="{DynamicResource EidolonText715}" Command="{Binding InstallPromptConverterCommand}" HorizontalAlignment="Left" />
+            <TextBlock Text="{DynamicResource EidolonText716}" Classes="muted" FontSize="13" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+        <Border Grid.Row="4" Grid.ColumnSpan="3" Classes="card">
           <Expander Header="{DynamicResource EidolonText272}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
             <StackPanel Spacing="14" Margin="4,12,4,4">
               <Grid ColumnDefinitions="*,Auto">
@@ -159,7 +181,7 @@
             </StackPanel>
           </Expander>
         </Border>
-        <Border Grid.Row="4" Grid.ColumnSpan="3" Classes="card" IsVisible="{Binding CanOpenTrainingData}">
+        <Border Grid.Row="6" Grid.ColumnSpan="3" Classes="card" IsVisible="{Binding CanOpenTrainingData}">
           <StackPanel Spacing="10">
             <TextBlock Text="{DynamicResource EidolonText575}" Classes="sectionTitle" />
             <TextBlock Text="{DynamicResource EidolonText576}" Classes="muted" FontSize="12" />

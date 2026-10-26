@@ -1,5 +1,6 @@
 using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
+using Eidolon.Core.Infrastructure.AssetCreation;
 using SkiaSharp;
 
 namespace Eidolon.Core.Application
@@ -39,8 +40,8 @@ namespace Eidolon.Core.Application
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
             settings.Validate();
-            ModelAsset generationModel = new ModelAsset();
-            List<ModelAsset> generationLoras = new List<ModelAsset>();
+            ModelAsset generationModel = new();
+            List<ModelAsset> generationLoras = new();
             long seed = 0;
             if (settings.GenerationBackend == GenerationBackend.ComfyUI)
             {
@@ -79,7 +80,7 @@ namespace Eidolon.Core.Application
                 generationLoras = loras.Select(lora => lora.Copy()).ToList();
                 seed = input.Seed;
             }
-            using SKMemoryStream memory = new SKMemoryStream(input.Reference.ImageData);
+            using SKMemoryStream memory = new(input.Reference.ImageData);
             using SKCodec codec = SKCodec.Create(memory);
             if (codec == null)
             {
@@ -98,7 +99,7 @@ namespace Eidolon.Core.Application
                 throw new StudioException(StudioMessageCode.InvalidReferenceImage);
             }
             cancellationToken.ThrowIfCancellationRequested();
-            AssetCollection collection = new AssetCollection
+            AssetCollection collection = new()
             {
                 Kind = input.Kind, Prompt = _prompts.Subject(input.Prompt),
                 Settings = settings.Copy(), Model = generationModel, Loras = generationLoras,
@@ -227,7 +228,7 @@ namespace Eidolon.Core.Application
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 byte[] referenceImageData = await File.ReadAllBytesAsync(Path.Combine(_jobs.DirectoryFor(collection.Id), "Reference.bin"), cancellationToken).ConfigureAwait(false);
-                GenerationReferenceInput reference = new GenerationReferenceInput
+                GenerationReferenceInput reference = new()
                 {
                     ImageData = referenceImageData, ImageName = collection.ReferenceName,
                     Mode = GenerationReferenceMode.Reimagine, ChangeStrength = collection.ChangeStrength

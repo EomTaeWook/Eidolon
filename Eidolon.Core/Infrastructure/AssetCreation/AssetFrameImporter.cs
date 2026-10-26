@@ -1,7 +1,7 @@
 using Eidolon.Core.Domain;
 using SkiaSharp;
 
-namespace Eidolon.Core.Infrastructure
+namespace Eidolon.Core.Infrastructure.AssetCreation
 {
     public class AssetFrameImporter
     {
@@ -18,7 +18,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.InvalidReferenceImage);
             }
-            using SKMemoryStream stream = new SKMemoryStream(data);
+            using SKMemoryStream stream = new(data);
             using SKCodec codec = SKCodec.Create(stream);
             if (codec == null || codec.Info.Width < 1 || codec.Info.Height < 1
                 || (long)codec.Info.Width * codec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
@@ -38,8 +38,8 @@ namespace Eidolon.Core.Infrastructure
                 width = decoded.Height;
                 height = decoded.Width;
             }
-            using SKBitmap oriented = new SKBitmap(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
-            using (SKCanvas canvas = new SKCanvas(oriented))
+            using SKBitmap oriented = new(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            using (SKCanvas canvas = new(oriented))
             {
                 canvas.Clear(SKColors.Transparent);
                 switch (codec.EncodedOrigin)
@@ -84,7 +84,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.InvalidReferenceImage);
             }
-            using FileStream output = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
+            using FileStream output = new(path, FileMode.CreateNew, FileAccess.Write);
             png.SaveTo(output);
             output.Flush(true);
             return path;

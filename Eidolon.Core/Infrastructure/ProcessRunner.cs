@@ -23,10 +23,10 @@ namespace Eidolon.Core.Infrastructure
                 start.RedirectStandardInput = true;
                 start.StandardInputEncoding = new UTF8Encoding(false);
             }
-            using Process process = new Process { StartInfo = start };
-            using ProcessLogFile log = new ProcessLogFile(logPath);
-            using SemaphoreSlim logGate = new SemaphoreSlim(1, 1);
-            using WindowsProcessLifetime parentLifetime = new WindowsProcessLifetime(stopWithParent);
+            using Process process = new() { StartInfo = start };
+            using ProcessLogFile log = new(logPath);
+            using SemaphoreSlim logGate = new(1, 1);
+            using WindowsProcessLifetime parentLifetime = new(stopWithParent);
             cancellationToken.ThrowIfCancellationRequested();
             if (process.Start() == false)
             {
@@ -74,7 +74,7 @@ namespace Eidolon.Core.Infrastructure
             async Task ReadAsync(StreamReader reader, bool isStandardOutput)
             {
                 char[] buffer = new char[1024];
-                StringBuilder pending = new StringBuilder();
+                StringBuilder pending = new();
                 try
                 {
                     int count;
@@ -147,7 +147,7 @@ namespace Eidolon.Core.Infrastructure
         public ProcessStartInfo CreateStartInfo(string executable, IEnumerable<string> arguments,
             string workingDirectory, IReadOnlyDictionary<string, string> environment = null)
         {
-            ProcessStartInfo start = new ProcessStartInfo
+            ProcessStartInfo start = new()
             {
                 FileName = executable,
                 WorkingDirectory = workingDirectory,

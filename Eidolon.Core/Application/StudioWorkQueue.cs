@@ -7,11 +7,11 @@ namespace Eidolon.Core.Application
     {
         private const int ClosingFlag = int.MinValue;
 
-        private readonly SynchronizedArrayQueue<WorkRequest> _requests = new SynchronizedArrayQueue<WorkRequest>();
-        private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
-        private readonly CancellationTokenSource _lifetime = new CancellationTokenSource();
-        private readonly TaskCompletionSource _enqueueDrained = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly TaskCompletionSource _disposed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly SynchronizedArrayQueue<WorkRequest> _requests = new();
+        private readonly SemaphoreSlim _signal = new(0);
+        private readonly CancellationTokenSource _lifetime = new();
+        private readonly TaskCompletionSource _enqueueDrained = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource _disposed = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly Task _worker;
         private WorkRequest _currentRequest;
         private int _enqueueState;

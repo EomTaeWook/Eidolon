@@ -32,7 +32,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 offset = new FileInfo(partial).Length;
             }
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
+            using HttpRequestMessage request = new(HttpMethod.Get, url);
             if (offset > 0)
             {
                 request.Headers.Range = new RangeHeaderValue(offset, null);
@@ -79,7 +79,7 @@ namespace Eidolon.Core.Infrastructure
             long received = offset;
             DateTimeOffset lastReportAtUtc = _time.GetUtcNow();
             await using (Stream input = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
-            await using (FileStream output = new FileStream(partial, mode, FileAccess.Write, FileShare.None,
+            await using (FileStream output = new(partial, mode, FileAccess.Write, FileShare.None,
                 1024 * 1024, FileOptions.Asynchronous))
             {
                 byte[] buffer = new byte[1024 * 1024];

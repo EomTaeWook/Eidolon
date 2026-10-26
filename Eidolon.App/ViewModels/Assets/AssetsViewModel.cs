@@ -414,6 +414,42 @@ namespace Eidolon.App.ViewModels
             }
         }
 
+        public string GetModelPromptGuidance(ModelAsset model)
+        {
+            if (model == null)
+            {
+                return "No ComfyUI checkpoint is selected. Read eidolon_list_models and choose a checkpoint before using model-specific tags.";
+            }
+            if (model.Kind != AssetKind.Checkpoint)
+            {
+                return "This is an adapter, not a checkpoint. For generation, follow the target checkpoint's prompt_guidance. The service adds registered LoRA trigger words automatically; do not duplicate them.";
+            }
+            string fileName = Path.GetFileName(model.EngineName);
+            if (model.Family == ModelFamily.Sdxl)
+            {
+                if (fileName.Equals("Illustrious-XL-v0.1.safetensors", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return "Filename-matched guidance for Illustrious XL v0.1: prefer detailed comma-separated Danbooru-style English tags; short natural-language phrases can clarify relationships. Suggested organization, not a guaranteed weighting order: optional supported quality tags, subject/count/identity, one consistent framing/viewpoint and pose, appearance/clothing, background/lighting, requested style. Supported quality examples include best quality and masterpiece; relevant negatives include worst quality, bad quality and lowres. Avoid conflicting composition tags. Do not assume score_9, score_8_up, rating_safe or source_anime are supported defaults. Add character or artist names only when requested. Other Illustrious versions and derivatives need their own guidance. Source: https://huggingface.co/OnomaAIResearch/Illustrious-xl-early-release-v0";
+                }
+                if (fileName.Equals("RealVisXL_V4.0.safetensors", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return "Filename-matched guidance for RealVisXL 4.0: the model targets photorealism. When photography is requested, use comma-separated descriptive English phrases for subject/action, framing, materials, lighting and setting; preserve the user's requested style. For relevant human portraits, the model card suggests face asymmetry, eyes asymmetry and deformed eyes as possible negative terms. Do not suppress an open mouth when it is requested. No universal Danbooru, score_9, rating_* or source_* prefix is prescribed. These photographic phrasing suggestions are an application recommendation based on the model's stated focus. Source: https://huggingface.co/SG161222/RealVisXL_V4.0";
+                }
+                if (fileName.Equals("sd_xl_base_1.0.safetensors", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return "Filename-matched guidance for SDXL Base 1.0: the model card uses natural-language descriptions. Use detailed comma-separated English phrases describing the subject and action, spatial relationships, composition, style, materials, lighting and background. State relationships clearly instead of listing disconnected nouns. Do not assume Danbooru quality, score_9, rating_* or source_* tags are required because the family is SDXL. Put only relevant unwanted features in negative_prompt. Source: https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0";
+                }
+            }
+            if (model.Family == ModelFamily.StableDiffusion15)
+            {
+                if (fileName.Equals("v1-5-pruned-emaonly.safetensors", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return "Filename-matched guidance for Stable Diffusion 1.5 base: use focused English descriptive phrases, separated by commas, with the main subject/action first and relevant composition, style, lighting and background details. This is a practical organization based on the model card's English-caption and natural-language examples, not a guaranteed tag weighting rule. Do not inherit anime-finetune or Pony-style quality, rating or source tags from the SD1.5 family alone. Put relevant unwanted features in negative_prompt. Source: https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5";
+                }
+            }
+            return "No checkpoint-specific prompt guidance is registered for this filename and family. Consult the exact checkpoint's model card; do not infer its training vocabulary from an editable display name, a filename substring, SDXL/SD1.5 compatibility or another version. Until confirmed, use detailed comma-separated English descriptive phrases and relevant negatives without inventing score, rating, source or mandatory quality prefixes. Treat ordering as organization advice, not guaranteed priority.";
+        }
+
         private ModelAsset FindDownloadedModel(ModelDownload download)
         {
             AssetItem item = Library.FirstOrDefault(asset => asset.Asset.Kind == AssetKind.Checkpoint

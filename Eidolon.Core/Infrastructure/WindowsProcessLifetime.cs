@@ -26,7 +26,7 @@ namespace Eidolon.Core.Infrastructure
                 _job = null;
                 throw new StudioException(StudioMessageCode.ProcessStartFailed, new Win32Exception(error));
             }
-            WindowsJobExtendedLimitInformation limits = new WindowsJobExtendedLimitInformation();
+            WindowsJobExtendedLimitInformation limits = new();
             limits.BasicLimitInformation.LimitFlags = KillOnJobClose;
             if (SetInformationJobObject(_job, ExtendedLimitInformationClass, ref limits,
                 (uint)Marshal.SizeOf<WindowsJobExtendedLimitInformation>()) == false)

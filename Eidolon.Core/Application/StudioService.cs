@@ -17,7 +17,7 @@ namespace Eidolon.Core.Application
         private readonly BackgroundRemovalService _backgroundRemoval;
         private readonly CodexImageEngine _codex;
         private readonly RuntimeInstaller _runtimeInstaller;
-        private readonly SemaphoreSlim _gpuGate = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _gpuGate = new(1, 1);
 
         public StudioService(AssetLibrary assetLibrary, JobStore jobStore, ComfyEngine comfyEngine, LoraTrainer loraTrainer, TimeProvider timeProvider, ISeedProvider seedProvider, BackgroundRemovalService backgroundRemovalService, CodexImageEngine codexImageEngine, RuntimeInstaller runtimeInstaller)
         {
@@ -38,9 +38,7 @@ namespace Eidolon.Core.Application
             return await GenerateAsync(settings, prompt, model, loras, removeBackground, seed, null, progress, token).ConfigureAwait(false);
         }
 
-        public async Task<JobRecord> GenerateAsync(StudioSettings settings, string prompt, ModelAsset model,
-            IReadOnlyList<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference,
-            IProgress<WorkProgress> progress, CancellationToken token)
+        public async Task<JobRecord> GenerateAsync(StudioSettings settings, string prompt, ModelAsset model, IReadOnlyList<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, IProgress<WorkProgress> progress, CancellationToken token, string convertedPrompt = "")
         {
             if (string.IsNullOrWhiteSpace(prompt) == true)
             {
@@ -84,9 +82,14 @@ namespace Eidolon.Core.Application
                     throw new StudioException(StudioMessageCode.InvalidReferenceImage);
                 }
             }
+            string generationPrompt = prompt;
+            if (string.IsNullOrWhiteSpace(convertedPrompt) == false)
+            {
+                generationPrompt = convertedPrompt;
+            }
             if (settings.GenerationBackend == GenerationBackend.Codex)
             {
-                return await GenerateCodexAsync(settings, prompt, removeBackground, reference, progress, token).ConfigureAwait(false);
+                return await GenerateCodexAsync(settings, prompt, removeBackground, reference, progress, token, generationPrompt).ConfigureAwait(false);
             }
             ValidateModel(settings, model);
             foreach (ModelAsset lora in loras)
@@ -101,15 +104,15 @@ namespace Eidolon.Core.Application
                 }
                 ValidateFile(settings, lora);
             }
-            GenerationPreset preset = new GenerationPreset(model.Family);
-            JobRecord job = new JobRecord
+            GenerationPreset preset = new(model.Family);
+            JobRecord job = new()
             {
                 Kind = JobKind.Generation,
                 Title = prompt.Trim(),
                 UserPrompt = prompt.Trim(),
                 BasePositivePrompt = settings.PositivePrompt.Trim(),
                 HasBasePositivePrompt = true,
-                PositivePrompt = ComposePrompt(settings.PositivePrompt, prompt, loras),
+                PositivePrompt = ComposePrompt(settings.PositivePrompt, generationPrompt, loras),
                 NegativePrompt = settings.NegativePrompt.Trim(),
                 RemoveBackground = removeBackground,
                 Model = model.Copy(),
@@ -156,11 +159,10 @@ namespace Eidolon.Core.Application
             }
         }
 
-        private async Task<JobRecord> GenerateCodexAsync(StudioSettings settings, string prompt,
-            bool removeBackground, GenerationReferenceInput reference, IProgress<WorkProgress> progress, CancellationToken token)
+        private async Task<JobRecord> GenerateCodexAsync(StudioSettings settings, string prompt, bool removeBackground, GenerationReferenceInput reference, IProgress<WorkProgress> progress, CancellationToken token, string generationPrompt)
         {
             settings.Validate();
-            JobRecord job = new JobRecord
+            JobRecord job = new()
             {
                 Kind = JobKind.Generation,
                 GenerationBackend = GenerationBackend.Codex,
@@ -169,7 +171,7 @@ namespace Eidolon.Core.Application
                 UserPrompt = prompt.Trim(),
                 BasePositivePrompt = settings.PositivePrompt,
                 HasBasePositivePrompt = true,
-                PositivePrompt = ComposePrompt(settings.PositivePrompt, prompt, Array.Empty<ModelAsset>()),
+                PositivePrompt = ComposePrompt(settings.PositivePrompt, generationPrompt, Array.Empty<ModelAsset>()),
                 NegativePrompt = settings.NegativePrompt,
                 RemoveBackground = removeBackground,
                 Model = new ModelAsset { Name = "Codex", EngineName = "image_gen" },
@@ -209,7 +211,7 @@ namespace Eidolon.Core.Application
             await Task.Run(() =>
             {
                 token.ThrowIfCancellationRequested();
-                using SKMemoryStream input = new SKMemoryStream(reference.ImageData);
+                using SKMemoryStream input = new(reference.ImageData);
                 using SKCodec codec = SKCodec.Create(input);
                 if (codec == null)
                 {
@@ -252,8 +254,8 @@ namespace Eidolon.Core.Application
                     job.Width = Math.Max(64, (int)Math.Round(sourceWidth * scale / 8) * 8);
                     job.Height = Math.Max(64, (int)Math.Round(sourceHeight * scale / 8) * 8);
                 }
-                using SKBitmap prepared = new SKBitmap(job.Width, job.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using (SKCanvas canvas = new SKCanvas(prepared))
+                using SKBitmap prepared = new(job.Width, job.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using (SKCanvas canvas = new(prepared))
                 {
                     if (job.GenerationBackend == GenerationBackend.Codex)
                     {
@@ -308,7 +310,7 @@ namespace Eidolon.Core.Application
                 {
                     throw new StudioException(StudioMessageCode.InvalidReferenceImage);
                 }
-                using (FileStream stream = new FileStream(destination, FileMode.CreateNew, FileAccess.Write))
+                using (FileStream stream = new(destination, FileMode.CreateNew, FileAccess.Write))
                 {
                     encoded.SaveTo(stream);
                 }
@@ -393,7 +395,7 @@ namespace Eidolon.Core.Application
             {
                 throw new StudioException(StudioMessageCode.InvalidTrainingBackground);
             }
-            JobRecord job = new JobRecord
+            JobRecord job = new()
             {
                 Kind = JobKind.Training,
                 Title = input.Name.Trim(),
@@ -528,7 +530,7 @@ namespace Eidolon.Core.Application
                 }
                 return;
             }
-            RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+            RuntimeLayout layout = new(settings.InstallDirectory);
             _runtimeInstaller.EnsureInstalled(layout);
             if (asset.RuntimeRoot.Equals(layout.Root, StringComparison.OrdinalIgnoreCase) == false)
             {
@@ -567,7 +569,7 @@ namespace Eidolon.Core.Application
                 }
                 if (hasBoundary == true)
                 {
-                    List<string> parts = new List<string>();
+                    List<string> parts = new();
                     if (string.IsNullOrWhiteSpace(positive) == false)
                     {
                         parts.Add(positive.Trim());
@@ -586,13 +588,13 @@ namespace Eidolon.Core.Application
 
         private string ComposePrompt(string positive, string prompt, IReadOnlyList<ModelAsset> loras)
         {
-            List<string> description = new List<string>();
+            List<string> description = new();
             description.Add(prompt.Trim());
             if (string.IsNullOrWhiteSpace(positive) == false)
             {
                 description.Add(positive.Trim());
             }
-            List<string> parts = new List<string>();
+            List<string> parts = new();
             AppendLoraTriggers(parts, loras, string.Join(", ", description));
             parts.AddRange(description);
             return string.Join(", ", parts);

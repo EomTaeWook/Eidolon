@@ -12,7 +12,7 @@ namespace Eidolon.Core.Infrastructure
         private readonly RuntimeInstaller _runtimeInstaller;
         private readonly string _directory;
         private readonly string _imagesDirectory;
-        private readonly object _gate = new object();
+        private readonly object _gate = new();
 
         public JobStore(string dataDirectory, AtomicJsonFile atomicJsonFile, RuntimeInstaller runtimeInstaller)
         {
@@ -47,7 +47,7 @@ namespace Eidolon.Core.Infrastructure
 
         public int ClearTrainingDatasets(StudioSettings settings, CancellationToken token)
         {
-            RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+            RuntimeLayout layout = new(settings.InstallDirectory);
             _runtimeInstaller.EnsureInstalled(layout);
             string root = Path.GetFullPath(layout.TrainingDataDirectory);
             EnsureRegularDirectoryParents(root);
@@ -57,7 +57,7 @@ namespace Eidolon.Core.Infrastructure
             }
             lock (_gate)
             {
-                List<string> targets = new List<string>();
+                List<string> targets = new();
                 foreach (string directory in Directory.EnumerateDirectories(root))
                 {
                     token.ThrowIfCancellationRequested();
@@ -85,7 +85,7 @@ namespace Eidolon.Core.Infrastructure
 
         private void EnsureRegularDirectoryParents(string path)
         {
-            DirectoryInfo directory = new DirectoryInfo(path);
+            DirectoryInfo directory = new(path);
             while (directory != null)
             {
                 if (directory.Exists == true)
@@ -392,7 +392,7 @@ namespace Eidolon.Core.Infrastructure
         {
             lock (_gate)
             {
-                List<AssetCollection> collections = new List<AssetCollection>();
+                List<AssetCollection> collections = new();
                 if (Directory.Exists(_directory) == false)
                 {
                     return collections;
@@ -449,7 +449,7 @@ namespace Eidolon.Core.Infrastructure
                     {
                         if (groupAssetCollections == false)
                         {
-                            GenerationPage rawPage = new GenerationPage();
+                            GenerationPage rawPage = new();
                             rawPage.TotalCount = files.Count;
                             rawPage.PageCount = Math.Max(1, (files.Count + pageSize - 1) / pageSize);
                             rawPage.Number = Math.Min(number, rawPage.PageCount);
@@ -469,8 +469,8 @@ namespace Eidolon.Core.Infrastructure
                         }
                     }
                 }
-                List<GenerationImage> visibleImages = new List<GenerationImage>();
-                List<GenerationImage> collectionImages = new List<GenerationImage>();
+                List<GenerationImage> visibleImages = new();
+                List<GenerationImage> collectionImages = new();
                 foreach (FileInfo file in files)
                 {
                     token.ThrowIfCancellationRequested();
@@ -539,7 +539,7 @@ namespace Eidolon.Core.Infrastructure
                     visibleImages.AddRange(collectionImages);
                 }
                 visibleImages = visibleImages.OrderByDescending(image => image.CreatedAtUtc).ThenBy(image => image.FilePath, StringComparer.OrdinalIgnoreCase).ToList();
-                GenerationPage page = new GenerationPage();
+                GenerationPage page = new();
                 page.TotalCount = visibleImages.Count;
                 page.PageCount = Math.Max(1, (visibleImages.Count + pageSize - 1) / pageSize);
                 page.Number = Math.Min(number, page.PageCount);
@@ -562,7 +562,7 @@ namespace Eidolon.Core.Infrastructure
                 {
                     return null;
                 }
-                GenerationImage image = new GenerationImage
+                GenerationImage image = new()
                 {
                     FilePath = path,
                     CreatedAtUtc = new DateTimeOffset(File.GetCreationTimeUtc(path))
@@ -877,7 +877,7 @@ namespace Eidolon.Core.Infrastructure
         {
             token.ThrowIfCancellationRequested();
             string root = OutputDirectory(generationDirectory);
-            List<FileInfo> files = new List<FileInfo>();
+            List<FileInfo> files = new();
             if (Directory.Exists(root) == false)
             {
                 return files;
@@ -952,7 +952,7 @@ namespace Eidolon.Core.Infrastructure
                     try
                     {
                         JobRecord job = Load(header.Id);
-                        List<string> publishedFiles = new List<string>();
+                        List<string> publishedFiles = new();
                         bool legacy = string.IsNullOrWhiteSpace(job.OutputDirectory);
                         string output = job.OutputDirectory;
                         if (legacy == true)
@@ -1121,7 +1121,7 @@ namespace Eidolon.Core.Infrastructure
         private List<JobHeader> ReadHeaders(CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
-            List<JobHeader> headers = new List<JobHeader>();
+            List<JobHeader> headers = new();
             if (Directory.Exists(_directory) == false)
             {
                 return headers;
@@ -1184,7 +1184,7 @@ namespace Eidolon.Core.Infrastructure
             try
             {
                 await using (FileStream input = File.OpenRead(source))
-                await using (FileStream output = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write,
+                await using (FileStream output = new(temporary, FileMode.CreateNew, FileAccess.Write,
                     FileShare.None, 1024 * 1024, FileOptions.Asynchronous))
                 {
                     await input.CopyToAsync(output, token).ConfigureAwait(false);

@@ -48,7 +48,7 @@ namespace Eidolon.Core.Infrastructure
             await File.WriteAllTextAsync(schemaPath, ResultSchema, new UTF8Encoding(false), token).ConfigureAwait(false);
             await File.WriteAllTextAsync(Path.Combine(workingDirectory, "Request.txt"), instructions,
                 new UTF8Encoding(false), token).ConfigureAwait(false);
-            List<string> arguments = new List<string>
+            List<string> arguments = new()
             {
                 "exec", "--skip-git-repo-check", "--ephemeral", "--ignore-user-config",
                 "--sandbox", "read-only", "--enable", "image_generation", "--json",
@@ -68,7 +68,7 @@ namespace Eidolon.Core.Infrastructure
             job.State = JobState.Running;
             jobs.Save(job);
             progress.Report(new WorkProgress(StudioMessageCode.CodexGenerating));
-            CodexOutputReader response = new CodexOutputReader();
+            CodexOutputReader response = new();
             await _processes.RunAsync(executable, arguments, workingDirectory, logPath, token,
                 stopWithParent: true, standardInput: instructions,
                 standardOutputReceived: response.ReadLine).ConfigureAwait(false);
@@ -97,7 +97,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 referenceInstructions = _templates.Reimagine;
             }
-            Dictionary<string, string> values = new Dictionary<string, string>
+            Dictionary<string, string> values = new()
             {
                 ["PositivePrompt"] = JsonSerializer.Serialize(job.PositivePrompt),
                 ["NegativePrompt"] = JsonSerializer.Serialize(job.NegativePrompt),
@@ -212,7 +212,7 @@ namespace Eidolon.Core.Infrastructure
 
         private async Task CopyOriginalAsync(string source, string output, string logPath, CancellationToken token)
         {
-            using FileStream input = new FileStream(source, FileMode.Open, FileAccess.Read, FileShare.Read,
+            using FileStream input = new(source, FileMode.Open, FileAccess.Read, FileShare.Read,
                 81920, FileOptions.Asynchronous | FileOptions.SequentialScan);
             if (input.Length == 0)
             {
@@ -222,7 +222,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.InvalidCodexOutput, logPath);
             }
-            using FileStream destination = new FileStream(output, FileMode.CreateNew, FileAccess.Write,
+            using FileStream destination = new(output, FileMode.CreateNew, FileAccess.Write,
                 FileShare.None, 81920, FileOptions.Asynchronous);
             await input.CopyToAsync(destination, token).ConfigureAwait(false);
             await destination.FlushAsync(token).ConfigureAwait(false);
@@ -231,7 +231,7 @@ namespace Eidolon.Core.Infrastructure
         private void ReadDimensions(JobRecord job, string output, string logPath, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
-            FileInfo file = new FileInfo(output);
+            FileInfo file = new(output);
             if ((file.Attributes & FileAttributes.ReparsePoint) != 0)
             {
                 throw new StudioException(StudioMessageCode.InvalidCodexOutput, logPath);
@@ -245,7 +245,7 @@ namespace Eidolon.Core.Infrastructure
                 throw new StudioException(StudioMessageCode.InvalidCodexOutput, logPath);
             }
             using FileStream stream = File.OpenRead(output);
-            using SKManagedStream input = new SKManagedStream(stream);
+            using SKManagedStream input = new(stream);
             using SKCodec codec = SKCodec.Create(input);
             if (codec == null)
             {

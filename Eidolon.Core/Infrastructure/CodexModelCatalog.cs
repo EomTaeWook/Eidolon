@@ -23,7 +23,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.CodexExecutableNotFound);
             }
-            StringBuilder output = new StringBuilder();
+            StringBuilder output = new();
             string logPath = Path.Combine(dataDirectory, "Logs", "CodexModels.log");
             using CancellationTokenSource timeout = CancellationTokenSource.CreateLinkedTokenSource(token);
             timeout.CancelAfter(TimeSpan.FromSeconds(30));
@@ -40,8 +40,8 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new JsonException();
             }
-            List<CodexModelInfo> models = new List<CodexModelInfo>();
-            HashSet<string> names = new HashSet<string>(StringComparer.Ordinal);
+            List<CodexModelInfo> models = new();
+            HashSet<string> names = new(StringComparer.Ordinal);
             foreach (CodexModelInfo model in catalog.Models)
             {
                 if (model == null)

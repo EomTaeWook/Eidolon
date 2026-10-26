@@ -53,9 +53,9 @@ namespace Eidolon.Core.Infrastructure
             }
             DenseTensor<float> input = PrepareInput(resized.Pixels);
             token.ThrowIfCancellationRequested();
-            using SessionOptions options = new SessionOptions();
-            using InferenceSession session = new InferenceSession(modelPath, options);
-            using RunOptions runOptions = new RunOptions();
+            using SessionOptions options = new();
+            using InferenceSession session = new(modelPath, options);
+            using RunOptions runOptions = new();
             using CancellationTokenRegistration cancellation = token.Register(() => runOptions.Terminate = true);
             NamedOnnxValue[] inputs = { NamedOnnxValue.CreateFromTensor(session.InputMetadata.Keys.First(), input) };
             float[] prediction;
@@ -94,7 +94,7 @@ namespace Eidolon.Core.Infrastructure
                 byte opacity = (byte)(color.Alpha * alpha[index].Red / 255);
                 colors[index] = new SKColor(color.Red, color.Green, color.Blue, opacity);
             }
-            using SKBitmap result = new SKBitmap(original.Width, original.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
+            using SKBitmap result = new(original.Width, original.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
             result.Pixels = colors;
             using SKData png = result.Encode(SKEncodedImageFormat.Png, 100);
             if (png == null)
@@ -106,7 +106,7 @@ namespace Eidolon.Core.Infrastructure
             try
             {
                 progress.Report(new WorkProgress(StudioMessageCode.BackgroundRemoving, 90, false));
-                using (FileStream output = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write))
+                using (FileStream output = new(temporary, FileMode.CreateNew, FileAccess.Write))
                 {
                     png.SaveTo(output);
                     output.Flush(true);
@@ -130,7 +130,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 maximum = Math.Max(maximum, Math.Max(color.Red, Math.Max(color.Green, color.Blue)));
             }
-            DenseTensor<float> tensor = new DenseTensor<float>(new[] { 1, 3, InputSize, InputSize });
+            DenseTensor<float> tensor = new(new[] { 1, 3, InputSize, InputSize });
             for (int y = 0; y < InputSize; y++)
             {
                 for (int x = 0; x < InputSize; x++)
@@ -164,7 +164,7 @@ namespace Eidolon.Core.Infrastructure
                 byte opacity = (byte)Math.Round(Math.Clamp(value, 0, 1) * 255);
                 colors[index] = new SKColor(opacity, opacity, opacity, 255);
             }
-            SKBitmap mask = new SKBitmap(InputSize, InputSize, SKColorType.Rgba8888, SKAlphaType.Unpremul);
+            SKBitmap mask = new(InputSize, InputSize, SKColorType.Rgba8888, SKAlphaType.Unpremul);
             mask.Pixels = colors;
             return mask;
         }

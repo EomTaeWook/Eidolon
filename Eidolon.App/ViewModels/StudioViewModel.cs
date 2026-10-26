@@ -27,12 +27,7 @@ namespace Eidolon.App.ViewModels
         public SettingsViewModel Settings { get; private set; }
         public AppUpdateViewModel Updates { get; private set; }
 
-        public StudioViewModel(SettingsStore settingsStore, AssetLibrary assets, JobStore jobs,
-            RuntimeInstaller installer, ComfyEngine engine, StudioService studio, DesktopDialogs dialogs,
-            ThemeService themes, LanguageService languages, StringHelper strings, StudioWorkPresenter work,
-            ISeedProvider seeds, CodexModelCatalog codexModels, string dataDirectory,
-            AssetCreationService assetCreation, AssetImageLoader assetImages, ApplicationUpdateService updates,
-            ApplicationUpdateInstaller updateInstaller, ApplicationUpdateRestartPresenter updateRestart)
+        public StudioViewModel(SettingsStore settingsStore, AssetLibrary assets, JobStore jobs, RuntimeInstaller installer, ComfyEngine engine, StudioService studio, DesktopDialogs dialogs, ThemeService themes, LanguageService languages, StringHelper strings, StudioWorkPresenter work, ISeedProvider seeds, CodexModelCatalog codexModels, string dataDirectory, AssetCreationService assetCreation, AssetImageLoader assetImages, ApplicationUpdateService updates, ApplicationUpdateInstaller updateInstaller, ApplicationUpdateRestartPresenter updateRestart, PromptConverter promptConverter)
         {
             _engine = engine;
             _work = work;
@@ -42,13 +37,12 @@ namespace Eidolon.App.ViewModels
             Updates = new AppUpdateViewModel(Session, Navigation, work, strings, dialogs, updates, updateInstaller, updateRestart);
             Assets = new AssetsViewModel(Session, Navigation, work, strings, dialogs, assets, engine);
             Settings = new SettingsViewModel(Session, Navigation, work, strings, dialogs, Assets, themes, languages, codexModels);
-            Generation = new GenerationViewModel(Session, Navigation, work, strings, dialogs, Assets, jobs, studio, seeds);
+            Generation = new GenerationViewModel(Session, Navigation, work, strings, dialogs, Assets, jobs, studio, seeds, promptConverter, installer);
             Training = new TrainingViewModel(Session, Navigation, work, strings, dialogs, Assets, studio);
             AssetCreation = new AssetCreationViewModel(Session, Navigation, work, strings, dialogs, Assets, assetCreation, jobs, seeds, assetImages);
             Gallery = new GalleryViewModel(Session, Navigation, work, strings, dialogs, Generation, Training, jobs, AssetCreation);
             Engine = new EngineViewModel(Session, Navigation, work, strings, dialogs, Assets, Settings, assets, installer, engine, jobs);
-            Mcp = new McpViewModel(Session, Navigation, work, strings, dialogs,
-                new McpService(Session, Assets, Generation, jobs, seeds, strings, AssetCreation, assetCreation, Training));
+            Mcp = new McpViewModel(Session, Navigation, work, strings, dialogs, new McpService(Session, Assets, Generation, jobs, seeds, strings, AssetCreation, assetCreation, Training));
             Generation.ImageGenerated += Gallery.ShowGeneratedImage;
             Settings.LanguageChanged += Localize;
             _work.Finished += OnWorkFinished;

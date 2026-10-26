@@ -290,6 +290,16 @@ namespace Eidolon.App.Localization
                     return "EidolonText650";
                 case StudioMessageCode.AssetSheetTooLarge:
                     return "EidolonText651";
+                case StudioMessageCode.InstallingPromptConverter:
+                    return "EidolonText707";
+                case StudioMessageCode.PromptConverterReady:
+                    return "EidolonText708";
+                case StudioMessageCode.ConvertingPrompt:
+                    return "EidolonText709";
+                case StudioMessageCode.PromptConverterNotInstalled:
+                    return "EidolonText710";
+                case StudioMessageCode.PromptConversionFailed:
+                    return "EidolonText711";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(code), code, null);
             }

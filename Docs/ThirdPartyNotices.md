@@ -20,6 +20,8 @@ Eidolon의 UI·렌더링 구성요소에는 아래 소프트웨어가 포함됩�
 | ComfyUI | GPL-3.0. [라이선스](https://github.com/Comfy-Org/ComfyUI/blob/v0.38.0/LICENSE) |
 | comfyui_controlnet_aux | Apache-2.0. [원본](https://github.com/Fannovel16/comfyui_controlnet_aux), [라이선스](https://github.com/Fannovel16/comfyui_controlnet_aux/blob/59b1fc411ede8623b2997855b8018f0b3b6cf49f/LICENSE.txt) |
 | sd-scripts | Apache-2.0. [라이선스](https://github.com/kohya-ss/sd-scripts/blob/v0.12.0/LICENSE.md) |
+| llama.cpp | MIT. 로컬 프롬프트 변환 실행기는 엔진 탭에서 별도로 내려받습니다. [원본·라이선스](https://github.com/ggml-org/llama.cpp/blob/d854d98bae598388ecea1ed84396587e5edc326d/LICENSE) |
+| Qwen3-4B-Instruct-2507 및 GGUF 양자화본 | Apache-2.0 원본 모델과 배포본 조건을 따릅니다. [원본 모델·라이선스](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507/blob/cdbee75f17c01a7cc42f958dc650907174af0554/LICENSE), [bartowski GGUF 배포·모델 카드](https://huggingface.co/bartowski/Qwen_Qwen3-4B-Instruct-2507-GGUF). 프롬프트 변환 모델은 엔진 탭에서 별도로 내려받습니다. |
 | PyTorch / torchvision | BSD 계열. [PyTorch](https://github.com/pytorch/pytorch/blob/v2.10.0/LICENSE), [torchvision](https://github.com/pytorch/vision/blob/v0.25.0/LICENSE) |
 | 기본 SDXL Base 1.0 가중치 | CreativeML Open RAIL++-M. [원본 라이선스](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/462165984030d82259a11f4367a4eed129e94a7b/LICENSE.md) |
 | SDXL Canny Control-LoRA | 원본 모델 이용조건. [모델 카드](https://huggingface.co/stabilityai/control-lora/blob/75590eb0e7868d3d0f1581b5126d487b33c7fdb4/README.md), [원본 라이선스](https://huggingface.co/stabilityai/control-lora/blob/75590eb0e7868d3d0f1581b5126d487b33c7fdb4/LICENSE.MD). SDXL 그림체 편집을 처음 사용할 때 rank 256 가중치와 원본 고지를 내려받습니다. |

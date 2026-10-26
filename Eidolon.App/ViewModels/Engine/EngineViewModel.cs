@@ -23,12 +23,78 @@ namespace Eidolon.App.ViewModels
         public ObservableCollection<RuntimeModuleItem> RuntimeModules { get; private set; } = new ObservableCollection<RuntimeModuleItem>();
         public ObservableCollection<RuntimeModuleItem> CustomNodes { get; private set; } = new ObservableCollection<RuntimeModuleItem>();
         public AsyncCommand InstallCommand { get; private set; }
+        public AsyncCommand InstallPromptConverterCommand { get; private set; }
         public AsyncCommand StartEngineCommand { get; private set; }
         public AsyncCommand StopEngineCommand { get; private set; }
         public AsyncCommand OpenRuntimeCommand { get; private set; }
         public AsyncCommand RefreshRuntimeModulesCommand { get; private set; }
         public AsyncCommand OpenTrainingDataCommand { get; private set; }
         public AsyncCommand ClearTrainingDataCommand { get; private set; }
+
+        public string PromptConverterInstallDirectory
+        {
+            get
+            {
+                string installDirectory = Session.Settings.InstallDirectory;
+                if (string.IsNullOrWhiteSpace(installDirectory) == false)
+                {
+                    return installDirectory.Trim();
+                }
+                installDirectory = Settings.InstallDirectory;
+                if (string.IsNullOrWhiteSpace(installDirectory) == true)
+                {
+                    return string.Empty;
+                }
+                return installDirectory.Trim();
+            }
+        }
+
+        public bool CanInstallPromptConverter
+        {
+            get
+            {
+                if (Session.IsIdle == false)
+                {
+                    return false;
+                }
+                return Path.IsPathFullyQualified(PromptConverterInstallDirectory);
+            }
+        }
+
+        public string PromptConverterStatus
+        {
+            get
+            {
+                string installDirectory = PromptConverterInstallDirectory;
+                if (Path.IsPathFullyQualified(installDirectory) == true)
+                {
+                    if (_installer.IsPromptConverterInstalled(installDirectory) == true)
+                    {
+                        return _strings.GetString("EidolonText276");
+                    }
+                }
+                return _strings.GetString("EidolonText277");
+            }
+        }
+
+        private async Task InstallPromptConverterAsync(DesktopSettings requestedSettings, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _installer.InstallPromptConverterAsync(requestedSettings, _work.Progress, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                if (string.IsNullOrWhiteSpace(Session.Settings.InstallDirectory) == true)
+                {
+                    DesktopSettings settings = Session.Settings.Copy();
+                    settings.InstallDirectory = requestedSettings.InstallDirectory;
+                    Session.SaveSettings(settings);
+                }
+            }
+            finally
+            {
+                RefreshCommands();
+            }
+        }
 
         public bool CanOpenTrainingData
         {
@@ -396,6 +462,12 @@ namespace Eidolon.App.ViewModels
                 DesktopSettings requestedSettings = Settings.CreateEngineSettings();
                 return Session.WorkAsync(token => InstallAsync(requestedSettings, token));
             }, () => CanInstallEngine == true);
+            InstallPromptConverterCommand = Command(() =>
+            {
+                DesktopSettings requestedSettings = Session.Settings.Copy();
+                requestedSettings.InstallDirectory = PromptConverterInstallDirectory;
+                return Session.WorkAsync(cancellationToken => InstallPromptConverterAsync(requestedSettings, cancellationToken));
+            }, () => CanInstallPromptConverter);
             StartEngineCommand = Command(() =>
             {
                 _work.CancelScheduled();
@@ -455,6 +527,9 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(IsEngineConnected));
             Raise(nameof(StartEngineCaption));
             Raise(nameof(CanInstallEngine));
+            Raise(nameof(PromptConverterInstallDirectory));
+            Raise(nameof(CanInstallPromptConverter));
+            Raise(nameof(PromptConverterStatus));
             Raise(nameof(CanOpenTrainingData));
             Raise(nameof(CanClearTrainingData));
             Raise(nameof(TrainingDataDirectory));

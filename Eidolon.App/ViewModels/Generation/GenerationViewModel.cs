@@ -18,6 +18,8 @@ namespace Eidolon.App.ViewModels
         private readonly JobStore _jobs;
         private readonly StudioService _studio;
         private readonly ISeedProvider _seeds;
+        private readonly PromptConverter _promptConverter;
+        private readonly RuntimeInstaller _runtimeInstaller;
         private string _prompt = string.Empty;
         private string _editingPrompt = string.Empty;
         private bool _useRandomGenerationSeed = true;
@@ -477,7 +479,7 @@ namespace Eidolon.App.ViewModels
             {
                 reference = new GenerationReferenceInput
                 {
-                    ImageData = draft.ImageData,
+                    ImageData = draft.ImageData.ToArray(),
                     ImageName = draft.ImageName,
                     Mode = draft.Mode,
                     ChangeStrength = draft.ChangeStrength
@@ -488,19 +490,22 @@ namespace Eidolon.App.ViewModels
             {
                 loras = Assets.Loras.Where(lora => lora.IsSelected == true).Select(lora => lora.Asset.Copy()).ToList();
             }
-            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey);
+            bool usePromptConversion = false;
+            if (editing == false)
+            {
+                usePromptConversion = _runtimeInstaller.IsPromptConverterInstalled(settings.InstallDirectory);
+            }
+            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey, usePromptConversion);
             return Task.CompletedTask;
         }
 
-        internal void EnqueueGeneration(DesktopSettings settings, string prompt, ModelAsset model,
-            List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, string titleKey)
+        internal void EnqueueGeneration(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, string titleKey, bool usePromptConversion = false)
         {
             if (Session.CanQueue == false)
             {
                 throw new InvalidOperationException("The application is not ready to queue an image request.");
             }
-            _work.Enqueue(_strings.GetString(titleKey) + " · " + prompt,
-                token => GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, token));
+            _work.Enqueue(_strings.GetString(titleKey) + " · " + prompt, cancellationToken => GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, usePromptConversion, cancellationToken));
             _lastQueuedGenerationSeed = string.Empty;
             if (settings.GenerationBackend == GenerationBackend.ComfyUI)
             {
@@ -510,14 +515,27 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(QueuedGenerationSeedCaption));
         }
 
-        private async Task GenerateAsync(DesktopSettings settings, string prompt, ModelAsset model,
-            List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, CancellationToken token)
+        private async Task GenerateAsync(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, bool usePromptConversion, CancellationToken cancellationToken)
         {
-            JobRecord job = await _studio.GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, _work.Progress, token);
+            string convertedPrompt = string.Empty;
+            if (usePromptConversion == true)
+            {
+                string modelGuidance = "Use concise English comma-separated tags or short descriptive phrases, preserving the original meaning, requested subject, relationships, pose, viewpoint, style and constraints without adding new details.";
+                if (settings.GenerationBackend == GenerationBackend.ComfyUI)
+                {
+                    modelGuidance = Assets.GetModelPromptGuidance(model);
+                }
+                convertedPrompt = await _promptConverter.ConvertAsync(settings, prompt, modelGuidance, _work.Progress, cancellationToken);
+                if (string.IsNullOrWhiteSpace(convertedPrompt) == true)
+                {
+                    throw new StudioException(StudioMessageCode.PromptConversionFailed);
+                }
+            }
+            JobRecord job = await _studio.GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, _work.Progress, cancellationToken, convertedPrompt);
             if (Navigation.IsResultsView == false)
             {
                 string path = _jobs.ImagePath(job, job.ImageFiles.Last());
-                GenerationImage image = await Task.Run(() => _jobs.FindGenerationImage(job.OutputDirectory, path, token), token);
+                GenerationImage image = await Task.Run(() => _jobs.FindGenerationImage(job.OutputDirectory, path, cancellationToken), cancellationToken);
                 if (image != null)
                 {
                     ImageGenerated?.Invoke(image);
@@ -609,24 +627,68 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(GenerationNegativePrompt));
         }
 
-        public GenerationViewModel(StudioSession session, StudioNavigationViewModel navigation,
-            StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs,
-            AssetsViewModel assets, JobStore jobs, StudioService studio, ISeedProvider seeds) : base(session, navigation, work, strings, dialogs)
+        public GenerationViewModel(StudioSession session, StudioNavigationViewModel navigation, StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs, AssetsViewModel assets, JobStore jobs, StudioService studio, ISeedProvider seeds, PromptConverter promptConverter, RuntimeInstaller runtimeInstaller) : base(session, navigation, work, strings, dialogs)
         {
             Assets = assets;
             _jobs = jobs;
             _studio = studio;
             _seeds = seeds;
+            _promptConverter = promptConverter;
+            _runtimeInstaller = runtimeInstaller;
             Assets.PropertyChanged += OnAssetsChanged;
-            GenerateCommand = Command(QueueGenerationAsync,
-                () => Session.CanQueue == true && IsGenerationBackendReady == true && IsGenerationSeedValid == true
-                    && _generationReference.AreOptionsValid == true && string.IsNullOrWhiteSpace(Prompt) == false);
-            EditImageCommand = Command(QueueEditingAsync,
-                () => Session.CanQueue == true && IsGenerationBackendReady == true && IsGenerationSeedValid == true
-                    && _editingReference.HasImage == true && _editingReference.AreOptionsValid == true
-                    && string.IsNullOrWhiteSpace(EditingPrompt) == false);
+            GenerateCommand = Command(QueueGenerationAsync, () =>
+            {
+                if (Session.CanQueue == false)
+                {
+                    return false;
+                }
+                if (IsGenerationBackendReady == false)
+                {
+                    return false;
+                }
+                if (IsGenerationSeedValid == false)
+                {
+                    return false;
+                }
+                if (_generationReference.AreOptionsValid == false)
+                {
+                    return false;
+                }
+                return string.IsNullOrWhiteSpace(Prompt) == false;
+            });
+            EditImageCommand = Command(QueueEditingAsync, () =>
+            {
+                if (Session.CanQueue == false)
+                {
+                    return false;
+                }
+                if (IsGenerationBackendReady == false)
+                {
+                    return false;
+                }
+                if (IsGenerationSeedValid == false)
+                {
+                    return false;
+                }
+                if (_editingReference.HasImage == false)
+                {
+                    return false;
+                }
+                if (_editingReference.AreOptionsValid == false)
+                {
+                    return false;
+                }
+                return string.IsNullOrWhiteSpace(EditingPrompt) == false;
+            });
             PickReferenceImageCommand = Command(PickReferenceImageAsync, () => Session.CanEditGenerationInputs == true);
-            ClearReferenceImageCommand = Command(ClearReferenceImageAsync, () => Session.CanEditGenerationInputs == true && HasReferenceImage == true);
+            ClearReferenceImageCommand = Command(ClearReferenceImageAsync, () =>
+            {
+                if (Session.CanEditGenerationInputs == false)
+                {
+                    return false;
+                }
+                return HasReferenceImage;
+            });
         }
 
         private void OnAssetsChanged(object sender, PropertyChangedEventArgs args)

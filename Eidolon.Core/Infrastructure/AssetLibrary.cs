@@ -12,7 +12,7 @@ namespace Eidolon.Core.Infrastructure
         private readonly RuntimeInstaller _runtimeInstaller;
         private readonly string _path;
         private readonly IReadOnlyList<ModelDownload> _downloads;
-        private readonly SemaphoreSlim _gate = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _gate = new(1, 1);
 
         public IReadOnlyList<ModelDownload> Downloads
         {
@@ -33,23 +33,23 @@ namespace Eidolon.Core.Infrastructure
             const string sdxlLicense = "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/462165984030d82259a11f4367a4eed129e94a7b/LICENSE.md";
             _downloads = Array.AsReadOnly(new ModelDownload[]
             {
-                new ModelDownload("SDXL Base 1.0", ModelFamily.Sdxl,
+                new("SDXL Base 1.0", ModelFamily.Sdxl,
                     "stabilityai/stable-diffusion-xl-base-1.0", "462165984030d82259a11f4367a4eed129e94a7b",
                     "sd_xl_base_1.0.safetensors", 6938078334,
                     "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b",
                     sdxlLicense, "License-SDXL.md"),
-                new ModelDownload("Stable Diffusion 1.5", ModelFamily.StableDiffusion15,
+                new("Stable Diffusion 1.5", ModelFamily.StableDiffusion15,
                     "stable-diffusion-v1-5/stable-diffusion-v1-5", "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
                     "v1-5-pruned-emaonly.safetensors", 4265146304,
                     "6ce0161689b3853acaa03779ec93eafe75a02f4ced659bee03f50797806fa2fa",
                     "https://huggingface.co/spaces/CompVis/stable-diffusion-license/resolve/14d42d09bffd871b1666a084fc954a50cff72ac0/license.txt",
                     "License-SD15.txt"),
-                new ModelDownload("RealVisXL 4.0", ModelFamily.Sdxl,
+                new("RealVisXL 4.0", ModelFamily.Sdxl,
                     "SG161222/RealVisXL_V4.0", "26dfe44930964cd70d0a817b6d1cc945c130e38d",
                     "RealVisXL_V4.0.safetensors", 6938040706,
                     "912c9dc74f5855175c31a7993f863a043ac8dcc31732b324cd05d75cd7e16844",
                     sdxlLicense, "License-RealVisXL.md"),
-                new ModelDownload("Illustrious XL 0.1", ModelFamily.Sdxl,
+                new("Illustrious XL 0.1", ModelFamily.Sdxl,
                     "OnomaAIResearch/Illustrious-xl-early-release-v0", "dca0dac303e6dc4b0c31d8001bc685b89b5d0204",
                     "Illustrious-XL-v0.1.safetensors", 6938040760,
                     "3e15ba00387db678ab4a099f75771c4f5ac67fda9e7100a01d263eaf30145aa9",
@@ -73,7 +73,7 @@ namespace Eidolon.Core.Infrastructure
                 {
                     return new List<ModelAsset>();
                 }
-                RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+                RuntimeLayout layout = new(settings.InstallDirectory);
                 return catalog.Assets.Where(asset => asset.RuntimeRoot.Equals(layout.Root, StringComparison.OrdinalIgnoreCase)
                     && File.Exists(layout.AssetPath(asset)) == true)
                     .Select(asset => asset.Copy()).OrderBy(asset => asset.Kind).ThenBy(asset => asset.Name).ToList();
@@ -103,7 +103,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.ExternalAssetImportUnsupported);
             }
-            RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+            RuntimeLayout layout = new(settings.InstallDirectory);
             _runtimeInstaller.EnsureInstalled(layout);
             if (Path.GetExtension(sourcePath).Equals(".safetensors", StringComparison.OrdinalIgnoreCase) == false)
             {
@@ -189,7 +189,7 @@ namespace Eidolon.Core.Infrastructure
         public async Task ScanAsync(StudioSettings settings, IProgress<WorkProgress> progress,
             CancellationToken cancellationToken)
         {
-            RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+            RuntimeLayout layout = new(settings.InstallDirectory);
             _runtimeInstaller.EnsureInstalled(layout);
             await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
@@ -248,7 +248,7 @@ namespace Eidolon.Core.Infrastructure
                 ModelAsset stored = catalog.Assets.Single(item => item.Id == asset.Id);
                 if (ComfyServerAddress.IsExternalAsset(stored) == false)
                 {
-                    RuntimeLayout layout = new RuntimeLayout(Path.GetDirectoryName(stored.RuntimeRoot));
+                    RuntimeLayout layout = new(Path.GetDirectoryName(stored.RuntimeRoot));
                     ModelFamily detected = _inspector.Inspect(layout.AssetPath(stored), stored.Kind);
                     if (detected != ModelFamily.Unknown && detected != family)
                     {
@@ -301,7 +301,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.ExternalAssetImportUnsupported);
             }
-            RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+            RuntimeLayout layout = new(settings.InstallDirectory);
             _runtimeInstaller.EnsureInstalled(layout);
             await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
@@ -332,7 +332,7 @@ namespace Eidolon.Core.Infrastructure
                     }
                 }
                 string path = layout.AssetPath(asset);
-                DirectoryInfo directory = new DirectoryInfo(Path.GetDirectoryName(path));
+                DirectoryInfo directory = new(Path.GetDirectoryName(path));
                 while (directory != null)
                 {
                     if (directory.Exists == true)
@@ -344,7 +344,7 @@ namespace Eidolon.Core.Infrastructure
                     }
                     directory = directory.Parent;
                 }
-                FileInfo file = new FileInfo(path);
+                FileInfo file = new(path);
                 if (file.Exists == true)
                 {
                     if ((file.Attributes & FileAttributes.ReparsePoint) != 0)
@@ -372,7 +372,7 @@ namespace Eidolon.Core.Infrastructure
                 throw new StudioException(StudioMessageCode.ExternalAssetImportUnsupported);
             }
             ModelDownload model = Downloads.Single(item => item.FileName == fileName);
-            RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+            RuntimeLayout layout = new(settings.InstallDirectory);
             _runtimeInstaller.EnsureInstalled(layout);
             string destination = Path.Combine(layout.ModelsDirectory, model.FileName);
             await _downloader.DownloadAsync(model.DownloadUrl, destination,

@@ -26,7 +26,7 @@ namespace Eidolon.Core.Infrastructure
         public async Task<string> TrainAsync(StudioSettings settings, JobRecord job, TrainingInput training,
             IProgress<WorkProgress> progress, CancellationToken cancellationToken)
         {
-            RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+            RuntimeLayout layout = new(settings.InstallDirectory);
             _installer.EnsureInstalled(layout, true);
             if (settings.UseCpu == true)
             {
@@ -44,7 +44,7 @@ namespace Eidolon.Core.Infrastructure
             job.DatasetImageCount = images.Count;
             job.DatasetImages = images.Select(image => image.Copy()).ToList();
             _jobs.Save(job);
-            GenerationPreset imagePreset = new GenerationPreset(job.Model.Family);
+            GenerationPreset imagePreset = new(job.Model.Family);
             string datasetConfig = "[general]\ncaption_extension = \".txt\"\nkeep_tokens = 1\n" +
                 "[[datasets]]\nresolution = " + imagePreset.Resolution.ToString(CultureInfo.InvariantCulture) +
                 "\nbatch_size = 1\nenable_bucket = true\nbucket_no_upscale = true\n" +
@@ -68,7 +68,7 @@ namespace Eidolon.Core.Infrastructure
             }
             string outputName = "Eidolon-" + job.Id.Substring(0, 8);
             string outputDirectory = Path.Combine(jobDirectory, "Output");
-            List<string> arguments = new List<string>
+            List<string> arguments = new()
             {
                 "-u", "-m", "accelerate.commands.launch", "--num_processes", "1", "--num_machines", "1",
                 "--mixed_precision", TrainingPreset.Precision, "--dynamo_backend", "no", "--num_cpu_threads_per_process", "2",
@@ -102,7 +102,7 @@ namespace Eidolon.Core.Infrastructure
             progress.Report(new WorkProgress(StudioMessageCode.TrainingStarting));
             DateTimeOffset lastReportAtUtc = DateTimeOffset.MinValue;
             bool hasStepProgress = false;
-            object reportGate = new object();
+            object reportGate = new();
             await _runner.RunAsync(layout.TrainingPython, arguments, layout.TrainingDirectory,
                 logPath, cancellationToken, _installer.EnvironmentFor(layout), line =>
                 {
@@ -121,7 +121,7 @@ namespace Eidolon.Core.Infrastructure
                             if (total == job.Steps)
                             {
                                 hasStepProgress = true;
-                                WorkProgress stepProgress = new WorkProgress(StudioMessageCode.TrainingProgress,
+                                WorkProgress stepProgress = new(StudioMessageCode.TrainingProgress,
                                     step * 100.0 / total, false, step, total);
                                 Match remaining = Regex.Match(line, @"\[[\d:]+<(?<remaining>\d+(?::\d+){1,2})[,\]]");
                                 if (remaining.Success == true && TryParseRemainingTime(remaining.Groups["remaining"].Value,
@@ -328,9 +328,9 @@ namespace Eidolon.Core.Infrastructure
                     {
                         throw new StudioException(StudioMessageCode.TrainingImageProcessingFailed, Path.GetFileName(source));
                     }
-                    using SKBitmap result = new SKBitmap(original.Width, original.Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+                    using SKBitmap result = new(original.Width, original.Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
                     using SKImage image = SKImage.FromBitmap(original);
-                    using (SKCanvas canvas = new SKCanvas(result))
+                    using (SKCanvas canvas = new(result))
                     {
                         canvas.Clear(color);
                         canvas.DrawImage(image, 0, 0, SKSamplingOptions.Default, null);

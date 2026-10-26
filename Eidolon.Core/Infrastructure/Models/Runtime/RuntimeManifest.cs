@@ -13,5 +13,8 @@ namespace Eidolon.Core.Infrastructure
         public string ComfyVersion { get; set; } = RuntimeLayout.ComfyVersion;
         public string TrainingVersion { get; set; } = RuntimeLayout.TrainingVersion;
         public string Error { get; set; } = string.Empty;
+        public bool PromptConverterInstalled { get; set; }
+        public string PromptConverterVersion { get; set; } = string.Empty;
+        public List<string> PromptConverterFiles { get; set; } = new List<string>();
     }
 }

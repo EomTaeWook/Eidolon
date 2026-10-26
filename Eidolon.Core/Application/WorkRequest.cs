@@ -2,7 +2,7 @@ namespace Eidolon.Core.Application
 {
     internal class WorkRequest
     {
-        private readonly TaskCompletionSource<bool> _cancelRequested = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<bool> _cancelRequested = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private Task _cancellation = Task.CompletedTask;
         private readonly Action _discarded;
 

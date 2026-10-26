@@ -56,7 +56,7 @@ namespace Eidolon.Core.Infrastructure
             string temporaryPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
             {
-                using (FileStream stream = new FileStream(temporaryPath, FileMode.CreateNew, FileAccess.Write))
+                using (FileStream stream = new(temporaryPath, FileMode.CreateNew, FileAccess.Write))
                 {
                     JsonSerializer.Serialize(stream, value, _options);
                     stream.Flush(true);

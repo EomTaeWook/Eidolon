@@ -143,6 +143,11 @@ namespace Eidolon.Core.Domain
         InvalidGenerationMetadata,
         PreparingOutlineControl,
         OutlineControlModelRequired,
-        OutlineControlNodeRequired
+        OutlineControlNodeRequired,
+        InstallingPromptConverter,
+        PromptConverterReady,
+        ConvertingPrompt,
+        PromptConverterNotInstalled,
+        PromptConversionFailed
     }
 }

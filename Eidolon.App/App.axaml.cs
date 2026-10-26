@@ -11,6 +11,7 @@ using Eidolon.Core.Application;
 using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
 using System.Reflection;
+using Eidolon.Core.Infrastructure.AssetCreation;
 
 namespace Eidolon.App
 {
@@ -93,6 +94,7 @@ namespace Eidolon.App
                 PackagedResources.ReadText("Eidolon.Codex.Restyle.txt"),
                 PackagedResources.ReadText("Eidolon.Codex.Reimagine.txt")));
             _serviceContainer.RegisterType<CodexImageEngine, CodexImageEngine>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<PromptConverter, PromptConverter>(LifeScope.Singleton);
             _serviceContainer.RegisterType<CodexModelCatalog, CodexModelCatalog>(LifeScope.Singleton);
             _serviceContainer.RegisterType<RuntimeModuleReader, RuntimeModuleReader>(LifeScope.Singleton);
             _serviceContainer.RegisterType<RuntimeInstaller, RuntimeInstaller>(LifeScope.Singleton);
@@ -120,15 +122,7 @@ namespace Eidolon.App
                 _engineHttp, provider.GetService<ProcessRunner>(), provider.GetService<RuntimeInstaller>(),
                 provider.GetService<ComfyWorkflowBuilder>(), provider.GetService<FileDownloader>(),
                 provider.GetService<TimeProvider>()), LifeScope.Singleton);
-            _serviceContainer.RegisterType<StudioViewModel>(provider => new StudioViewModel(
-                provider.GetService<SettingsStore>(), provider.GetService<AssetLibrary>(), provider.GetService<JobStore>(),
-                provider.GetService<RuntimeInstaller>(), provider.GetService<ComfyEngine>(), provider.GetService<StudioService>(),
-                provider.GetService<DesktopDialogs>(), provider.GetService<ThemeService>(), provider.GetService<LanguageService>(),
-                provider.GetService<StringHelper>(), provider.GetService<StudioWorkPresenter>(),
-                provider.GetService<ISeedProvider>(), provider.GetService<CodexModelCatalog>(), dataDirectory,
-                provider.GetService<AssetCreationService>(), provider.GetService<AssetImageLoader>(),
-                provider.GetService<ApplicationUpdateService>(), provider.GetService<ApplicationUpdateInstaller>(),
-                provider.GetService<ApplicationUpdateRestartPresenter>()), LifeScope.Singleton);
+            _serviceContainer.RegisterType<StudioViewModel>(provider => new StudioViewModel(provider.GetService<SettingsStore>(), provider.GetService<AssetLibrary>(), provider.GetService<JobStore>(), provider.GetService<RuntimeInstaller>(), provider.GetService<ComfyEngine>(), provider.GetService<StudioService>(), provider.GetService<DesktopDialogs>(), provider.GetService<ThemeService>(), provider.GetService<LanguageService>(), provider.GetService<StringHelper>(), provider.GetService<StudioWorkPresenter>(), provider.GetService<ISeedProvider>(), provider.GetService<CodexModelCatalog>(), dataDirectory, provider.GetService<AssetCreationService>(), provider.GetService<AssetImageLoader>(), provider.GetService<ApplicationUpdateService>(), provider.GetService<ApplicationUpdateInstaller>(), provider.GetService<ApplicationUpdateRestartPresenter>(), provider.GetService<PromptConverter>()), LifeScope.Singleton);
             _serviceContainer.RegisterDependencies(typeof(StringHelper).Assembly);
             return _serviceContainer.Build();
         }

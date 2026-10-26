@@ -17,7 +17,7 @@ namespace Eidolon.Core.Infrastructure
         private readonly ComfyWorkflowBuilder _workflow;
         private readonly FileDownloader _downloader;
         private readonly TimeProvider _time;
-        private readonly SemaphoreSlim _lifecycleGate = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _lifecycleGate = new(1, 1);
         private CancellationTokenSource _engineLifetime;
         private Task _engineTask;
         private string _activeRoot = string.Empty;
@@ -43,7 +43,7 @@ namespace Eidolon.Core.Infrastructure
             await _lifecycleGate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                Uri server = new Uri(ComfyServerAddress.Root(settings));
+                Uri server = new(ComfyServerAddress.Root(settings));
                 RuntimeLayout layout = null;
                 if (string.IsNullOrWhiteSpace(settings.InstallDirectory) == false)
                 {
@@ -78,7 +78,7 @@ namespace Eidolon.Core.Infrastructure
                 {
                     listenAddress = parsedAddress;
                 }
-                TcpListener probe = new TcpListener(listenAddress, server.Port);
+                TcpListener probe = new(listenAddress, server.Port);
                 try
                 {
                     probe.Start();
@@ -99,7 +99,7 @@ namespace Eidolon.Core.Infrastructure
                 progress.Report(new WorkProgress(StudioMessageCode.EngineStarting));
                 _engineLifetime?.Dispose();
                 _engineLifetime = new CancellationTokenSource();
-                List<string> arguments = new List<string>
+                List<string> arguments = new()
                 {
                     "-u", "main.py", "--listen", listenAddress.ToString(), "--port", server.Port.ToString(),
                     "--disable-auto-launch", "--extra-model-paths-config", Path.Combine(layout.Root, "ModelPaths.yaml")
@@ -172,8 +172,8 @@ namespace Eidolon.Core.Infrastructure
                 referenceImage = await UploadReferenceImageAsync(settings, job, cancellationToken).ConfigureAwait(false);
             }
             string clientId = Guid.NewGuid().ToString("N");
-            using ClientWebSocket socket = new ClientWebSocket();
-            using CancellationTokenSource socketLifetime = new CancellationTokenSource();
+            using ClientWebSocket socket = new();
+            using CancellationTokenSource socketLifetime = new();
             Task socketTask = Task.CompletedTask;
             try
             {
@@ -181,7 +181,7 @@ namespace Eidolon.Core.Infrastructure
                 connectTimeout.CancelAfter(TimeSpan.FromSeconds(5));
                 try
                 {
-                    UriBuilder socketAddress = new UriBuilder(Address(settings, "ws"));
+                    UriBuilder socketAddress = new(Address(settings, "ws"));
                     string httpScheme = socketAddress.Scheme;
                     socketAddress.Scheme = "ws";
                     if (httpScheme == "https")
@@ -198,7 +198,7 @@ namespace Eidolon.Core.Infrastructure
                     progress.Report(new WorkProgress(StudioMessageCode.ProgressConnectionUnavailable));
                 }
                 string promptId = Guid.ParseExact(job.Id, "N").ToString("D");
-                JsonObject payload = new JsonObject
+                JsonObject payload = new()
                 {
                     ["prompt"] = _workflow.Build(job, referenceImage),
                     ["client_id"] = clientId,
@@ -302,8 +302,8 @@ namespace Eidolon.Core.Infrastructure
         private async Task<string> UploadReferenceImageAsync(StudioSettings settings, JobRecord job, CancellationToken token)
         {
             await using FileStream input = File.OpenRead(job.ReferenceImagePath);
-            using MultipartFormDataContent content = new MultipartFormDataContent();
-            using StreamContent image = new StreamContent(input);
+            using MultipartFormDataContent content = new();
+            using StreamContent image = new(input);
             image.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
             content.Add(image, "image", job.Id + ".png");
             content.Add(new StringContent("input"), "type");
@@ -331,7 +331,7 @@ namespace Eidolon.Core.Infrastructure
 
         private async Task CancelAsync(StudioSettings settings, string id)
         {
-            using CancellationTokenSource timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(10));
             await PostAsync(settings, "api/jobs/" + Uri.EscapeDataString(id) + "/cancel", new JsonObject(), timeout.Token).ConfigureAwait(false);
         }
 
@@ -367,7 +367,7 @@ namespace Eidolon.Core.Infrastructure
             if (ComfyServerAddress.CanStartLocally(settings) == true &&
                 string.IsNullOrWhiteSpace(settings.InstallDirectory) == false && stats["system"]["argv"] is JsonArray arguments)
             {
-                RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+                RuntimeLayout layout = new(settings.InstallDirectory);
                 string modelPaths = Path.Combine(layout.Root, "ModelPaths.yaml");
                 for (int index = 0; index + 1 < arguments.Count; index++)
                 {
@@ -388,7 +388,7 @@ namespace Eidolon.Core.Infrastructure
             byte[] buffer = new byte[8192];
             while (socket.State == WebSocketState.Open)
             {
-                using MemoryStream message = new MemoryStream();
+                using MemoryStream message = new();
                 WebSocketReceiveResult part;
                 do
                 {
@@ -444,7 +444,7 @@ namespace Eidolon.Core.Infrastructure
         private async Task<JsonObject> PostAsync(StudioSettings settings, string route, JsonObject payload,
             CancellationToken cancellationToken)
         {
-            using StringContent content = new StringContent(payload.ToJsonString(), Encoding.UTF8, "application/json");
+            using StringContent content = new(payload.ToJsonString(), Encoding.UTF8, "application/json");
             using HttpResponseMessage response = await _http.PostAsync(Address(settings, route), content, cancellationToken).ConfigureAwait(false);
             string text = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             if (response.IsSuccessStatusCode == false)
@@ -503,7 +503,7 @@ namespace Eidolon.Core.Infrastructure
             string modelFileName = Path.GetFileName(controlModel.FileName);
             if (Connection.UsesLocalAssets == true)
             {
-                RuntimeLayout layout = new RuntimeLayout(settings.InstallDirectory);
+                RuntimeLayout layout = new(settings.InstallDirectory);
                 progress.Report(new WorkProgress(StudioMessageCode.PreparingOutlineControl, 0, true, controlModel.Name));
                 await _downloader.DownloadAsync(controlModel.DownloadUrl, Path.Combine(layout.ControlNetsDirectory, modelFileName), controlModel.Sha256, progress, cancellationToken).ConfigureAwait(false);
                 await _downloader.DownloadAsync(controlModel.LicenseUrl, Path.Combine(layout.ControlNetsDirectory, controlModel.LicenseFileName), string.Empty, progress, cancellationToken).ConfigureAwait(false);

@@ -12,6 +12,16 @@ namespace Eidolon.Core.Infrastructure
         public const string VisionVersion = "0.25.0";
         public const string OutlineNodeName = "comfyui_controlnet_aux";
         public const string OutlineNodeRevision = "59b1fc411ede8623b2997855b8018f0b3b6cf49f";
+        public const string PromptConverterVersion = "b11889";
+        public const string PromptConverterRevision = "d854d98bae598388ecea1ed84396587e5edc326d";
+        public const string PromptConverterArchiveUrl = "https://github.com/ggml-org/llama.cpp/releases/download/b11889/llama-b11889-bin-win-cpu-x64.zip";
+        public const string PromptConverterArchiveSha256 = "bf563dffb502a230ae06c9dc455b54cbc079e7e0bc270cd4d6191209b28d175d";
+        public const string PromptConverterModelRevision = "ae44f08e1392f39c0e474af10c3ff8355c8b6688";
+        public const string PromptConverterModelName = "Qwen_Qwen3-4B-Instruct-2507-Q4_K_M.gguf";
+        public const string PromptConverterModelUrl = "https://huggingface.co/bartowski/Qwen_Qwen3-4B-Instruct-2507-GGUF/resolve/ae44f08e1392f39c0e474af10c3ff8355c8b6688/Qwen_Qwen3-4B-Instruct-2507-Q4_K_M.gguf";
+        public const string PromptConverterModelSha256 = "2fde00ce69dd4899c70d020845e2638353015bba0fdf161b3eb965f2bca4464e";
+        public const long PromptConverterModelBytes = 2497280736;
+        public const string PromptConverterOriginalModelRevision = "cdbee75f17c01a7cc42f958dc650907174af0554";
 
         public string Root { get; private set; }
         public string ComfyDirectory { get; private set; }
@@ -25,6 +35,8 @@ namespace Eidolon.Core.Infrastructure
         public string TrainingDataDirectory { get; private set; }
         public string LogDirectory { get; private set; }
         public string UvExecutable { get; private set; }
+        public string PromptConverterExecutable { get; private set; }
+        public string PromptConverterModelPath { get; private set; }
 
         public RuntimeLayout(string installDirectory)
         {
@@ -48,6 +60,8 @@ namespace Eidolon.Core.Infrastructure
             TrainingDataDirectory = Path.Combine(Root, "TrainingData");
             LogDirectory = Path.Combine(Root, "Logs");
             UvExecutable = Path.Combine(Root, "Tools", "uv.exe");
+            PromptConverterExecutable = Path.Combine(Root, "Tools", "PromptConverter-" + PromptConverterVersion, "llama-completion.exe");
+            PromptConverterModelPath = Path.Combine(Root, "Models", "PromptConverter-" + PromptConverterModelRevision, PromptConverterModelName);
         }
 
         public string AssetPath(ModelAsset asset)

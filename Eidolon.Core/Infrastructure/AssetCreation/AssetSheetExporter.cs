@@ -72,8 +72,8 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.AssetSheetTooLarge);
             }
-            List<SKRectI> subjectBounds = new List<SKRectI>();
-            List<int> sourceCanvasSizes = new List<int>();
+            List<SKRectI> subjectBounds = new();
+            List<int> sourceCanvasSizes = new();
             float maximumWidth = 0;
             float maximumHeight = 0;
             foreach (AssetFrame frame in collection.Frames)
@@ -88,7 +88,7 @@ namespace Eidolon.Core.Infrastructure
                 maximumHeight = Math.Max(maximumHeight, (float)subject.Height / canvasSize);
             }
             float scale = Math.Min((float)collection.FrameWidth / maximumWidth, (float)collection.FrameHeight / maximumHeight);
-            SKSamplingOptions samplingOptions = new SKSamplingOptions(SKFilterMode.Linear);
+            SKSamplingOptions samplingOptions = new(SKFilterMode.Linear);
             if (collection.PixelArt == true)
             {
                 samplingOptions = new SKSamplingOptions(SKFilterMode.Nearest);
@@ -96,14 +96,14 @@ namespace Eidolon.Core.Infrastructure
             string exportDirectory = Path.Combine(Path.GetFullPath(parentDirectory), "Eidolon-Assets-" + collection.Id.Substring(0, 8) + "-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(Path.Combine(exportDirectory, "Frames"));
             Directory.CreateDirectory(Path.Combine(exportDirectory, "Sources"));
-            AssetSheetManifest manifest = new AssetSheetManifest
+            AssetSheetManifest manifest = new()
             {
                 CollectionId = collection.Id, Kind = collection.Kind, Width = sheetWidth, Height = sheetHeight,
                 FrameWidth = collection.FrameWidth, FrameHeight = collection.FrameHeight,
                 Loop = false, PixelArt = collection.PixelArt
             };
-            using SKBitmap sheet = new SKBitmap(sheetWidth, sheetHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
-            using SKCanvas sheetCanvas = new SKCanvas(sheet);
+            using SKBitmap sheet = new(sheetWidth, sheetHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+            using SKCanvas sheetCanvas = new(sheet);
             sheetCanvas.Clear(SKColors.Transparent);
             for (int frameIndex = 0; frameIndex < collection.Frames.Count; frameIndex++)
             {
@@ -111,12 +111,12 @@ namespace Eidolon.Core.Infrastructure
                 AssetFrame frame = collection.Frames[frameIndex];
                 using SKBitmap original = Decode(frame.ImagePath);
                 SKRectI subject = subjectBounds[frameIndex];
-                using SKBitmap frameCanvas = new SKBitmap(collection.FrameWidth, collection.FrameHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using SKBitmap frameCanvas = new(collection.FrameWidth, collection.FrameHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 float frameWidth = (float)subject.Width / sourceCanvasSizes[frameIndex] * scale;
                 float frameHeight = (float)subject.Height / sourceCanvasSizes[frameIndex] * scale;
                 SKRect destination = SKRect.Create((collection.FrameWidth - frameWidth) / 2, collection.FrameHeight - frameHeight, frameWidth, frameHeight);
                 using (SKImage source = SKImage.FromBitmap(original))
-                using (SKCanvas canvas = new SKCanvas(frameCanvas))
+                using (SKCanvas canvas = new(frameCanvas))
                 {
                     canvas.Clear(SKColors.Transparent);
                     canvas.DrawImage(source, new SKRect(subject.Left, subject.Top, subject.Right, subject.Bottom), destination, samplingOptions, null);
@@ -154,7 +154,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.InvalidReferenceImage);
             }
-            using SKManagedStream managed = new SKManagedStream(stream);
+            using SKManagedStream managed = new(stream);
             using SKCodec codec = SKCodec.Create(managed);
             if (codec == null || codec.Info.Width < 1 || codec.Info.Height < 1
                 || (long)codec.Info.Width * codec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
@@ -177,7 +177,7 @@ namespace Eidolon.Core.Infrastructure
             {
                 throw new StudioException(StudioMessageCode.AssetCreationFailed);
             }
-            using FileStream output = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
+            using FileStream output = new(path, FileMode.CreateNew, FileAccess.Write);
             data.SaveTo(output);
             output.Flush(true);
         }
