@@ -4,7 +4,8 @@ using Eidolon.App.Localization;
 using Eidolon.App.Mcp;
 using Eidolon.App.Presenters;
 using Eidolon.App.Services;
-using Eidolon.Mcp;
+using MCP.Core;
+using MCP.Core.Transport;
 
 namespace Eidolon.App.ViewModels
 {
@@ -17,6 +18,7 @@ namespace Eidolon.App.ViewModels
         {
             _server = new McpHttpServer(new McpServerOptions
             {
+                Name = "Eidolon",
                 Instructions = "Eidolon queues local image generation, style edits and LoRA training. Mandatory prompt format: write every supplied prompt, positive_prompt and negative_prompt entry in English, regardless of the user's language. Translate the user's request before calling a tool. Use detailed comma-separated English tags or short tag phrases instead of vague summaries or long prose. Separate relevant details into subject and count, appearance and shape, pose and action, composition, camera angle and viewpoint, art style, materials and textures, colors, lighting and background. Describe each relevant detail as specifically as the user's request allows; do not invent unrelated requirements. Put unwanted elements and artifacts in negative_prompt as separate English tags. Before image generation, editing or asset creation, read eidolon_get_instructions for the active backend, selected checkpoint and saved instructions. For ComfyUI also call eidolon_list_models and follow the target checkpoint's prompt_guidance, using selected_model_id when model_id is omitted. Model families establish compatibility, not a universal tag vocabulary; never assume score_*, rating_* or source_* prefixes apply to all SDXL models. Unknown or renamed checkpoints need their exact model card. For frame regeneration use the collection's captured backend and checkpoint from eidolon_get_asset_collection instead of current UI selection. Resolve conflicting saved tags with request-only instruction overrides. This also applies to frame regeneration. Optional prompt fields may still be omitted and instruction overrides may be empty to clear them. Image and training tools return acceptance, not completion. Poll status and read result paths. Instruction overrides apply only to their request. For LoRA training, call eidolon_train_lora with absolute image or folder paths in white_images and black_images; do not automate a file picker. Both groups train one LoRA. To continue training existing weights, pass resume_lora_id from eidolon_list_models; it must be a local LoRA with the same family and runtime as the training checkpoint. Omit it for new training, independently of UI continuation settings. Only the supplied images are used; include earlier images explicitly if they should be trained again. Continuation loads weights and rank, starts a fresh optimizer and schedule, and preserves the original by saving a new LoRA. Write any supplied description as detailed comma-separated English tags. The training runtime is local ComfyUI with an NVIDIA GPU, regardless of the image-generation backend. Poll eidolon_get_status, then eidolon_list_models for the trained LoRA."
             }, tools.CreateTools(), error => LogHelper.Error(error));
             _server.StateChanged += OnServerStateChanged;

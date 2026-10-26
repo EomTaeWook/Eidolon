@@ -177,9 +177,11 @@ URL 예약 명령의 계약은 [Microsoft netsh http 문서](https://learn.micro
 
 ## 책임 경계
 
-`Eidolon.Mcp`는 Dignus DI를 사용하고 App/Core 참조 없이 `HttpListener`, JSON-RPC, MCP 전송과 도구 등록을 소유한다. Dignus는 [작업 규칙](WorkingRules.md)의 외부 패키지 제한에서 허용한다. 모델은 `Models/Server`, `Models/Protocol`, `Models/Tools`로 묶으며 통신·프로토콜·도구 실행 타입은 기능 폴더에서 타입별 파일로 나눈다. 라이브러리 상세 계약은 [라이브러리 사용법](../Eidolon.Mcp/README.md)이 소유한다.
+`MCP.Core`는 Dignus DI를 사용하고 App/Core 참조 없이 `HttpListener`, JSON-RPC, MCP 전송과 도구 등록을 소유한다. Dignus는 [작업 규칙](WorkingRules.md)의 외부 패키지 제한에서 허용한다. 모델은 `Models/Server`, `Models/Protocol`, `Models/Tools`로 묶으며 통신·프로토콜·도구 실행 타입은 기능 폴더에서 타입별 파일로 나눈다. 라이브러리 상세 계약은 [라이브러리 사용법](../Mcp.Core/README.md)이 소유한다.
 
-JSON-RPC 메서드는 `Eidolon.Mcp/Controllers`의 `InitializeController`, `PingController`, `ServerDiscoverController`, `ToolsListController`, `ToolsCallController`, `NotificationsCancelledController`가 각각 처리한다. 컨트롤러는 transient이며 `McpDispatcher`가 메서드별 타입을 찾아 요청·알림마다 DI에서 새로 resolve한 뒤 공통 응답 메타데이터를 붙인다. 서버 옵션·도구 목록·콜백과 App의 `McpService`는 공유한다.
+독립 MCP.Core 솔루션은 https://github.com/EomTaeWook/Mcp.Core.git 저장소를 Mcp.Core 서브모듈로 연결하고 Mcp.Core/MCP.Core.csproj를 참조한다. 프로젝트 설정·사용법·MIT 라이선스도 독립 저장소가 소유한다. 서버 이름은 호스트가 지정하며 Eidolon App의 `McpViewModel`이 `Name="Eidolon"`을 전달한다. 앱 도구·설정·번역·큐는 이 라이브러리에 포함하지 않는다.
+
+JSON-RPC 메서드는 `Mcp.Core/Controllers`의 `InitializeController`, `PingController`, `ServerDiscoverController`, `ToolsListController`, `ToolsCallController`, `NotificationsCancelledController`가 각각 처리한다. 컨트롤러는 `McpControllerBase`를 상속하고 `[Controller("initialize")]` 같은 특성의 이름으로 검색한다. `MethodName` 상수와 수동 등록 목록은 사용하지 않는다. `McpDispatcher`가 발견한 타입을 항상 `LifeScope.Transient`로 등록하고 요청·알림마다 새 인스턴스를 resolve한 뒤 공통 응답 메타데이터를 붙인다. 서버 옵션·도구 목록·콜백과 App의 `McpService`는 공유한다.
 
 App의 `Mcp/McpService.cs`는 `CreateTools()`에서 도구 정의와 private 처리 메서드를 등록하고 기존 Session·자산 선택·생성 및 학습 ViewModel·JobStore에 연결한다. 학습 요청은 `TrainingViewModel.EnqueueTraining`을 통해 UI와 같은 `TrainAsync` 실행 경로에 연결하며 별도 폴더 선택·학습 큐·데이터셋 저장소를 만들지 않는다. 호출 흐름은 `tools/call → ToolsCallController → McpService의 처리 메서드`다. UI 상태는 Avalonia UI 스레드에서 읽고 요청 사본을 만든다. `ViewModels/Mcp/McpViewModel`이 서버의 시작·정지·화면 상태를 소유한다. 루트는 초기화 완료 후 기존 `StartCommand`를 실행하고 종료를 조합한다. 초기화 실패·종료 중·이미 실행 중이면 기존 명령 조건으로 시작하지 않으며 시작 오류는 기존 명령 오류 처리로 표시한다. Core는 MCP와 UI를 참조하지 않는다. 별도 설정 저장소, 생성 큐, 작업 이력이나 결과 인덱스를 만들지 않는다.
 

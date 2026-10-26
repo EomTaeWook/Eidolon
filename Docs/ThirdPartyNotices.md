@@ -8,6 +8,7 @@ Eidolon의 UI·렌더링 구성요소에는 아래 소프트웨어가 포함됩�
 |---|---|
 | Avalonia | MIT, Copyright © 2013–2026 The AvaloniaUI Project. [라이선스](https://github.com/AvaloniaUI/Avalonia/blob/12.1.4/licence.md) |
 | Dignus / Dignus.Log | MIT, Copyright © 2021–2026 EomTaeWook. [라이선스](https://github.com/EomTaeWook/Dignus-Public/blob/main/LICENSE) |
+| MCP.Core | MIT, Copyright © 2026 EomTaeWook. 독립 MCP 서버 모듈이며 Eidolon 자체의 소스 라이선스와 구분합니다. [라이선스](../Mcp.Core/LICENSE) |
 | SkiaSharp | MIT, Copyright © Microsoft Corporation. [라이선스](https://github.com/mono/SkiaSharp/blob/main/LICENSE.md) |
 | ONNX Runtime | MIT, Copyright © Microsoft Corporation. [라이선스](https://github.com/microsoft/onnxruntime/blob/v1.31.0/LICENSE) |
 | IS-Net general-use / DIS | Apache-2.0 및 원본 이용조건. [원본](https://github.com/xuebinqin/DIS), [이용조건](https://github.com/xuebinqin/DIS#7-term-of-use). 배경 제거를 처음 사용할 때 ONNX 모델을 내려받고 이용조건이 포함된 원본 README를 모델 폴더의 `NOTICE-ISNet.md`에 보존합니다. |

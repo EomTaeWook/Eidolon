@@ -162,6 +162,12 @@
             </DataTemplate>
           </ListBox.ItemTemplate>
         </ListBox>
+        <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="12" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding IsGalleryLoading}">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <ProgressBar IsIndeterminate="True" Width="60" Height="4" VerticalAlignment="Center" />
+            <TextBlock Text="{DynamicResource EidolonText378}" Classes="muted" FontSize="12" />
+          </StackPanel>
+        </Border>
         <StackPanel Grid.Row="1" Spacing="12" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding IsGalleryEmpty}" MaxWidth="320" Margin="12,16">
           <Border Width="60" Height="60" CornerRadius="30" Background="{DynamicResource BadgeBrush}" HorizontalAlignment="Center">
             <Path Data="{StaticResource EidolonIconImage}" Width="26" Height="26" Stretch="Uniform" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.6" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -171,10 +177,6 @@
           <Button Content="{DynamicResource EidolonText106}" Command="{Binding Navigation.ShowGenerationCommand}" HorizontalAlignment="Center" Padding="16,7" Margin="0,4,0,0" />
         </StackPanel>
         <StackPanel Grid.Row="2" Spacing="10" Margin="0,12,0,0">
-          <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" IsVisible="{Binding IsGalleryLoading}">
-            <ProgressBar IsIndeterminate="True" Width="60" Height="4" VerticalAlignment="Center" />
-            <TextBlock Text="{DynamicResource EidolonText378}" Classes="muted" FontSize="12" />
-          </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" IsVisible="{Binding HasGenerations}">
             <Button Content="{DynamicResource EidolonText374}" Command="{Binding PreviousGalleryPageCommand}" Padding="12,8" />
             <TextBlock Text="{Binding GalleryPageCaption}" VerticalAlignment="Center" MinWidth="90" TextAlignment="Center" />

@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Eidolon.Core/Eidolon.Core.csproj" />
-    <ProjectReference Include="../Eidolon.Mcp/Eidolon.Mcp.csproj" />
+    <ProjectReference Include="../Mcp.Core/MCP.Core.csproj" />
     <ProjectReference Include="../DataContainer/DataContainer.csproj" />
     <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />

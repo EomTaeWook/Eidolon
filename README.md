@@ -120,6 +120,8 @@ dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o ar
 
 Eidolon은 [Eidolon Source License 1.0](LICENSE)을 적용하는 소스 공개형(source-available) 소프트웨어입니다.
 
+독립 [MCP.Core](https://github.com/EomTaeWook/Mcp.Core) 서브모듈에는 별도의 [MIT 라이선스](Mcp.Core/LICENSE)를 적용합니다.
+
 - 개인·교육·회사 내부 업무와 상업용 게임·에셋 제작에 무료로 사용할 수 있습니다.
 - 소스 수정과 무료 재배포는 라이선스·저작권 고지를 유지하고 주요 변경 내용을 표시하는 조건으로 허용합니다.
 - Eidolon 자체와 이를 상당 부분 기반으로 한 수정·재포장·개명 앱의 판매·유료 배포는 저작권자의 별도 서면 허가가 필요합니다.

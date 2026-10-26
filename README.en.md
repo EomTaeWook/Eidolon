@@ -118,6 +118,8 @@ The executable includes the runtime, UI libraries, localized resources, and noti
 
 Eidolon is source-available software under the [Eidolon Source License 1.0](LICENSE).
 
+The independent [MCP.Core](https://github.com/EomTaeWook/Mcp.Core) submodule is licensed separately under [MIT](Mcp.Core/LICENSE).
+
 - Free use is permitted for personal, educational, internal business, and commercial game and asset production.
 - Modification and free redistribution are permitted when license and copyright notices are preserved, material changes are identified, and recipients receive the same terms.
 - Selling or charging for Eidolon, including modified, repackaged, or renamed apps based substantially on it, requires separate written permission from the copyright holder.

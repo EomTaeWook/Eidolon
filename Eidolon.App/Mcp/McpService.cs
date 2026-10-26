@@ -5,7 +5,7 @@ using Eidolon.App.ViewModels;
 using Eidolon.Core.Application;
 using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
-using Eidolon.Mcp;
+using MCP.Core;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
