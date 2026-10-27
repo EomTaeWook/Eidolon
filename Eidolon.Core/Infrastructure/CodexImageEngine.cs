@@ -64,6 +64,37 @@ namespace Eidolon.Core.Infrastructure
                 arguments.Add("--image");
                 arguments.Add(job.ReferenceImagePath);
             }
+            if (job.ReferenceMode == GenerationReferenceMode.Inpaint)
+            {
+                string maskGuidePath = Path.Combine(workingDirectory, "MaskGuide.png");
+                await Task.Run(() =>
+                {
+                    token.ThrowIfCancellationRequested();
+                    using SKBitmap mask = SKBitmap.Decode(job.ReferenceMaskPath);
+                    if (mask == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    using SKBitmap guide = new(mask.Width, mask.Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+                    using (SKCanvas canvas = new(guide))
+                    {
+                        canvas.Clear(SKColors.Black);
+                        using SKImage maskImage = SKImage.FromBitmap(mask);
+                        canvas.DrawImage(maskImage, 0, 0, new SKSamplingOptions(SKFilterMode.Nearest));
+                    }
+                    using SKImage image = SKImage.FromBitmap(guide);
+                    using SKData encoded = image.Encode(SKEncodedImageFormat.Png, 100);
+                    if (encoded == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    using FileStream destination = new(maskGuidePath, FileMode.CreateNew, FileAccess.Write);
+                    encoded.SaveTo(destination);
+                    token.ThrowIfCancellationRequested();
+                }, token).ConfigureAwait(false);
+                arguments.Add("--image");
+                arguments.Add(maskGuidePath);
+            }
             arguments.Add("-");
             job.State = JobState.Running;
             jobs.Save(job);
@@ -89,7 +120,11 @@ namespace Eidolon.Core.Infrastructure
                 backgroundInstructions = _templates.TransparentBackground;
             }
             string referenceInstructions = string.Empty;
-            if (job.ReferenceMode == GenerationReferenceMode.Restyle)
+            if (job.ReferenceMode == GenerationReferenceMode.Inpaint)
+            {
+                referenceInstructions = _templates.Inpaint;
+            }
+            else if (job.ReferenceMode == GenerationReferenceMode.Restyle)
             {
                 referenceInstructions = _templates.Restyle;
             }

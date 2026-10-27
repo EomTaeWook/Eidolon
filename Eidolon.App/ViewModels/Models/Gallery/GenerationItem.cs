@@ -271,6 +271,10 @@ namespace Eidolon.App.ViewModels
                 {
                     mode = _strings.GetString("EidolonText445");
                 }
+                if (Metadata.ReferenceMode == GenerationReferenceMode.Inpaint)
+                {
+                    mode = _strings.GetString("EidolonText721");
+                }
                 if (Metadata.GenerationBackend == GenerationBackend.Codex)
                 {
                     return mode + " · " + Metadata.ReferenceImageName;

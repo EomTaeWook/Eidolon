@@ -7214,8 +7214,8 @@
   {
     "Id": 3792,
     "Name": "EidolonText713",
-    "Kor": "\uD55C\uAE00\u00B7\uC601\uC5B4 \uC124\uBA85\uC744 \uC601\uBB38 \uD0DC\uADF8\uB85C \uC815\uB9AC\uD574 \uC0DD\uC131\uD569\uB2C8\uB2E4. \uC6D0\uBB38\uC740 \uC720\uC9C0\uD569\uB2C8\uB2E4.",
-    "Eng": "Generate with English tags converted from Korean or English input. The original input is preserved."
+    "Kor": "\uD55C\uAE00\u00B7\uC601\uC5B4 \uC785\uB825\uC744 \uC120\uD0DD\uD55C \uC774\uBBF8\uC9C0 \uBAA8\uB378\uC5D0 \uB9DE\uB294 \uC601\uC5B4 \uD0DC\uADF8\uB098 \uBB38\uC7A5\uC73C\uB85C \uC815\uB9AC\uD569\uB2C8\uB2E4. \uC6D0\uBB38\uC740 \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+    "Eng": "Adapts Korean or English input into English tags or sentences suited to the selected image model. Preserves the original input."
   },
   {
     "Id": 3793,
@@ -7232,8 +7232,8 @@
   {
     "Id": 3795,
     "Name": "EidolonText716",
-    "Kor": "\uC124\uCE58\uD558\uBA74 \uC77C\uBC18\u00B7\uCC38\uACE0 \uC774\uBBF8\uC9C0 \uC0DD\uC131 \uC804\uC5D0 \uC601\uBB38 \uD0DC\uADF8\uB85C \uC790\uB3D9 \uBCC0\uD658\uD569\uB2C8\uB2E4.",
-    "Eng": "Once installed, automatically converts prompts to English tags before standard and reference-image generation."
+    "Kor": "\uC124\uCE58\uD558\uBA74 \uC571\u00B7MCP\uC758 \uC77C\uBC18\u00B7\uCC38\uACE0 \uC774\uBBF8\uC9C0 \uC0DD\uC131\uACFC \uD3B8\uC9D1\uC5D0 \uC790\uB3D9 \uC801\uC6A9\uD569\uB2C8\uB2E4.",
+    "Eng": "Once installed, applies automatically to standard and reference-image generation and style edits from the app and MCP."
   },
   {
     "Id": 3796,
@@ -7258,5 +7258,53 @@
     "Name": "EidolonText720",
     "Kor": "\uBCC0\uD658 \uBAA8\uB378\uC744 \uC0AD\uC81C\uD588\uC2B5\uB2C8\uB2E4. \uC785\uB825\uD55C \uC124\uBA85\uC73C\uB85C \uC0DD\uC131\uD569\uB2C8\uB2E4.",
     "Eng": "Converter removed. Generation now uses your original input."
+  },
+  {
+    "Id": 3800,
+    "Name": "EidolonText721",
+    "Kor": "\uBD80\uBD84 \uACE0\uCE58\uAE30",
+    "Eng": "Edit area"
+  },
+  {
+    "Id": 3801,
+    "Name": "EidolonText722",
+    "Kor": "\uBE0C\uB7EC\uC2DC \uD06C\uAE30",
+    "Eng": "Brush size"
+  },
+  {
+    "Id": 3802,
+    "Name": "EidolonText723",
+    "Kor": "\uC9C0\uC6B0\uAC1C",
+    "Eng": "Eraser"
+  },
+  {
+    "Id": 3803,
+    "Name": "EidolonText724",
+    "Kor": "\uC120\uD0DD \uC9C0\uC6B0\uAE30",
+    "Eng": "Clear selection"
+  },
+  {
+    "Id": 3804,
+    "Name": "EidolonText725",
+    "Kor": "\uACE0\uCE60 \uBD80\uBD84\uC744 \uCE60\uD55C \uB4A4 \uBCC0\uACBD\uD560 \uB0B4\uC6A9\uC744 \uC785\uB825\uD558\uC138\uC694. \uC120\uD0DD\uD558\uC9C0 \uC54A\uC740 \uBD80\uBD84\uC740 \uC6D0\uBCF8\uC744 \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+    "Eng": "Paint the area to edit, then describe the change. Unselected areas retain the original image."
+  },
+  {
+    "Id": 3805,
+    "Name": "EidolonText726",
+    "Kor": "\uACE0\uCE60 \uBD80\uBD84\uC744 \uBA3C\uC800 \uCE60\uD558\uC138\uC694.",
+    "Eng": "Paint the area to edit first."
+  },
+  {
+    "Id": 3806,
+    "Name": "EidolonText727",
+    "Kor": "\uC120\uD0DD\uD55C \uC601\uC5ED\uC744 \uC5B4\uB5BB\uAC8C \uBC14\uAFC0\uC9C0 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Describe what to change inside the selected area."
+  },
+  {
+    "Id": 3807,
+    "Name": "EidolonText728",
+    "Kor": "\uC601\uC5ED \uC120\uD0DD",
+    "Eng": "Select area"
   }
 ]

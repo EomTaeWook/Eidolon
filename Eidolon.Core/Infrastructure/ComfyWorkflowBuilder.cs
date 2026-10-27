@@ -16,6 +16,11 @@ namespace Eidolon.Core.Infrastructure
 
         public JsonObject Build(JobRecord job, string referenceImage)
         {
+            return Build(job, referenceImage, string.Empty);
+        }
+
+        public JsonObject Build(JobRecord job, string referenceImage, string referenceMask)
+        {
             JsonObject workflow = new();
             Add("1", "CheckpointLoaderSimple", new JsonObject { ["ckpt_name"] = job.Model.EngineName });
             string modelNode = "1";
@@ -51,7 +56,21 @@ namespace Eidolon.Core.Infrastructure
                     throw new StudioException(StudioMessageCode.InvalidReferenceImage);
                 }
                 Add("8", "LoadImage", new JsonObject { ["image"] = referenceImage });
-                Add("4", "VAEEncode", new JsonObject { ["pixels"] = Link("8", 0), ["vae"] = Link("1", 2) });
+                if (job.ReferenceMode == GenerationReferenceMode.Inpaint)
+                {
+                    if (string.IsNullOrWhiteSpace(referenceMask) == true)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    Add("12", "ImageScale", new JsonObject { ["image"] = Link("8", 0), ["upscale_method"] = "lanczos", ["width"] = job.Width, ["height"] = job.Height, ["crop"] = "disabled" });
+                    Add("13", "LoadImage", new JsonObject { ["image"] = referenceMask });
+                    Add("14", "InvertMask", new JsonObject { ["mask"] = Link("13", 1) });
+                    Add("4", "VAEEncodeForInpaint", new JsonObject { ["pixels"] = Link("12", 0), ["vae"] = Link("1", 2), ["mask"] = Link("14", 0), ["grow_mask_by"] = 6 });
+                }
+                else
+                {
+                    Add("4", "VAEEncode", new JsonObject { ["pixels"] = Link("8", 0), ["vae"] = Link("1", 2) });
+                }
             }
             string positiveNode = "2";
             string negativeNode = "3";

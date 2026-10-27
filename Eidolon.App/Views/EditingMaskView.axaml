@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.EditingMaskView" x:DataType="vm:GenerationViewModel">
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="16,10">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{DynamicResource EidolonText721}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" />
+        <Button Grid.Column="1" Content="{DynamicResource EidolonText439}" Command="{Binding CloseEditingMaskCommand}" Padding="12,6" />
+      </Grid>
+    </Border>
+    <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" Padding="12" ClipToBounds="True">
+      <Grid>
+        <views:TransparencyBackground />
+        <views:ReferenceMaskEditor ImageData="{Binding EditingImageData}" MaskData="{Binding EditingMaskData, Mode=TwoWay}" BrushSize="{Binding EditingBrushSize}" IsErasing="{Binding IsErasingMask}" SelectionBrush="{DynamicResource AccentBrush}" IsEnabled="{Binding Session.CanEditGenerationInputs}" MinWidth="1" MinHeight="1" />
+      </Grid>
+    </Border>
+    <Border Grid.Row="2" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="16,10">
+      <StackPanel Spacing="8">
+        <WrapPanel>
+          <TextBlock Text="{DynamicResource EidolonText722}" FontSize="12" VerticalAlignment="Center" Margin="0,0,10,8" />
+          <Slider Minimum="1" Maximum="128" Value="{Binding EditingBrushSize, Mode=TwoWay}" Width="160" VerticalAlignment="Center" Margin="0,0,16,8" IsEnabled="{Binding Session.CanEditGenerationInputs}" AutomationProperties.Name="{DynamicResource EidolonText722}" />
+          <CheckBox Content="{DynamicResource EidolonText723}" IsChecked="{Binding IsErasingMask, Mode=TwoWay}" FontSize="12" Margin="0,0,16,8" IsEnabled="{Binding Session.CanEditGenerationInputs}" />
+          <Button Content="{DynamicResource EidolonText724}" Command="{Binding ClearEditingMaskCommand}" Padding="10,6" Margin="0,0,0,8" />
+        </WrapPanel>
+        <TextBlock Text="{DynamicResource EidolonText725}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+      </StackPanel>
+    </Border>
+  </Grid>
+</UserControl>

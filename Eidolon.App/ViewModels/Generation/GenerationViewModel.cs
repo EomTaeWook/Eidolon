@@ -28,10 +28,160 @@ namespace Eidolon.App.ViewModels
         private readonly GenerationReferenceDraft _generationReference = new GenerationReferenceDraft(GenerationReferenceMode.Reimagine, 0.65);
         private readonly GenerationReferenceDraft _editingReference = new GenerationReferenceDraft(GenerationReferenceMode.Restyle, 0.35);
         private bool _removeBackground;
+        private bool _editingMaskOpen;
+        private bool _isErasingMask;
+        private double _editingBrushSize = 32;
         public AsyncCommand GenerateCommand { get; private set; }
         public AsyncCommand EditImageCommand { get; private set; }
         public AsyncCommand PickReferenceImageCommand { get; private set; }
         public AsyncCommand ClearReferenceImageCommand { get; private set; }
+        public AsyncCommand ClearEditingMaskCommand { get; private set; }
+        public AsyncCommand OpenEditingMaskCommand { get; private set; }
+        public AsyncCommand CloseEditingMaskCommand { get; private set; }
+
+        public bool IsPartialEditing
+        {
+            get
+            {
+                return _editingReference.Mode == GenerationReferenceMode.Inpaint;
+            }
+            set
+            {
+                if (IsPartialEditing == value)
+                {
+                    return;
+                }
+                if (value == true)
+                {
+                    _editingReference.SetMode(GenerationReferenceMode.Inpaint);
+                    _editingReference.ChangeStrength = 0.65;
+                }
+                else
+                {
+                    _editingReference.SetMode(GenerationReferenceMode.Restyle);
+                    _editingReference.ChangeStrength = 0.35;
+                }
+                _editingMaskOpen = value;
+                RefreshReferenceInputs();
+            }
+        }
+
+        public bool ShowEditingMaskEditor
+        {
+            get
+            {
+                if (Navigation.IsEditingView == false)
+                {
+                    return false;
+                }
+                if (IsPartialEditing == false)
+                {
+                    return false;
+                }
+                if (_editingReference.HasImage == false)
+                {
+                    return false;
+                }
+                return _editingMaskOpen;
+            }
+        }
+
+        public byte[] EditingImageData
+        {
+            get
+            {
+                return _editingReference.ImageData;
+            }
+        }
+
+        public byte[] EditingMaskData
+        {
+            get
+            {
+                return _editingReference.MaskData;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    value = Array.Empty<byte>();
+                }
+                if (ReferenceEquals(_editingReference.MaskData, value) == true)
+                {
+                    return;
+                }
+                _editingReference.BeginLoad();
+                _editingReference.MaskData = value;
+                Raise(nameof(EditingMaskData));
+                Raise(nameof(HasEditingMask));
+                Raise(nameof(AreReferenceOptionsValid));
+                RefreshCommands();
+            }
+        }
+
+        public bool HasEditingMask
+        {
+            get
+            {
+                return _editingReference.MaskData.Length > 0;
+            }
+        }
+
+        public bool IsErasingMask
+        {
+            get
+            {
+                return _isErasingMask;
+            }
+            set
+            {
+                Set(ref _isErasingMask, value);
+            }
+        }
+
+        public double EditingBrushSize
+        {
+            get
+            {
+                return _editingBrushSize;
+            }
+            set
+            {
+                if (double.IsFinite(value) == false)
+                {
+                    return;
+                }
+                if (value <= 0)
+                {
+                    return;
+                }
+                Set(ref _editingBrushSize, value);
+            }
+        }
+
+        public string EditingInputCaption
+        {
+            get
+            {
+                if (IsPartialEditing == true)
+                {
+                    return _strings.GetString("EidolonText721");
+                }
+                return _strings.GetString("EidolonText457");
+            }
+        }
+
+        public string EditingPromptHint
+        {
+            get
+            {
+                if (IsPartialEditing == true)
+                {
+                    return _strings.GetString("EidolonText727");
+                }
+                return _strings.GetString("EidolonText458");
+            }
+        }
 
         public bool IsComfyGeneration
         {
@@ -145,6 +295,10 @@ namespace Eidolon.App.ViewModels
             {
                 if (Navigation.IsEditingView == true)
                 {
+                    if (IsPartialEditing == true)
+                    {
+                        return _strings.GetString("EidolonText721");
+                    }
                     return _strings.GetString("EidolonText445");
                 }
                 return _strings.GetString("EidolonText438");
@@ -157,6 +311,10 @@ namespace Eidolon.App.ViewModels
             {
                 if (Navigation.IsEditingView == true)
                 {
+                    if (IsPartialEditing == true)
+                    {
+                        return _strings.GetString("EidolonText721");
+                    }
                     return _strings.GetString("EidolonText456");
                 }
                 return _strings.GetString("EidolonText106");
@@ -361,6 +519,10 @@ namespace Eidolon.App.ViewModels
                 imageName = Path.GetFileName(path);
             }
             reference.SetImage(image.Data, image.Thumbnail, imageName);
+            if (reference == _editingReference)
+            {
+                _editingMaskOpen = true;
+            }
             RefreshReferenceInputs();
             Session.Error = string.Empty;
             return true;
@@ -380,10 +542,18 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(ReferenceImageName));
             Raise(nameof(HasReferenceImage));
             Raise(nameof(GenerationActionCaption));
+            Raise(nameof(GenerationInputCaption));
             Raise(nameof(ReferenceChangeStrength));
             Raise(nameof(ReferenceStrengthCaption));
             Raise(nameof(ReferenceImageHint));
             Raise(nameof(AreReferenceOptionsValid));
+            Raise(nameof(IsPartialEditing));
+            Raise(nameof(ShowEditingMaskEditor));
+            Raise(nameof(EditingImageData));
+            Raise(nameof(EditingMaskData));
+            Raise(nameof(HasEditingMask));
+            Raise(nameof(EditingInputCaption));
+            Raise(nameof(EditingPromptHint));
             RefreshCommands();
         }
 
@@ -480,6 +650,7 @@ namespace Eidolon.App.ViewModels
                 reference = new GenerationReferenceInput
                 {
                     ImageData = draft.ImageData.ToArray(),
+                    MaskData = draft.MaskData.ToArray(),
                     ImageName = draft.ImageName,
                     Mode = draft.Mode,
                     ChangeStrength = draft.ChangeStrength
@@ -490,21 +661,22 @@ namespace Eidolon.App.ViewModels
             {
                 loras = Assets.Loras.Where(lora => lora.IsSelected == true).Select(lora => lora.Asset.Copy()).ToList();
             }
-            bool usePromptConversion = false;
-            if (editing == false)
+            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey);
+            if (editing == true)
             {
-                usePromptConversion = _runtimeInstaller.IsPromptConverterInstalled(settings.InstallDirectory);
+                _editingMaskOpen = false;
+                Raise(nameof(ShowEditingMaskEditor));
             }
-            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey, usePromptConversion);
             return Task.CompletedTask;
         }
 
-        internal void EnqueueGeneration(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, string titleKey, bool usePromptConversion = false)
+        internal void EnqueueGeneration(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, string titleKey)
         {
             if (Session.CanQueue == false)
             {
                 throw new InvalidOperationException("The application is not ready to queue an image request.");
             }
+            bool usePromptConversion = _runtimeInstaller.IsPromptConverterInstalled(settings.InstallDirectory);
             _work.Enqueue(_strings.GetString(titleKey) + " · " + prompt, cancellationToken => GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, usePromptConversion, cancellationToken));
             _lastQueuedGenerationSeed = string.Empty;
             if (settings.GenerationBackend == GenerationBackend.ComfyUI)
@@ -520,7 +692,7 @@ namespace Eidolon.App.ViewModels
             string convertedPrompt = string.Empty;
             if (usePromptConversion == true)
             {
-                string modelGuidance = "Use concise English comma-separated tags or short descriptive phrases, preserving the original meaning, requested subject, relationships, pose, viewpoint, style and constraints without adding new details.";
+                string modelGuidance = "The target backend is Codex image generation. Use clear natural-language English descriptions or sentences expressing the requested subject, relationships, pose, viewpoint, style and constraints. Do not apply ComfyUI checkpoint-specific tags, quality prefixes or local LoRA vocabulary, and do not add details.";
                 if (settings.GenerationBackend == GenerationBackend.ComfyUI)
                 {
                     modelGuidance = Assets.GetModelPromptGuidance(model);
@@ -549,11 +721,17 @@ namespace Eidolon.App.ViewModels
         {
             GenerationReferenceDraft reference = _generationReference;
             int targetTab = 0;
-            if (job.ReferenceMode == GenerationReferenceMode.Restyle)
+            bool editing = job.ReferenceMode == GenerationReferenceMode.Restyle;
+            if (job.ReferenceMode == GenerationReferenceMode.Inpaint)
+            {
+                editing = true;
+            }
+            if (editing == true)
             {
                 reference = _editingReference;
                 targetTab = 1;
                 EditingPrompt = job.UserPrompt;
+                _editingReference.SetMode(job.ReferenceMode);
             }
             else
             {
@@ -567,15 +745,84 @@ namespace Eidolon.App.ViewModels
                 {
                     reference.ChangeStrength = job.Denoise;
                 }
+                byte[] restoredImageData = Array.Empty<byte>();
                 try
                 {
-                    await LoadReferenceImageAsync(reference, job.ReferenceImagePath, job.ReferenceImageName);
+                    if (await LoadReferenceImageAsync(reference, job.ReferenceImagePath, job.ReferenceImageName) == true)
+                    {
+                        restoredImageData = reference.ImageData;
+                        if (job.ReferenceMode == GenerationReferenceMode.Inpaint)
+                        {
+                            int maskRequest = reference.BeginLoad();
+                            byte[] maskData = await Task.Run(() =>
+                            {
+                                Session.Lifetime.ThrowIfCancellationRequested();
+                                using FileStream maskStream = File.OpenRead(job.ReferenceMaskPath);
+                                if (maskStream.Length < 1)
+                                {
+                                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                                }
+                                if (maskStream.Length > GenerationReferenceInput.MaximumImageBytes)
+                                {
+                                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                                }
+                                byte[] data = new byte[(int)maskStream.Length];
+                                maskStream.ReadExactly(data);
+                                using SKMemoryStream encodedMask = new(data);
+                                using SKCodec maskCodec = SKCodec.Create(encodedMask);
+                                if (maskCodec == null)
+                                {
+                                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                                }
+                                if (maskCodec.Info.Width < 1)
+                                {
+                                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                                }
+                                if (maskCodec.Info.Height < 1)
+                                {
+                                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                                }
+                                if ((long)maskCodec.Info.Width * maskCodec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
+                                {
+                                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                                }
+                                using SKBitmap decodedMask = SKBitmap.Decode(maskCodec);
+                                if (decodedMask == null)
+                                {
+                                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                                }
+                                return data;
+                            }, Session.Lifetime);
+                            if (Session.IsClosing == true)
+                            {
+                                return;
+                            }
+                            if (reference.IsCurrentLoad(maskRequest) == false)
+                            {
+                                return;
+                            }
+                            reference.MaskData = maskData;
+                            RefreshReferenceInputs();
+                        }
+                    }
                 }
                 catch (Exception error) when (error is not OperationCanceledException)
                 {
-                    reference.SetMissingImage(job.ReferenceImageName);
+                    if (restoredImageData.Length > 0)
+                    {
+                        if (ReferenceEquals(reference.ImageData, restoredImageData) == false)
+                        {
+                            return;
+                        }
+                        reference.MaskData = Array.Empty<byte>();
+                        Session.Error = _strings.GetString("EidolonText726");
+                    }
+                    else
+                    {
+                        reference.SetMissingImage(job.ReferenceImageName);
+                        Session.Error = _strings.GetString("EidolonText454");
+                    }
                     RefreshReferenceInputs();
-                    Session.Error = _strings.GetString("EidolonText454");
                 }
             }
             RemoveBackground = job.RemoveBackground;
@@ -689,6 +936,41 @@ namespace Eidolon.App.ViewModels
                 }
                 return HasReferenceImage;
             });
+            ClearEditingMaskCommand = Command(() =>
+            {
+                EditingMaskData = Array.Empty<byte>();
+                return Task.CompletedTask;
+            }, () =>
+            {
+                if (Session.CanEditGenerationInputs == false)
+                {
+                    return false;
+                }
+                return HasEditingMask;
+            });
+            OpenEditingMaskCommand = Command(() =>
+            {
+                _editingMaskOpen = true;
+                Raise(nameof(ShowEditingMaskEditor));
+                return Task.CompletedTask;
+            }, () =>
+            {
+                if (Session.CanEditGenerationInputs == false)
+                {
+                    return false;
+                }
+                if (IsPartialEditing == false)
+                {
+                    return false;
+                }
+                return _editingReference.HasImage;
+            });
+            CloseEditingMaskCommand = Command(() =>
+            {
+                _editingMaskOpen = false;
+                Raise(nameof(ShowEditingMaskEditor));
+                return Task.CompletedTask;
+            }, () => true);
         }
 
         private void OnAssetsChanged(object sender, PropertyChangedEventArgs args)

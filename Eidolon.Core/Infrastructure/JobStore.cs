@@ -643,12 +643,22 @@ namespace Eidolon.Core.Infrastructure
                     {
                         if (metadata.ReferenceMode != GenerationReferenceMode.Restyle)
                         {
-                            throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                            if (metadata.ReferenceMode != GenerationReferenceMode.Inpaint)
+                            {
+                                throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                            }
                         }
                     }
                     if (string.IsNullOrWhiteSpace(metadata.ReferenceImagePath) == true)
                     {
                         throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                    }
+                    if (metadata.ReferenceMode == GenerationReferenceMode.Inpaint)
+                    {
+                        if (string.IsNullOrWhiteSpace(metadata.ReferenceMaskPath) == true)
+                        {
+                            throw new StudioException(StudioMessageCode.InvalidGenerationMetadata);
+                        }
                     }
                     if (metadata.GenerationBackend == GenerationBackend.ComfyUI)
                     {

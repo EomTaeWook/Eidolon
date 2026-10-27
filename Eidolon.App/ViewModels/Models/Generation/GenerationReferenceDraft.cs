@@ -16,6 +16,7 @@ namespace Eidolon.App.ViewModels
         public GenerationReferenceMode Mode { get; private set; }
         public double ChangeStrength { get; set; }
         public byte[] ImageData { get; private set; } = Array.Empty<byte>();
+        public byte[] MaskData { get; set; } = Array.Empty<byte>();
         public string ImageName { get; private set; } = string.Empty;
         public Bitmap Thumbnail { get; private set; }
         public bool HasImage
@@ -29,9 +30,37 @@ namespace Eidolon.App.ViewModels
         {
             get
             {
-                return HasImage == false || (ImageData.Length > 0 && double.IsFinite(ChangeStrength) == true
-                    && ChangeStrength >= 0.05 && ChangeStrength <= 0.95);
+                if (HasImage == false)
+                {
+                    return true;
+                }
+                if (ImageData.Length == 0)
+                {
+                    return false;
+                }
+                if (double.IsFinite(ChangeStrength) == false)
+                {
+                    return false;
+                }
+                if (ChangeStrength < 0.05)
+                {
+                    return false;
+                }
+                if (ChangeStrength > 0.95)
+                {
+                    return false;
+                }
+                if (Mode == GenerationReferenceMode.Inpaint)
+                {
+                    return MaskData.Length > 0;
+                }
+                return true;
             }
+        }
+
+        public void SetMode(GenerationReferenceMode mode)
+        {
+            Mode = mode;
         }
 
         public int BeginLoad()
@@ -49,6 +78,7 @@ namespace Eidolon.App.ViewModels
         {
             Bitmap previous = Thumbnail;
             ImageData = data;
+            MaskData = Array.Empty<byte>();
             Thumbnail = thumbnail;
             ImageName = name;
             previous?.Dispose();
@@ -69,6 +99,7 @@ namespace Eidolon.App.ViewModels
             _loadRequest++;
             Bitmap previous = Thumbnail;
             ImageData = Array.Empty<byte>();
+            MaskData = Array.Empty<byte>();
             Thumbnail = null;
             ImageName = string.Empty;
             previous?.Dispose();

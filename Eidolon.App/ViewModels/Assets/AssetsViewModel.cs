@@ -437,7 +437,7 @@ namespace Eidolon.App.ViewModels
                 }
                 if (fileName.Equals("sd_xl_base_1.0.safetensors", StringComparison.OrdinalIgnoreCase) == true)
                 {
-                    return "Filename-matched guidance for SDXL Base 1.0: the model card uses natural-language descriptions. Use detailed comma-separated English phrases describing the subject and action, spatial relationships, composition, style, materials, lighting and background. State relationships clearly instead of listing disconnected nouns. Do not assume Danbooru quality, score_9, rating_* or source_* tags are required because the family is SDXL. Put only relevant unwanted features in negative_prompt. Source: https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0";
+                    return "Filename-matched guidance for SDXL Base 1.0: the model card uses natural-language descriptions. Prefer clear English descriptions or sentences expressing the subject and action, spatial relationships, composition, style, materials, lighting and background; do not force the description into disconnected tags. State relationships clearly instead of listing disconnected nouns. Do not assume Danbooru quality, score_9, rating_* or source_* tags are required because the family is SDXL. Put only relevant unwanted features in negative_prompt. Source: https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0";
                 }
             }
             if (model.Family == ModelFamily.StableDiffusion15)

@@ -1,6 +1,7 @@
 using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 using SkiaSharp;
 using Dignus.Log;
 
@@ -54,7 +55,10 @@ namespace Eidolon.Core.Application
                 {
                     if (reference.Mode != GenerationReferenceMode.Restyle)
                     {
-                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                        if (reference.Mode != GenerationReferenceMode.Inpaint)
+                        {
+                            throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                        }
                     }
                 }
                 if (double.IsFinite(reference.ChangeStrength) == false)
@@ -80,6 +84,21 @@ namespace Eidolon.Core.Application
                 if (reference.ImageData.Length > GenerationReferenceInput.MaximumImageBytes)
                 {
                     throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (reference.Mode == GenerationReferenceMode.Inpaint)
+                {
+                    if (reference.MaskData == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    if (reference.MaskData.Length == 0)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    if (reference.MaskData.Length > GenerationReferenceInput.MaximumImageBytes)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
                 }
             }
             string generationPrompt = prompt;
@@ -254,18 +273,28 @@ namespace Eidolon.Core.Application
                     job.Width = Math.Max(64, (int)Math.Round(sourceWidth * scale / 8) * 8);
                     job.Height = Math.Max(64, (int)Math.Round(sourceHeight * scale / 8) * 8);
                 }
-                using SKBitmap prepared = new(job.Width, job.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+                int preparedWidth = job.Width;
+                int preparedHeight = job.Height;
+                if (reference.Mode == GenerationReferenceMode.Inpaint)
+                {
+                    preparedWidth = sourceWidth;
+                    preparedHeight = sourceHeight;
+                }
+                SKMatrix sourceTransform = SKMatrix.Identity;
+                using SKBitmap prepared = new(preparedWidth, preparedHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using (SKCanvas canvas = new(prepared))
                 {
+                    SKColor background = SKColors.White;
                     if (job.GenerationBackend == GenerationBackend.Codex)
                     {
-                        canvas.Clear(SKColors.Transparent);
+                        background = SKColors.Transparent;
                     }
-                    else
+                    if (reference.Mode == GenerationReferenceMode.Inpaint)
                     {
-                        canvas.Clear(SKColors.White);
+                        background = SKColors.Transparent;
                     }
-                    canvas.Scale((float)job.Width / sourceWidth, (float)job.Height / sourceHeight);
+                    canvas.Clear(background);
+                    canvas.Scale((float)preparedWidth / sourceWidth, (float)preparedHeight / sourceHeight);
                     switch (codec.EncodedOrigin)
                     {
                         case SKEncodedOrigin.TopRight:
@@ -298,6 +327,7 @@ namespace Eidolon.Core.Application
                             canvas.RotateDegrees(270);
                             break;
                     }
+                    sourceTransform = canvas.TotalMatrix;
                     using SKImage image = SKImage.FromBitmap(source);
                     canvas.DrawImage(image, 0, 0, new SKSamplingOptions(SKFilterMode.Linear));
                 }
@@ -317,6 +347,78 @@ namespace Eidolon.Core.Application
                 job.ReferenceMode = reference.Mode;
                 job.ReferenceImageName = reference.ImageName;
                 job.ReferenceImagePath = destination;
+                if (reference.Mode == GenerationReferenceMode.Inpaint)
+                {
+                    using SKMemoryStream maskInput = new(reference.MaskData);
+                    using SKCodec maskCodec = SKCodec.Create(maskInput);
+                    if (maskCodec == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    if (maskCodec.Info.Width < 1)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    if (maskCodec.Info.Height < 1)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    if ((long)maskCodec.Info.Width * maskCodec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    long aspectDifference = Math.Abs((long)maskCodec.Info.Width * source.Height - (long)maskCodec.Info.Height * source.Width);
+                    if (aspectDifference > Math.Max(source.Width, source.Height))
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    using SKBitmap mask = SKBitmap.Decode(maskCodec);
+                    if (mask == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    bool hasSelection = false;
+                    for (int row = 0; row < mask.Height; row++)
+                    {
+                        token.ThrowIfCancellationRequested();
+                        for (int column = 0; column < mask.Width; column++)
+                        {
+                            if (mask.GetPixel(column, row).Alpha > 0)
+                            {
+                                hasSelection = true;
+                                break;
+                            }
+                        }
+                        if (hasSelection == true)
+                        {
+                            break;
+                        }
+                    }
+                    if (hasSelection == false)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    using SKBitmap preparedMask = new(preparedWidth, preparedHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                    using (SKCanvas maskCanvas = new(preparedMask))
+                    {
+                        maskCanvas.Clear(SKColors.Transparent);
+                        maskCanvas.SetMatrix(sourceTransform);
+                        using SKImage maskImage = SKImage.FromBitmap(mask);
+                        maskCanvas.DrawImage(maskImage, new SKRect(0, 0, source.Width, source.Height), new SKSamplingOptions(SKFilterMode.Linear));
+                    }
+                    string maskPath = _jobs.WorkingImagePath(job, Path.Combine("Inputs", "Mask.png"));
+                    using SKImage maskOutput = SKImage.FromBitmap(preparedMask);
+                    using SKData maskEncoded = maskOutput.Encode(SKEncodedImageFormat.Png, 100);
+                    if (maskEncoded == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                    }
+                    using (FileStream maskStream = new(maskPath, FileMode.CreateNew, FileAccess.Write))
+                    {
+                        maskEncoded.SaveTo(maskStream);
+                    }
+                    job.ReferenceMaskPath = maskPath;
+                }
                 if (job.GenerationBackend == GenerationBackend.ComfyUI)
                 {
                     job.Denoise = reference.ChangeStrength;
@@ -499,7 +601,105 @@ namespace Eidolon.Core.Application
                     removeWorkingFile = true;
                 }
             }
+            if (job.ReferenceMode == GenerationReferenceMode.Inpaint)
+            {
+                string compositeFile = Path.Combine("Processed", Guid.NewGuid().ToString("N") + ".png");
+                await CompositeMaskedImageAsync(job, _jobs.WorkingImagePath(job, workingFile), _jobs.WorkingImagePath(job, compositeFile), token).ConfigureAwait(false);
+                if (removeWorkingFile == true)
+                {
+                    File.Delete(_jobs.WorkingImagePath(job, workingFile));
+                }
+                workingFile = compositeFile;
+                removeWorkingFile = true;
+            }
             await _jobs.PublishImageAsync(job, workingFile, removeWorkingFile, _time.GetUtcNow(), token).ConfigureAwait(false);
+        }
+
+        private Task CompositeMaskedImageAsync(JobRecord job, string generatedPath, string destinationPath, CancellationToken token)
+        {
+            return Task.Run(() =>
+            {
+                token.ThrowIfCancellationRequested();
+                using SKBitmap reference = SKBitmap.Decode(job.ReferenceImagePath);
+                using SKBitmap mask = SKBitmap.Decode(job.ReferenceMaskPath);
+                using SKBitmap generated = SKBitmap.Decode(generatedPath);
+                if (reference == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (mask == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                }
+                if (generated == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (mask.Width != reference.Width)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                }
+                if (mask.Height != reference.Height)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                }
+                if (mask.BytesPerPixel != 4)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceOptions);
+                }
+                using SKBitmap result = new(reference.Width, reference.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using (SKCanvas resultCanvas = new(result))
+                {
+                    resultCanvas.Clear(SKColors.Transparent);
+                    using SKImage referenceImage = SKImage.FromBitmap(reference);
+                    resultCanvas.DrawImage(referenceImage, 0, 0, new SKSamplingOptions(SKFilterMode.Nearest));
+                }
+                using SKBitmap resized = new(reference.Width, reference.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using (SKCanvas resizedCanvas = new(resized))
+                {
+                    resizedCanvas.Clear(SKColors.Transparent);
+                    using SKImage generatedImage = SKImage.FromBitmap(generated);
+                    resizedCanvas.DrawImage(generatedImage, new SKRect(0, 0, reference.Width, reference.Height), new SKSamplingOptions(SKFilterMode.Linear));
+                }
+                int rowLength = reference.Width * 4;
+                byte[] resultRow = new byte[rowLength];
+                byte[] generatedRow = new byte[rowLength];
+                byte[] maskRow = new byte[rowLength];
+                for (int row = 0; row < reference.Height; row++)
+                {
+                    token.ThrowIfCancellationRequested();
+                    IntPtr resultPointer = IntPtr.Add(result.GetPixels(), row * result.RowBytes);
+                    Marshal.Copy(resultPointer, resultRow, 0, rowLength);
+                    Marshal.Copy(IntPtr.Add(resized.GetPixels(), row * resized.RowBytes), generatedRow, 0, rowLength);
+                    Marshal.Copy(IntPtr.Add(mask.GetPixels(), row * mask.RowBytes), maskRow, 0, rowLength);
+                    for (int column = 0; column < reference.Width; column++)
+                    {
+                        int pixelOffset = column * 4;
+                        int opacity = maskRow[pixelOffset + 3];
+                        if (opacity == 0)
+                        {
+                            continue;
+                        }
+                        for (int channel = 0; channel < 4; channel++)
+                        {
+                            int offset = pixelOffset + channel;
+                            resultRow[offset] = (byte)((resultRow[offset] * (255 - opacity) + generatedRow[offset] * opacity + 127) / 255);
+                        }
+                    }
+                    Marshal.Copy(resultRow, 0, resultPointer, rowLength);
+                }
+                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                using SKImage output = SKImage.FromBitmap(result);
+                using SKData encoded = output.Encode(SKEncodedImageFormat.Png, 100);
+                if (encoded == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                using FileStream destination = new(destinationPath, FileMode.CreateNew, FileAccess.Write);
+                encoded.SaveTo(destination);
+                job.Width = result.Width;
+                job.Height = result.Height;
+            }, token);
         }
 
         private void ValidateModel(StudioSettings settings, ModelAsset model)

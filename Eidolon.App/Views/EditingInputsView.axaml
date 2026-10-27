@@ -1,6 +1,13 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.EditingInputsView" x:DataType="vm:GenerationViewModel" IsEnabled="{Binding Session.CanEditGenerationInputs}">
   <StackPanel Spacing="8">
-    <TextBlock Text="{DynamicResource EidolonText457}" FontSize="14" FontWeight="SemiBold" />
-    <TextBox Text="{Binding EditingPrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="80" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="{DynamicResource EidolonText458}" />
+    <WrapPanel>
+      <CheckBox Content="{DynamicResource EidolonText721}" IsChecked="{Binding IsPartialEditing, Mode=TwoWay}" FontSize="13" Margin="0,0,16,0" />
+      <Button Content="{DynamicResource EidolonText728}" Command="{Binding OpenEditingMaskCommand}" IsVisible="{Binding IsPartialEditing}" Padding="10,6" />
+    </WrapPanel>
+    <TextBlock Text="{Binding EditingInputCaption}" FontSize="14" FontWeight="SemiBold" />
+    <TextBox Text="{Binding EditingPrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="80" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="{Binding EditingPromptHint}" />
+    <StackPanel IsVisible="{Binding IsPartialEditing}">
+      <TextBlock Text="{DynamicResource EidolonText726}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding !HasEditingMask}" />
+    </StackPanel>
   </StackPanel>
 </UserControl>

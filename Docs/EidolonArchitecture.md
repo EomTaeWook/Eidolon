@@ -82,7 +82,7 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 
 ## 화면 구성
 
-로컬 프롬프트 변환은 엔진 탭에서 설치하며 설치된 경우 UI 일반·참고 생성에 자동 적용한다. 별도 사용 설정은 두지 않고 설치 전에는 기존 입력으로 생성한다. `GenerationViewModel`이 UI 일반·참고 생성 요청의 캡처된 설정·원문·모델 안내를 기존 FIFO 안에서 Core의 `PromptConverter`에 전달한다. `StudioService.GenerateAsync`의 선택적 `convertedPrompt`는 실제 합성에 사용하고 기존 `UserPrompt`는 원문으로 보존한다. `AssetsViewModel.GetModelPromptGuidance`가 MCP와 변환의 체크포인트 안내를 함께 제공한다. 편집·다면도·학습·MCP 요청의 자동 변환과 별도 저장소·상주 서버는 추가하지 않는다. 설치·실행·취소·품질 한계는 [로컬 프롬프트 변환](PromptConversion.md)을 따른다.
+로컬 프롬프트 변환은 엔진 탭에서 설치하며 설치된 경우 UI·MCP의 일반·참고 생성과 그림체 편집에 자동 적용한다. 별도 사용 설정은 두지 않고 설치 전에는 기존 입력으로 생성한다. `GenerationViewModel`이 UI·MCP 요청에 고정된 설정·원문·체크포인트 안내를 기존 FIFO 안에서 Core의 `PromptConverter`에 전달한다. 태그·문장 등 입력 형식과 관계없이 대상 모델 안내에 따라 태그 또는 자연어 설명을 출력하도록 지시한다. `StudioService.GenerateAsync`의 선택적 `convertedPrompt`는 실제 합성에 사용하고 기존 `UserPrompt`는 원문으로 보존한다. `AssetsViewModel.GetModelPromptGuidance`가 MCP와 변환의 체크포인트 안내를 함께 제공한다. 다면도·학습의 자동 변환과 별도 저장소·상주 서버는 추가하지 않는다. 설치·실행·취소·품질 한계는 [로컬 프롬프트 변환](PromptConversion.md)을 따른다.
 
 에셋 제작은 저장된 ComfyUI 또는 Codex 생성 방식을 사용한다. Codex는 체크포인트 없이 기준 이미지와 항목별 설명을 기존 생성 경계로 전달하며 모델·LoRA·참고 강도·시드 입력을 표시하지 않는다. 이어 만들기와 재생성은 묶음에 저장된 생성 방식과 지침을 사용한다.
 
@@ -151,6 +151,8 @@ App이 `RuntimeModuleItem`으로 이름과 상태 문구를 번역한다. 목록
 GitHub 소스를 직접 내려받으므로 사용자에게 Git 설치를 요구하지 않는다. uv로 로컬 Python과 생성·학습용 독립 venv를 구성하고 시스템 Python, PATH와 레지스트리를 변경하지 않는다. ComfyUI와 sd-scripts 실행에는 Python이 필요하며 C#이 실행·감시를 담당한다.
 
 `comfyui_controlnet_aux`를 ComfyUI의 `custom_nodes`에 기본 설치해 Canny·Lineart 등의 외곽선 추출 노드를 준비한다. 신규 설치와 기존 설치의 설치·복구에 같은 경로를 사용하며 원본 `requirements.txt`의 의존성은 생성용 Python에만 설치한다. 기존 PyTorch·torchvision의 CPU·CUDA 버전 제약을 적용한다. 이미 있는 노드 소스와 `.disabled` 폴더는 보존하며 비활성화한 노드를 자동으로 다시 활성화하지 않는다. 외부 ComfyUI 서버의 파일은 변경하지 않는다. 학습형 Lineart 등의 보조 가중치는 노드 첫 사용 시 내려받으며 기본 설치에서 모든 전처리기 가중치를 미리 받지 않는다. 설치한 보조 전처리기와 별개로 그림체 편집 워크플로는 ComfyUI 기본 Canny와 계열별 조건 가중치를 사용한다.
+
+UI 부분 고치기(`GenerationReferenceMode.Inpaint`)는 기존 참고 이미지 요청에 마스크 사본을 추가하고 생성 뒤 선택 영역만 원본에 합성한다. 화면·좌표·메타데이터·재사용과 두 생성 방식의 계약은 [이미지 편집](ImageEditing.md)이 소유한다.
 
 ComfyUI의 그림체 편집(`GenerationReferenceMode.Restyle`)은 준비한 원본 이미지에서 기본 `Canny` 노드로 외곽선을 추출하고 `ControlNetLoader`·`ControlNetApplyAdvanced`를 거쳐 양성·음성 조건을 KSampler에 전달한다. Canny 임계값은 ComfyUI 기본값 0.4·0.8, 조건 강도는 기존 `GenerationPreset.OutlineStrength`의 1.0이며 전체 샘플링 구간에 적용한다. SDXL에는 Stability AI Canny Control-LoRA rank 256(774,450,192 bytes), SD 1.5에는 ControlNet 1.1 Canny FP16(722,601,100 bytes)을 사용한다. 기존 `ComfyEngine`이 노드 준비 상태를 확인하고 앱 관리 로컬 엔진이면 `RuntimeLayout.ControlNetsDirectory`에 고정 리비전·SHA-256으로 필요한 계열만 내려받는다. 모델 카드·라이선스도 같은 폴더에 보존한다. 외부 서버에는 파일을 쓰지 않고 정해진 호환 파일과 기본 노드가 없으면 오류를 알리며 조건을 생략하지 않는다. 적용 모델명·강도는 `JobRecord`와 출력 `GenerationMetadata`에 기록한다. 일반 생성·참고 생성·다면도에는 원본 외곽선을 강제하지 않으며 Codex 경로는 기존 내장 이미지 편집을 사용한다. UI와 MCP의 `eidolon_edit_image`가 같은 편집 경로를 사용하고 별도 옵션은 추가하지 않는다. 실제 형태 유지 품질은 이미지 생성 비교로 확인해야 한다.
 

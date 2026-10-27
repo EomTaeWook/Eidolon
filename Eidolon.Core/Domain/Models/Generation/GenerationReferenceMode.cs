@@ -4,6 +4,7 @@ namespace Eidolon.Core.Domain
     {
         None,
         Reimagine,
-        Restyle
+        Restyle,
+        Inpaint
     }
 }

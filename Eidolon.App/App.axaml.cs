@@ -88,11 +88,7 @@ namespace Eidolon.App
             _serviceContainer.RegisterType<AtomicJsonFile, AtomicJsonFile>(LifeScope.Singleton);
             _serviceContainer.RegisterType<ProcessRunner, ProcessRunner>(LifeScope.Singleton);
             _serviceContainer.RegisterType<CodexExecutableLocator, CodexExecutableLocator>(LifeScope.Singleton);
-            _serviceContainer.RegisterType(new CodexInstructionTemplates(
-                PackagedResources.ReadText("Eidolon.Codex.ImageGeneration.txt"),
-                PackagedResources.ReadText("Eidolon.Codex.TransparentBackground.txt"),
-                PackagedResources.ReadText("Eidolon.Codex.Restyle.txt"),
-                PackagedResources.ReadText("Eidolon.Codex.Reimagine.txt")));
+            _serviceContainer.RegisterType(new CodexInstructionTemplates(PackagedResources.ReadText("Eidolon.Codex.ImageGeneration.txt"), PackagedResources.ReadText("Eidolon.Codex.TransparentBackground.txt"), PackagedResources.ReadText("Eidolon.Codex.Restyle.txt"), PackagedResources.ReadText("Eidolon.Codex.Reimagine.txt"), PackagedResources.ReadText("Eidolon.Codex.Inpaint.txt")));
             _serviceContainer.RegisterType<CodexImageEngine, CodexImageEngine>(LifeScope.Singleton);
             _serviceContainer.RegisterType<PromptConverter, PromptConverter>(LifeScope.Singleton);
             _serviceContainer.RegisterType<CodexModelCatalog, CodexModelCatalog>(LifeScope.Singleton);

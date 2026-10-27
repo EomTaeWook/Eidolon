@@ -166,10 +166,15 @@ namespace Eidolon.Core.Infrastructure
                 jobs.Save(job);
             }
             string referenceImage = string.Empty;
+            string referenceMask = string.Empty;
             if (job.ReferenceMode != GenerationReferenceMode.None)
             {
                 progress.Report(new WorkProgress(StudioMessageCode.ReferenceImageUploading));
                 referenceImage = await UploadReferenceImageAsync(settings, job, cancellationToken).ConfigureAwait(false);
+            }
+            if (job.ReferenceMode == GenerationReferenceMode.Inpaint)
+            {
+                referenceMask = await UploadReferenceImageAsync(settings, job.ReferenceMaskPath, job.Id + "-mask.png", cancellationToken).ConfigureAwait(false);
             }
             string clientId = Guid.NewGuid().ToString("N");
             using ClientWebSocket socket = new();
@@ -200,7 +205,7 @@ namespace Eidolon.Core.Infrastructure
                 string promptId = Guid.ParseExact(job.Id, "N").ToString("D");
                 JsonObject payload = new()
                 {
-                    ["prompt"] = _workflow.Build(job, referenceImage),
+                    ["prompt"] = _workflow.Build(job, referenceImage, referenceMask),
                     ["client_id"] = clientId,
                     ["prompt_id"] = promptId
                 };
@@ -301,11 +306,16 @@ namespace Eidolon.Core.Infrastructure
 
         private async Task<string> UploadReferenceImageAsync(StudioSettings settings, JobRecord job, CancellationToken token)
         {
-            await using FileStream input = File.OpenRead(job.ReferenceImagePath);
+            return await UploadReferenceImageAsync(settings, job.ReferenceImagePath, job.Id + ".png", token).ConfigureAwait(false);
+        }
+
+        private async Task<string> UploadReferenceImageAsync(StudioSettings settings, string imagePath, string fileName, CancellationToken token)
+        {
+            await using FileStream input = File.OpenRead(imagePath);
             using MultipartFormDataContent content = new();
             using StreamContent image = new(input);
             image.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
-            content.Add(image, "image", job.Id + ".png");
+            content.Add(image, "image", fileName);
             content.Add(new StringContent("input"), "type");
             content.Add(new StringContent("Eidolon"), "subfolder");
             content.Add(new StringContent("false"), "overwrite");

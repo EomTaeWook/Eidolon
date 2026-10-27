@@ -22,6 +22,7 @@ namespace Eidolon.Core.Domain
         public GenerationReferenceMode ReferenceMode { get; set; } = GenerationReferenceMode.None;
         public string ReferenceImageName { get; set; } = string.Empty;
         public string ReferenceImagePath { get; set; } = string.Empty;
+        public string ReferenceMaskPath { get; set; } = string.Empty;
         public double Denoise { get; set; } = 1.0;
         public string OutlineControlModel { get; set; } = string.Empty;
         public double OutlineControlStrength { get; set; }

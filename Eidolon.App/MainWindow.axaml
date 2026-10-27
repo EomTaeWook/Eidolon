@@ -136,7 +136,14 @@
             </Button>
           </Grid>
           <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" ClipToBounds="True">
-            <views:GenerationPreviewView DataContext="{Binding Gallery}" />
+            <Grid>
+              <Grid IsVisible="{Binding !Generation.ShowEditingMaskEditor}">
+                <views:GenerationPreviewView DataContext="{Binding Gallery}" />
+              </Grid>
+              <Grid IsVisible="{Binding Generation.ShowEditingMaskEditor}">
+                <views:EditingMaskView DataContext="{Binding Generation}" />
+              </Grid>
+            </Grid>
           </Border>
           <views:GenerationInputsView Grid.Row="4" DataContext="{Binding Generation}" HorizontalAlignment="Stretch" />
           <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="16" DataContext="{Binding Generation}" x:DataType="vm:GenerationViewModel">

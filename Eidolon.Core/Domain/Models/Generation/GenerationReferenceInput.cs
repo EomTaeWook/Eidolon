@@ -10,6 +10,7 @@ namespace Eidolon.Core.Domain
         }
 
         public byte[] ImageData { get; set; } = Array.Empty<byte>();
+        public byte[] MaskData { get; set; } = Array.Empty<byte>();
         public string ImageName { get; set; } = string.Empty;
         public GenerationReferenceMode Mode { get; set; } = GenerationReferenceMode.Reimagine;
         public double ChangeStrength { get; set; } = 0.65;

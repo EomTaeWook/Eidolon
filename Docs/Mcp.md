@@ -27,7 +27,9 @@ Eidolon 앱 초기화가 끝나면 MCP 서버가 자동으로 시작된다. MCP 
 
 `positive_prompt`·`negative_prompt`를 제공하면 해당 요청의 지침만 대체한다. 빈 문자열은 해당 지침을 비운다. 생략한 지침은 저장된 설정을 사용한다. 저장 설정·프리셋·생성 및 편집 입력칸은 변경하지 않는다. LoRA 트리거 → 사용자 설명 → 요청 지침의 합성 순서는 기존 생성 서비스를 따른다.
 
-AI 클라이언트는 사용자 요청의 언어와 관계없이 모든 프롬프트를 반드시 영어로 작성한다. `prompt`·`positive_prompt`·`negative_prompt`·`action`·각 `frame_descriptions` 항목과 학습의 선택적 `description`에 적용하며 선택 재생성도 동일하다. 대상·개수·외형·형태·포즈·동작·구도·카메라 각도·시점·그림체·재질·질감·색상·조명·배경 중 요청에 필요한 내용을 최대한 구체적인 영어 태그 또는 짧은 태그 구문으로 나누고 쉼표로 구분한다. 제외할 요소는 `negative_prompt`의 별도 영어 태그로 작성한다. 접속 안내와 도구·입력 스키마 설명으로 전달하는 작성 규칙이며 서버가 자동 번역하거나 언어를 판별해 거부하지는 않는다. 선택 입력의 생략·지침을 비우는 빈 문자열과 기존 저장 지침은 유지한다.
+일반·참고 생성과 그림체 편집의 `prompt`는 태그·구문·문장 또는 혼합형으로 전달할 수 있다. 로컬 변환기가 설치되어 있으면 앱이 요청에 고정된 생성 방식·체크포인트의 안내로 영어 형식을 정리한 뒤 같은 FIFO에서 생성한다. 입력이 태그여도 문장형 모델의 출력까지 태그로 고정하지 않으며, 문장 입력도 태그 중심 모델의 안내에 맞춰 정리한다. 원문은 `UserPrompt`, 실제 합성 결과는 `PositivePrompt`에 남는다. `accepted=true` 응답에는 접수한 원문·지침을 반환하며 최종 적용문은 완료 후 이미지 메타데이터에서 확인한다. 미설치 상태에서는 입력을 그대로 사용하므로 클라이언트가 대상 모델에 적합한 영어 프롬프트를 작성해야 한다.
+
+요청별 `positive_prompt`·`negative_prompt`와 저장 지침·LoRA 트리거는 로컬 변환기가 다시 작성하지 않는다. 클라이언트는 요청별 지침을 대상 모델의 안내에 맞는 영어 태그·구문·문장으로 작성하며 제외 조건은 `negative_prompt`에 둔다. 다면도·선택 재생성과 학습 캡션은 기존 영어 작성 계약을 유지하며 로컬 자동 변환 대상에 포함하지 않는다. 요청에 필요한 대상·개수·포즈·관계·시점·스타일·제외 조건을 보존하고 요청하지 않은 품질·수위·출처 태그를 임의로 추가하지 않는다. 선택 입력의 생략·지침을 비우는 빈 문자열과 기존 저장 지침은 유지한다.
 
 생성·편집·에셋 제작 전에는 `eidolon_get_instructions`로 저장된 지침과 `generation_backend`·`selected_model_id`·`prompt_guidance`를 읽는다. ComfyUI이면 `eidolon_list_models`의 대상 체크포인트 항목에서 `engine_name`·`prompt_guidance`를 확인한다. `model_id`를 생략할 때는 응답의 `selected_model_id`에 해당하는 안내를 사용한다. 다른 체크포인트를 명시할 때는 그 항목의 안내를 사용하며 저장된 공통 지침과 충돌하는 태그는 요청별 `positive_prompt`·`negative_prompt` 사본으로 조정한다. 모델 목록 응답에도 현재 `generation_backend`를 표시한다. Codex일 때는 로컬 체크포인트 태그 안내를 적용하지 않는다. 프레임 재생성은 `eidolon_get_asset_collection`의 저장된 생성 방식·체크포인트를 기준으로 하며 현재 UI 선택을 대신 사용하지 않는다.
 
@@ -37,7 +39,7 @@ AI 클라이언트는 사용자 요청의 언어와 관계없이 모든 프롬�
 |---|---|
 | Illustrious XL 0.1 | Danbooru 형식의 영어 태그를 중심으로 관계 설명에 짧은 자연어를 사용한다. 선택적 품질 태그는 `best quality`·`masterpiece`, 제외 예시는 `worst quality`·`bad quality`·`lowres`로 안내하며 구도 충돌을 피한다. `score_9`·`rating_safe`·`source_anime`를 공통 기본값으로 간주하지 않는다. [공식 모델 카드](https://huggingface.co/OnomaAIResearch/Illustrious-xl-early-release-v0) |
 | RealVisXL 4.0 | 공식 카드의 실사 지향을 바탕으로 사진 요청에 대상·동작·구도·재질·조명·배경을 짧은 영어 구문으로 구체화하도록 권한다. 이는 앱의 작성 권고이며 모든 항목에 반드시 실사 스타일을 강제하지 않는다. 인물 제외 태그는 해당 요청에 맞을 때만 사용한다. [공식 모델 카드](https://huggingface.co/SG161222/RealVisXL_V4.0) |
-| SDXL Base 1.0 | 공식 카드의 자연어 예시를 바탕으로 짧은 영어 설명에 대상과 공간 관계를 명확히 표현하도록 안내한다. SDXL 계열이라는 이유로 Danbooru·점수·수위·출처 태그를 필수로 넣지 않는다. [공식 모델 카드](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0) |
+| SDXL Base 1.0 | 공식 카드의 자연어 예시를 바탕으로 영어 설명·문장에 대상과 공간 관계를 명확히 표현하도록 안내한다. SDXL 계열이라는 이유로 Danbooru·점수·수위·출처 태그를 필수로 넣지 않는다. [공식 모델 카드](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0) |
 | Stable Diffusion 1.5 base | 공식 카드의 영어 캡션·자연어 예시를 바탕으로 주요 대상·동작과 관련 구도·스타일·조명·배경을 정리하도록 권한다. 다른 애니메이션 파생 모델의 특수 태그를 그대로 가져오지 않는다. [배포 모델 카드](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5) |
 
 태그 순서는 읽기 쉬운 구성 권고이며 앞쪽일수록 반드시 더 높은 가중치가 적용된다고 보장하지 않는다. 캐릭터·작가·스타일은 사용자 요청에 맞는 경우에만 추가한다. LoRA 항목은 대상 체크포인트 안내를 따르며 등록된 호출 단어의 자동 적용을 유지한다. 모델 안내는 App의 AssetsViewModel.GetModelPromptGuidance가 소유하며 MCP 응답과 로컬 프롬프트 변환에서 같은 내용을 사용한다. 안내 조회 자체는 UI 입력과 저장 설정을 변경하지 않는다. 별도 태그 저장소·모델 등록부·실행 시 모델 카드 다운로드는 추가하지 않는다.
