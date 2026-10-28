@@ -19,6 +19,14 @@
         <TextBox Text="{Binding Prompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="80" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="{DynamicResource EidolonText114}" />
       </StackPanel>
       <views:EditingInputsView IsVisible="{Binding Navigation.IsEditingView}" />
+      <StackPanel Spacing="8" IsVisible="{Binding ShowPromptConversion}" IsEnabled="{Binding Session.CanEditGenerationInputs}">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Text="{DynamicResource EidolonText730}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+          <Button Grid.Column="1" Content="{DynamicResource EidolonText729}" Command="{Binding ConvertPromptCommand}" Padding="14,6" />
+        </Grid>
+        <TextBox Text="{Binding ConvertedPrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="72" ScrollViewer.VerticalScrollBarVisibility="Auto" IsVisible="{Binding HasConvertedPrompt}" AutomationProperties.Name="{DynamicResource EidolonText730}" />
+        <TextBlock Text="{DynamicResource EidolonText731}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasConvertedPrompt}" />
+      </StackPanel>
       <Grid ColumnDefinitions="*,Auto" MinHeight="42">
         <Border IsVisible="{Binding Navigation.IsEditingView}" Margin="0,0,16,0" VerticalAlignment="Center">
           <TextBlock Text="{DynamicResource EidolonText459}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding !HasReferenceImage}" />

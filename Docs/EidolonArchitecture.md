@@ -82,7 +82,7 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 
 ## 화면 구성
 
-로컬 프롬프트 변환은 엔진 탭에서 설치하며 설치된 경우 UI·MCP의 일반·참고 생성과 그림체 편집에 자동 적용한다. 별도 사용 설정은 두지 않고 설치 전에는 기존 입력으로 생성한다. `GenerationViewModel`이 UI·MCP 요청에 고정된 설정·원문·체크포인트 안내를 기존 FIFO 안에서 Core의 `PromptConverter`에 전달한다. 태그·문장 등 입력 형식과 관계없이 대상 모델 안내에 따라 태그 또는 자연어 설명을 출력하도록 지시한다. `StudioService.GenerateAsync`의 선택적 `convertedPrompt`는 실제 합성에 사용하고 기존 `UserPrompt`는 원문으로 보존한다. `AssetsViewModel.GetModelPromptGuidance`가 MCP와 변환의 체크포인트 안내를 함께 제공한다. 다면도·학습의 자동 변환과 별도 저장소·상주 서버는 추가하지 않는다. 설치·실행·취소·품질 한계는 [로컬 프롬프트 변환](PromptConversion.md)을 따른다.
+로컬 프롬프트 변환은 엔진 탭에서 설치한다. 설치된 ComfyUI 생성·편집 UI는 `GenerationViewModel`의 변환 명령으로 원문을 정리하고, 별도 변환문 입력란에서 확인·수정한 뒤 생성한다. 변환 전 원문과 대상 모델을 고정하고 늦은 결과가 현재 입력을 덮어쓰지 않게 하며 일반 생성과 편집의 상태를 분리한다. 생성 때는 사용자가 확인한 변환문을 다시 변환하지 않는다. ComfyUI MCP는 대화형 확인 단계를 추가하지 않고 기존 자동 변환 요청 경계를 유지한다. Codex 방식은 UI·MCP 모두 로컬 변환 없이 원문을 기존 이미지 생성·편집으로 바로 전달한다. 변환과 생성은 기존 FIFO를 사용하며 별도 사용 설정은 두지 않고 변환 모델 설치 전에는 기존 입력으로 생성한다. `GenerationViewModel`이 요청에 고정된 설정·원문·체크포인트 안내를 Core의 `PromptConverter`에 전달한다. 태그·문장 등 입력 형식과 관계없이 대상 모델 안내에 따라 태그 또는 자연어 설명을 출력하도록 지시한다. `StudioService.GenerateAsync`의 선택적 `convertedPrompt`는 실제 합성에 사용하고 기존 `UserPrompt`는 원문으로 보존한다. `AssetsViewModel.GetModelPromptGuidance`가 MCP와 변환의 체크포인트 안내를 함께 제공한다. 다면도·학습의 자동 변환과 별도 저장소·상주 서버는 추가하지 않는다. 설치·실행·취소·품질 한계는 [로컬 프롬프트 변환](PromptConversion.md)을 따른다.
 
 에셋 제작은 저장된 ComfyUI 또는 Codex 생성 방식을 사용한다. Codex는 체크포인트 없이 기준 이미지와 항목별 설명을 기존 생성 경계로 전달하며 모델·LoRA·참고 강도·시드 입력을 표시하지 않는다. 이어 만들기와 재생성은 묶음에 저장된 생성 방식과 지침을 사용한다.
 

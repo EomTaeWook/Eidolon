@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Globalization;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using Eidolon.App.Services;
 using Eidolon.App.Localization;
 using Eidolon.App.Presenters;
@@ -20,8 +21,18 @@ namespace Eidolon.App.ViewModels
         private readonly ISeedProvider _seeds;
         private readonly PromptConverter _promptConverter;
         private readonly RuntimeInstaller _runtimeInstaller;
+        private DesktopSettings _promptConversionSettings;
+        private ModelAsset _promptConversionModel;
         private string _prompt = string.Empty;
         private string _editingPrompt = string.Empty;
+        private string _convertedPrompt = string.Empty;
+        private string _editingConvertedPrompt = string.Empty;
+        private bool _hasConvertedPrompt;
+        private bool _hasEditingConvertedPrompt;
+        private bool _isConvertingPrompt;
+        private bool _isConvertingEditingPrompt;
+        private int _promptConversionRequest;
+        private int _editingPromptConversionRequest;
         private bool _useRandomGenerationSeed = true;
         private string _generationSeed = "0";
         private string _lastQueuedGenerationSeed = string.Empty;
@@ -33,6 +44,7 @@ namespace Eidolon.App.ViewModels
         private double _editingBrushSize = 32;
         public AsyncCommand GenerateCommand { get; private set; }
         public AsyncCommand EditImageCommand { get; private set; }
+        public AsyncCommand ConvertPromptCommand { get; private set; }
         public AsyncCommand PickReferenceImageCommand { get; private set; }
         public AsyncCommand ClearReferenceImageCommand { get; private set; }
         public AsyncCommand ClearEditingMaskCommand { get; private set; }
@@ -445,7 +457,7 @@ namespace Eidolon.App.ViewModels
             {
                 if (Set(ref _prompt, value) == true)
                 {
-                    RefreshCommands();
+                    InvalidatePromptConversion(false);
                 }
             }
         }
@@ -460,9 +472,243 @@ namespace Eidolon.App.ViewModels
             {
                 if (Set(ref _editingPrompt, value) == true)
                 {
-                    RefreshCommands();
+                    InvalidatePromptConversion(true);
                 }
             }
+        }
+
+        public bool ShowPromptConversion
+        {
+            get
+            {
+                if (Session.IsInitialized == false)
+                {
+                    return false;
+                }
+                if (IsComfyGeneration == false)
+                {
+                    return false;
+                }
+                return _runtimeInstaller.IsPromptConverterInstalled(Session.Settings.InstallDirectory);
+            }
+        }
+
+        public bool HasConvertedPrompt
+        {
+            get
+            {
+                if (Navigation.IsEditingView == true)
+                {
+                    return _hasEditingConvertedPrompt;
+                }
+                return _hasConvertedPrompt;
+            }
+        }
+
+        public bool IsConvertingPrompt
+        {
+            get
+            {
+                if (Navigation.IsEditingView == true)
+                {
+                    return _isConvertingEditingPrompt;
+                }
+                return _isConvertingPrompt;
+            }
+        }
+
+        public string ConvertedPrompt
+        {
+            get
+            {
+                if (Navigation.IsEditingView == true)
+                {
+                    return _editingConvertedPrompt;
+                }
+                return _convertedPrompt;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    value = string.Empty;
+                }
+                if (Navigation.IsEditingView == true)
+                {
+                    if (_editingConvertedPrompt == value)
+                    {
+                        return;
+                    }
+                    _editingConvertedPrompt = value;
+                }
+                else
+                {
+                    if (_convertedPrompt == value)
+                    {
+                        return;
+                    }
+                    _convertedPrompt = value;
+                }
+                Raise(nameof(ConvertedPrompt));
+                RefreshCommands();
+            }
+        }
+
+        private void RefreshPromptConversion()
+        {
+            Raise(nameof(ConvertedPrompt));
+            Raise(nameof(HasConvertedPrompt));
+            Raise(nameof(IsConvertingPrompt));
+            RefreshCommands();
+        }
+
+        private void InvalidatePromptConversion(bool editing)
+        {
+            if (editing == true)
+            {
+                _editingPromptConversionRequest++;
+                _editingConvertedPrompt = string.Empty;
+                _hasEditingConvertedPrompt = false;
+            }
+            else
+            {
+                _promptConversionRequest++;
+                _convertedPrompt = string.Empty;
+                _hasConvertedPrompt = false;
+            }
+            RefreshPromptConversion();
+        }
+
+        private bool IsCurrentPromptConversion(bool editing, int request)
+        {
+            if (Session.IsClosing == true)
+            {
+                return false;
+            }
+            if (editing == true)
+            {
+                return request == _editingPromptConversionRequest;
+            }
+            return request == _promptConversionRequest;
+        }
+
+        private void FinishPromptConversion(bool editing)
+        {
+            if (editing == true)
+            {
+                _isConvertingEditingPrompt = false;
+            }
+            else
+            {
+                _isConvertingPrompt = false;
+            }
+            RefreshPromptConversion();
+        }
+
+        private Task ConvertPromptAsync()
+        {
+            bool editing = Navigation.IsEditingView;
+            string prompt = Prompt;
+            if (editing == true)
+            {
+                prompt = EditingPrompt;
+            }
+            DesktopSettings settings = Session.CreateActiveSettings(Session.Settings);
+            ModelAsset model = Assets.SelectedModel.Asset.Copy();
+            string modelGuidance = Assets.GetModelPromptGuidance(model);
+            InvalidatePromptConversion(editing);
+            int request = _promptConversionRequest;
+            if (editing == true)
+            {
+                request = _editingPromptConversionRequest;
+                _isConvertingEditingPrompt = true;
+            }
+            else
+            {
+                _isConvertingPrompt = true;
+            }
+            RefreshPromptConversion();
+            try
+            {
+                _work.Enqueue(_strings.GetString("EidolonText729") + " · " + prompt, cancellationToken => ConvertPromptAsync(settings, prompt, modelGuidance, editing, request, cancellationToken), () => Dispatcher.UIThread.Post(() => FinishPromptConversion(editing)));
+            }
+            catch
+            {
+                FinishPromptConversion(editing);
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+
+        private async Task ConvertPromptAsync(DesktopSettings settings, string prompt, string modelGuidance, bool editing, int request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (IsCurrentPromptConversion(editing, request) == false)
+                {
+                    return;
+                }
+                string convertedPrompt = await _promptConverter.ConvertAsync(settings, prompt, modelGuidance, _work.Progress, cancellationToken);
+                if (string.IsNullOrWhiteSpace(convertedPrompt) == true)
+                {
+                    throw new StudioException(StudioMessageCode.PromptConversionFailed);
+                }
+                cancellationToken.ThrowIfCancellationRequested();
+                if (IsCurrentPromptConversion(editing, request) == false)
+                {
+                    return;
+                }
+                if (editing == true)
+                {
+                    _editingConvertedPrompt = convertedPrompt;
+                    _hasEditingConvertedPrompt = true;
+                }
+                else
+                {
+                    _convertedPrompt = convertedPrompt;
+                    _hasConvertedPrompt = true;
+                }
+                RefreshPromptConversion();
+                Session.Status = _strings.GetString("EidolonText004");
+                Session.Percent = 100;
+            }
+            catch (Exception) when (cancellationToken.IsCancellationRequested == false)
+            {
+                if (IsCurrentPromptConversion(editing, request) == true)
+                {
+                    throw;
+                }
+            }
+            finally
+            {
+                FinishPromptConversion(editing);
+            }
+        }
+
+        private bool CanGeneratePrompt(bool editing)
+        {
+            string prompt = Prompt;
+            string convertedPrompt = _convertedPrompt;
+            bool hasConvertedPrompt = _hasConvertedPrompt;
+            if (editing == true)
+            {
+                prompt = EditingPrompt;
+                convertedPrompt = _editingConvertedPrompt;
+                hasConvertedPrompt = _hasEditingConvertedPrompt;
+            }
+            if (string.IsNullOrWhiteSpace(prompt) == true)
+            {
+                return false;
+            }
+            if (ShowPromptConversion == true)
+            {
+                if (hasConvertedPrompt == false)
+                {
+                    return false;
+                }
+                return string.IsNullOrWhiteSpace(convertedPrompt) == false;
+            }
+            return true;
         }
 
         private async Task PickReferenceImageAsync()
@@ -614,6 +860,19 @@ namespace Eidolon.App.ViewModels
             {
                 throw new InvalidOperationException(_strings.GetString("EidolonText001"));
             }
+            string convertedPrompt = string.Empty;
+            if (ShowPromptConversion == true)
+            {
+                if (CanGeneratePrompt(editing) == false)
+                {
+                    throw new StudioException(StudioMessageCode.PromptRequired);
+                }
+                convertedPrompt = _convertedPrompt;
+                if (editing == true)
+                {
+                    convertedPrompt = _editingConvertedPrompt;
+                }
+            }
             long seed = 0;
             if (IsComfyGeneration == false)
             {
@@ -661,7 +920,7 @@ namespace Eidolon.App.ViewModels
             {
                 loras = Assets.Loras.Where(lora => lora.IsSelected == true).Select(lora => lora.Asset.Copy()).ToList();
             }
-            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey);
+            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey, false, convertedPrompt);
             if (editing == true)
             {
                 _editingMaskOpen = false;
@@ -672,12 +931,24 @@ namespace Eidolon.App.ViewModels
 
         internal void EnqueueGeneration(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, string titleKey)
         {
+            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey, true, string.Empty);
+        }
+
+        private void EnqueueGeneration(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, string titleKey, bool allowAutomaticPromptConversion, string convertedPrompt)
+        {
             if (Session.CanQueue == false)
             {
                 throw new InvalidOperationException("The application is not ready to queue an image request.");
             }
-            bool usePromptConversion = _runtimeInstaller.IsPromptConverterInstalled(settings.InstallDirectory);
-            _work.Enqueue(_strings.GetString(titleKey) + " · " + prompt, cancellationToken => GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, usePromptConversion, cancellationToken));
+            bool usePromptConversion = false;
+            if (allowAutomaticPromptConversion == true)
+            {
+                if (settings.GenerationBackend == GenerationBackend.ComfyUI)
+                {
+                    usePromptConversion = _runtimeInstaller.IsPromptConverterInstalled(settings.InstallDirectory);
+                }
+            }
+            _work.Enqueue(_strings.GetString(titleKey) + " · " + prompt, cancellationToken => GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, usePromptConversion, convertedPrompt, cancellationToken));
             _lastQueuedGenerationSeed = string.Empty;
             if (settings.GenerationBackend == GenerationBackend.ComfyUI)
             {
@@ -687,16 +958,11 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(QueuedGenerationSeedCaption));
         }
 
-        private async Task GenerateAsync(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, bool usePromptConversion, CancellationToken cancellationToken)
+        private async Task GenerateAsync(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, bool usePromptConversion, string convertedPrompt, CancellationToken cancellationToken)
         {
-            string convertedPrompt = string.Empty;
             if (usePromptConversion == true)
             {
-                string modelGuidance = "The target backend is Codex image generation. Use clear natural-language English descriptions or sentences expressing the requested subject, relationships, pose, viewpoint, style and constraints. Do not apply ComfyUI checkpoint-specific tags, quality prefixes or local LoRA vocabulary, and do not add details.";
-                if (settings.GenerationBackend == GenerationBackend.ComfyUI)
-                {
-                    modelGuidance = Assets.GetModelPromptGuidance(model);
-                }
+                string modelGuidance = Assets.GetModelPromptGuidance(model);
                 convertedPrompt = await _promptConverter.ConvertAsync(settings, prompt, modelGuidance, _work.Progress, cancellationToken);
                 if (string.IsNullOrWhiteSpace(convertedPrompt) == true)
                 {
@@ -882,7 +1148,36 @@ namespace Eidolon.App.ViewModels
             _seeds = seeds;
             _promptConverter = promptConverter;
             _runtimeInstaller = runtimeInstaller;
+            _promptConversionSettings = Session.Settings.Copy();
+            if (Assets.SelectedModel != null)
+            {
+                _promptConversionModel = Assets.SelectedModel.Asset.Copy();
+            }
             Assets.PropertyChanged += OnAssetsChanged;
+            ConvertPromptCommand = Command(ConvertPromptAsync, () =>
+            {
+                if (Session.CanQueue == false)
+                {
+                    return false;
+                }
+                if (ShowPromptConversion == false)
+                {
+                    return false;
+                }
+                if (IsGenerationBackendReady == false)
+                {
+                    return false;
+                }
+                if (IsConvertingPrompt == true)
+                {
+                    return false;
+                }
+                if (Navigation.IsEditingView == true)
+                {
+                    return string.IsNullOrWhiteSpace(EditingPrompt) == false;
+                }
+                return string.IsNullOrWhiteSpace(Prompt) == false;
+            });
             GenerateCommand = Command(QueueGenerationAsync, () =>
             {
                 if (Session.CanQueue == false)
@@ -901,7 +1196,7 @@ namespace Eidolon.App.ViewModels
                 {
                     return false;
                 }
-                return string.IsNullOrWhiteSpace(Prompt) == false;
+                return CanGeneratePrompt(false);
             });
             EditImageCommand = Command(QueueEditingAsync, () =>
             {
@@ -925,7 +1220,7 @@ namespace Eidolon.App.ViewModels
                 {
                     return false;
                 }
-                return string.IsNullOrWhiteSpace(EditingPrompt) == false;
+                return CanGeneratePrompt(true);
             });
             PickReferenceImageCommand = Command(PickReferenceImageAsync, () => Session.CanEditGenerationInputs == true);
             ClearReferenceImageCommand = Command(ClearReferenceImageAsync, () =>
@@ -977,6 +1272,17 @@ namespace Eidolon.App.ViewModels
         {
             if (args.PropertyName == nameof(Assets.SelectedModel))
             {
+                ModelAsset previousModel = _promptConversionModel;
+                _promptConversionModel = null;
+                if (Assets.SelectedModel != null)
+                {
+                    _promptConversionModel = Assets.SelectedModel.Asset.Copy();
+                }
+                if (HasPromptConversionModelChanged(previousModel, _promptConversionModel) == true)
+                {
+                    InvalidatePromptConversion(false);
+                    InvalidatePromptConversion(true);
+                }
                 RefreshCommands();
             }
         }
@@ -985,6 +1291,13 @@ namespace Eidolon.App.ViewModels
         {
             if (args.PropertyName == nameof(Session.Settings))
             {
+                DesktopSettings previousSettings = _promptConversionSettings;
+                _promptConversionSettings = Session.Settings.Copy();
+                if (HasPromptConversionSettingsChanged(previousSettings, Session.Settings) == true)
+                {
+                    InvalidatePromptConversion(false);
+                    InvalidatePromptConversion(true);
+                }
                 RefreshGenerationInstructions();
                 Raise(nameof(IsComfyGeneration));
                 Raise(nameof(IsGenerationBackendReady));
@@ -1000,12 +1313,14 @@ namespace Eidolon.App.ViewModels
             {
                 Raise(nameof(GenerationInputCaption));
                 Raise(nameof(GenerationSubmitCommand));
+                RefreshPromptConversion();
                 RefreshReferenceInputs();
             }
         }
 
         protected override void RefreshCommands()
         {
+            Raise(nameof(ShowPromptConversion));
             Raise(nameof(IsGenerationSeedValid));
             Raise(nameof(GenerationSeedValidationHint));
             Raise(nameof(QueuedGenerationSeedCaption));
@@ -1022,10 +1337,62 @@ namespace Eidolon.App.ViewModels
 
         public override void Dispose()
         {
+            _promptConversionRequest++;
+            _editingPromptConversionRequest++;
             Assets.PropertyChanged -= OnAssetsChanged;
             _generationReference.Dispose();
             _editingReference.Dispose();
             base.Dispose();
+        }
+
+        private bool HasPromptConversionSettingsChanged(DesktopSettings previousSettings, DesktopSettings currentSettings)
+        {
+            if (previousSettings.GenerationBackend != currentSettings.GenerationBackend)
+            {
+                return true;
+            }
+            if (previousSettings.InstallDirectory != currentSettings.InstallDirectory)
+            {
+                return true;
+            }
+            if (previousSettings.CodexExecutablePath != currentSettings.CodexExecutablePath)
+            {
+                return true;
+            }
+            return previousSettings.CodexModel != currentSettings.CodexModel;
+        }
+
+        private bool HasPromptConversionModelChanged(ModelAsset previousModel, ModelAsset currentModel)
+        {
+            if (previousModel == null)
+            {
+                return currentModel != null;
+            }
+            if (currentModel == null)
+            {
+                return true;
+            }
+            if (previousModel.Id != currentModel.Id)
+            {
+                return true;
+            }
+            if (previousModel.Family != currentModel.Family)
+            {
+                return true;
+            }
+            if (previousModel.Name != currentModel.Name)
+            {
+                return true;
+            }
+            if (previousModel.EngineName != currentModel.EngineName)
+            {
+                return true;
+            }
+            if (previousModel.RuntimeRoot != currentModel.RuntimeRoot)
+            {
+                return true;
+            }
+            return previousModel.TriggerWord != currentModel.TriggerWord;
         }
     }
 }
