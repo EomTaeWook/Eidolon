@@ -12,7 +12,7 @@
     <TextBox Text="{Binding PositivePrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="112" PlaceholderText="{DynamicResource EidolonText179}" />
     <TextBlock Text="{DynamicResource EidolonText180}" Classes="label" />
     <TextBox Text="{Binding NegativePrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="112" PlaceholderText="{DynamicResource EidolonText181}" />
-    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,8,0,0">
+    <Border Background="{DynamicResource WindowBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,8,0,0">
       <StackPanel Spacing="12">
         <TextBlock Text="{DynamicResource EidolonText547}" FontSize="16" FontWeight="SemiBold" />
         <TextBlock Text="{DynamicResource EidolonText512}" Classes="label" />
@@ -20,7 +20,7 @@
         <WrapPanel Margin="0,0,0,-8">
           <Button Content="{DynamicResource EidolonText514}" Command="{Binding AddCommand}" Classes="primary" MinWidth="148" MinHeight="42" HorizontalContentAlignment="Center" Margin="0,0,8,8" />
           <Button Content="{DynamicResource EidolonText515}" Command="{Binding UpdateCommand}" MinWidth="148" MinHeight="42" HorizontalContentAlignment="Center" Margin="0,0,8,8" />
-          <Button Content="{DynamicResource EidolonText516}" Command="{Binding DeleteCommand}" MinWidth="104" MinHeight="42" HorizontalContentAlignment="Center" Margin="0,0,0,8" />
+          <Button Content="{DynamicResource EidolonText516}" Command="{Binding DeleteCommand}" Classes="danger" MinWidth="104" MinHeight="42" HorizontalContentAlignment="Center" Margin="0,0,0,8" />
         </WrapPanel>
         <TextBlock Text="{Binding Hint}" Classes="muted" FontSize="12" />
       </StackPanel>

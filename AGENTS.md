@@ -2,6 +2,8 @@
 
 작업 전에 [작업 규칙](Docs/WorkingRules.md), [기술 구조](Docs/EidolonArchitecture.md), [코딩 컨벤션](Docs/ReusableArchitecture/CodingConvention.md)을 읽는다.
 
+코드 정리·아키텍처 검수 요청에는 `reusable-architecture-review` 스킬을 사용하고 [재사용 아키텍처 적용 절차](Docs/WorkingRules.md#재사용-아키텍처-적용)를 따른다.
+
 데이터 모델·DTO는 소유 계층의 `Models` 아래에서 기능별 폴더로 묶는다. 모델을 제외한 최상위 타입은 파일별로 분리하며 내부 클래스를 만들지 않는다. Core에 언어·테마·번역 서비스나 UI 리소스 키를 넣지 않는다. 다국어와 앱의 DI·템플릿 로딩은 App이 소유한다. MCP 프로토콜 컨트롤러의 DI는 `MCP.Core`에서 Dignus로 구성한다.
 
 사용자 지시에 따라 빌드·테스트는 실행하지 않는다. 전체 검수는 정적 코드 검수로 진행하며, 실행 검증은 사용자가 별도로 요청할 때만 수행한다.

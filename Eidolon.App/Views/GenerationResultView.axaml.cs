@@ -3,9 +3,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Eidolon.App.Views
 {
-    public partial class GenerationPreviewView : UserControl
+    public partial class GenerationResultView : UserControl
     {
-        public GenerationPreviewView()
+        public GenerationResultView()
         {
             AvaloniaXamlLoader.Load(this);
         }

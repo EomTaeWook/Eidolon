@@ -8,7 +8,7 @@
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-      <Setter Property="MinHeight" Value="60" />
+      <Setter Property="MinHeight" Value="56" />
       <Setter Property="Padding" Value="14,10" />
       <Setter Property="Margin" Value="0,0,8,0" />
     </Style>
@@ -18,9 +18,9 @@
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.trainingStep:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
     </Style>
     <Style Selector="Button.trainingStep:pressed /template/ ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
@@ -84,7 +84,7 @@
     </Style>
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,Auto,*,Auto" MaxWidth="1080" HorizontalAlignment="Stretch">
-    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
       <StackPanel Spacing="6" Margin="0,0,16,0">
         <TextBlock Text="{DynamicResource EidolonText137}" Classes="title" />
         <TextBlock Text="{DynamicResource EidolonText504}" Classes="muted" FontSize="13" />
@@ -93,7 +93,7 @@
         <TextBlock Text="{Binding Workflow.PositionCaption}" Classes="muted" FontSize="12" />
       </Border>
     </Grid>
-    <Border Grid.Row="1" Margin="0,0,-8,20">
+    <Border Grid.Row="1" Margin="0,0,-8,16">
       <ItemsControl ItemsSource="{Binding Workflow.Steps}">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate>
@@ -116,7 +116,7 @@
       <StackPanel Spacing="14">
         <Border Classes="card" Padding="20" VerticalAlignment="Top">
           <StackPanel Spacing="20">
-            <TextBlock Text="{Binding Workflow.Title}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Workflow.Title}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
             <StackPanel Spacing="16" IsVisible="{Binding Workflow.IsImagesStep}" IsEnabled="{Binding CanEditTrainingInputs}">
               <TextBlock Text="{DynamicResource EidolonText492}" Classes="muted" FontSize="13" />
               <ItemsControl ItemsSource="{Binding TrainingImageGroups}" Margin="-6,0">

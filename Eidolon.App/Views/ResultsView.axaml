@@ -19,7 +19,7 @@
       <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="14" />
+      <Setter Property="CornerRadius" Value="12" />
       <Setter Property="ClipToBounds" Value="True" />
       <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
@@ -81,10 +81,10 @@
           </StackPanel>
         </Button>
         <Button Content="{DynamicResource EidolonText273}" Command="{Binding RefreshGalleryCommand}" Padding="12,8" />
-        <Button Content="{DynamicResource EidolonText317}" Command="{Binding DeleteAllGenerationsCommand}" IsVisible="{Binding HasGenerations}" Padding="12,8" />
+        <Button Content="{DynamicResource EidolonText317}" Command="{Binding DeleteAllGenerationsCommand}" Classes="danger" IsVisible="{Binding HasGenerations}" Padding="12,8" />
       </StackPanel>
     </Grid>
-    <StackPanel Grid.Row="1" Spacing="10" Margin="0,12,0,24">
+    <StackPanel Grid.Row="1" Spacing="10" Margin="0,12,0,16">
       <TextBlock Text="{DynamicResource EidolonText373}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
       <Border Background="{DynamicResource ErrorSurfaceBrush}" CornerRadius="8" Padding="12" IsVisible="{Binding HasGalleryError}">
         <StackPanel Spacing="6">
@@ -103,7 +103,7 @@
         <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,8" IsVisible="{Binding HasGenerations}">
           <TextBlock Text="{Binding GallerySelectionCaption}" VerticalAlignment="Center" Foreground="{DynamicResource AccentBrush}" FontSize="12" />
           <Button Grid.Column="1" Content="{DynamicResource EidolonText387}" Command="{Binding ClearGallerySelectionCommand}" Padding="10,7" Margin="0,0,8,0" />
-          <Button Grid.Column="2" Content="{DynamicResource EidolonText316}" Command="{Binding DeleteGenerationCommand}" Padding="10,7" />
+          <Button Grid.Column="2" Content="{DynamicResource EidolonText316}" Command="{Binding DeleteGenerationCommand}" Classes="danger" Padding="10,7" />
         </Grid>
         <ListBox x:Name="Gallery" Grid.Row="1" ItemsSource="{Binding Generations}" SelectedItems="{Binding GallerySelection, Mode=OneWay}" SelectionMode="Multiple" IsEnabled="{Binding !IsGalleryLoading}" Margin="-6,0" Background="Transparent" BorderThickness="0" ScrollViewer.AllowAutoHide="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" KeyDown="OnGalleryKeyDown">
           <ListBox.ItemsPanel>
@@ -148,7 +148,7 @@
                       </ItemsControl.ItemTemplate>
                     </ItemsControl>
                   </Border>
-                  <StackPanel Grid.Row="1" Spacing="8" Margin="14,14">
+                  <StackPanel Grid.Row="1" Spacing="6" Margin="14,12">
                     <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FileName}" />
                     <TextBlock Text="{Binding CollectionCaption}" Foreground="{DynamicResource AccentBrush}" FontSize="12" IsVisible="{Binding IsAssetCollection}" />
                     <TextBlock Text="{Binding Metadata.Model.Name, FallbackValue=''}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" IsVisible="{Binding HasMetadata}" />

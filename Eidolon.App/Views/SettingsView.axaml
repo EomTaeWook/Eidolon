@@ -1,10 +1,11 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.SettingsView" x:DataType="vm:StudioViewModel">
   <UserControl.Styles>
     <Style Selector="TabItem.settingsSection">
-      <Setter Property="Width" Value="192" />
-      <Setter Property="MinHeight" Value="48" />
-      <Setter Property="Margin" Value="0,0,0,8" />
-      <Setter Property="Padding" Value="16,12" />
+      <Setter Property="Width" Value="184" />
+      <Setter Property="MinHeight" Value="46" />
+      <Setter Property="Margin" Value="0,0,0,6" />
+      <Setter Property="Padding" Value="14,10" />
+      <Setter Property="BorderThickness" Value="3,0,0,0" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="Cursor" Value="Hand" />
     </Style>
@@ -13,7 +14,7 @@
     <StackPanel Spacing="6" Margin="0,0,0,24">
       <TextBlock Text="{DynamicResource EidolonText110}" Classes="title" />
     </StackPanel>
-    <TabControl Grid.Row="1" TabStripPlacement="Left" SelectedIndex="{Binding Navigation.SelectedSettingsTab, Mode=TwoWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+    <TabControl Grid.Row="1" TabStripPlacement="Left" SelectedIndex="{Binding Navigation.SelectedSettingsTab, Mode=TwoWay}" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
       <TabItem Classes="settingsSection" AutomationProperties.Name="{DynamicResource EidolonText594}">
         <TabItem.Header>
           <TextBlock Text="{DynamicResource EidolonText594}" MaxWidth="160" TextWrapping="Wrap" />
@@ -34,13 +35,13 @@
           <Border Classes="card" MaxWidth="1000" VerticalAlignment="Top" DataContext="{Binding Mcp}" x:DataType="vm:McpViewModel">
             <StackPanel Spacing="16">
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="{DynamicResource EidolonText595}" FontSize="18" FontWeight="SemiBold" />
+                <TextBlock Text="{DynamicResource EidolonText595}" FontSize="16" FontWeight="SemiBold" />
                 <TextBlock Grid.Column="1" Text="{Binding StatusCaption}" Classes="muted" VerticalAlignment="Center" Margin="16,0,0,0" />
               </Grid>
               <TextBlock Text="{DynamicResource EidolonText596}" Classes="muted" />
               <TextBox Text="{Binding Endpoint, Mode=OneWay}" IsReadOnly="True" Classes="folderPath" />
               <WrapPanel>
-                <Button Content="{DynamicResource EidolonText600}" Command="{Binding StartCommand}" Margin="0,0,8,0" />
+                <Button Content="{DynamicResource EidolonText600}" Command="{Binding StartCommand}" Classes="primary" Margin="0,0,8,0" />
                 <Button Content="{DynamicResource EidolonText601}" Command="{Binding StopCommand}" />
               </WrapPanel>
               <TextBlock Text="{DynamicResource EidolonText597}" Classes="muted" FontSize="12" />

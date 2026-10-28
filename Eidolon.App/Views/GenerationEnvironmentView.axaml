@@ -1,10 +1,11 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationEnvironmentView" x:DataType="vm:StudioViewModel">
   <UserControl.Styles>
     <Style Selector="TabItem.environmentSection">
-      <Setter Property="Width" Value="192" />
-      <Setter Property="MinHeight" Value="48" />
-      <Setter Property="Margin" Value="0,0,0,8" />
-      <Setter Property="Padding" Value="16,12" />
+      <Setter Property="Width" Value="184" />
+      <Setter Property="MinHeight" Value="46" />
+      <Setter Property="Margin" Value="0,0,0,6" />
+      <Setter Property="Padding" Value="14,10" />
+      <Setter Property="BorderThickness" Value="3,0,0,0" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="Cursor" Value="Hand" />
     </Style>
@@ -14,7 +15,7 @@
       <TextBlock Text="{DynamicResource EidolonText581}" Classes="title" />
       <TextBlock Text="{DynamicResource EidolonText582}" Classes="muted" FontSize="13" />
     </StackPanel>
-    <TabControl Grid.Row="1" TabStripPlacement="Left" SelectedIndex="{Binding Navigation.SelectedEnvironmentTab, Mode=TwoWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+    <TabControl Grid.Row="1" TabStripPlacement="Left" SelectedIndex="{Binding Navigation.SelectedEnvironmentTab, Mode=TwoWay}" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
       <TabItem Classes="environmentSection" AutomationProperties.Name="{DynamicResource EidolonText583}">
         <TabItem.Header>
           <TextBlock Text="{DynamicResource EidolonText583}" MaxWidth="160" TextWrapping="Wrap" />
@@ -29,7 +30,7 @@
           <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,0">
             <Border Classes="card">
               <StackPanel Spacing="12">
-                <TextBlock Text="{DynamicResource EidolonText176}" FontSize="18" FontWeight="SemiBold" />
+                <TextBlock Text="{DynamicResource EidolonText176}" FontSize="16" FontWeight="SemiBold" />
                 <TextBlock Text="{DynamicResource EidolonText543}" Classes="muted" FontSize="12" />
                 <views:PromptSettingsView DataContext="{Binding Prompts}" />
               </StackPanel>

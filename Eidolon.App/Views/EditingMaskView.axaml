@@ -1,18 +1,31 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.EditingMaskView" x:DataType="vm:GenerationViewModel">
+  <UserControl.Styles>
+    <Style Selector="views|ReferenceMaskEditor.maskEditing">
+      <Setter Property="SelectionBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+  </UserControl.Styles>
   <Grid RowDefinitions="Auto,*,Auto">
-    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="16,10">
+    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="18,12">
       <Grid ColumnDefinitions="*,Auto">
-        <TextBlock Text="{DynamicResource EidolonText721}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" />
-        <Button Grid.Column="1" Content="{DynamicResource EidolonText439}" Command="{Binding CloseEditingMaskCommand}" Padding="12,6" />
+        <StackPanel Spacing="3" Margin="0,0,12,0" VerticalAlignment="Center">
+          <TextBlock Text="{DynamicResource EidolonText440}" FontWeight="SemiBold" FontSize="14" />
+          <TextBlock Text="{Binding ReferenceImageName}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ReferenceImageName}" IsVisible="{Binding HasReferenceImage}" />
+        </StackPanel>
+        <Button Grid.Column="1" Content="{DynamicResource EidolonText291}" Command="{Binding Navigation.ShowResultsCommand}" Padding="12,6" Margin="8,0,0,0" />
       </Grid>
     </Border>
     <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" Padding="12" ClipToBounds="True">
       <Grid>
-        <views:TransparencyBackground />
-        <views:ReferenceMaskEditor ImageData="{Binding EditingImageData}" MaskData="{Binding EditingMaskData, Mode=TwoWay}" BrushSize="{Binding EditingBrushSize}" IsErasing="{Binding IsErasingMask}" SelectionBrush="{DynamicResource AccentBrush}" IsEnabled="{Binding Session.CanEditGenerationInputs}" MinWidth="1" MinHeight="1" />
+        <views:TransparencyBackground IsVisible="{Binding HasReferenceImage}" />
+        <views:ReferenceMaskEditor Classes.maskEditing="{Binding ShowEditingMaskEditor}" ImageData="{Binding EditingImageData}" MaskData="{Binding EditingMaskData, Mode=TwoWay}" BrushSize="{Binding EditingBrushSize}" IsErasing="{Binding IsErasingMask}" IsVisible="{Binding HasReferenceImage}" IsHitTestVisible="{Binding ShowEditingMaskEditor}" IsEnabled="{Binding Session.CanEditGenerationInputs}" MinWidth="1" MinHeight="1" />
+        <StackPanel Spacing="12" MaxWidth="340" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !HasReferenceImage}">
+          <Path Data="{StaticResource EidolonIconImage}" Width="40" Height="40" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" HorizontalAlignment="Center" />
+          <TextBlock Text="{DynamicResource EidolonText459}" Classes="muted" FontSize="14" TextWrapping="Wrap" TextAlignment="Center" />
+          <Button Content="{DynamicResource EidolonText441}" Command="{Binding PickReferenceImageCommand}" Classes="primary" HorizontalAlignment="Center" />
+        </StackPanel>
       </Grid>
     </Border>
-    <Border Grid.Row="2" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="16,10">
+    <Border Grid.Row="2" Background="{DynamicResource FooterBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="18,12" IsVisible="{Binding ShowEditingMaskEditor}">
       <StackPanel Spacing="8">
         <WrapPanel>
           <TextBlock Text="{DynamicResource EidolonText722}" FontSize="12" VerticalAlignment="Center" Margin="0,0,10,8" />

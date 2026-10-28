@@ -1,10 +1,17 @@
 <Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.MainWindow" x:DataType="vm:StudioViewModel" Title="Eidolon" Icon="/Assets/AppIcon.ico" Width="1280" Height="900" MinWidth="1024" MinHeight="740" WindowStartupLocation="CenterScreen">
+  <Window.Styles>
+    <Style Selector="views|GenerationInputsView">
+      <Setter Property="DockPanel.Dock" Value="Bottom" />
+      <Setter Property="Margin" Value="0,12,0,0" />
+    </Style>
+  </Window.Styles>
   <Grid RowDefinitions="Auto,*,Auto">
-    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="20,10">
-      <Grid ColumnDefinitions="Auto,20,*,Auto">
+    <Border Background="{DynamicResource HeaderBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="24,12">
+      <Grid ColumnDefinitions="Auto,24,*,Auto">
         <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <Border Width="3" Height="28" CornerRadius="2" Background="{DynamicResource AccentBrush}" />
           <Image Source="/Assets/AppIcon.png" Width="28" Height="28" />
-          <TextBlock Text="Eidolon" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+          <TextBlock Text="Eidolon" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
         </StackPanel>
         <WrapPanel Grid.Column="2" VerticalAlignment="Center">
           <Button Command="{Binding Navigation.ShowGenerationCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsGenerationView}" Padding="10,8" CornerRadius="6" FontSize="13" Margin="0,2,4,2">
@@ -51,102 +58,108 @@
         </StackPanel>
       </Grid>
     </Border>
-    <Grid Grid.Row="1" Margin="20">
+    <Grid Grid.Row="1" Margin="24,20,24,16">
       <Border IsVisible="{Binding Navigation.IsGenerationWorkspace}">
         <Grid RowDefinitions="Auto,12,*,12,Auto" ColumnDefinitions="*,16,260">
-          <Grid Grid.ColumnSpan="3" ColumnDefinitions="*,Auto">
-            <WrapPanel VerticalAlignment="Center">
-              <TextBlock Text="{Binding Generation.GenerationInputCaption}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,20,0" />
-              <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding Generation.IsComfyGeneration}" VerticalAlignment="Center" Margin="0,2,12,2">
-                <ComboBox ItemsSource="{Binding Assets.Models}" SelectedItem="{Binding Assets.SelectedModel, Mode=TwoWay}" IsVisible="{Binding Assets.HasAvailableModels}" IsEnabled="{Binding Session.CanEditGenerationInputs}" Width="220" MinHeight="40" Background="{DynamicResource SurfaceBrush}" CornerRadius="6" ToolTip.Tip="{DynamicResource EidolonText359}">
-                  <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="vm:AssetItem">
-                      <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="13" ToolTip.Tip="{Binding Detail}" />
-                    </DataTemplate>
-                  </ComboBox.ItemTemplate>
-                </ComboBox>
-                <Button Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" IsVisible="{Binding !Assets.HasAvailableModels}" ToolTip.Tip="{Binding Assets.ModelSetupHint}" />
-                <DropDownButton Width="220" MinHeight="40" Padding="12,8" CornerRadius="6" HorizontalContentAlignment="Stretch" IsEnabled="{Binding Session.CanEditGenerationInputs}" ToolTip.Tip="{Binding Assets.SelectedLoraNames}" AutomationProperties.Name="{DynamicResource EidolonText423}">
-                  <Grid>
-                    <TextBlock Text="{DynamicResource EidolonText423}" IsVisible="{Binding !Assets.HasSelectedLoras}" FontSize="13" />
-                    <TextBlock Text="{Binding Assets.SelectedLoraNames}" IsVisible="{Binding Assets.HasSelectedLoras}" TextTrimming="CharacterEllipsis" FontSize="13" />
-                  </Grid>
-                  <DropDownButton.Flyout>
-                    <Flyout Placement="BottomEdgeAlignedLeft">
-                      <StackPanel Width="320" Spacing="10">
-                        <Grid ColumnDefinitions="*,Auto">
-                          <TextBlock Text="{DynamicResource EidolonText423}" FontSize="14" FontWeight="SemiBold" />
-                          <TextBlock Grid.Column="1" Text="{Binding Assets.SelectedLorasCaption}" IsVisible="{Binding Assets.HasSelectedLoras}" Classes="muted" FontSize="11" />
-                        </Grid>
-                        <TextBox Text="{Binding Assets.LoraSearch, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText432}" IsVisible="{Binding Assets.ShowLoraSearch}" FontSize="13" />
-                        <TextBlock Text="{DynamicResource EidolonText341}" IsVisible="{Binding !Assets.HasAvailableLoras}" Classes="muted" FontSize="12" />
-                        <Border IsVisible="{Binding Assets.HasAvailableLoras}">
-                          <TextBlock Text="{DynamicResource EidolonText433}" IsVisible="{Binding !Assets.HasMatchingLoras}" Classes="muted" FontSize="12" />
-                        </Border>
-                        <ScrollViewer MaxHeight="240" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" IsVisible="{Binding Assets.HasMatchingLoras}">
-                          <ItemsControl ItemsSource="{Binding Assets.FilteredLoras}">
-                            <ItemsControl.Styles>
-                              <Style Selector="ToggleButton.loraRow">
-                                <Setter Property="HorizontalAlignment" Value="Stretch" />
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                <Setter Property="Background" Value="Transparent" />
-                                <Setter Property="BorderThickness" Value="0" />
-                                <Setter Property="CornerRadius" Value="4" />
-                                <Setter Property="Padding" Value="10" />
-                                <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-                              </Style>
-                              <Style Selector="ToggleButton.loraRow:checked">
-                                <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-                              </Style>
-                              <Style Selector="ToggleButton.loraRow:checked /template/ ContentPresenter">
-                                <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-                              </Style>
-                              <Style Selector="ToggleButton.loraRow:pointerover /template/ ContentPresenter">
-                                <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
-                                <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-                              </Style>
-                            </ItemsControl.Styles>
-                            <ItemsControl.ItemTemplate>
-                              <DataTemplate x:DataType="vm:AssetItem">
-                                <ToggleButton Classes="loraRow" IsChecked="{Binding IsSelected, Mode=TwoWay}" ToolTip.Tip="{Binding TriggerCaption}" AutomationProperties.Name="{Binding Label}">
-                                  <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="13" />
-                                    <TextBlock Grid.Column="1" Text="{DynamicResource EidolonText435}" Foreground="{DynamicResource AccentBrush}" IsVisible="{Binding IsSelected}" FontSize="11" Margin="12,0,0,0" VerticalAlignment="Center" />
-                                  </Grid>
-                                </ToggleButton>
-                              </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                          </ItemsControl>
-                        </ScrollViewer>
-                      </StackPanel>
-                    </Flyout>
-                  </DropDownButton.Flyout>
-                </DropDownButton>
-                <Button Content="{DynamicResource EidolonText410}" Command="{Binding Assets.ScanCommand}" Padding="10,8" ToolTip.Tip="{DynamicResource EidolonText125}" />
-              </StackPanel>
-              <TextBlock Text="{Binding Session.CodexModelCaption}" IsVisible="{Binding !Generation.IsComfyGeneration}" Classes="muted" FontSize="13" VerticalAlignment="Center" ToolTip.Tip="{DynamicResource EidolonText545}" />
-            </WrapPanel>
-            <Button Grid.Column="1" Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" CornerRadius="6" Padding="10,8" ToolTip.Tip="{DynamicResource EidolonText560}" AutomationProperties.Name="{DynamicResource EidolonText560}">
-              <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock Text="{Binding Session.GenerationBackendCaption}" FontSize="13" VerticalAlignment="Center" />
-                <Path Data="{StaticResource EidolonIconSettings}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
-              </StackPanel>
-            </Button>
-          </Grid>
-          <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" ClipToBounds="True">
-            <Grid>
-              <Grid IsVisible="{Binding !Generation.ShowEditingMaskEditor}">
-                <views:GenerationPreviewView DataContext="{Binding Gallery}" />
-              </Grid>
-              <Grid IsVisible="{Binding Generation.ShowEditingMaskEditor}">
-                <views:EditingMaskView DataContext="{Binding Generation}" />
-              </Grid>
+          <Border Grid.ColumnSpan="3" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="16,10">
+            <Grid ColumnDefinitions="*,Auto">
+              <WrapPanel VerticalAlignment="Center">
+                <TextBlock Text="{Binding Generation.GenerationInputCaption}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,20,0" />
+                <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding Generation.IsComfyGeneration}" VerticalAlignment="Center" Margin="0,2,12,2">
+                  <ComboBox ItemsSource="{Binding Assets.Models}" SelectedItem="{Binding Assets.SelectedModel, Mode=TwoWay}" IsVisible="{Binding Assets.HasAvailableModels}" IsEnabled="{Binding Session.CanEditGenerationInputs}" Width="220" MinHeight="40" Background="{DynamicResource SurfaceBrush}" CornerRadius="8" ToolTip.Tip="{DynamicResource EidolonText359}">
+                    <ComboBox.ItemTemplate>
+                      <DataTemplate x:DataType="vm:AssetItem">
+                        <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="13" ToolTip.Tip="{Binding Detail}" />
+                      </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                  </ComboBox>
+                  <Button Content="{Binding Assets.ModelSetupActionCaption}" Command="{Binding Assets.PrepareModelsCommand}" IsVisible="{Binding !Assets.HasAvailableModels}" ToolTip.Tip="{Binding Assets.ModelSetupHint}" />
+                  <DropDownButton Width="220" MinHeight="40" Padding="12,8" CornerRadius="8" HorizontalContentAlignment="Stretch" IsEnabled="{Binding Session.CanEditGenerationInputs}" ToolTip.Tip="{Binding Assets.SelectedLoraNames}" AutomationProperties.Name="{DynamicResource EidolonText423}">
+                    <Grid>
+                      <TextBlock Text="{DynamicResource EidolonText423}" IsVisible="{Binding !Assets.HasSelectedLoras}" FontSize="13" />
+                      <TextBlock Text="{Binding Assets.SelectedLoraNames}" IsVisible="{Binding Assets.HasSelectedLoras}" TextTrimming="CharacterEllipsis" FontSize="13" />
+                    </Grid>
+                    <DropDownButton.Flyout>
+                      <Flyout Placement="BottomEdgeAlignedLeft">
+                        <StackPanel Width="320" Spacing="10">
+                          <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="{DynamicResource EidolonText423}" FontSize="14" FontWeight="SemiBold" />
+                            <TextBlock Grid.Column="1" Text="{Binding Assets.SelectedLorasCaption}" IsVisible="{Binding Assets.HasSelectedLoras}" Classes="muted" FontSize="11" />
+                          </Grid>
+                          <TextBox Text="{Binding Assets.LoraSearch, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText432}" IsVisible="{Binding Assets.ShowLoraSearch}" FontSize="13" />
+                          <TextBlock Text="{DynamicResource EidolonText341}" IsVisible="{Binding !Assets.HasAvailableLoras}" Classes="muted" FontSize="12" />
+                          <Border IsVisible="{Binding Assets.HasAvailableLoras}">
+                            <TextBlock Text="{DynamicResource EidolonText433}" IsVisible="{Binding !Assets.HasMatchingLoras}" Classes="muted" FontSize="12" />
+                          </Border>
+                          <ScrollViewer MaxHeight="240" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" IsVisible="{Binding Assets.HasMatchingLoras}">
+                            <ItemsControl ItemsSource="{Binding Assets.FilteredLoras}">
+                              <ItemsControl.Styles>
+                                <Style Selector="ToggleButton.loraRow">
+                                  <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                  <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                  <Setter Property="Background" Value="Transparent" />
+                                  <Setter Property="BorderThickness" Value="0" />
+                                  <Setter Property="CornerRadius" Value="4" />
+                                  <Setter Property="Padding" Value="10" />
+                                  <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                                </Style>
+                                <Style Selector="ToggleButton.loraRow:checked">
+                                  <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+                                  <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                                </Style>
+                                <Style Selector="ToggleButton.loraRow:checked /template/ ContentPresenter">
+                                  <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+                                  <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                                </Style>
+                                <Style Selector="ToggleButton.loraRow:pointerover /template/ ContentPresenter">
+                                  <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
+                                  <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                                </Style>
+                                <Style Selector="ToggleButton.loraRow:checked:pointerover /template/ ContentPresenter">
+                                  <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+                                  <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                                </Style>
+                              </ItemsControl.Styles>
+                              <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:AssetItem">
+                                  <ToggleButton Classes="loraRow" IsChecked="{Binding IsSelected, Mode=TwoWay}" ToolTip.Tip="{Binding TriggerCaption}" AutomationProperties.Name="{Binding Label}">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                      <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" FontSize="13" />
+                                      <TextBlock Grid.Column="1" Text="{DynamicResource EidolonText435}" Foreground="{DynamicResource AccentBrush}" IsVisible="{Binding IsSelected}" FontSize="11" Margin="12,0,0,0" VerticalAlignment="Center" />
+                                    </Grid>
+                                  </ToggleButton>
+                                </DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                          </ScrollViewer>
+                        </StackPanel>
+                      </Flyout>
+                    </DropDownButton.Flyout>
+                  </DropDownButton>
+                  <Button Content="{DynamicResource EidolonText410}" Command="{Binding Assets.ScanCommand}" Padding="10,8" ToolTip.Tip="{DynamicResource EidolonText125}" />
+                </StackPanel>
+                <TextBlock Text="{Binding Session.CodexModelCaption}" IsVisible="{Binding !Generation.IsComfyGeneration}" Classes="muted" FontSize="13" VerticalAlignment="Center" ToolTip.Tip="{DynamicResource EidolonText545}" />
+              </WrapPanel>
+              <Button Grid.Column="1" Command="{Binding Navigation.ShowGenerationEnvironmentCommand}" CornerRadius="8" Padding="10,8" ToolTip.Tip="{DynamicResource EidolonText560}" AutomationProperties.Name="{DynamicResource EidolonText560}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <TextBlock Text="{Binding Session.GenerationBackendCaption}" FontSize="13" VerticalAlignment="Center" />
+                  <Path Data="{StaticResource EidolonIconSettings}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
+                </StackPanel>
+              </Button>
             </Grid>
           </Border>
-          <views:GenerationInputsView Grid.Row="4" DataContext="{Binding Generation}" HorizontalAlignment="Stretch" />
-          <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="16" DataContext="{Binding Generation}" x:DataType="vm:GenerationViewModel">
+          <DockPanel Grid.Row="2" Grid.RowSpan="3">
+            <views:GenerationInputsView DataContext="{Binding Generation}" HorizontalAlignment="Stretch" />
+            <Grid>
+              <Grid IsVisible="{Binding Navigation.IsGenerationView}">
+                <views:GenerationResultView DataContext="{Binding Generation}" />
+              </Grid>
+              <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" ClipToBounds="True" IsVisible="{Binding Navigation.IsEditingView}">
+                <views:EditingMaskView DataContext="{Binding Generation}" />
+              </Border>
+            </Grid>
+          </DockPanel>
+          <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18" DataContext="{Binding Generation}" x:DataType="vm:GenerationViewModel">
             <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
               <StackPanel Spacing="20" IsEnabled="{Binding Session.CanEditGenerationInputs}">
                 <views:ReferenceImageInputsView />
@@ -198,7 +211,7 @@
             <StackPanel Spacing="20" MaxWidth="1000" HorizontalAlignment="Stretch">
               <Border Classes="card">
                 <StackPanel Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText185}" FontSize="18" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource EidolonText185}" FontSize="16" FontWeight="SemiBold" />
                   <TextBlock Text="{DynamicResource EidolonText186}" TextWrapping="Wrap" />
                   <TextBlock Text="{DynamicResource EidolonText187}" Classes="muted" />
                   <TextBlock Text="{DynamicResource EidolonText285}" Classes="muted" />
@@ -214,7 +227,7 @@
               </Border>
               <Border Classes="card">
                 <StackPanel Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText188}" FontSize="18" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource EidolonText188}" FontSize="16" FontWeight="SemiBold" />
                   <TextBlock Text="{DynamicResource EidolonText189}" TextWrapping="Wrap" />
                   <TextBlock Text="{DynamicResource EidolonText480}" Classes="muted" />
                   <Button Command="{Binding Navigation.ShowGenerationCommand}" HorizontalAlignment="Left">
@@ -227,7 +240,7 @@
               </Border>
               <Border Classes="card">
                 <StackPanel Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText476}" FontSize="18" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource EidolonText476}" FontSize="16" FontWeight="SemiBold" />
                   <TextBlock Text="{DynamicResource EidolonText477}" TextWrapping="Wrap" />
                   <TextBlock Text="{DynamicResource EidolonText479}" Classes="muted" />
                   <Button Command="{Binding Navigation.ShowEditingCommand}" HorizontalAlignment="Left">
@@ -240,14 +253,14 @@
               </Border>
               <Border Classes="card">
                 <StackPanel Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText661}" FontSize="18" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource EidolonText661}" FontSize="16" FontWeight="SemiBold" />
                   <TextBlock Text="{DynamicResource EidolonText662}" TextWrapping="Wrap" />
                   <Button Content="{DynamicResource EidolonText291}" Command="{Binding Navigation.ShowResultsCommand}" HorizontalAlignment="Left" />
                 </StackPanel>
               </Border>
               <Border Classes="card">
                 <StackPanel Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText652}" FontSize="18" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource EidolonText652}" FontSize="16" FontWeight="SemiBold" />
                   <TextBlock Text="{DynamicResource EidolonText653}" TextWrapping="Wrap" />
                   <TextBlock Text="{DynamicResource EidolonText663}" Classes="muted" />
                   <Button Content="{DynamicResource EidolonText603}" Command="{Binding Navigation.ShowAssetCreationCommand}" HorizontalAlignment="Left" />
@@ -255,7 +268,7 @@
               </Border>
               <Border Classes="card">
                 <StackPanel Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText191}" FontSize="18" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource EidolonText191}" FontSize="16" FontWeight="SemiBold" />
                   <TextBlock Text="{DynamicResource EidolonText192}" TextWrapping="Wrap" />
                   <TextBlock Text="{DynamicResource EidolonText193}" Classes="muted" />
                   <Button Command="{Binding Navigation.ShowTrainingCommand}" HorizontalAlignment="Left">
@@ -268,14 +281,14 @@
               </Border>
               <Border Classes="card">
                 <StackPanel Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText664}" FontSize="18" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource EidolonText664}" FontSize="16" FontWeight="SemiBold" />
                   <TextBlock Text="{DynamicResource EidolonText665}" TextWrapping="Wrap" />
                   <Button Content="{DynamicResource EidolonText110}" Command="{Binding Navigation.ShowSettingsCommand}" HorizontalAlignment="Left" />
                 </StackPanel>
               </Border>
               <Border Classes="card">
                 <StackPanel Spacing="10">
-                  <TextBlock Text="{DynamicResource EidolonText194}" FontSize="18" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource EidolonText194}" FontSize="16" FontWeight="SemiBold" />
                   <TextBlock Text="{DynamicResource EidolonText195}" TextWrapping="Wrap" />
                   <TextBlock Text="{DynamicResource EidolonText196}" Classes="muted" />
                   <Button Command="{Binding Settings.OpenLogsCommand}" HorizontalAlignment="Left">

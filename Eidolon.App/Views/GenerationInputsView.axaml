@@ -1,37 +1,56 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationInputsView" x:DataType="vm:GenerationViewModel">
   <UserControl.Styles>
     <Style Selector="TextBox">
-      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-      <Setter Property="CornerRadius" Value="6" />
-      <Setter Property="FontSize" Value="15" />
+      <Setter Property="FontSize" Value="14" />
     </Style>
-    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+    <Style Selector="Border.composer:focus-within">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
-    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+    <Style Selector="Button.promptConversion">
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.promptConversion:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Button.promptConversion:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Button.promptConversion:focus-visible /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Button.promptConversion:disabled">
+      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+      <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+    <Style Selector="Button.promptConversion:disabled /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
     </Style>
   </UserControl.Styles>
-  <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+  <Border Classes="composer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="14" Padding="18,14">
     <StackPanel Spacing="12">
       <StackPanel Spacing="8" IsEnabled="{Binding Session.CanEditGenerationInputs}" IsVisible="{Binding Navigation.IsGenerationView}">
-        <TextBlock Text="{DynamicResource EidolonText112}" FontSize="14" FontWeight="SemiBold" />
+        <TextBlock Text="{DynamicResource EidolonText112}" FontSize="13" FontWeight="SemiBold" />
         <TextBox Text="{Binding Prompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="80" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="{DynamicResource EidolonText114}" />
       </StackPanel>
       <views:EditingInputsView IsVisible="{Binding Navigation.IsEditingView}" />
-      <StackPanel Spacing="8" IsVisible="{Binding ShowPromptConversion}" IsEnabled="{Binding Session.CanEditGenerationInputs}">
-        <Grid ColumnDefinitions="*,Auto">
-          <TextBlock Text="{DynamicResource EidolonText730}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
-          <Button Grid.Column="1" Content="{DynamicResource EidolonText729}" Command="{Binding ConvertPromptCommand}" Padding="14,6" />
-        </Grid>
-        <TextBox Text="{Binding ConvertedPrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="72" ScrollViewer.VerticalScrollBarVisibility="Auto" IsVisible="{Binding HasConvertedPrompt}" AutomationProperties.Name="{DynamicResource EidolonText730}" />
-        <TextBlock Text="{DynamicResource EidolonText731}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasConvertedPrompt}" />
-      </StackPanel>
       <Grid ColumnDefinitions="*,Auto" MinHeight="42">
-        <Border IsVisible="{Binding Navigation.IsEditingView}" Margin="0,0,16,0" VerticalAlignment="Center">
-          <TextBlock Text="{DynamicResource EidolonText459}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding !HasReferenceImage}" />
-        </Border>
-        <Button Grid.Column="1" Classes="primary" Command="{Binding GenerationSubmitCommand}" Width="160" Height="42" CornerRadius="6" FontSize="14" HorizontalAlignment="Right" HorizontalContentAlignment="Center" ToolTip.Tip="{DynamicResource EidolonText248}">
+        <StackPanel Spacing="4" Margin="0,0,16,0" VerticalAlignment="Center">
+          <Button Classes="promptConversion" Command="{Binding ConvertPromptCommand}" IsVisible="{Binding ShowPromptConversion}" HorizontalAlignment="Left" MinHeight="26" Padding="4,2" FontSize="12" Background="Transparent" BorderThickness="0" CornerRadius="4" AutomationProperties.Name="{DynamicResource EidolonText729}">
+            <StackPanel Orientation="Horizontal" Spacing="5">
+              <Path Data="{StaticResource EidolonIconTag}" Width="12" Height="12" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.6" VerticalAlignment="Center" />
+              <TextBlock Text="{DynamicResource EidolonText729}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <Border IsVisible="{Binding Navigation.IsEditingView}">
+            <TextBlock Text="{DynamicResource EidolonText459}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding !HasReferenceImage}" />
+          </Border>
+        </StackPanel>
+        <Button Grid.Column="1" Classes="primary" Command="{Binding GenerationSubmitCommand}" MinWidth="148" Height="42" CornerRadius="8" FontSize="14" HorizontalAlignment="Right" HorizontalContentAlignment="Center" ToolTip.Tip="{DynamicResource EidolonText248}">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <Path Data="{StaticResource EidolonIconPlay}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
             <TextBlock Text="{Binding GenerationActionCaption}" VerticalAlignment="Center" />

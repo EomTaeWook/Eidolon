@@ -4,7 +4,7 @@
       <Border Classes="card">
         <StackPanel Spacing="20">
           <StackPanel Spacing="12">
-            <TextBlock Text="{DynamicResource EidolonText546}" FontSize="18" FontWeight="SemiBold" />
+            <TextBlock Text="{DynamicResource EidolonText546}" FontSize="16" FontWeight="SemiBold" />
             <TextBlock Text="{DynamicResource EidolonText297}" Classes="label" />
             <Grid ColumnDefinitions="*,Auto,Auto">
               <TextBox Classes="folderPath" Text="{Binding Settings.GenerationDirectory, Mode=TwoWay}" ToolTip.Tip="{Binding Settings.GenerationDirectory}" />
@@ -20,7 +20,7 @@
           </StackPanel>
           <Border Height="1" Background="{DynamicResource BorderBrush}" />
           <StackPanel Spacing="12">
-            <TextBlock Text="{DynamicResource EidolonText170}" FontSize="18" FontWeight="SemiBold" />
+            <TextBlock Text="{DynamicResource EidolonText170}" FontSize="16" FontWeight="SemiBold" />
             <TextBlock Text="{DynamicResource EidolonText171}" Classes="label" />
             <StackPanel Orientation="Horizontal" Spacing="24">
               <RadioButton GroupName="EidolonTheme" Content="{DynamicResource EidolonText220}" IsChecked="{Binding Settings.IsLightTheme, Mode=TwoWay}" />

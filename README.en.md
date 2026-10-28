@@ -8,17 +8,19 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 ## Download
 
-[Download Eidolon v0.1.0-beta.5 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v0.1.0-beta.5/Eidolon-0.1.0-beta.5-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v0.1.0-beta.5)
+[Download Eidolon v0.1.0-beta.6 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v0.1.0-beta.6/Eidolon-0.1.0-beta.6-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v0.1.0-beta.6)
 
 Run the single `.exe` file. No extraction or separate .NET installation is required. For Codex, sign in to your installed Codex first. For ComfyUI, prepare the engine and models through the app.
 
 ## Screenshots
 
+The screenshots below show an earlier version. The current Generate screen places results above the prompt input.
+
 ### Image generation
 
 ![Eidolon left navigation and Generate screen with the Codex backend, description and reference inputs, and result preview](Docs/images/generation.png)
 
-Describe the image and choose a reference and background options. Keep the inputs and result preview side by side while preparing your next request.
+Describe the image and choose a reference and background options. Review the generated result above while preparing the next request in the input below.
 
 ### Results
 
@@ -112,7 +114,7 @@ Publish the self-contained Windows x64 executable with:
 dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o artifacts\win-x64 -m:1 /p:UseSharedCompilation=false
 ```
 
-The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. See [local prompt conversion](Docs/PromptConversion.md) for installation, conversion and generation checks and limitations, the earlier [multi-view validation record](Docs/AssetCreationQuality.md), and the [release notes](Docs/Releases/0.1.0-beta.5.md) for this update.
+The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. See [local prompt conversion](Docs/PromptConversion.md) for installation, conversion and generation checks and limitations, the earlier [multi-view validation record](Docs/AssetCreationQuality.md), and the [release notes](Docs/Releases/0.1.0-beta.6.md) for this update.
 
 ## License
 

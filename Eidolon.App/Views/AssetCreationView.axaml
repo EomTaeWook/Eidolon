@@ -9,16 +9,19 @@
       <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
     <Style Selector="Button.assetLora.active">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.assetLora.active:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.assetLora.active:pressed /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="Button.assetLora:disabled">
       <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
@@ -31,7 +34,7 @@
       <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
     </Style>
   </UserControl.Styles>
-  <Grid RowDefinitions="Auto,24,*">
+  <Grid RowDefinitions="Auto,20,*">
     <StackPanel Spacing="5">
       <Grid ColumnDefinitions="*,Auto">
         <TextBlock Text="{DynamicResource EidolonText603}" Classes="title" />
@@ -42,14 +45,14 @@
       <TextBlock Text="{DynamicResource EidolonText604}" Classes="muted" FontSize="12" />
       <TextBlock Text="{DynamicResource EidolonText655}" Classes="muted" FontSize="12" IsVisible="{Binding !IsComfyAssetCreation}" />
     </StackPanel>
-    <Grid Grid.Row="2" ColumnDefinitions="300,20,*">
+    <Grid Grid.Row="2" ColumnDefinitions="288,16,*">
       <Border Classes="card" Padding="0">
         <Grid RowDefinitions="*,Auto">
-          <ScrollViewer Margin="22,22,10,0" Padding="0,0,12,16" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Spacing="24" IsEnabled="{Binding Session.CanEditGenerationInputs}">
+          <ScrollViewer Margin="20,20,8,0" Padding="0,0,12,16" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="20" IsEnabled="{Binding Session.CanEditGenerationInputs}">
               <StackPanel Spacing="10">
                 <TextBlock Text="{DynamicResource EidolonText608}" FontWeight="SemiBold" />
-                <Button Command="{Binding PickReferenceCommand}" HorizontalAlignment="Stretch" MinHeight="92" HorizontalContentAlignment="Center">
+                <Button Command="{Binding PickReferenceCommand}" HorizontalAlignment="Stretch" MinHeight="80" HorizontalContentAlignment="Center">
                   <StackPanel Spacing="10" HorizontalAlignment="Center">
                     <Path Data="{StaticResource EidolonIconImage}" Width="24" Height="24" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.5" HorizontalAlignment="Center" />
                     <TextBlock Text="{DynamicResource EidolonText441}" HorizontalAlignment="Center" />
@@ -68,7 +71,7 @@
               <StackPanel Spacing="10">
                 <TextBlock Text="{DynamicResource EidolonText609}" FontWeight="SemiBold" />
                 <TextBlock Text="{DynamicResource EidolonText606}" FontSize="13" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" />
-                <TextBox Text="{Binding Prompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="140" MaxHeight="240" PlaceholderText="{DynamicResource EidolonText641}" />
+                <TextBox Text="{Binding Prompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="112" MaxHeight="192" PlaceholderText="{DynamicResource EidolonText641}" />
               </StackPanel>
               <StackPanel Spacing="8">
                 <Border Height="1" Background="{DynamicResource BorderBrush}" />
@@ -122,7 +125,7 @@
               <TextBlock Text="{DynamicResource EidolonText629}" Classes="muted" FontSize="12" />
             </StackPanel>
           </ScrollViewer>
-          <Border Grid.Row="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="22,18">
+          <Border Grid.Row="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="20,16">
             <StackPanel Spacing="8">
               <Button Content="{DynamicResource EidolonText617}" Command="{Binding CreateCommand}" Classes="primary" HorizontalAlignment="Stretch" MinHeight="44" />
               <Button Content="{DynamicResource EidolonText631}" Command="{Binding CancelCommand}" IsVisible="{Binding IsRunning}" HorizontalAlignment="Stretch" />
@@ -140,13 +143,13 @@
               </DataTemplate>
             </ComboBox.ItemTemplate>
           </ComboBox>
-          <Button Grid.Column="1" Content="{DynamicResource EidolonText656}" Command="{Binding DeleteCollectionCommand}" Margin="8,0,0,0" />
+          <Button Grid.Column="1" Content="{DynamicResource EidolonText656}" Command="{Binding DeleteCollectionCommand}" Classes="danger" Margin="8,0,0,0" />
           <Button Grid.Column="2" Content="{DynamicResource EidolonText410}" Command="{Binding RefreshCollectionsCommand}" Margin="8,0,0,0" />
         </Grid>
-        <Border Grid.Row="2" Classes="card" Padding="24">
+        <Border Grid.Row="2" Classes="card" Padding="20">
           <ScrollViewer HorizontalScrollBarVisibility="Disabled">
             <StackPanel Spacing="16">
-              <TextBlock Text="{DynamicResource EidolonText622}" FontSize="18" FontWeight="SemiBold" />
+              <TextBlock Text="{DynamicResource EidolonText622}" FontSize="16" FontWeight="SemiBold" />
               <TextBlock Text="{Binding Preview.Title}" TextTrimming="CharacterEllipsis" />
               <TextBlock Text="{Binding Preview.SeedCaption}" Classes="muted" FontSize="12" IsVisible="{Binding Preview.HasSeed}" />
               <TextBlock Text="{Binding Preview.SelectedFrame.Caption}" FontWeight="SemiBold" FontSize="13" IsVisible="{Binding Preview.HasFrames}" />

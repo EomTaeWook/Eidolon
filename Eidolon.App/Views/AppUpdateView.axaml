@@ -2,8 +2,10 @@
   <Border Classes="card">
     <StackPanel Spacing="16">
       <Grid ColumnDefinitions="*,Auto">
-        <TextBlock Text="{DynamicResource EidolonText666}" FontSize="18" FontWeight="SemiBold" />
-        <TextBlock Grid.Column="1" Text="{Binding CurrentVersionCaption}" Classes="muted" VerticalAlignment="Center" Margin="16,0,0,0" />
+        <TextBlock Text="{DynamicResource EidolonText666}" FontSize="16" FontWeight="SemiBold" />
+        <Border Grid.Column="1" Background="{DynamicResource WindowBrush}" CornerRadius="16" Padding="10,5" VerticalAlignment="Center" Margin="16,0,0,0">
+          <TextBlock Text="{Binding CurrentVersionCaption}" Classes="muted" FontSize="12" />
+        </Border>
       </Grid>
       <TextBlock Text="{DynamicResource EidolonText676}" Classes="muted" FontSize="12" />
       <StackPanel Spacing="4" MinHeight="42">

@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.GenerationResultView" x:DataType="vm:GenerationViewModel" IsVisible="{Binding HasGeneratedResult}">
+  <UserControl.Styles>
+    <Style Selector="Button">
+      <Setter Property="Width" Value="36" />
+      <Setter Property="Height" Value="36" />
+      <Setter Property="Padding" Value="8" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+  </UserControl.Styles>
+  <Border Classes="card" Padding="0" ClipToBounds="True">
+    <Grid RowDefinitions="Auto,*">
+      <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="18,12">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Spacing="3" Margin="0,0,12,0" VerticalAlignment="Center">
+            <TextBlock Text="{DynamicResource EidolonText291}" FontSize="14" FontWeight="SemiBold" />
+            <WrapPanel>
+              <TextBlock Text="{Binding GeneratedResult.DimensionsCaption, FallbackValue=''}" Classes="muted" FontSize="12" Margin="0,0,12,0" />
+              <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding GeneratedResult.HasSeed, FallbackValue=False}">
+                <TextBlock Text="{DynamicResource EidolonText369}" Classes="muted" FontSize="12" />
+                <SelectableTextBlock Text="{Binding GeneratedResult.SeedCaption}" Foreground="{DynamicResource MutedBrush}" FontSize="12" />
+              </StackPanel>
+            </WrapPanel>
+          </StackPanel>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+            <Button Command="{Binding ExportGeneratedResultCommand}" ToolTip.Tip="{DynamicResource EidolonText122}" AutomationProperties.Name="{DynamicResource EidolonText122}">
+              <Path Data="{StaticResource EidolonIconSave}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.6" />
+            </Button>
+            <Button Command="{Binding ReuseGeneratedPromptCommand}" ToolTip.Tip="{DynamicResource EidolonText121}" AutomationProperties.Name="{DynamicResource EidolonText121}">
+              <Path Data="{StaticResource EidolonIconPlay}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.6" />
+            </Button>
+            <Button Command="{Binding UseGeneratedResultAsReferenceCommand}" ToolTip.Tip="{DynamicResource EidolonText455}" AutomationProperties.Name="{DynamicResource EidolonText455}">
+              <Path Data="{StaticResource EidolonIconEdit}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.6" />
+            </Button>
+            <Button Command="{Binding Navigation.ShowResultsCommand}" ToolTip.Tip="{DynamicResource EidolonText291}" AutomationProperties.Name="{DynamicResource EidolonText291}">
+              <Path Data="{StaticResource EidolonIconResults}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.6" />
+            </Button>
+          </StackPanel>
+        </Grid>
+      </Border>
+      <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" Padding="16" ClipToBounds="True">
+        <Viewbox Stretch="Uniform" MaxWidth="1024" MaxHeight="1024" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="2" ClipToBounds="True">
+            <Grid Width="{Binding GeneratedResultImage.Size.Width, FallbackValue=1}" Height="{Binding GeneratedResultImage.Size.Height, FallbackValue=1}">
+              <views:TransparencyBackground />
+              <Image Source="{Binding GeneratedResultImage}" Stretch="Uniform" />
+            </Grid>
+          </Border>
+        </Viewbox>
+      </Border>
+    </Grid>
+  </Border>
+</UserControl>

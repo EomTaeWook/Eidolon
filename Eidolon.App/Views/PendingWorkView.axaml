@@ -1,6 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.PendingWorkView" x:DataType="vm:StudioSession" IsVisible="{Binding HasPendingRequests}">
-  <DropDownButton x:Name="QueueButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Height="48" FontSize="13" CornerRadius="10" Padding="16,0" Background="{DynamicResource ButtonBrush}" Foreground="{DynamicResource TextBrush}" BorderBrush="{DynamicResource BorderBrush}" AutomationProperties.Name="{Binding QueueSummary}">
-    <TextBlock Text="{Binding QueueSummary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+  <DropDownButton x:Name="QueueButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Height="44" FontSize="13" CornerRadius="8" Padding="14,0" Background="{DynamicResource WindowBrush}" Foreground="{DynamicResource TextBrush}" BorderBrush="{DynamicResource BorderBrush}" AutomationProperties.Name="{Binding QueueSummary}">
+    <Grid ColumnDefinitions="16,10,*">
+      <Path Data="{StaticResource EidolonIconResults}" Width="16" Height="16" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" VerticalAlignment="Center" />
+      <TextBlock Grid.Column="2" Text="{Binding QueueSummary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+    </Grid>
     <DropDownButton.Flyout>
       <Flyout Placement="TopEdgeAlignedLeft" ShowMode="Standard" Opening="OnQueueFlyoutOpening">
         <Grid RowDefinitions="Auto,*,Auto" Width="640" MaxHeight="420">

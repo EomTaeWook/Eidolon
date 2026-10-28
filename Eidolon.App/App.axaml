@@ -3,40 +3,40 @@
     <ResourceDictionary>
       <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
-          <SolidColorBrush x:Key="WindowBrush" Color="#F4F5F8" />
+          <SolidColorBrush x:Key="WindowBrush" Color="#F2F5F9" />
           <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
           <SolidColorBrush x:Key="HeaderBrush" Color="#FFFFFF" />
-          <SolidColorBrush x:Key="FooterBrush" Color="#FFFFFF" />
-          <SolidColorBrush x:Key="BorderBrush" Color="#C7CFDD" />
-          <SolidColorBrush x:Key="TextBrush" Color="#1B1E2B" />
-          <SolidColorBrush x:Key="MutedBrush" Color="#647084" />
-          <SolidColorBrush x:Key="AccentBrush" Color="#4F5DE4" />
-          <SolidColorBrush x:Key="AccentHoverBrush" Color="#414DCC" />
+          <SolidColorBrush x:Key="FooterBrush" Color="#F8FAFC" />
+          <SolidColorBrush x:Key="BorderBrush" Color="#CBD5E3" />
+          <SolidColorBrush x:Key="TextBrush" Color="#182235" />
+          <SolidColorBrush x:Key="MutedBrush" Color="#56657A" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#3154D5" />
+          <SolidColorBrush x:Key="AccentHoverBrush" Color="#2849C2" />
           <SolidColorBrush x:Key="AccentTextBrush" Color="#FFFFFF" />
-          <SolidColorBrush x:Key="BadgeBrush" Color="#E4E7FF" />
-          <SolidColorBrush x:Key="ButtonBrush" Color="#F3F4FF" />
-          <SolidColorBrush x:Key="DisabledBrush" Color="#EFF1F5" />
-          <SolidColorBrush x:Key="DisabledTextBrush" Color="#8B93A1" />
-          <SolidColorBrush x:Key="ErrorSurfaceBrush" Color="#FDECEE" />
-          <SolidColorBrush x:Key="ErrorTextBrush" Color="#A72F37" />
+          <SolidColorBrush x:Key="BadgeBrush" Color="#E7EDFF" />
+          <SolidColorBrush x:Key="ButtonBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="DisabledBrush" Color="#E2E8F0" />
+          <SolidColorBrush x:Key="DisabledTextBrush" Color="#626F82" />
+          <SolidColorBrush x:Key="ErrorSurfaceBrush" Color="#FDEDF0" />
+          <SolidColorBrush x:Key="ErrorTextBrush" Color="#B63849" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
           <SolidColorBrush x:Key="WindowBrush" Color="#000000" />
-          <SolidColorBrush x:Key="SurfaceBrush" Color="#14161F" />
-          <SolidColorBrush x:Key="HeaderBrush" Color="#14161F" />
-          <SolidColorBrush x:Key="FooterBrush" Color="#14161F" />
-          <SolidColorBrush x:Key="BorderBrush" Color="#454D61" />
-          <SolidColorBrush x:Key="TextBrush" Color="#F1F2F8" />
-          <SolidColorBrush x:Key="MutedBrush" Color="#969DB2" />
-          <SolidColorBrush x:Key="AccentBrush" Color="#9BA5FF" />
-          <SolidColorBrush x:Key="AccentHoverBrush" Color="#B7BEFF" />
-          <SolidColorBrush x:Key="AccentTextBrush" Color="#151A3B" />
-          <SolidColorBrush x:Key="BadgeBrush" Color="#343D65" />
-          <SolidColorBrush x:Key="ButtonBrush" Color="#252D49" />
-          <SolidColorBrush x:Key="DisabledBrush" Color="#1C1F29" />
-          <SolidColorBrush x:Key="DisabledTextBrush" Color="#8992A8" />
-          <SolidColorBrush x:Key="ErrorSurfaceBrush" Color="#38252A" />
-          <SolidColorBrush x:Key="ErrorTextBrush" Color="#FFB8B8" />
+          <SolidColorBrush x:Key="SurfaceBrush" Color="#151A23" />
+          <SolidColorBrush x:Key="HeaderBrush" Color="#111620" />
+          <SolidColorBrush x:Key="FooterBrush" Color="#111620" />
+          <SolidColorBrush x:Key="BorderBrush" Color="#35445A" />
+          <SolidColorBrush x:Key="TextBrush" Color="#E7EEF8" />
+          <SolidColorBrush x:Key="MutedBrush" Color="#9AA9BD" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#8DA9FF" />
+          <SolidColorBrush x:Key="AccentHoverBrush" Color="#A6BCFF" />
+          <SolidColorBrush x:Key="AccentTextBrush" Color="#101C3F" />
+          <SolidColorBrush x:Key="BadgeBrush" Color="#1D2D4C" />
+          <SolidColorBrush x:Key="ButtonBrush" Color="#151A23" />
+          <SolidColorBrush x:Key="DisabledBrush" Color="#202733" />
+          <SolidColorBrush x:Key="DisabledTextBrush" Color="#8190A5" />
+          <SolidColorBrush x:Key="ErrorSurfaceBrush" Color="#33202B" />
+          <SolidColorBrush x:Key="ErrorTextBrush" Color="#F1A8B9" />
         </ResourceDictionary>
       </ResourceDictionary.ThemeDictionaries>
       <StreamGeometry x:Key="EidolonIconImage">M2,2 H18 V18 H2 Z M2,13 L7,8 L11,12 L14,9 L18,13 M13,6 A1,1 0 1 0 15,6 A1,1 0 1 0 13,6</StreamGeometry>
@@ -52,10 +52,16 @@
       <StreamGeometry x:Key="EidolonIconSave">M3,2 H15 L18,5 V18 H3 Z M6,2 V8 H14 V2 M6,18 V12 H15 V18</StreamGeometry>
       <StreamGeometry x:Key="EidolonIconDownload">M10,1 V13 M5,8 L10,13 L15,8 M3,13 V18 H17 V13</StreamGeometry>
       <StreamGeometry x:Key="EidolonIconFolder">M2,5 H8 L10,7 H18 V17 H2 Z</StreamGeometry>
+      <StreamGeometry x:Key="EidolonIconTag">M2,2 H9 L18,11 L11,18 L2,9 Z M5,6 A1,1 0 1 0 7,6 A1,1 0 1 0 5,6</StreamGeometry>
     </ResourceDictionary>
   </Application.Resources>
   <Application.Styles>
-    <FluentTheme />
+    <FluentTheme>
+      <FluentTheme.Palettes>
+        <ColorPaletteResources x:Key="Light" Accent="#3154D5" />
+        <ColorPaletteResources x:Key="Dark" Accent="#8DA9FF" />
+      </FluentTheme.Palettes>
+    </FluentTheme>
     <Style Selector="Window">
       <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI, Malgun Gothic" />
       <Setter Property="FontSize" Value="14" />
@@ -63,7 +69,7 @@
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
     <Style Selector="TextBlock.title">
-      <Setter Property="FontSize" Value="28" />
+      <Setter Property="FontSize" Value="24" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
@@ -73,36 +79,39 @@
     </Style>
     <Style Selector="TextBlock.label">
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Margin" Value="0,6,0,4" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+      <Setter Property="Margin" Value="0,2,0,4" />
     </Style>
     <Style Selector="Border.card">
       <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="12" />
-      <Setter Property="Padding" Value="24" />
+      <Setter Property="Padding" Value="20" />
     </Style>
     <Style Selector="Button">
       <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Padding" Value="14,10" />
+      <Setter Property="Padding" Value="14,9" />
+      <Setter Property="MinHeight" Value="36" />
       <Setter Property="FontSize" Value="14" />
-      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Button:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
     </Style>
     <Style Selector="Button:pressed /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
     </Style>
     <Style Selector="Button:focus-visible /template/ ContentPresenter">
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
@@ -136,6 +145,7 @@
       <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="MinHeight" Value="40" />
       <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
     <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
@@ -159,6 +169,31 @@
       <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
     </Style>
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="{DynamicResource ErrorSurfaceBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ErrorTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ErrorSurfaceBrush}" />
+    </Style>
+    <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ErrorSurfaceBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ErrorTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ErrorTextBrush}" />
+    </Style>
+    <Style Selector="Button.danger:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ErrorSurfaceBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ErrorTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ErrorTextBrush}" />
+    </Style>
+    <Style Selector="Button.danger:disabled">
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    </Style>
+    <Style Selector="Button.danger:disabled /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    </Style>
     <Style Selector="Button.navigation">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
@@ -173,11 +208,11 @@
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
     <Style Selector="Button.navigation:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
     <Style Selector="Button.navigation:pressed /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
     <Style Selector="Button.navigation.active">
@@ -230,11 +265,11 @@
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
     <Style Selector="ToggleButton.disclosure:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
     <Style Selector="ToggleButton.disclosure:pressed /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
     <Style Selector="ToggleButton.disclosure:checked Path">
@@ -249,6 +284,7 @@
       <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="MinHeight" Value="40" />
       <Setter Property="Padding" Value="12,10" />
     </Style>
     <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
@@ -311,8 +347,8 @@
     </Style>
     <Style Selector="DropDownButton">
       <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="8" />
       <Setter Property="Padding" Value="12,8" />
@@ -321,14 +357,14 @@
       <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="DropDownButton:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
     </Style>
     <Style Selector="DropDownButton:pressed /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
     </Style>
     <Style Selector="DropDownButton:focus-visible /template/ ContentPresenter">
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
@@ -370,41 +406,41 @@
       <Setter Property="Padding" Value="10,6" />
     </Style>
     <Style Selector="TabItem">
-      <Setter Property="Padding" Value="16,10" />
+      <Setter Property="Padding" Value="14,10" />
       <Setter Property="Margin" Value="0,0,8,0" />
       <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
       <Setter Property="FontSize" Value="14" />
       <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
     <Style Selector="TabItem:selected">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="TabItem:selected /template/ Border#PART_LayoutRoot">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="TabItem:pointerover /template/ Border#PART_LayoutRoot">
-      <Setter Property="Background" Value="{DynamicResource ButtonBrush}" />
+      <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
       <Setter Property="TextElement.Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
     <Style Selector="TabItem:selected:pointerover /template/ Border#PART_LayoutRoot">
-      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
-      <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="TabItem:pressed /template/ Border#PART_LayoutRoot">
       <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
       <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="TabItem:selected:pressed /template/ Border#PART_LayoutRoot">
-      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
-      <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" />
+      <Setter Property="Background" Value="{DynamicResource BadgeBrush}" />
+      <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="TabItem:disabled">
       <Setter Property="Background" Value="{DynamicResource DisabledBrush}" />

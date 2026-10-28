@@ -21,14 +21,11 @@ namespace Eidolon.App.ViewModels
         private readonly ISeedProvider _seeds;
         private readonly PromptConverter _promptConverter;
         private readonly RuntimeInstaller _runtimeInstaller;
+        private Bitmap _generatedResultImage;
         private DesktopSettings _promptConversionSettings;
         private ModelAsset _promptConversionModel;
         private string _prompt = string.Empty;
         private string _editingPrompt = string.Empty;
-        private string _convertedPrompt = string.Empty;
-        private string _editingConvertedPrompt = string.Empty;
-        private bool _hasConvertedPrompt;
-        private bool _hasEditingConvertedPrompt;
         private bool _isConvertingPrompt;
         private bool _isConvertingEditingPrompt;
         private int _promptConversionRequest;
@@ -50,6 +47,26 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand ClearEditingMaskCommand { get; private set; }
         public AsyncCommand OpenEditingMaskCommand { get; private set; }
         public AsyncCommand CloseEditingMaskCommand { get; private set; }
+        public AsyncCommand ExportGeneratedResultCommand { get; private set; }
+        public AsyncCommand ReuseGeneratedPromptCommand { get; private set; }
+        public AsyncCommand UseGeneratedResultAsReferenceCommand { get; private set; }
+        public GenerationItem GeneratedResult { get; private set; }
+
+        public Bitmap GeneratedResultImage
+        {
+            get
+            {
+                return _generatedResultImage;
+            }
+        }
+
+        public bool HasGeneratedResult
+        {
+            get
+            {
+                return _generatedResultImage != null;
+            }
+        }
 
         public bool IsPartialEditing
         {
@@ -419,7 +436,11 @@ namespace Eidolon.App.ViewModels
                 {
                     return true;
                 }
-                return long.TryParse(GenerationSeed, NumberStyles.None, CultureInfo.InvariantCulture, out long seed) == true && seed >= 0;
+                if (long.TryParse(GenerationSeed, NumberStyles.None, CultureInfo.InvariantCulture, out long seed) == false)
+                {
+                    return false;
+                }
+                return seed >= 0;
             }
         }
 
@@ -435,7 +456,11 @@ namespace Eidolon.App.ViewModels
         {
             get
             {
-                return IsComfyGeneration == true && string.IsNullOrEmpty(_lastQueuedGenerationSeed) == false;
+                if (IsComfyGeneration == false)
+                {
+                    return false;
+                }
+                return string.IsNullOrEmpty(_lastQueuedGenerationSeed) == false;
             }
         }
 
@@ -493,18 +518,6 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        public bool HasConvertedPrompt
-        {
-            get
-            {
-                if (Navigation.IsEditingView == true)
-                {
-                    return _hasEditingConvertedPrompt;
-                }
-                return _hasConvertedPrompt;
-            }
-        }
-
         public bool IsConvertingPrompt
         {
             get
@@ -517,47 +530,8 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        public string ConvertedPrompt
-        {
-            get
-            {
-                if (Navigation.IsEditingView == true)
-                {
-                    return _editingConvertedPrompt;
-                }
-                return _convertedPrompt;
-            }
-            set
-            {
-                if (value == null)
-                {
-                    value = string.Empty;
-                }
-                if (Navigation.IsEditingView == true)
-                {
-                    if (_editingConvertedPrompt == value)
-                    {
-                        return;
-                    }
-                    _editingConvertedPrompt = value;
-                }
-                else
-                {
-                    if (_convertedPrompt == value)
-                    {
-                        return;
-                    }
-                    _convertedPrompt = value;
-                }
-                Raise(nameof(ConvertedPrompt));
-                RefreshCommands();
-            }
-        }
-
         private void RefreshPromptConversion()
         {
-            Raise(nameof(ConvertedPrompt));
-            Raise(nameof(HasConvertedPrompt));
             Raise(nameof(IsConvertingPrompt));
             RefreshCommands();
         }
@@ -567,14 +541,10 @@ namespace Eidolon.App.ViewModels
             if (editing == true)
             {
                 _editingPromptConversionRequest++;
-                _editingConvertedPrompt = string.Empty;
-                _hasEditingConvertedPrompt = false;
             }
             else
             {
                 _promptConversionRequest++;
-                _convertedPrompt = string.Empty;
-                _hasConvertedPrompt = false;
             }
             RefreshPromptConversion();
         }
@@ -660,13 +630,11 @@ namespace Eidolon.App.ViewModels
                 }
                 if (editing == true)
                 {
-                    _editingConvertedPrompt = convertedPrompt;
-                    _hasEditingConvertedPrompt = true;
+                    EditingPrompt = convertedPrompt;
                 }
                 else
                 {
-                    _convertedPrompt = convertedPrompt;
-                    _hasConvertedPrompt = true;
+                    Prompt = convertedPrompt;
                 }
                 RefreshPromptConversion();
                 Session.Status = _strings.GetString("EidolonText004");
@@ -688,37 +656,37 @@ namespace Eidolon.App.ViewModels
         private bool CanGeneratePrompt(bool editing)
         {
             string prompt = Prompt;
-            string convertedPrompt = _convertedPrompt;
-            bool hasConvertedPrompt = _hasConvertedPrompt;
             if (editing == true)
             {
-                prompt = EditingPrompt;
-                convertedPrompt = _editingConvertedPrompt;
-                hasConvertedPrompt = _hasEditingConvertedPrompt;
-            }
-            if (string.IsNullOrWhiteSpace(prompt) == true)
-            {
-                return false;
-            }
-            if (ShowPromptConversion == true)
-            {
-                if (hasConvertedPrompt == false)
+                if (_isConvertingEditingPrompt == true)
                 {
                     return false;
                 }
-                return string.IsNullOrWhiteSpace(convertedPrompt) == false;
+                prompt = EditingPrompt;
             }
-            return true;
+            else
+            {
+                if (_isConvertingPrompt == true)
+                {
+                    return false;
+                }
+            }
+            return string.IsNullOrWhiteSpace(prompt) == false;
         }
 
         private async Task PickReferenceImageAsync()
         {
             GenerationReferenceDraft reference = ActiveReference;
             string path = await _dialogs.PickReferenceImageAsync();
-            if (string.IsNullOrWhiteSpace(path) == false && Session.IsClosing == false)
+            if (string.IsNullOrWhiteSpace(path) == true)
             {
-                await LoadReferenceImageAsync(reference, path);
+                return;
             }
+            if (Session.IsClosing == true)
+            {
+                return;
+            }
+            await LoadReferenceImageAsync(reference, path);
         }
 
         private async Task<bool> LoadReferenceImageAsync(GenerationReferenceDraft reference, string path, string imageName = null)
@@ -729,7 +697,11 @@ namespace Eidolon.App.ViewModels
             {
                 token.ThrowIfCancellationRequested();
                 using FileStream input = File.OpenRead(path);
-                if (input.Length == 0 || input.Length > GenerationReferenceInput.MaximumImageBytes)
+                if (input.Length == 0)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (input.Length > GenerationReferenceInput.MaximumImageBytes)
                 {
                     throw new StudioException(StudioMessageCode.InvalidReferenceImage);
                 }
@@ -737,8 +709,19 @@ namespace Eidolon.App.ViewModels
                 input.ReadExactly(data);
                 using SKMemoryStream encoded = new SKMemoryStream(data);
                 using SKCodec codec = SKCodec.Create(encoded);
-                if (codec == null || codec.Info.Width < 1 || codec.Info.Height < 1
-                    || (long)codec.Info.Width * codec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
+                if (codec == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (codec.Info.Width < 1)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (codec.Info.Height < 1)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if ((long)codec.Info.Width * codec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
                 {
                     throw new StudioException(StudioMessageCode.InvalidReferenceImage);
                 }
@@ -755,7 +738,12 @@ namespace Eidolon.App.ViewModels
                 }
                 return (data, thumbnail);
             }, token);
-            if (Session.IsClosing == true || reference.IsCurrentLoad(request) == false)
+            if (Session.IsClosing == true)
+            {
+                image.Thumbnail.Dispose();
+                return false;
+            }
+            if (reference.IsCurrentLoad(request) == false)
             {
                 image.Thumbnail.Dispose();
                 return false;
@@ -860,18 +848,9 @@ namespace Eidolon.App.ViewModels
             {
                 throw new InvalidOperationException(_strings.GetString("EidolonText001"));
             }
-            string convertedPrompt = string.Empty;
-            if (ShowPromptConversion == true)
+            if (CanGeneratePrompt(editing) == false)
             {
-                if (CanGeneratePrompt(editing) == false)
-                {
-                    throw new StudioException(StudioMessageCode.PromptRequired);
-                }
-                convertedPrompt = _convertedPrompt;
-                if (editing == true)
-                {
-                    convertedPrompt = _editingConvertedPrompt;
-                }
+                throw new StudioException(StudioMessageCode.PromptRequired);
             }
             long seed = 0;
             if (IsComfyGeneration == false)
@@ -920,7 +899,7 @@ namespace Eidolon.App.ViewModels
             {
                 loras = Assets.Loras.Where(lora => lora.IsSelected == true).Select(lora => lora.Asset.Copy()).ToList();
             }
-            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey, false, convertedPrompt);
+            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey, false);
             if (editing == true)
             {
                 _editingMaskOpen = false;
@@ -931,10 +910,10 @@ namespace Eidolon.App.ViewModels
 
         internal void EnqueueGeneration(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, string titleKey)
         {
-            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey, true, string.Empty);
+            EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey, true);
         }
 
-        private void EnqueueGeneration(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, string titleKey, bool allowAutomaticPromptConversion, string convertedPrompt)
+        private void EnqueueGeneration(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, string titleKey, bool allowAutomaticPromptConversion)
         {
             if (Session.CanQueue == false)
             {
@@ -948,7 +927,7 @@ namespace Eidolon.App.ViewModels
                     usePromptConversion = _runtimeInstaller.IsPromptConverterInstalled(settings.InstallDirectory);
                 }
             }
-            _work.Enqueue(_strings.GetString(titleKey) + " · " + prompt, cancellationToken => GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, usePromptConversion, convertedPrompt, cancellationToken));
+            _work.Enqueue(_strings.GetString(titleKey) + " · " + prompt, cancellationToken => GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, usePromptConversion, cancellationToken));
             _lastQueuedGenerationSeed = string.Empty;
             if (settings.GenerationBackend == GenerationBackend.ComfyUI)
             {
@@ -958,8 +937,9 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(QueuedGenerationSeedCaption));
         }
 
-        private async Task GenerateAsync(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, bool usePromptConversion, string convertedPrompt, CancellationToken cancellationToken)
+        private async Task GenerateAsync(DesktopSettings settings, string prompt, ModelAsset model, List<ModelAsset> loras, bool removeBackground, long seed, GenerationReferenceInput reference, bool usePromptConversion, CancellationToken cancellationToken)
         {
+            string convertedPrompt = string.Empty;
             if (usePromptConversion == true)
             {
                 string modelGuidance = Assets.GetModelPromptGuidance(model);
@@ -970,17 +950,47 @@ namespace Eidolon.App.ViewModels
                 }
             }
             JobRecord job = await _studio.GenerateAsync(settings, prompt, model, loras, removeBackground, seed, reference, _work.Progress, cancellationToken, convertedPrompt);
-            if (Navigation.IsResultsView == false)
+            string path = _jobs.ImagePath(job, job.ImageFiles.Last());
+            GenerationImage image = await Task.Run(() => _jobs.FindGenerationImage(job.OutputDirectory, path, cancellationToken), cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (Session.IsClosing == true)
             {
-                string path = _jobs.ImagePath(job, job.ImageFiles.Last());
-                GenerationImage image = await Task.Run(() => _jobs.FindGenerationImage(job.OutputDirectory, path, cancellationToken), cancellationToken);
-                if (image != null)
+                return;
+            }
+            if (image != null)
+            {
+                ShowGeneratedResult(image);
+                if (Navigation.IsResultsView == false)
                 {
                     ImageGenerated?.Invoke(image);
                 }
             }
             Session.Status = _strings.GetString("EidolonText004");
             Session.Percent = 100;
+        }
+
+        private void ShowGeneratedResult(GenerationImage image)
+        {
+            _generatedResultImage?.Dispose();
+            _generatedResultImage = null;
+            GeneratedResult?.Dispose();
+            GeneratedResult = null;
+            try
+            {
+                using FileStream stream = File.OpenRead(image.FilePath);
+                GeneratedResult = new GenerationItem(image, _strings);
+                _generatedResultImage = new Bitmap(stream);
+            }
+            catch (Exception error)
+            {
+                GeneratedResult?.Dispose();
+                GeneratedResult = null;
+                Session.Error = _strings.GetString("EidolonText244") + _strings.GetExceptionMessage(error);
+            }
+            Raise(nameof(GeneratedResult));
+            Raise(nameof(GeneratedResultImage));
+            Raise(nameof(HasGeneratedResult));
+            RefreshCommands();
         }
 
         internal async Task ReusePromptAsync(GenerationMetadata job)
@@ -1154,6 +1164,34 @@ namespace Eidolon.App.ViewModels
                 _promptConversionModel = Assets.SelectedModel.Asset.Copy();
             }
             Assets.PropertyChanged += OnAssetsChanged;
+            ExportGeneratedResultCommand = Command(() => _dialogs.ExportImageAsync(GeneratedResult.Image.FilePath), () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                return HasGeneratedResult;
+            });
+            ReuseGeneratedPromptCommand = Command(() => ReusePromptAsync(GeneratedResult.Metadata), () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                if (HasGeneratedResult == false)
+                {
+                    return false;
+                }
+                return GeneratedResult.HasMetadata;
+            });
+            UseGeneratedResultAsReferenceCommand = Command(() => UseResultAsReferenceAsync(GeneratedResult), () =>
+            {
+                if (Session.CanEditGenerationInputs == false)
+                {
+                    return false;
+                }
+                return HasGeneratedResult;
+            });
             ConvertPromptCommand = Command(ConvertPromptAsync, () =>
             {
                 if (Session.CanQueue == false)
@@ -1329,6 +1367,7 @@ namespace Eidolon.App.ViewModels
 
         public override void Localize()
         {
+            GeneratedResult?.Localize();
             Raise(nameof(ReferenceImageHint));
             Raise(nameof(GenerationInputCaption));
             RefreshReferenceInputs();
@@ -1340,6 +1379,10 @@ namespace Eidolon.App.ViewModels
             _promptConversionRequest++;
             _editingPromptConversionRequest++;
             Assets.PropertyChanged -= OnAssetsChanged;
+            _generatedResultImage?.Dispose();
+            _generatedResultImage = null;
+            GeneratedResult?.Dispose();
+            GeneratedResult = null;
             _generationReference.Dispose();
             _editingReference.Dispose();
             base.Dispose();

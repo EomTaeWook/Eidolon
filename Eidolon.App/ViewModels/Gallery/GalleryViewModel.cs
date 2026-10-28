@@ -163,7 +163,15 @@ namespace Eidolon.App.ViewModels
         {
             get
             {
-                return HasGenerations == false && IsGalleryLoading == false && HasGalleryError == false;
+                if (HasGenerations == true)
+                {
+                    return false;
+                }
+                if (IsGalleryLoading == true)
+                {
+                    return false;
+                }
+                return HasGalleryError == false;
             }
         }
 
@@ -295,7 +303,16 @@ namespace Eidolon.App.ViewModels
             }
             set
             {
-                if (Set(ref _selectedGeneration, value) == true && (Navigation.IsGenerationWorkspace == true || Navigation.IsResultsView == true))
+                if (Set(ref _selectedGeneration, value) == false)
+                {
+                    return;
+                }
+                if (Navigation.IsGenerationWorkspace == true)
+                {
+                    SelectedResult = value;
+                    return;
+                }
+                if (Navigation.IsResultsView == true)
                 {
                     SelectedResult = value;
                 }
@@ -407,9 +424,12 @@ namespace Eidolon.App.ViewModels
 
         private Task OpenImageFolderAsync()
         {
-            if (HasPreview == true && Navigation.IsResultsView == false)
+            if (HasPreview == true)
             {
-                return _dialogs.OpenFolderAsync(Path.GetDirectoryName(_previewPath));
+                if (Navigation.IsResultsView == false)
+                {
+                    return _dialogs.OpenFolderAsync(Path.GetDirectoryName(_previewPath));
+                }
             }
             if (string.IsNullOrWhiteSpace(Session.Settings.GenerationDirectory) == false)
             {
@@ -571,17 +591,6 @@ namespace Eidolon.App.ViewModels
                         if (remembered != null)
                         {
                             preview = _jobs.FindGenerationImage(Path.GetDirectoryName(remembered.FilePath), remembered.FilePath, cancellationToken);
-                        }
-                    }
-                    if (preview == null)
-                    {
-                        if (string.IsNullOrEmpty(page.LatestImagePath) == false)
-                        {
-                            preview = page.Images.FirstOrDefault(image => image.FilePath == page.LatestImagePath);
-                            if (preview == null)
-                            {
-                                preview = _jobs.FindGenerationImage(directory, page.LatestImagePath, cancellationToken);
-                            }
                         }
                     }
                     return (page, preview);
@@ -792,31 +801,117 @@ namespace Eidolon.App.ViewModels
             _creation = creation;
             _jobs = jobs;
             GallerySelection.CollectionChanged += OnGallerySelectionChanged;
-            UseResultAsReferenceCommand = Command(() => Generation.UseResultAsReferenceAsync(SelectedResult),
-                () => Session.CanEditGenerationInputs == true && HasSelectedResult == true && HasPreview == true);
-            UseResultForAssetCreationCommand = Command(UseResultForAssetCreationAsync,
-                () => Session.CanEditGenerationInputs == true && HasSelectedResult == true && HasPreview == true);
-            SelectGenerationCommand = new AsyncCommand(SelectGenerationAsync,
-                () => Session.IsClosing == false && IsGalleryLoading == false, OnCommandError);
+            UseResultAsReferenceCommand = Command(() => Generation.UseResultAsReferenceAsync(SelectedResult), () =>
+            {
+                if (Session.CanEditGenerationInputs == false)
+                {
+                    return false;
+                }
+                if (HasSelectedResult == false)
+                {
+                    return false;
+                }
+                return HasPreview;
+            });
+            UseResultForAssetCreationCommand = Command(UseResultForAssetCreationAsync, () =>
+            {
+                if (Session.CanEditGenerationInputs == false)
+                {
+                    return false;
+                }
+                if (HasSelectedResult == false)
+                {
+                    return false;
+                }
+                return HasPreview;
+            });
+            SelectGenerationCommand = new AsyncCommand(SelectGenerationAsync, () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                return IsGalleryLoading == false;
+            }, OnCommandError);
             _commands.Add(SelectGenerationCommand);
-            RefreshGalleryCommand = Command(() => RefreshGalleryAsync(),
-                () => Session.IsClosing == false && IsGalleryLoading == false);
-            PreviousGalleryPageCommand = Command(() => LoadGalleryPageAsync(_galleryPageNumber - 1),
-                () => Session.IsClosing == false && IsGalleryLoading == false && _galleryPageNumber > 1);
-            NextGalleryPageCommand = Command(() => LoadGalleryPageAsync(_galleryPageNumber + 1),
-                () => Session.IsClosing == false && IsGalleryLoading == false && _galleryPageNumber < _galleryPageCount);
+            RefreshGalleryCommand = Command(() => RefreshGalleryAsync(), () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                return IsGalleryLoading == false;
+            });
+            PreviousGalleryPageCommand = Command(() => LoadGalleryPageAsync(_galleryPageNumber - 1), () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                if (IsGalleryLoading == true)
+                {
+                    return false;
+                }
+                return _galleryPageNumber > 1;
+            });
+            NextGalleryPageCommand = Command(() => LoadGalleryPageAsync(_galleryPageNumber + 1), () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                if (IsGalleryLoading == true)
+                {
+                    return false;
+                }
+                return _galleryPageNumber < _galleryPageCount;
+            });
             ClearGallerySelectionCommand = Command(() =>
             {
                 GallerySelection.Clear();
                 return Task.CompletedTask;
-            }, () => Session.IsClosing == false && HasGallerySelection == true);
-            ExportCommand = Command(() => _dialogs.ExportImageAsync(_previewPath), () => Session.IsClosing == false && HasPreview == true);
+            }, () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                return HasGallerySelection;
+            });
+            ExportCommand = Command(() => _dialogs.ExportImageAsync(_previewPath), () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                return HasPreview;
+            });
             DeleteGenerationCommand = Command(() => DeleteGenerationsAsync(false), () => CanDeleteGallerySelection);
             DeleteAllGenerationsCommand = Command(() => DeleteGenerationsAsync(true), () => CanDeleteAllGenerations);
-            ReusePromptCommand = Command(() => Generation.ReusePromptAsync(SelectedResult.Metadata),
-                () => Session.IsClosing == false && SelectedResult != null && SelectedResult.HasMetadata == true);
-            UseResultForTrainingCommand = Command(() => Training.UseResultForTrainingAsync(SelectedResult, _previewPath),
-                () => Session.CanQueue == true && HasPreview == true && SelectedResult != null);
+            ReusePromptCommand = Command(() => Generation.ReusePromptAsync(SelectedResult.Metadata), () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                if (SelectedResult == null)
+                {
+                    return false;
+                }
+                return SelectedResult.HasMetadata;
+            });
+            UseResultForTrainingCommand = Command(() => Training.UseResultForTrainingAsync(SelectedResult, _previewPath), () =>
+            {
+                if (Session.CanQueue == false)
+                {
+                    return false;
+                }
+                if (HasPreview == false)
+                {
+                    return false;
+                }
+                return SelectedResult != null;
+            });
             OpenImageFolderCommand = Command(OpenImageFolderAsync, () => Session.IsClosing == false);
         }
 
@@ -842,8 +937,16 @@ namespace Eidolon.App.ViewModels
 
         protected override void OnNavigationPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            if (args.PropertyName == nameof(Navigation.SelectedTab)
-                && (Navigation.IsGenerationWorkspace == true || Navigation.IsResultsView == true))
+            if (args.PropertyName != nameof(Navigation.SelectedTab))
+            {
+                return;
+            }
+            if (Navigation.IsGenerationWorkspace == true)
+            {
+                SelectedResult = SelectedGeneration;
+                return;
+            }
+            if (Navigation.IsResultsView == true)
             {
                 SelectedResult = SelectedGeneration;
             }
@@ -855,9 +958,12 @@ namespace Eidolon.App.ViewModels
             {
                 item.Localize();
             }
-            if (SelectedGeneration != null && Generations.Contains(SelectedGeneration) == false)
+            if (SelectedGeneration != null)
             {
-                SelectedGeneration.Localize();
+                if (Generations.Contains(SelectedGeneration) == false)
+                {
+                    SelectedGeneration.Localize();
+                }
             }
             Raise(nameof(GalleryPageCaption));
             Raise(nameof(GalleryCountCaption));
