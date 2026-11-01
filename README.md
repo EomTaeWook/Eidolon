@@ -8,11 +8,26 @@ ComfyUI와 설치된 Codex 중 생성 방식을 선택하고, 공통 생성 지�
 
 ## 다운로드
 
-[Eidolon v0.1.0-beta.6 Windows x64 다운로드](https://github.com/EomTaeWook/Eidolon/releases/download/v0.1.0-beta.6/Eidolon-0.1.0-beta.6-win-x64.exe) · [릴리스 정보](https://github.com/EomTaeWook/Eidolon/releases/tag/v0.1.0-beta.6)
+[Eidolon v1.0.0 Windows x64 다운로드](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.0/Eidolon-v1.0.0-win-x64.exe) · [릴리스 정보](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.0)
 
 단일 `.exe` 파일을 실행하세요. 압축 해제나 별도 .NET 설치는 필요 없습니다. Codex 방식은 설치된 Codex에 먼저 로그인하고, ComfyUI 방식은 앱에서 엔진과 모델을 준비합니다.
 
-## 화면 미리보기
+## 생성·편집 예시
+
+민트·라벤더·크림색으로 그린 기사와, 같은 구도에서 갑옷·망토 색상을 바꾼 파스텔 일러스트입니다.
+
+| 생성 예시 | 색상 편집 예시 |
+|---|---|
+| ![민트색 갑옷과 라벤더색 망토를 입은 파스텔 기사 일러스트](Docs/images/pastel-knight.png) | ![같은 기사의 갑옷을 파스텔 블루로, 망토를 피치 핑크로 바꾼 일러스트](Docs/images/pastel-knight-edited.png) |
+
+**생성 설명:** 민트색 갑옷과 라벤더 망토를 입고 검과 둥근 방패를 든 기사, 부드러운 과슈·색연필 질감, 크림색 종이 배경.
+
+**편집 설명:** 대상·포즈·구도를 유지하고 갑옷은 파스텔 블루, 망토는 피치 핑크로 바꿔줘.
+
+README용으로 내장 이미지 생성 도구에서 만든 예시입니다. 앱을 실행해 생성한 결과나 화면 캡처는 아닙니다.
+
+<details>
+<summary>이전 버전의 앱 화면 보기</summary>
 
 아래 스크린샷은 이전 버전입니다. 최신 생성 화면은 위쪽 결과와 아래쪽 프롬프트 입력을 사용합니다.
 
@@ -39,6 +54,8 @@ ComfyUI와 설치된 Codex 중 생성 방식을 선택하고, 공통 생성 지�
 학습할 이미지를 흰색·검정색 배경 목록에 나누어 추가합니다. 이미지 선택, 이름·트리거 확인, 학습 설정의 세 단계로 진행하며 학습 데이터는 내부에서 자동 준비합니다.
 
 미리보기는 실제 Windows 앱에서 캡처했습니다. 한국어·라이트 테마를 사용하며 왼쪽 탐색 메뉴와 공통 하단 상태 영역을 포함합니다.
+
+</details>
 
 ## 핵심 경험
 
@@ -116,7 +133,7 @@ Windows x64 자체 포함 단일 EXE는 다음 명령으로 만듭니다.
 dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o artifacts\win-x64 -m:1 /p:UseSharedCompilation=false
 ```
 
-런타임과 UI·문자열·고지 리소스는 EXE에 포함합니다. 생성·학습 엔진과 가중치는 선택한 설치 경로에 별도로 준비합니다. 로컬 모델 설치·자동 변환·생성 연결의 확인 범위와 한계는 [로컬 프롬프트 변환](Docs/PromptConversion.md), 이전 다면도 확인 범위는 [품질 검증 기록](Docs/AssetCreationQuality.md), 이번 변경 사항은 [릴리스 노트](Docs/Releases/0.1.0-beta.6.md)를 참고하세요.
+런타임과 UI·문자열·고지 리소스는 EXE에 포함합니다. 생성·학습 엔진과 가중치는 선택한 설치 경로에 별도로 준비합니다. 로컬 모델 설치·자동 변환·생성 연결의 확인 범위와 한계는 [로컬 프롬프트 변환](Docs/PromptConversion.md), 이전 다면도 확인 범위는 [품질 검증 기록](Docs/AssetCreationQuality.md), 이번 변경 사항은 [릴리스 노트](Docs/Releases/1.0.0.md)를 참고하세요.
 
 ## 라이선스
 

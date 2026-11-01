@@ -23,6 +23,7 @@ namespace Eidolon.App.ViewModels
         private bool _executingInstall;
         private bool _readyToRestart;
         private bool _updateRestart;
+        private bool _startupCheckStarted;
         private string _statusName = "EidolonText672";
         private double _percentage;
 
@@ -187,6 +188,24 @@ namespace Eidolon.App.ViewModels
                 return false;
             }
             return Session.IsClosing == false;
+        }
+
+        internal void CheckOnStartup()
+        {
+            if (_startupCheckStarted == true)
+            {
+                return;
+            }
+            if (_updateRestart == true)
+            {
+                return;
+            }
+            if (CanCheck() == false)
+            {
+                return;
+            }
+            _startupCheckStarted = true;
+            _ = CheckAsync();
         }
 
         private Task CheckAsync()

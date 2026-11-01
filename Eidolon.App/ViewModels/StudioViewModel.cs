@@ -91,6 +91,7 @@ namespace Eidolon.App.ViewModels
             }
             Session.RefreshAvailability();
             Mcp.StartCommand.Execute(null);
+            Updates.CheckOnStartup();
         }
 
         private Task NavigateAsync(int tab)

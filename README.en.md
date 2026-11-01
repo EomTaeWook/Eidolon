@@ -8,11 +8,26 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 ## Download
 
-[Download Eidolon v0.1.0-beta.6 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v0.1.0-beta.6/Eidolon-0.1.0-beta.6-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v0.1.0-beta.6)
+[Download Eidolon v1.0.0 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.0/Eidolon-v1.0.0-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.0)
 
 Run the single `.exe` file. No extraction or separate .NET installation is required. For Codex, sign in to your installed Codex first. For ComfyUI, prepare the engine and models through the app.
 
-## Screenshots
+## Generation and editing examples
+
+A pastel knight in mint, lavender, and cream, followed by a color edit that keeps the same pose and composition.
+
+| Generation example | Color edit example |
+|---|---|
+| ![Pastel knight wearing mint armor and a lavender cape](Docs/images/pastel-knight.png) | ![The same knight with pastel blue armor and a peach-pink cape](Docs/images/pastel-knight-edited.png) |
+
+**Generation description:** A knight wearing mint armor and a lavender cape, holding a sword and round shield, delicate gouache and colored-pencil texture, warm cream paper background.
+
+**Edit description:** Keep the character, pose, and composition. Change the armor to pastel blue and the cape to peach pink.
+
+These examples were made for the README with the built-in image generation tool. They are not outputs generated through a running Eidolon app or screenshots of it.
+
+<details>
+<summary>View screenshots from an earlier app version</summary>
 
 The screenshots below show an earlier version. The current Generate screen places results above the prompt input.
 
@@ -39,6 +54,8 @@ Generate front, right, left, back, and top views from a reference image, then co
 Add training images to the white or black background lists. Review the images, name and trigger, then configure training. The app prepares the dataset automatically.
 
 Screenshots capture the actual Windows app using Korean and the light theme, including the left navigation and shared bottom status area.
+
+</details>
 
 ## Core experience
 
@@ -114,7 +131,7 @@ Publish the self-contained Windows x64 executable with:
 dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o artifacts\win-x64 -m:1 /p:UseSharedCompilation=false
 ```
 
-The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. See [local prompt conversion](Docs/PromptConversion.md) for installation, conversion and generation checks and limitations, the earlier [multi-view validation record](Docs/AssetCreationQuality.md), and the [release notes](Docs/Releases/0.1.0-beta.6.md) for this update.
+The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. See [local prompt conversion](Docs/PromptConversion.md) for installation, conversion and generation checks and limitations, the earlier [multi-view validation record](Docs/AssetCreationQuality.md), and the [release notes](Docs/Releases/1.0.0.md) for this update.
 
 ## License
 
