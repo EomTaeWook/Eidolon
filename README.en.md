@@ -12,30 +12,23 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 Run the single `.exe` file. No extraction or separate .NET installation is required. For Codex, sign in to your installed Codex first. For ComfyUI, prepare the engine and models through the app.
 
-## Generation and editing examples
+## Actual app screens
 
-A pastel knight in mint, lavender, and cream, followed by a color edit that keeps the same pose and composition.
-
-| Generation example | Color edit example |
-|---|---|
-| ![Pastel knight wearing mint armor and a lavender cape](Docs/images/pastel-knight.png) | ![The same knight with pastel blue armor and a peach-pink cape](Docs/images/pastel-knight-edited.png) |
-
-**Generation description:** A knight wearing mint armor and a lavender cape, holding a sword and round shield, delicate gouache and colored-pencil texture, warm cream paper background.
-
-**Edit description:** Keep the character, pose, and composition. Change the armor to pastel blue and the cape to peach pink.
-
-These examples were made for the README with the built-in image generation tool. They are not outputs generated through a running Eidolon app or screenshots of it.
-
-<details>
-<summary>View screenshots from an earlier app version</summary>
-
-The screenshots below show an earlier version. The current Generate screen places results above the prompt input.
+Eidolon 1.0.0 in Korean with the light theme. Pastel images were generated through the app using ComfyUI and Illustrious-XL-v0.1, then used for editing and five-view creation.
 
 ### Image generation
 
-![Eidolon left navigation and Generate screen with the Codex backend, description and reference inputs, and result preview](Docs/images/generation.png)
+![Pastel knight output above the prompt input in the Generate screen](Docs/images/generation.png)
 
 Describe the image and choose a reference and background options. Review the generated result above while preparing the next request in the input below.
+
+### Editing and partial edits
+
+![Edit screen with a pastel source image and color-change instructions](Docs/images/editing.png)
+
+Choose a source image and describe the changes. For a partial edit, paint the area to change before submitting the request.
+
+![Painting the region to change on the source image in the partial-edit screen](Docs/images/partial-editing.png)
 
 ### Results
 
@@ -45,6 +38,8 @@ Select an image in the gallery to read its prompt and generation settings. Save 
 
 ### Asset creation
 
+![Asset creation screen with five views generated from the pastel reference](Docs/images/assets.png)
+
 Generate front, right, left, back, and top views from a reference image, then compare them. Regenerate, replace, and export individual images from the same screen.
 
 ### LoRA training
@@ -53,9 +48,7 @@ Generate front, right, left, back, and top views from a reference image, then co
 
 Add training images to the white or black background lists. Review the images, name and trigger, then configure training. The app prepares the dataset automatically.
 
-Screenshots capture the actual Windows app using Korean and the light theme, including the left navigation and shared bottom status area.
-
-</details>
+The training screenshot shows image selection; training was not started. See the [user guide](Docs/Usage.md) in Korean for more captures and instructions covering conversion, training steps, generation settings, app settings, and MCP.
 
 ## Core experience
 
@@ -67,7 +60,7 @@ Screenshots capture the actual Windows app using Korean and the light theme, inc
 
 ## Features
 
-- **Local English-tag conversion**: Install the model in Engine setup to automatically convert Korean/English input before standard and reference generation while preserving the original
+- **Local English-tag conversion**: After installing the model, use the small button below the input to convert Korean/English text, then review and edit it in the same field
 - **Generation and editing**: ComfyUI or Codex, reference images, source-image editing, and transparent backgrounds
 - **Results**: Image and multi-view filters, grouped views with per-direction preview, saved prompts and settings, reuse, export, and selected-image deletion
 - **Multiple views**: Five directions, per-item regeneration and replacement, resume, and PNG, sheet, and coordinate JSON export

@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Eidolon.App.ViewModels;
 
@@ -13,7 +12,7 @@ namespace Eidolon.App.Views
 
         public SettingsView()
         {
-            AvaloniaXamlLoader.Load(this);
+            InitializeComponent();
             AttachedToVisualTree += OnSettingsAttachedToVisualTree;
             DetachedFromVisualTree += OnSettingsDetachedFromVisualTree;
         }
