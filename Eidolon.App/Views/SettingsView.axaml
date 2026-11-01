@@ -1,62 +1,56 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.SettingsView" x:DataType="vm:StudioViewModel">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" xmlns:views="using:Eidolon.App.Views" x:Class="Eidolon.App.Views.SettingsView" x:DataType="vm:StudioViewModel" Background="{DynamicResource WindowBrush}">
   <UserControl.Styles>
-    <Style Selector="TabItem.settingsSection">
-      <Setter Property="Width" Value="184" />
-      <Setter Property="MinHeight" Value="46" />
-      <Setter Property="Margin" Value="0,0,0,6" />
-      <Setter Property="Padding" Value="14,10" />
-      <Setter Property="BorderThickness" Value="3,0,0,0" />
-      <Setter Property="HorizontalContentAlignment" Value="Left" />
-      <Setter Property="Cursor" Value="Hand" />
+    <Style Selector="Button">
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style Selector="Button.folderAction">
+      <Setter Property="Height" Value="32" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="Padding" Value="12,6" />
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style Selector="TextBox.folderPath">
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="FontSize" Value="14" />
     </Style>
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,*">
-    <StackPanel Spacing="6" Margin="0,0,0,24">
-      <TextBlock Text="{DynamicResource EidolonText110}" Classes="title" />
-    </StackPanel>
-    <TabControl Grid.Row="1" TabStripPlacement="Left" SelectedIndex="{Binding Navigation.SelectedSettingsTab, Mode=TwoWay}" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-      <TabItem Classes="settingsSection" AutomationProperties.Name="{DynamicResource EidolonText594}">
-        <TabItem.Header>
-          <TextBlock Text="{DynamicResource EidolonText594}" MaxWidth="160" TextWrapping="Wrap" />
-        </TabItem.Header>
-        <views:GeneralSettingsView Margin="24,0,0,0" />
-      </TabItem>
-      <TabItem Classes="settingsSection" AutomationProperties.Name="{DynamicResource EidolonText593}">
-        <TabItem.Header>
-          <TextBlock Text="{DynamicResource EidolonText593}" MaxWidth="160" TextWrapping="Wrap" />
-        </TabItem.Header>
-        <views:EngineView DataContext="{Binding Engine}" Margin="24,0,0,0" />
-      </TabItem>
-      <TabItem Classes="settingsSection" AutomationProperties.Name="{DynamicResource EidolonText595}">
-        <TabItem.Header>
-          <TextBlock Text="{DynamicResource EidolonText595}" MaxWidth="160" TextWrapping="Wrap" />
-        </TabItem.Header>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,16" Margin="24,0,0,0">
-          <Border Classes="card" MaxWidth="1000" VerticalAlignment="Top" DataContext="{Binding Mcp}" x:DataType="vm:McpViewModel">
-            <StackPanel Spacing="16">
-              <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="{DynamicResource EidolonText595}" FontSize="16" FontWeight="SemiBold" />
-                <TextBlock Grid.Column="1" Text="{Binding StatusCaption}" Classes="muted" VerticalAlignment="Center" Margin="16,0,0,0" />
-              </Grid>
-              <TextBlock Text="{DynamicResource EidolonText596}" Classes="muted" />
-              <TextBox Text="{Binding Endpoint, Mode=OneWay}" IsReadOnly="True" Classes="folderPath" />
-              <WrapPanel>
-                <Button Content="{DynamicResource EidolonText600}" Command="{Binding StartCommand}" Classes="primary" Margin="0,0,8,0" />
-                <Button Content="{DynamicResource EidolonText601}" Command="{Binding StopCommand}" />
-              </WrapPanel>
-              <TextBlock Text="{DynamicResource EidolonText597}" Classes="muted" FontSize="12" />
-            </StackPanel>
-          </Border>
-        </ScrollViewer>
-      </TabItem>
-      <TabItem Classes="settingsSection" AutomationProperties.Name="{DynamicResource EidolonText666}">
-        <TabItem.Header>
-          <TextBlock Text="{DynamicResource EidolonText666}" MaxWidth="160" TextWrapping="Wrap" />
-        </TabItem.Header>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,16" Margin="24,0,0,0">
-          <views:AppUpdateView DataContext="{Binding Updates}" MaxWidth="1000" VerticalAlignment="Top" />
-        </ScrollViewer>
-      </TabItem>
-    </TabControl>
+    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="12,8">
+      <TextBlock Text="{DynamicResource EidolonText110}" FontSize="16" FontWeight="SemiBold" />
+    </Border>
+    <ScrollViewer x:Name="SettingsScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Margin="16" Spacing="8" MaxWidth="700" HorizontalAlignment="Left">
+        <views:AppUpdateView x:Name="UpdateSection" DataContext="{Binding Updates}" />
+        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" />
+        <views:GeneralSettingsView />
+        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" />
+        <StackPanel x:Name="EngineSection" Spacing="8">
+          <TextBlock Text="{DynamicResource EidolonText593}" FontSize="16" FontWeight="SemiBold" />
+          <views:EngineView DataContext="{Binding Engine}" />
+        </StackPanel>
+        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" />
+        <StackPanel x:Name="McpSection" Spacing="8" DataContext="{Binding Mcp}" x:DataType="vm:McpViewModel">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <TextBlock Text="{DynamicResource EidolonText595}" FontSize="16" FontWeight="SemiBold" />
+            <TextBlock Grid.Column="1" Text="{Binding StatusCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
+          </Grid>
+          <TextBlock Text="{DynamicResource EidolonText596}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+          <TextBox Text="{Binding Endpoint, Mode=OneWay}" IsReadOnly="True" Classes="folderPath" />
+          <WrapPanel>
+            <Button Content="{DynamicResource EidolonText600}" Command="{Binding StartCommand}" Classes="primary" Margin="0,0,8,0" />
+            <Button Content="{DynamicResource EidolonText601}" Command="{Binding StopCommand}" />
+          </WrapPanel>
+          <TextBlock Text="{DynamicResource EidolonText597}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+        </StackPanel>
+      </StackPanel>
+    </ScrollViewer>
   </Grid>
 </UserControl>

@@ -1,26 +1,20 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.AppUpdateView" x:DataType="vm:AppUpdateViewModel">
-  <Border Classes="card">
-    <StackPanel Spacing="16">
-      <Grid ColumnDefinitions="*,Auto">
-        <TextBlock Text="{DynamicResource EidolonText666}" FontSize="16" FontWeight="SemiBold" />
-        <Border Grid.Column="1" Background="{DynamicResource WindowBrush}" CornerRadius="16" Padding="10,5" VerticalAlignment="Center" Margin="16,0,0,0">
-          <TextBlock Text="{Binding CurrentVersionCaption}" Classes="muted" FontSize="12" />
-        </Border>
-      </Grid>
-      <TextBlock Text="{DynamicResource EidolonText676}" Classes="muted" FontSize="12" />
-      <StackPanel Spacing="4" MinHeight="42">
-        <TextBlock Text="{Binding StatusCaption}" />
-        <TextBlock Text="{Binding InstallHint}" Classes="muted" FontSize="12" />
-      </StackPanel>
-      <Grid Height="5">
-        <ProgressBar Value="{Binding Percentage}" Minimum="0" Maximum="100" IsIndeterminate="{Binding IsIndeterminate}" IsVisible="{Binding IsBusy}" />
-      </Grid>
-      <WrapPanel>
-        <Button Content="{DynamicResource EidolonText668}" Command="{Binding CheckCommand}" Margin="0,0,8,4" />
-        <Button Content="{DynamicResource EidolonText669}" Command="{Binding InstallCommand}" Classes="primary" IsVisible="{Binding HasUpdate}" Margin="0,0,8,4" />
-        <Button Content="{DynamicResource EidolonText677}" Command="{Binding CancelCommand}" IsVisible="{Binding IsBusy}" Margin="0,0,8,4" />
-        <Button Content="{DynamicResource EidolonText670}" Command="{Binding OpenReleaseCommand}" Margin="0,0,0,4" />
-      </WrapPanel>
-    </StackPanel>
-  </Border>
+  <StackPanel Spacing="8">
+    <TextBlock Text="{DynamicResource EidolonText666}" FontSize="16" FontWeight="SemiBold" />
+    <TextBlock Text="{DynamicResource EidolonText676}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+    <Border Background="{DynamicResource WindowBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12">
+      <SelectableTextBlock Text="{Binding CurrentVersionCaption}" TextWrapping="Wrap" />
+    </Border>
+    <TextBlock Text="{Binding StatusCaption}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+    <TextBlock Text="{Binding InstallHint}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+    <ProgressBar Height="3" Value="{Binding Percentage}" Minimum="0" Maximum="100" IsIndeterminate="{Binding IsIndeterminate}" IsVisible="{Binding IsBusy}" />
+    <WrapPanel>
+      <Button Content="{DynamicResource EidolonText668}" Command="{Binding CheckCommand}" MinWidth="80" Margin="0,0,8,8" />
+      <Button Content="{DynamicResource EidolonText669}" Command="{Binding InstallCommand}" Classes="primary" IsVisible="{Binding HasUpdate}" MinWidth="80" Margin="0,0,8,8" />
+      <Button Content="{DynamicResource EidolonText677}" Command="{Binding CancelCommand}" IsVisible="{Binding IsBusy}" MinWidth="80" Margin="0,0,8,8" />
+      <Button Command="{Binding OpenReleaseCommand}" Width="32" MinHeight="32" Padding="7" Margin="0,0,0,8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" ToolTip.Tip="{DynamicResource EidolonText670}" AutomationProperties.Name="{DynamicResource EidolonText670}">
+        <Path Data="{StaticResource EidolonIconGitHub}" Width="16" Height="16" Stretch="Uniform" Fill="{ReflectionBinding $parent[Button].Foreground}" />
+      </Button>
+    </WrapPanel>
+  </StackPanel>
 </UserControl>
