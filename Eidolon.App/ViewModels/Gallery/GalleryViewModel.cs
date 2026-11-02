@@ -240,6 +240,7 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand NextGalleryPageCommand { get; private set; }
         public AsyncCommand ClearGallerySelectionCommand { get; private set; }
         public AsyncCommand ExportCommand { get; private set; }
+        public AsyncCommand CopyFileNameCommand { get; private set; }
         public AsyncCommand DeleteGenerationCommand { get; private set; }
         public AsyncCommand DeleteAllGenerationsCommand { get; private set; }
         public AsyncCommand ReusePromptCommand { get; private set; }
@@ -877,6 +878,18 @@ namespace Eidolon.App.ViewModels
                     return false;
                 }
                 return HasGallerySelection;
+            });
+            CopyFileNameCommand = Command(() => _dialogs.CopyFileNameAsync(SelectedResult.FileName), () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                if (HasSelectedResult == false)
+                {
+                    return false;
+                }
+                return string.IsNullOrEmpty(SelectedResult.FileName) == false;
             });
             ExportCommand = Command(() => _dialogs.ExportImageAsync(_previewPath), () =>
             {

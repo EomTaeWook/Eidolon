@@ -1,6 +1,7 @@
 using Eidolon.App.Localization;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input.Platform;
 using Avalonia.Platform.Storage;
 using Dignus.DependencyInjection.Attributes;
 using Eidolon.Core.Application;
@@ -113,6 +114,11 @@ namespace Eidolon.App.Services
                     file.Dispose();
                 }
             }
+        }
+
+        public Task CopyFileNameAsync(string fileName)
+        {
+            return _desktop.MainWindow.Clipboard.SetTextAsync(fileName);
         }
 
         public async Task ExportImageAsync(string source)

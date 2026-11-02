@@ -187,6 +187,12 @@
       <GridSplitter Grid.Column="1" Classes="resultsSplitter" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Focusable="True" Cursor="SizeWestEast" />
       <Grid Grid.Column="2" RowDefinitions="Auto,Auto,Auto,*" IsVisible="{Binding HasSelectedResult}">
         <StackPanel Spacing="7" Margin="0,0,0,10">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <SelectableTextBlock Text="{Binding SelectedResult.FileName}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Command="{Binding CopyFileNameCommand}" Width="28" Height="28" MinHeight="28" Padding="6" VerticalAlignment="Top" ToolTip.Tip="{DynamicResource ReferenceCopyName}" AutomationProperties.Name="{DynamicResource ReferenceCopyName}">
+              <Path Data="M6,15 H3 V3 H15 V6 M8,8 H20 V20 H8 Z" Width="14" Height="14" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
+            </Button>
+          </Grid>
           <TextBlock Text="{Binding SelectedResult.Label}" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SelectedResult.Label}" />
           <WrapPanel Orientation="Horizontal">
             <TextBlock Text="{Binding SelectedResult.Metadata.Model.Name, FallbackValue=''}" Classes="muted" FontSize="12" MaxWidth="220" TextTrimming="CharacterEllipsis" Margin="0,0,14,0" IsVisible="{Binding SelectedResult.HasMetadata}" />
@@ -248,7 +254,6 @@
                 <SelectableTextBlock Text="{Binding SelectedResult.AppliedLoras}" TextWrapping="Wrap" />
               </StackPanel>
               <Border Height="1" Background="{DynamicResource BorderBrush}" />
-              <SelectableTextBlock Text="{Binding SelectedResult.FileName}" Classes="muted" FontSize="11" TextWrapping="Wrap" />
               <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
                 <TextBlock Text="{DynamicResource EidolonText367}" Classes="muted" FontSize="12" Margin="0,0,10,0" />
                 <TextBlock Grid.Column="1" Text="{Binding SelectedResult.CreatedCaption}" Classes="muted" FontSize="12" />
