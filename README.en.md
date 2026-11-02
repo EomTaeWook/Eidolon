@@ -8,7 +8,7 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 ## Download
 
-[Download Eidolon v1.0.0 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.0/Eidolon-v1.0.0-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.0)
+[Download Eidolon v1.0.1 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.1/Eidolon-v1.0.1-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.1)
 
 Run the single `.exe` file. No extraction or separate .NET installation is required. For Codex, sign in to your installed Codex first. For ComfyUI, prepare the engine and models through the app.
 
@@ -124,7 +124,7 @@ Publish the self-contained Windows x64 executable with:
 dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o artifacts\win-x64 -m:1 /p:UseSharedCompilation=false
 ```
 
-The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. See [local prompt conversion](Docs/PromptConversion.md) for installation, conversion and generation checks and limitations, the earlier [multi-view validation record](Docs/AssetCreationQuality.md), and the [release notes](Docs/Releases/1.0.0.md) for this update.
+The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. See [local prompt conversion](Docs/PromptConversion.md) for installation, conversion and generation checks and limitations, the earlier [multi-view validation record](Docs/AssetCreationQuality.md), and the [release notes](Docs/Releases/1.0.1.md) for this update.
 
 ## License
 

@@ -8,7 +8,7 @@ ComfyUI와 설치된 Codex 중 생성 방식을 선택하고, 공통 생성 지�
 
 ## 다운로드
 
-[Eidolon v1.0.0 Windows x64 다운로드](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.0/Eidolon-v1.0.0-win-x64.exe) · [릴리스 정보](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.0)
+[Eidolon v1.0.1 Windows x64 다운로드](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.1/Eidolon-v1.0.1-win-x64.exe) · [릴리스 정보](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.1)
 
 단일 `.exe` 파일을 실행하세요. 압축 해제나 별도 .NET 설치는 필요 없습니다. Codex 방식은 설치된 Codex에 먼저 로그인하고, ComfyUI 방식은 앱에서 엔진과 모델을 준비합니다.
 
@@ -126,7 +126,7 @@ Windows x64 자체 포함 단일 EXE는 다음 명령으로 만듭니다.
 dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o artifacts\win-x64 -m:1 /p:UseSharedCompilation=false
 ```
 
-런타임과 UI·문자열·고지 리소스는 EXE에 포함합니다. 생성·학습 엔진과 가중치는 선택한 설치 경로에 별도로 준비합니다. 로컬 모델 설치·자동 변환·생성 연결의 확인 범위와 한계는 [로컬 프롬프트 변환](Docs/PromptConversion.md), 이전 다면도 확인 범위는 [품질 검증 기록](Docs/AssetCreationQuality.md), 이번 변경 사항은 [릴리스 노트](Docs/Releases/1.0.0.md)를 참고하세요.
+런타임과 UI·문자열·고지 리소스는 EXE에 포함합니다. 생성·학습 엔진과 가중치는 선택한 설치 경로에 별도로 준비합니다. 로컬 모델 설치·자동 변환·생성 연결의 확인 범위와 한계는 [로컬 프롬프트 변환](Docs/PromptConversion.md), 이전 다면도 확인 범위는 [품질 검증 기록](Docs/AssetCreationQuality.md), 이번 변경 사항은 [릴리스 노트](Docs/Releases/1.0.1.md)를 참고하세요.
 
 ## 라이선스
 
