@@ -7,7 +7,6 @@
     </Border>
     <TextBlock Text="{Binding StatusCaption}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
     <TextBlock Text="{Binding InstallHint}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
-    <ProgressBar Height="3" Value="{Binding Percentage}" Minimum="0" Maximum="100" IsIndeterminate="{Binding IsIndeterminate}" IsVisible="{Binding IsBusy}" />
     <WrapPanel>
       <Button Content="{DynamicResource EidolonText668}" Command="{Binding CheckCommand}" MinWidth="80" Margin="0,0,8,8" />
       <Button Content="{DynamicResource EidolonText669}" Command="{Binding InstallCommand}" Classes="primary" IsVisible="{Binding HasUpdate}" MinWidth="80" Margin="0,0,8,8" />

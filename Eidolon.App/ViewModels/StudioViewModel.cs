@@ -42,7 +42,7 @@ namespace Eidolon.App.ViewModels
             AssetCreation = new AssetCreationViewModel(Session, Navigation, work, strings, dialogs, Assets, assetCreation, jobs, seeds, assetImages);
             Gallery = new GalleryViewModel(Session, Navigation, work, strings, dialogs, Generation, Training, jobs, AssetCreation);
             Engine = new EngineViewModel(Session, Navigation, work, strings, dialogs, Assets, Settings, assets, installer, engine, jobs);
-            Mcp = new McpViewModel(Session, Navigation, work, strings, dialogs, new McpService(Session, Assets, Generation, jobs, seeds, strings, AssetCreation, assetCreation, Training));
+            Mcp = new McpViewModel(Session, Navigation, work, strings, dialogs, new McpService(Session, Assets, Generation, jobs, seeds, strings, AssetCreation, assetCreation, Training, work));
             Generation.ImageGenerated += Gallery.ShowGeneratedImage;
             Settings.LanguageChanged += Localize;
             _work.Finished += OnWorkFinished;

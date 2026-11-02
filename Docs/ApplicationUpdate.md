@@ -16,7 +16,7 @@ Bough의 정식 릴리스 조회, 검증한 임시 다운로드, 정상 종료 �
 
 ## 다운로드와 종료
 
-시작 시 조회와 수동 조회는 기존 `AppUpdateViewModel.CheckAsync`·`_checking`·취소 토큰을 공유한다. 초기화가 끝난 `StudioViewModel`은 `CheckOnStartup`으로 조회를 시작하고 완료를 기다리지 않는다. `AppUpdateViewModel`이 실행당 자동 조회 한 번을 소유하고 종료 시 기존 `CloseAsync`에서 취소·대기한다. 설치는 생성·학습·대기 작업과 예약 작업이 없을 때 기존 `StudioWorkPresenter`의 유지 관리 요청으로 추가한다. 별도 큐를 만들지 않는다. 다운로드 진행과 검증 상태를 업데이트 카드와 기존 진행 영역에 표시한다. 요청에 고정한 릴리스 정보만 사용하며 설치 중에는 새 생성 요청을 받지 않는다.
+시작 시 조회와 수동 조회는 기존 `AppUpdateViewModel.CheckAsync`·`_checking`·취소 토큰을 공유한다. 초기화가 끝난 `StudioViewModel`은 `CheckOnStartup`으로 조회를 시작하고 완료를 기다리지 않는다. `AppUpdateViewModel`이 실행당 자동 조회 한 번을 소유하고 종료 시 기존 `CloseAsync`에서 취소·대기한다. 설치는 생성·학습·대기 작업과 예약 작업이 없을 때 기존 `StudioWorkPresenter`의 유지 관리 요청으로 추가한다. 별도 큐를 만들지 않는다. 업데이트 카드에는 버전·상태·기존 실행 버튼만 두며 진행 막대를 표시하지 않는다. 업데이트 확인·다운로드 진행률과 활동 문구는 MainWindow의 하단 공통 상태 영역에 표시한다. 실행 중인 공용 큐 작업이 있으면 기존 작업 진행률을 우선하고, 다운로드 중에는 기존 StudioSession 진행률 연결을 사용한다. 업데이트 확인은 기존 Updates.IsBusy·Percentage·IsIndeterminate 바인딩으로 하단에 표시하며 시작 화면을 막지 않는다. 요청에 고정한 릴리스 정보만 사용하며 설치 중에는 새 생성 요청을 받지 않는다.
 
 파일은 `%TEMP%/Eidolon/application-update/<GUID>`에서 준비한다. 설치 담당은 검증된 실행 파일을 별도 요청 폴더에 복사하고 현재 실행 파일을 `helper.exe`로 복사한다. 준비·취소·정리는 해당 요청의 고정 파일과 폴더에만 적용하며 사용자 설정·이미지·학습 데이터·엔진 설치는 건드리지 않는다.
 

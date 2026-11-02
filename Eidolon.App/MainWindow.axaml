@@ -311,8 +311,14 @@
           <TextBlock Grid.Column="1" Text="{Binding Session.QueueSummary}" IsVisible="{Binding Session.HasPendingRequests}" Classes="muted" FontSize="12" TextWrapping="NoWrap" VerticalAlignment="Center" Margin="24,0,0,0" />
         </Grid>
         <ProgressBar Grid.Row="2" Value="{Binding Session.Percent}" IsIndeterminate="{Binding Session.Indeterminate}" IsVisible="{Binding Session.IsBusy}" Height="3" Foreground="{DynamicResource AccentBrush}" />
+        <Grid Grid.Row="2" IsVisible="{Binding !Session.IsBusy}">
+          <ProgressBar Value="{Binding Updates.Percentage}" IsIndeterminate="{Binding Updates.IsIndeterminate}" IsVisible="{Binding Updates.IsBusy}" Minimum="0" Maximum="100" Height="3" Foreground="{DynamicResource AccentBrush}" />
+        </Grid>
         <Grid Grid.Row="4" ColumnDefinitions="*,Auto">
           <TextBlock Text="{Binding Session.ActiveRequestTitle}" IsVisible="{Binding Session.IsBusy}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Session.ActiveRequestTitle}" TextWrapping="NoWrap" VerticalAlignment="Center" />
+          <Grid IsVisible="{Binding !Session.IsBusy}">
+            <TextBlock Text="{Binding Updates.StatusCaption}" IsVisible="{Binding Updates.IsBusy}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Updates.StatusCaption}" TextWrapping="NoWrap" VerticalAlignment="Center" />
+          </Grid>
           <TextBlock Grid.Column="1" Text="{Binding Training.TrainingRemainingText}" IsVisible="{Binding Training.ShowTrainingRemainingTime}" Classes="muted" FontSize="12" TextWrapping="NoWrap" VerticalAlignment="Center" Margin="24,0,0,0" />
         </Grid>
         <Border Grid.Row="5" IsVisible="{Binding Session.HasError}" Background="{DynamicResource ErrorSurfaceBrush}" CornerRadius="7" Padding="12" Margin="0,8,0,0">
