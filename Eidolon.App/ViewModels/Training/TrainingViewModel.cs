@@ -302,16 +302,17 @@ namespace Eidolon.App.ViewModels
             RefreshCommands();
         }
 
-        private async Task CancelTrainingAsync()
+        internal async Task CancelTrainingAsync()
         {
             if (CanCancelTraining == false)
             {
                 return;
             }
+            string activeRequest = Session.ActiveRequestTitle;
             _trainingCancellationRequested = true;
             Session.Status = _strings.GetString("EidolonText328");
             RefreshTrainingState();
-            await _work.CancelCurrentAsync();
+            await _work.CancelCurrentAsync(activeRequest);
         }
 
         private StudioMessageCode TrainingInputIssue()

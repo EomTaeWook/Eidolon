@@ -1,5 +1,6 @@
 using Avalonia.Threading;
 using Eidolon.App.Localization;
+using Eidolon.App.Presenters;
 using Eidolon.App.Services;
 using Eidolon.App.ViewModels;
 using Eidolon.Core.Application;
@@ -19,6 +20,7 @@ namespace Eidolon.App.Mcp
         private readonly AssetsViewModel _assets;
         private readonly GenerationViewModel _generation;
         private readonly TrainingViewModel _training;
+        private readonly StudioWorkPresenter _work;
         private readonly JobStore _jobs;
         private readonly ISeedProvider _seeds;
         private readonly StringHelper _strings;
@@ -27,12 +29,13 @@ namespace Eidolon.App.Mcp
         private readonly JsonSerializerOptions _assetJson = new JsonSerializerOptions { Converters = { new JsonStringEnumConverter() } };
 
         public McpService(StudioSession session, AssetsViewModel assets, GenerationViewModel generation,
-            JobStore jobs, ISeedProvider seeds, StringHelper strings, AssetCreationViewModel creation, AssetCreationService assetService, TrainingViewModel training)
+            JobStore jobs, ISeedProvider seeds, StringHelper strings, AssetCreationViewModel creation, AssetCreationService assetService, TrainingViewModel training, StudioWorkPresenter work)
         {
             _session = session;
             _assets = assets;
             _generation = generation;
             _training = training;
+            _work = work;
             _jobs = jobs;
             _seeds = seeds;
             _strings = strings;
@@ -45,7 +48,7 @@ namespace Eidolon.App.Mcp
             return new[]
             {
                 new McpTool(new McpToolDefinition("eidolon_get_status",
-                    "Read Eidolon readiness, current work, pending queue, progress and error. Poll after enqueueing an image or LoRA training request.")
+                    "Read Eidolon readiness, current work, pending_count, pending_requests, progress, error, can_cancel_work and can_cancel_training. Poll after enqueueing any work. For current-work cancellation pass this response's exact active_request to eidolon_cancel_work. The training-specific alias is eidolon_cancel_training. Use eidolon_clear_pending to discard waiting requests without stopping the active one. In-flight HTTP tool calls use notifications/cancelled with their JSON-RPC request ID, before acceptance or completion.")
                 {
                     ReadOnly = true,
                     Idempotent = true,
@@ -69,6 +72,15 @@ namespace Eidolon.App.Mcp
                 new McpTool(new McpToolDefinition("eidolon_train_lora",
                     "Queue one new or continued LoRA training job from local image files or folders without opening a file picker. Requires name, trigger_word and at least one image in white_images or black_images. Optional resume_lora_id is an existing LoRA ID from eidolon_list_models, with the same family and local runtime as the checkpoint. It loads the existing weights and rank, then trains on the supplied images; previous images are not automatically included. The optimizer and schedule start fresh, and the result is saved as a new LoRA while preserving the original. Omit resume_lora_id to start a new LoRA regardless of UI continuation settings. Both background groups train together into one LoRA; only transparent areas are filled with the group's color. Folder paths include supported images in subfolders. Uses the local ComfyUI training runtime and requires an NVIDIA GPU, even when the saved image-generation backend is Codex. Omitting model_id uses the UI checkpoint; steps defaults to 1000 and means additional steps when continuing. Optional description MUST be in English as detailed comma-separated tags or short tag phrases. Existing sibling .txt captions and Eidolon metadata take precedence over description. Original images and captions are preserved. Returns acceptance, not completion; poll eidolon_get_status, then eidolon_list_models for the trained LoRA. Does not change UI training inputs or saved settings.",
                     TrainingSchema()), TrainLoraAsync),
+                new McpTool(new McpToolDefinition("eidolon_cancel_training",
+                    "Request cancellation of the currently running LoRA training immediately through the existing UI cancellation path, without waiting in the work queue. First read eidolon_get_status, require can_cancel_training=true, and pass its exact active_request string, including any localized prefix. The current title must still match. Rejects idle, non-training, already-cancelling, closing and final LoRA registration states. Does not remove pending requests, delete files or cancel image generation. accepted=true and cancellation_requested=true mean the cancellation signal was requested, not that training and engine recovery have finished. Poll eidolon_get_status for completion or errors.",
+                    CancelWorkSchema()) { ReadOnly = false, Destructive = false, Idempotent = false, OpenWorld = false }, CancelTrainingAsync),
+                new McpTool(new McpToolDefinition("eidolon_cancel_work",
+                    "Request cancellation of the currently running shared work, including image generation, reference generation, editing, local prompt conversion, LoRA training, multi-view creation, resume, regeneration and queued model maintenance. Read eidolon_get_status, require can_cancel_work=true, and pass its exact active_request title. Runs immediately outside the work queue and verifies the title again at the queue owner. Uses training's existing cancellation path and rejects final LoRA registration. UI and other MCP clients share this work queue. Does not discard pending requests or roll back completed writes or deletions. accepted=true means cancellation was signalled, not that processes, file operations or engine recovery have finished. Poll status. A title is not a unique job ID. For an unfinished HTTP query or export use notifications/cancelled with that call's JSON-RPC request ID.",
+                    CancelWorkSchema()) { ReadOnly = false, Destructive = false, Idempotent = false, OpenWorld = false }, CancelWorkAsync),
+                new McpTool(new McpToolDefinition("eidolon_clear_pending",
+                    "Discard all requests currently waiting in the shared work queue, including UI and other MCP clients' pending work. Runs immediately without waiting behind the active work. Does not cancel active work, completed work or scheduled connection-setting changes. Read eidolon_get_status.pending_requests first. To stop both waiting and active work, clear pending requests first, refresh status, then cancel the current work. Completed files are preserved; discarding a prepared multi-view request marks its unfinished collection as cancelled. Poll status after the response.")
+                { ReadOnly = false, Destructive = false, Idempotent = false, OpenWorld = false }, ClearPendingAsync),
                 new McpTool(new McpToolDefinition("eidolon_generate_image",
                     "Queue text-to-image generation, optionally with a reference image. Accept prompt as tags, descriptive phrases or natural-language sentences. For ComfyUI, an installed local converter adapts prompt to the captured checkpoint in the work queue; without it, provide English input already suited to that model. Codex receives prompt directly without local conversion. Keep positive_prompt and negative_prompt in English using the target model's format. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Specify the subject, appearance, pose, composition, viewpoint, style, materials, colors, lighting and background in relevant detail; put unwanted elements in negative_prompt. Returns accepted and the fixed seed, not a completed image. Poll eidolon_get_status then eidolon_list_images. Uses saved instructions unless positive_prompt or negative_prompt is provided. Omitting model_id uses the UI model; omitting lora_ids uses compatible selected UI LoRAs. An empty lora_ids array disables LoRAs for this request. Does not change UI inputs or saved settings.",
                     ImageSchema(false)), GenerateImageAsync),
@@ -103,6 +115,104 @@ namespace Eidolon.App.Mcp
                     RegenerateAssetSchema()), RegenerateAssetFrameAsync),
                 new McpTool(new McpToolDefinition("eidolon_export_asset_collection", "Export all reviewed view images into a new subfolder: Frames PNGs on a common canvas, Sheet.png, Sheet.json with frame rectangles, bottom-center pivots and Loop=false, and preserved Sources. All views must have images. Does not overwrite existing files. Sprite-animation collections are not supported.", ExportAssetSchema()), ExportAssetCollectionAsync)
             };
+        }
+
+        private JsonObject CancelWorkSchema()
+        {
+            return new JsonObject
+            {
+                ["type"] = "object",
+                ["properties"] = new JsonObject
+                {
+                    ["active_request"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["description"] = "The exact active_request title from the most recent eidolon_get_status response. Require can_cancel_work=true for eidolon_cancel_work or can_cancel_training=true for eidolon_cancel_training. Do not construct it from editable UI inputs. The title is not a unique job ID." }
+                },
+                ["required"] = new JsonArray("active_request"),
+                ["additionalProperties"] = false
+            };
+        }
+
+        private Task<McpToolResult> CancelTrainingAsync(JsonObject arguments, CancellationToken token)
+        {
+            return ExecuteAssetAsync(async () =>
+            {
+                string activeRequest = arguments["active_request"].GetValue<string>();
+                Task cancellation = await Dispatcher.UIThread.InvokeAsync<Task>(() =>
+                {
+                    EnsureAvailable(token);
+                    if (string.Equals(_session.ActiveRequestTitle, activeRequest, StringComparison.Ordinal) == false)
+                    {
+                        throw new ArgumentException("active_request no longer matches the current work. Read eidolon_get_status again.");
+                    }
+                    if (_training.CanCancelTraining == false)
+                    {
+                        throw new ArgumentException("The current work is not cancellable LoRA training. It may be idle, already cancelling or registering the completed LoRA.");
+                    }
+                    return _training.CancelTrainingAsync();
+                });
+                await cancellation.ConfigureAwait(false);
+                return new McpToolResult(new JsonObject { ["accepted"] = true, ["cancellation_requested"] = true, ["active_request"] = activeRequest });
+            });
+        }
+
+        private bool CanCancelWork()
+        {
+            if (_session.IsClosing == true)
+            {
+                return false;
+            }
+            if (_session.IsInitialized == false)
+            {
+                return false;
+            }
+            if (_session.IsBusy == false)
+            {
+                return false;
+            }
+            if (string.IsNullOrEmpty(_session.ActiveRequestTitle) == true)
+            {
+                return false;
+            }
+            if (_training.IsTrainingActive == true)
+            {
+                return _training.CanCancelTraining;
+            }
+            return true;
+        }
+
+        private Task<McpToolResult> CancelWorkAsync(JsonObject arguments, CancellationToken token)
+        {
+            return ExecuteAssetAsync(async () =>
+            {
+                string activeRequest = arguments["active_request"].GetValue<string>();
+                Task cancellation = await Dispatcher.UIThread.InvokeAsync<Task>(() =>
+                {
+                    EnsureAvailable(token);
+                    if (string.Equals(_session.ActiveRequestTitle, activeRequest, StringComparison.Ordinal) == false)
+                    {
+                        throw new ArgumentException("active_request no longer matches the current work. Read eidolon_get_status again.");
+                    }
+                    if (CanCancelWork() == false)
+                    {
+                        throw new ArgumentException("The current work cannot be cancelled. It may have finished or be registering a completed LoRA.");
+                    }
+                    if (_training.IsTrainingActive == true)
+                    {
+                        return _training.CancelTrainingAsync();
+                    }
+                    return _work.CancelCurrentAsync(activeRequest);
+                });
+                await cancellation.ConfigureAwait(false);
+                return new McpToolResult(new JsonObject { ["accepted"] = true, ["cancellation_requested"] = true, ["active_request"] = activeRequest });
+            });
+        }
+
+        private Task<McpToolResult> ClearPendingAsync(JsonObject arguments, CancellationToken token)
+        {
+            return OnUiAsync(() =>
+            {
+                _work.ClearPending();
+                return new JsonObject { ["accepted"] = true, ["pending_count"] = _work.GetPendingTitles().Count };
+            }, token);
         }
 
         private JsonObject DeleteModelSchema()
@@ -386,19 +496,26 @@ namespace Eidolon.App.Mcp
 
         private async Task<McpToolResult> GetStatusAsync(JsonObject arguments, CancellationToken token)
         {
-            return await OnUiAsync(() => new JsonObject
+            return await OnUiAsync(() =>
             {
-                ["initialized"] = _session.IsInitialized,
-                ["can_queue"] = _session.CanQueue,
-                ["engine_connected"] = _session.IsEngineConnected,
-                ["busy"] = _session.IsBusy,
-                ["idle"] = _session.IsIdle,
-                ["status"] = _session.Status,
-                ["active_request"] = _session.ActiveRequestTitle,
-                ["pending_count"] = _session.PendingRequests.Count,
-                ["progress_percent"] = _session.Percent,
-                ["indeterminate"] = _session.Indeterminate,
-                ["error"] = _session.Error
+                IReadOnlyList<string> pendingRequests = _work.GetPendingTitles();
+                return new JsonObject
+                {
+                    ["initialized"] = _session.IsInitialized,
+                    ["can_queue"] = _session.CanQueue,
+                    ["engine_connected"] = _session.IsEngineConnected,
+                    ["busy"] = _session.IsBusy,
+                    ["idle"] = _session.IsIdle,
+                    ["status"] = _session.Status,
+                    ["active_request"] = _session.ActiveRequestTitle,
+                    ["can_cancel_training"] = _training.CanCancelTraining,
+                    ["can_cancel_work"] = CanCancelWork(),
+                    ["pending_count"] = pendingRequests.Count,
+                    ["pending_requests"] = new JsonArray(pendingRequests.Select(title => (JsonNode)JsonValue.Create(title)).ToArray()),
+                    ["progress_percent"] = _session.Percent,
+                    ["indeterminate"] = _session.Indeterminate,
+                    ["error"] = _session.Error
+                };
             }, token);
         }
 

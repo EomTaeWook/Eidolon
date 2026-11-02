@@ -167,6 +167,11 @@ namespace Eidolon.App.Presenters
             return _queue.CancelCurrentAsync();
         }
 
+        public Task CancelCurrentAsync(string expectedTitle)
+        {
+            return _queue.CancelCurrentAsync(expectedTitle);
+        }
+
         private void OnQueueChanged()
         {
             Dispatcher.UIThread.Post(() =>

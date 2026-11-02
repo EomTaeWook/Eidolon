@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Avalonia.Threading;
 using Dignus.Log;
 using Eidolon.App.Services;
 using Eidolon.App.Localization;
@@ -206,7 +207,16 @@ namespace Eidolon.App.ViewModels
             }
             _maintenanceWork = true;
             Raise(nameof(CanQueue));
-            _work.Enqueue(_strings.GetString("EidolonText227"), token => ExecuteMaintenanceAsync(action, token));
+            _work.Enqueue(_strings.GetString("EidolonText227"), token => ExecuteMaintenanceAsync(action, token), () => Dispatcher.UIThread.Post(() =>
+            {
+                if (IsClosing == true)
+                {
+                    return;
+                }
+                _maintenanceWork = false;
+                Raise(nameof(CanQueue));
+                RefreshCommands();
+            }));
             return Task.CompletedTask;
         }
 

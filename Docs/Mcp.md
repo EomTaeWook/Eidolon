@@ -6,11 +6,14 @@ Eidolon 앱 초기화가 끝나면 MCP 서버가 자동으로 시작된다. MCP 
 
 | 도구 | 기능 |
 |---|---|
-| `eidolon_get_status` | 엔진·요청 가능 상태, 현재 작업, 대기 건수, 진행률과 오류 조회 |
+| `eidolon_get_status` | 현재 작업·취소 가능 여부, 대기 작업 제목·건수, 엔진 상태, 진행률과 오류 조회 |
 | `eidolon_list_models` | 사용할 체크포인트·LoRA의 ID, 이름, 계열과 트리거 조회 |
 | `eidolon_delete_model` | 명시적 승인 후 관리 로컬 체크포인트·LoRA의 실제 파일 삭제 요청 등록 |
 | `eidolon_get_instructions` | 저장된 공통 생성 지침과 제외할 요소 조회 |
 | `eidolon_train_lora` | 흰색·검정색 배경별 이미지·폴더 경로로 신규·기존 LoRA 추가 학습 요청 등록 |
+| `eidolon_cancel_training` | 현재 실행 중인 LoRA 학습의 취소 신호를 즉시 요청 |
+| `eidolon_cancel_work` | 생성·편집·학습·다면도·모델 관리 등 공용 큐의 현재 작업 취소 신호 요청 |
+| `eidolon_clear_pending` | 현재 작업은 유지하고 공용 큐에서 기다리는 요청 전체 비우기 |
 | `eidolon_generate_image` | 설명과 선택적 참고 이미지로 생성 요청 추가 |
 | `eidolon_edit_image` | 참고 이미지와 설명으로 그림체 편집 요청 추가 |
 | `eidolon_list_images` | 현재 출력 폴더의 PNG 경로와 저장된 생성 조건을 페이지로 조회 |
@@ -114,6 +117,71 @@ ComfyUI 방식의 `eidolon_edit_image`는 UI 편집과 같은 Canny 외곽선·C
 
 응답은 `accepted`·`name`·`trigger_word`·`model_id`·`steps`·`image_count`이며 완료 결과가 아니다. `eidolon_get_status`에서 현재 작업·대기열·진행률·오류를 확인하고 완료 뒤 `eidolon_list_models`에서 새 LoRA와 트리거를 조회한다. 학습 상태·남은 시간·취소는 기존 학습 화면에서도 사용한다. 엔진 정지·학습·등록·복구는 기존 `StudioService.TrainAsync`가 소유한다.
 
+## 작업 취소
+
+MCP 취소는 HTTP 호출, 접수 후 실행 중인 업무, 아직 대기 중인 업무를 구분한다. 완료한 작업과 이미 끝난 파일 쓰기·삭제를 되돌리지는 않는다.
+
+| 대상 | 취소 경로 |
+|---|---|
+| 응답을 기다리는 조회·입력 준비·내보내기 등 MCP HTTP 호출 | JSON-RPC 요청 ID를 지정한 `notifications/cancelled` |
+| 접수 후 실행 중인 생성·참고 생성·편집·프롬프트 변환 | `eidolon_cancel_work` |
+| 접수 후 실행 중인 신규·이어 학습 | `eidolon_cancel_work` 또는 `eidolon_cancel_training` |
+| 다면도 생성·이어 만들기·선택 재생성 | `eidolon_cancel_work` |
+| 접수된 모델 삭제 등 큐의 유지 관리 작업 | 실행 전에는 `eidolon_clear_pending`, 실행 중에는 `eidolon_cancel_work`. 이미 완료한 삭제는 복원하지 않음 |
+| 공용 큐에서 기다리는 요청 전체 | `eidolon_clear_pending` |
+
+### 실행 중인 업무 취소
+
+1. `eidolon_get_status`에서 `can_cancel_work=true`와 `active_request`를 확인한다.
+2. `active_request` 문자열 전체를 그대로 `eidolon_cancel_work`에 전달한다. 편집 가능한 화면 입력이나 파일명으로 대신 구성하지 않는다.
+3. 응답의 `accepted=true`·`cancellation_requested=true`는 취소 신호 접수다. 프로세스 종료·파일 처리·엔진 복구 완료를 뜻하지 않으므로 상태·오류를 계속 조회한다.
+
+```json
+{
+  "name": "eidolon_cancel_work",
+  "arguments": {
+    "active_request": "<가장 최근 eidolon_get_status 응답의 active_request 전체>"
+  }
+}
+```
+
+취소 도구는 FIFO 뒤에 추가하지 않고 UI 스레드에서 바로 기존 큐 취소를 호출한다. 큐 소유자도 같은 제목의 작업인지 다시 확인하며, 작업이 바뀌거나 유휴 상태이면 거절한다. `active_request`는 제목이며 고유 작업 ID가 아니므로 같은 제목의 연속 작업을 구분하는 식별자로 사용하지 않는다. UI와 다른 MCP 클라이언트도 같은 업무 큐를 사용한다.
+
+학습은 기존 `TrainingViewModel.CancelTrainingAsync`를 거쳐 취소 중 표시·프로세스 정리·엔진 복구를 유지하고 완성 LoRA 등록 중에는 취소를 거절한다. `eidolon_cancel_training`은 같은 `active_request` 인자로 학습만 취소하는 도구로 유지하며 `can_cancel_training=true`일 때 사용한다. 일반 생성·편집·다면도는 기존 토큰과 개별 엔진 작업 취소를 사용하며 외부 서버의 전체 작업을 중단하지 않는다. 완료 이미지·기존 LoRA·원본 학습 자료는 취소를 이유로 삭제하지 않는다.
+
+### 대기 업무 비우기
+
+`eidolon_get_status.pending_requests`에서 제목 목록을 확인한 뒤 다음 도구를 호출한다.
+
+```json
+{
+  "name": "eidolon_clear_pending",
+  "arguments": {}
+}
+```
+
+현재 대기 중인 요청 전체를 기존 `ClearPending` 경로로 비우며 UI·다른 MCP 클라이언트의 대기 요청도 포함한다. 실행 중인 작업·완료 파일·연결 설정의 별도 적용 예약은 유지한다. 준비된 다면도 묶음은 기존 폐기 콜백으로 취소 상태를 남기고, 시작 전 유지 관리 요청을 비웠을 때도 입력 제한을 해제한다. 응답은 `accepted`와 남은 `pending_count`다.
+
+현재 작업과 대기 작업을 모두 멈추려면 대기를 먼저 비우고, 상태를 다시 읽은 뒤 현재 작업을 취소한다. 현재 작업만 취소하면 정리 뒤 다음 대기 작업이 실행될 수 있다.
+
+### 진행 중인 HTTP 호출 취소
+
+응답이 아직 끝나지 않은 조회·내보내기 등의 호출에는 업무 제목 대신 해당 JSON-RPC 호출 ID를 사용한다. 다음 예시는 ID가 `42`인 호출을 취소한다. HTTP 요청 헤더와 버전 메타데이터는 원래 호출과 같은 프로토콜을 따른다.
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "notifications/cancelled",
+  "params": {
+    "requestId": 42
+  }
+}
+```
+
+2025 호환 경로와 `2026-07-28` 경로 모두 요청 ID를 취소에 연결한다. 알림은 요청 액터 뒤에서 기다리지 않고 처리하며, 완료된 호출·`initialize`·이미 업무 큐에 접수된 작업에는 영향을 주지 않는다. 동시 클라이언트는 진행 중인 요청 ID를 서로 겹치지 않게 사용한다. 호출 취소 토큰은 실제 처리 메서드로 전달하지만 이미 완료한 파일이나 내보내기 중 작성한 일부 파일의 롤백을 보장하지 않는다.
+
+이 취소 기능 변경은 빌드·테스트·앱 재실행·실제 작업 취소 호출로 검증하지 않았다. 실행 중인 이전 버전에는 소스 변경만으로 새 도구가 추가되지 않는다.
+
 ## 에셋 제작 호출
 
 `eidolon_create_views`에는 `reference_path`만 필수이며 `prompt`는 선택 입력이다. 대상 설명이 없으면 기준 이미지의 같은 대상을 요청한다. 캐릭터·물체 구분 없이 정면·우측·좌측·후면·윗면의 5항목을 만들며 방향 종류나 장수를 입력하지 않는다. 우측·좌측은 대상 자신의 면을 뜻하며 각각의 실제 방향을 요청한다. 스프라이트 생성 도구와 `action`·`frame_count`·`fps`·`frame_descriptions` 인자는 제공하지 않는다.
@@ -163,7 +231,7 @@ Mcp-Name: eidolon_generate_image
 
 기존 2025 계열 클라이언트는 `initialize` → `notifications/initialized` 뒤 `tools/list`·`tools/call`을 사용한다. 초기화 응답의 버전을 이후 `MCP-Protocol-Version`에 넣는다. 세션 ID는 발급하지 않으므로 세션 헤더나 별도 SSE 연결이 필요하지 않다. 구 HTTP+SSE나 stdio 전용 연결은 지원하지 않는다.
 
-2025 계열의 `notifications/cancelled`는 진행 중인 HTTP 호출에만 적용한다. 여러 클라이언트를 동시에 연결할 때 호출 ID를 서로 겹치지 않게 사용한다. 취소 알림으로 이미 대기열에 추가한 이미지 요청을 취소하지는 않는다.
+`notifications/cancelled`는 2025 계열과 `2026-07-28` 경로에서 진행 중인 HTTP 호출에만 적용한다. 여러 클라이언트를 동시에 연결할 때 호출 ID를 서로 겹치지 않게 사용한다. 취소 알림으로 이미 대기열에 추가한 이미지·학습 요청을 취소하지는 않는다. 접수 후 실행 중인 업무는 `eidolon_cancel_work`, 대기 업무는 `eidolon_clear_pending`을 사용한다.
 
 ## Windows HTTP URL 예약
 

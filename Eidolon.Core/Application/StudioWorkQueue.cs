@@ -87,7 +87,23 @@ namespace Eidolon.Core.Application
 
         public Task CancelCurrentAsync()
         {
+            return CancelCurrentAsync(null);
+        }
+
+        public Task CancelCurrentAsync(string expectedTitle)
+        {
             WorkRequest request = Volatile.Read(ref _currentRequest);
+            if (expectedTitle != null)
+            {
+                if (request == null)
+                {
+                    throw new ArgumentException("The requested work is no longer running.", nameof(expectedTitle));
+                }
+                if (string.Equals(request.Title, expectedTitle, StringComparison.Ordinal) == false)
+                {
+                    throw new ArgumentException("The current work changed. Read the current status again.", nameof(expectedTitle));
+                }
+            }
             if (request == null)
             {
                 return Task.CompletedTask;
