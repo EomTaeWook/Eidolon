@@ -19,7 +19,7 @@ Bough의 정식 릴리스 조회, 검증한 임시 다운로드, 정상 종료 �
 
 시작 시 조회와 수동 조회는 기존 `AppUpdateViewModel.CheckAsync`·`_checking`·취소 토큰을 공유한다. 초기화가 끝난 `StudioViewModel`은 `CheckOnStartup`으로 조회를 시작하고 완료를 기다리지 않는다. `AppUpdateViewModel`이 실행당 자동 조회 한 번을 소유하고 종료 시 기존 `CloseAsync`에서 취소·대기한다. 설치는 생성·학습·대기 작업과 예약 작업이 없을 때 기존 `StudioWorkPresenter`의 유지 관리 요청으로 추가한다. 별도 큐를 만들지 않는다. 업데이트 카드에는 버전·상태·기존 실행 버튼만 두며 진행 막대를 표시하지 않는다. 업데이트 확인·다운로드 진행률과 활동 문구는 MainWindow의 하단 공통 상태 영역에 표시한다. 실행 중인 공용 큐 작업이 있으면 기존 작업 진행률을 우선하고, 다운로드 중에는 기존 StudioSession 진행률 연결을 사용한다. 업데이트 확인은 기존 Updates.IsBusy·Percentage·IsIndeterminate 바인딩으로 하단에 표시하며 시작 화면을 막지 않는다. 요청에 고정한 릴리스 정보만 사용하며 설치 중에는 새 생성 요청을 받지 않는다.
 
-파일은 `%TEMP%/Eidolon/application-update/<GUID>`에서 준비한다. 설치 담당은 검증한 EXE 또는 ZIP을 별도 요청 폴더에 복사하고 현재 실행 파일을 Windows의 `helper.exe` 또는 macOS의 `helper`로 복사한다. macOS는 허용한 `Eidolon.app` 하위의 일반 파일·디렉터리만 제한된 크기로 추출하며 절대 경로·상위 이동·링크·중복 파일을 거부한다. 실행 권한과 bundle identifier·버전·Mach-O 아키텍처를 확인하고 현재·후보 번들의 전체 파일 해시를 종료 전후에 비교한다. 준비·취소·정리는 해당 요청의 고정 파일과 폴더에만 적용하며 사용자 설정·이미지·학습 데이터·엔진 설치는 건드리지 않는다.
+파일은 운영체제의 임시 폴더 아래 `Eidolon/application-update/<GUID>`에서 준비한다. macOS의 `/var` 같은 시스템 임시 경로 별칭은 요청 폴더를 만들기 전에 실제 경로로 정규화해 보조 프로세스의 실행 경로와 일치시킨다. 소유 폴더가 정해진 뒤에는 링크를 허용하지 않는다. 설치 담당은 검증한 EXE 또는 ZIP을 별도 요청 폴더에 복사하고 현재 실행 파일을 Windows의 `helper.exe` 또는 macOS의 `helper`로 복사한다. macOS는 허용한 `Eidolon.app` 하위의 일반 파일·디렉터리만 제한된 크기로 추출하며 절대 경로·상위 이동·링크·중복 파일을 거부한다. 실행 권한과 bundle identifier·버전·Mach-O 아키텍처를 확인하고 현재·후보 번들의 전체 파일 해시를 종료 전후에 비교한다. 준비·취소·정리는 해당 요청의 고정 파일과 폴더에만 적용하며 사용자 설정·이미지·학습 데이터·엔진 설치는 건드리지 않는다.
 
 준비가 끝나고 큐가 비면 App의 재시작 Presenter가 기존 MainWindow 닫기를 요청한다. `StudioViewModel.DisposeAsync`가 MCP·진행 중인 읽기·작업 큐·앱 소유 엔진을 정상 정리한다. UI 수명이 반환된 뒤에만 `Program`이 보조 프로세스의 설치를 승인한다. 예외로 앱이 종료되거나 승인 없이 원래 프로세스가 종료되면 실행 파일을 교체하지 않는다.
 

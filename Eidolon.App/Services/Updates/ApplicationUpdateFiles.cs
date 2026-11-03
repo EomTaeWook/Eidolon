@@ -11,7 +11,26 @@ namespace Eidolon.App.Services
 
         public ApplicationUpdateFiles()
         {
-            _updateRoot = Path.Combine(Path.GetTempPath(), "Eidolon", "application-update");
+            string temporaryDirectory = Path.GetFullPath(Path.GetTempPath());
+            if (OperatingSystem.IsMacOS() == true)
+            {
+                // macOS exposes system aliases such as /var, while ProcessPath resolves them.
+                // Resolve only the existing OS temp path before establishing our owned root.
+                string resolvedDirectory = Path.GetPathRoot(temporaryDirectory);
+                string relativeDirectory = Path.GetRelativePath(resolvedDirectory, temporaryDirectory);
+                foreach (string component in relativeDirectory.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    string componentPath = Path.Combine(resolvedDirectory, component);
+                    FileSystemInfo linkTarget = Directory.ResolveLinkTarget(componentPath, true);
+                    resolvedDirectory = componentPath;
+                    if (linkTarget != null)
+                    {
+                        resolvedDirectory = linkTarget.FullName;
+                    }
+                }
+                temporaryDirectory = resolvedDirectory;
+            }
+            _updateRoot = Path.Combine(temporaryDirectory, "Eidolon", "application-update");
         }
 
         internal string UpdateRoot
