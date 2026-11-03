@@ -11,21 +11,24 @@ namespace Eidolon.Core.Infrastructure
                 {
                     return string.Empty;
                 }
-                if (File.Exists(path) == false)
-                {
-                    return string.Empty;
-                }
-                if (Path.GetExtension(path).Equals(".exe", StringComparison.OrdinalIgnoreCase) == false)
+                if (IsExecutable(path) == false)
                 {
                     return string.Empty;
                 }
                 return Path.GetFullPath(path);
             }
-            string installed = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Programs", "OpenAI", "Codex", "bin", "codex.exe");
-            if (File.Exists(installed) == true)
+            string executableName = "codex.exe";
+            if (OperatingSystem.IsMacOS() == true)
             {
-                return installed;
+                executableName = "codex";
+            }
+            if (OperatingSystem.IsMacOS() == false)
+            {
+                string installed = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "OpenAI", "Codex", "bin", "codex.exe");
+                if (IsExecutable(installed) == true)
+                {
+                    return installed;
+                }
             }
             string searchPath = Environment.GetEnvironmentVariable("PATH");
             if (string.IsNullOrWhiteSpace(searchPath) == false)
@@ -37,14 +40,62 @@ namespace Eidolon.Core.Infrastructure
                     {
                         continue;
                     }
-                    string candidate = Path.Combine(directory, "codex.exe");
-                    if (File.Exists(candidate) == true)
+                    string candidate = Path.Combine(directory, executableName);
+                    if (IsExecutable(candidate) == true)
+                    {
+                        return candidate;
+                    }
+                }
+            }
+            if (OperatingSystem.IsMacOS() == true)
+            {
+                foreach (string directory in new string[] { "/opt/homebrew/bin", "/usr/local/bin" })
+                {
+                    string candidate = Path.Combine(directory, executableName);
+                    if (IsExecutable(candidate) == true)
                     {
                         return candidate;
                     }
                 }
             }
             return string.Empty;
+        }
+
+        private bool IsExecutable(string path)
+        {
+            if (File.Exists(path) == false)
+            {
+                return false;
+            }
+            if (OperatingSystem.IsMacOS() == false)
+            {
+                return Path.GetExtension(path).Equals(".exe", StringComparison.OrdinalIgnoreCase);
+            }
+            try
+            {
+                if (OperatingSystem.IsWindows())
+                {
+                    return false;
+                }
+                UnixFileMode permissions = File.GetUnixFileMode(path);
+                if ((permissions & UnixFileMode.UserExecute) != 0)
+                {
+                    return true;
+                }
+                if ((permissions & UnixFileMode.GroupExecute) != 0)
+                {
+                    return true;
+                }
+                return (permissions & UnixFileMode.OtherExecute) != 0;
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
         }
     }
 }

@@ -7004,8 +7004,8 @@
   {
     "Id": 3757,
     "Name": "EidolonText678",
-    "Kor": "\uC571 \uC5C5\uB370\uC774\uD2B8\uB294 Windows x64 \uB2E8\uC77C \uC2E4\uD589 \uD30C\uC77C \uBC30\uD3EC\uBCF8\uC5D0\uC11C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
-    "Eng": "App updates require the published Windows x64 single executable."
+    "Kor": "\uC571 \uC5C5\uB370\uC774\uD2B8\uB294 Windows x64 \uC2E4\uD589 \uD30C\uC77C \uB610\uB294 macOS \uC571 \uBC30\uD3EC\uBCF8\uC5D0\uC11C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "App updates require the published Windows x64 executable or macOS app bundle."
   },
   {
     "Id": 3758,
@@ -7040,8 +7040,8 @@
   {
     "Id": 3763,
     "Name": "EidolonText684",
-    "Kor": "Windows x64 \uC2E4\uD589 \uD30C\uC77C\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uB9B4\uB9AC\uC2A4 \uB0B4\uC6A9\uC744 \uD655\uC778\uD558\uC138\uC694.",
-    "Eng": "The Windows x64 executable could not be found. Check the release notes."
+    "Kor": "\uD604\uC7AC \uC6B4\uC601\uCCB4\uC81C\uC640 \uC544\uD0A4\uD14D\uCC98\uC5D0 \uB9DE\uB294 \uBC30\uD3EC \uD30C\uC77C\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uB9B4\uB9AC\uC2A4 \uB0B4\uC6A9\uC744 \uD655\uC778\uD558\uC138\uC694.",
+    "Eng": "A release asset for this operating system and architecture could not be found. Check the release notes."
   },
   {
     "Id": 3764,

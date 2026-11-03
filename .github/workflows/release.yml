@@ -1,0 +1,107 @@
+name: Build release packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Stable version tag used for package names
+        required: true
+        default: v1.0.3
+        type: string
+      source_ref:
+        description: Source branch, commit or existing tag to build
+        required: true
+        default: main
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Package ${{ matrix.runtime }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runtime: win-x64
+            runner: windows-2025
+            profile: WindowsX64
+          - runtime: osx-arm64
+            runner: macos-15
+            profile: MacOsArm64
+          - runtime: osx-x64
+            runner: macos-15-intel
+            profile: MacOsX64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      RUNTIME_IDENTIFIER: ${{ matrix.runtime }}
+      PUBLISH_PROFILE: ${{ matrix.profile }}
+      DOTNET_NOLOGO: '1'
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ inputs.source_ref }}
+          submodules: recursive
+          persist-credentials: false
+      - name: Set up .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Read release version
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:RELEASE_TAG -notmatch '^v(\d+\.\d+\.\d+)$') {
+              throw 'A stable vMajor.Minor.Patch release tag is required.'
+          }
+          $releaseVersion = $Matches[1]
+          [xml]$project = Get-Content -LiteralPath 'Eidolon.App/Eidolon.App.csproj' -Raw
+          if ($project.Project.PropertyGroup.Version -ne $releaseVersion) {
+              throw 'The release tag and application version do not match.'
+          }
+          $sourceCommit = git rev-parse HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Reading the release commit failed.' }
+          "RELEASE_VERSION=$releaseVersion" >> $env:GITHUB_ENV
+          "SOURCE_COMMIT=$sourceCommit" >> $env:GITHUB_ENV
+      - name: Publish self-contained application
+        run: |
+          dotnet publish Eidolon.App/Eidolon.App.csproj -c Release -p:PublishProfile=$env:PUBLISH_PROFILE -p:SourceRevisionId=$env:SOURCE_COMMIT -o artifacts/publish -m:1 /p:UseSharedCompilation=false -nr:false --verbosity minimal
+          if ($LASTEXITCODE -ne 0) { throw 'Publishing failed.' }
+      - name: Package Windows executable
+        if: matrix.runtime == 'win-x64'
+        run: |
+          New-Item -ItemType Directory -Path artifacts/packages -Force | Out-Null
+          Copy-Item -LiteralPath artifacts/publish/Eidolon.exe -Destination ('artifacts/packages/Eidolon-' + $env:RELEASE_TAG + '-win-x64.exe')
+      - name: Package macOS application
+        if: startsWith(matrix.runtime, 'osx-')
+        run: |
+          ./Scripts/Package-MacOs.ps1 -PublishDirectory artifacts/publish -OutputDirectory artifacts/packages -Version $env:RELEASE_VERSION -RuntimeIdentifier $env:RUNTIME_IDENTIFIER
+      - name: Record source and package hashes
+        run: |
+          $ErrorActionPreference = 'Stop'
+          [System.IO.File]::WriteAllText((Join-Path $PWD 'artifacts/packages/source-commit.txt'), $env:SOURCE_COMMIT + "`n", [System.Text.UTF8Encoding]::new($false))
+          $packageFiles = Get-ChildItem -LiteralPath artifacts/packages -File | Where-Object { $_.Name.StartsWith('Eidolon-') }
+          $hashLines = foreach ($packageFile in $packageFiles) {
+              $packageHash = (Get-FileHash -LiteralPath $packageFile.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+              $packageHash + '  ' + $packageFile.Name
+          }
+          [System.IO.File]::WriteAllLines((Join-Path $PWD 'artifacts/packages/SHA256SUMS.txt'), [string[]]$hashLines, [System.Text.UTF8Encoding]::new($false))
+      - name: Upload packages for release publication
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: Eidolon-${{ inputs.release_tag }}-${{ matrix.runtime }}
+          path: |
+            artifacts/packages/Eidolon-*.exe
+            artifacts/packages/Eidolon-*.app.zip
+            artifacts/packages/source-commit.txt
+            artifacts/packages/SHA256SUMS.txt
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14

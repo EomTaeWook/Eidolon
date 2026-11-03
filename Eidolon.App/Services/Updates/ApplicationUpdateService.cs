@@ -16,13 +16,15 @@ namespace Eidolon.App.Services
         private const string _releasePrefix = "https://github.com/EomTaeWook/Eidolon/releases/tag/";
         private const string _assetPrefix = "https://github.com/EomTaeWook/Eidolon/releases/download/";
         private const long _maximumAssetSize = 1024L * 1024 * 1024;
+        private readonly ApplicationUpdateInstaller _installer;
         private readonly HttpClient _client;
         private readonly ApplicationUpdateFiles _files;
         private readonly ApplicationUpdateEnvironment _environment;
 
-        public ApplicationUpdateService(ApplicationUpdateEnvironment environment, HttpClient client, ApplicationUpdateFiles files)
+        public ApplicationUpdateService(ApplicationUpdateEnvironment environment, HttpClient client, ApplicationUpdateFiles files, ApplicationUpdateInstaller installer)
         {
             _environment = environment;
+            _installer = installer;
             _client = client;
             _files = files;
         }
@@ -54,59 +56,12 @@ namespace Eidolon.App.Services
 
         internal ApplicationUpdateMessageCode GetInstallBlockedCode()
         {
-            if (OperatingSystem.IsWindows() == false)
-            {
-                return ApplicationUpdateMessageCode.DeploymentRequired;
-            }
-            if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
-            {
-                return ApplicationUpdateMessageCode.DeploymentRequired;
-            }
-            if (_environment.PublishedSingleFile == false)
-            {
-                return ApplicationUpdateMessageCode.DeploymentRequired;
-            }
-            if (Debugger.IsAttached == true)
-            {
-                return ApplicationUpdateMessageCode.DeploymentRequired;
-            }
-            string path = _environment.ExecutablePath;
-            if (string.IsNullOrWhiteSpace(path) == true)
-            {
-                return ApplicationUpdateMessageCode.DeploymentRequired;
-            }
-            if (Path.IsPathFullyQualified(path) == false)
-            {
-                return ApplicationUpdateMessageCode.DeploymentRequired;
-            }
-            string name = Path.GetFileNameWithoutExtension(path);
-            if (name.Equals("dotnet", StringComparison.OrdinalIgnoreCase) == true)
-            {
-                return ApplicationUpdateMessageCode.DeploymentRequired;
-            }
-            if (Path.GetExtension(path).Equals(".exe", StringComparison.OrdinalIgnoreCase) == false)
-            {
-                return ApplicationUpdateMessageCode.DeploymentRequired;
-            }
-            string directory = Path.GetDirectoryName(path);
-            if (File.Exists(Path.Combine(directory, "Eidolon.dll")) == true)
-            {
-                return ApplicationUpdateMessageCode.DeploymentRequired;
-            }
-            if (File.Exists(Path.Combine(directory, "Eidolon.deps.json")) == true)
-            {
-                return ApplicationUpdateMessageCode.DeploymentRequired;
-            }
-            return ApplicationUpdateMessageCode.None;
+            return _installer.GetInstallBlockedCode();
         }
 
         internal void ValidateInstallEnvironment()
         {
-            ApplicationUpdateMessageCode blocked = GetInstallBlockedCode();
-            if (blocked != ApplicationUpdateMessageCode.None)
-            {
-                throw new ApplicationUpdateException(blocked, null, Array.Empty<object>());
-            }
+            _installer.ValidateInstallEnvironment();
         }
 
         internal ApplicationUpdateEnvironment Environment
@@ -205,20 +160,16 @@ namespace Eidolon.App.Services
             }
         }
 
-        private static ApplicationUpdateRelease ReadAsset(JsonElement root, string tag, string version, Uri page)
+        private ApplicationUpdateRelease ReadAsset(JsonElement root, string tag, string version, Uri page)
         {
-            string expectedName = "Eidolon-" + tag + "-win-x64.exe";
             JsonElement selected = default;
             int matches = 0;
             foreach (JsonElement asset in root.GetProperty("assets").EnumerateArray())
             {
                 string name = asset.GetProperty("name").GetString();
-                if (name != expectedName)
+                if (_installer.MatchesAssetName(name, tag) == false)
                 {
-                    if (name != "Eidolon.exe")
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 selected = asset;
                 matches++;
@@ -328,7 +279,7 @@ namespace Eidolon.App.Services
                         throw new ApplicationUpdateException(ApplicationUpdateMessageCode.DownloadIncomplete, null, Array.Empty<object>());
                     }
                 }
-                string verified = Path.Combine(directory, "verified.exe");
+                string verified = Path.Combine(directory, _installer.CandidateFileName);
                 await _files.VerifyHashAsync(partial, release.Sha256, downloadToken).ConfigureAwait(false);
                 downloadToken.ThrowIfCancellationRequested();
                 File.Move(partial, verified);

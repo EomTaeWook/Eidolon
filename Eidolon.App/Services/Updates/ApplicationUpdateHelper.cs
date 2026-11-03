@@ -6,33 +6,46 @@ namespace Eidolon.App.Services
     public class ApplicationUpdateHelper
     {
         private readonly ApplicationUpdateFiles _files;
+        private readonly ApplicationUpdateInstaller _installer;
 
-        public ApplicationUpdateHelper(ApplicationUpdateFiles files)
+        public ApplicationUpdateHelper(ApplicationUpdateFiles files, ApplicationUpdateInstaller installer)
         {
             _files = files;
+            _installer = installer;
         }
 
         public static Task<int> RunHelperAsync(string manifestPath)
         {
-            ApplicationUpdateHelper helper = new ApplicationUpdateHelper(new ApplicationUpdateFiles());
+            ApplicationUpdateHelper helper = CreateHelper();
             return helper.RunAsync(manifestPath);
         }
 
         public static Task CleanupAfterHelperAsync(string directory, int helperPid)
         {
-            ApplicationUpdateHelper helper = new ApplicationUpdateHelper(new ApplicationUpdateFiles());
+            ApplicationUpdateHelper helper = CreateHelper();
             return helper.CleanupAsync(directory, helperPid);
+        }
+
+        private static ApplicationUpdateHelper CreateHelper()
+        {
+            ApplicationUpdateFiles files = new ApplicationUpdateFiles();
+            ApplicationUpdateEnvironment environment = App.CreateUpdateEnvironment();
+            ApplicationUpdateInstaller installer;
+            if (OperatingSystem.IsMacOS() == true)
+            {
+                installer = new MacOsApplicationUpdateInstaller(environment, files);
+            }
+            else
+            {
+                installer = new WindowsApplicationUpdateInstaller(environment, files);
+            }
+            return new ApplicationUpdateHelper(files, installer);
         }
 
         private async Task<int> RunAsync(string manifestPath)
         {
             string directory = null;
             ApplicationUpdateInstallManifest manifest = null;
-            string backup = null;
-            string incoming = null;
-            bool replaced = false;
-            bool canRestart = false;
-            ApplicationUpdateMessageCode failureCode = ApplicationUpdateMessageCode.None;
             try
             {
                 directory = Path.GetDirectoryName(Path.GetFullPath(manifestPath));
@@ -41,8 +54,8 @@ namespace Eidolon.App.Services
                 {
                     return 1;
                 }
-                string helperPath = Path.Combine(directory, "helper.exe");
-                if (string.Equals(Environment.ProcessPath, helperPath, StringComparison.OrdinalIgnoreCase) == false)
+                string helperPath = Path.Combine(directory, _installer.HelperFileName);
+                if (string.Equals(Environment.ProcessPath, helperPath, _files.PathComparison) == false)
                 {
                     return 1;
                 }
@@ -63,7 +76,7 @@ namespace Eidolon.App.Services
                 {
                     return 1;
                 }
-                if (string.Equals(original.MainModule.FileName, manifest.InstallPath, StringComparison.OrdinalIgnoreCase) == false)
+                if (string.Equals(original.MainModule.FileName, manifest.InstallPath, _files.PathComparison) == false)
                 {
                     return 1;
                 }
@@ -96,73 +109,13 @@ namespace Eidolon.App.Services
                 {
                     return 0;
                 }
-                canRestart = true;
-                // Fixed target must still be the original executable, not a replaced path or link.
-                _files.ValidatePlainFile(manifest.InstallPath);
-                await _files.VerifyHashAsync(manifest.InstallPath, manifest.InstalledSha256, CancellationToken.None).ConfigureAwait(false);
-                string candidate = Path.Combine(directory, "verified.exe");
-                _files.ValidatePlainFile(candidate);
-                if (new FileInfo(candidate).Length != manifest.CandidateSize)
-                {
-                    throw new ApplicationUpdateException(ApplicationUpdateMessageCode.DownloadIncomplete, null, Array.Empty<object>());
-                }
-                await _files.VerifyHashAsync(candidate, manifest.CandidateSha256, CancellationToken.None).ConfigureAwait(false);
-                string unique = Guid.NewGuid().ToString("N");
-                incoming = Path.Combine(manifest.WorkingDirectory, ".eidolon-update-" + unique + ".new");
-                backup = Path.Combine(manifest.WorkingDirectory, ".eidolon-update-" + unique + ".backup");
-                File.Copy(candidate, incoming, false);
-                await _files.VerifyHashAsync(incoming, manifest.CandidateSha256, CancellationToken.None).ConfigureAwait(false);
-                File.Replace(incoming, manifest.InstallPath, backup);
-                replaced = true;
-                StartInstalled(manifest, directory, ApplicationUpdateMessageCode.None);
-                // Keep the original until launching the replacement has succeeded.
-                _files.TryDeleteFile(backup);
-                backup = null;
+                await _installer.InstallAndRestartAsync(manifest, directory).ConfigureAwait(false);
                 return 0;
             }
             catch (Exception)
             {
-                failureCode = ApplicationUpdateMessageCode.ReplaceFailed;
-                if (replaced == true)
-                {
-                    failureCode = ApplicationUpdateMessageCode.LaunchFailed;
-                    try
-                    {
-                        File.Replace(backup, manifest.InstallPath, null);
-                        backup = null;
-                    }
-                    catch (Exception)
-                    {
-                        // Retain the original backup if the OS prevents restoration.
-                        failureCode = ApplicationUpdateMessageCode.RollbackFailed;
-                    }
-                }
-                if (canRestart == true)
-                {
-                    if (failureCode != ApplicationUpdateMessageCode.RollbackFailed)
-                    {
-                        try
-                        {
-                            _files.ValidatePlainFile(manifest.InstallPath);
-                            await _files.VerifyHashAsync(manifest.InstallPath, manifest.InstalledSha256, CancellationToken.None).ConfigureAwait(false);
-                            StartInstalled(manifest, directory, failureCode);
-                        }
-                        catch (Exception)
-                        {
-                            // No arbitrary alternate executable, elevation, or reboot scheduling.
-                        }
-                    }
-                }
+                // Platform replacement owns restoration and relaunch after authorization.
                 return 1;
-            }
-            finally
-            {
-                if (incoming != null)
-                {
-                    _files.TryDeleteFile(incoming);
-                }
-                // The running helper cannot delete itself on Windows. The relaunched app removes
-                // this fixed request directory after the helper PID exits; no shared temp sweep.
             }
         }
 
@@ -214,15 +167,8 @@ namespace Eidolon.App.Services
             {
                 throw new ApplicationUpdateException(ApplicationUpdateMessageCode.PrepareFailed, null, Array.Empty<object>());
             }
-            if (Path.GetExtension(manifest.InstallPath).Equals(".exe", StringComparison.OrdinalIgnoreCase) == false)
-            {
-                throw new ApplicationUpdateException(ApplicationUpdateMessageCode.PrepareFailed, null, Array.Empty<object>());
-            }
-            if (string.Equals(Path.GetDirectoryName(manifest.InstallPath), manifest.WorkingDirectory, StringComparison.OrdinalIgnoreCase) == false)
-            {
-                throw new ApplicationUpdateException(ApplicationUpdateMessageCode.PrepareFailed, null, Array.Empty<object>());
-            }
-            if (manifest.InstallPath.StartsWith(_files.UpdateRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) == true)
+            _installer.ValidatePlatformManifest(manifest);
+            if (manifest.InstallPath.StartsWith(_files.UpdateRoot + Path.DirectorySeparatorChar, _files.PathComparison) == true)
             {
                 throw new ApplicationUpdateException(ApplicationUpdateMessageCode.PrepareFailed, null, Array.Empty<object>());
             }
@@ -242,26 +188,7 @@ namespace Eidolon.App.Services
             {
                 throw new ApplicationUpdateException(ApplicationUpdateMessageCode.PrepareFailed, null, Array.Empty<object>());
             }
-            _files.ValidatePlainFile(Path.Combine(directory, "verified.exe"));
-        }
-
-        private void StartInstalled(ApplicationUpdateInstallManifest manifest, string directory, ApplicationUpdateMessageCode failureCode)
-        {
-            ProcessStartInfo start = new ProcessStartInfo(manifest.InstallPath);
-            start.UseShellExecute = false;
-            start.WorkingDirectory = manifest.WorkingDirectory;
-            start.ArgumentList.Add("--eidolon-update-cleanup");
-            start.ArgumentList.Add(directory);
-            start.ArgumentList.Add(Environment.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            if (failureCode != ApplicationUpdateMessageCode.None)
-            {
-                start.ArgumentList.Add(failureCode.ToString());
-            }
-            using Process relaunched = Process.Start(start);
-            if (relaunched == null)
-            {
-                throw new ApplicationUpdateException(ApplicationUpdateMessageCode.LaunchFailed, null, Array.Empty<object>());
-            }
+            _files.ValidatePlainFile(Path.Combine(directory, _installer.CandidateFileName));
         }
 
     }

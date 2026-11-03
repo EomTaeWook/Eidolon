@@ -8,9 +8,17 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 ## Download
 
-[Download Eidolon v1.0.2 for Windows x64](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.2/Eidolon-v1.0.2-win-x64.exe) · [Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.2)
+| Platform | Download |
+|---|---|
+| Windows x64 | [Eidolon-v1.0.3-win-x64.exe](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.3/Eidolon-v1.0.3-win-x64.exe) |
+| macOS 14+ · Apple Silicon | [Eidolon-v1.0.3-osx-arm64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.3/Eidolon-v1.0.3-osx-arm64.app.zip) |
+| macOS 14+ · Intel | [Eidolon-v1.0.3-osx-x64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.3/Eidolon-v1.0.3-osx-x64.app.zip) |
 
-Run the single `.exe` file. No extraction or separate .NET installation is required. For Codex, sign in to your installed Codex first. For ComfyUI, prepare the engine and models through the app.
+[Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.3)
+
+On Windows, run the single `.exe`. On Mac, extract the ZIP, move `Eidolon.app` to a writable Applications folder, and open it in Finder. No separate .NET installation is required. The Mac apps are ad-hoc signed without Apple notarization; the first launch may require approval under Privacy & Security in System Settings.
+
+On Mac, use your installed, signed-in Codex or an external ComfyUI server. Local ComfyUI, training and prompt-converter installation remain Windows x64 only. Both platforms check for updates once at startup. **Update and restart** inside the app performs download, verification, normal shutdown, replacement and restart.
 
 ## Actual app screens
 

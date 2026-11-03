@@ -4,20 +4,91 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Dignus.DependencyInjection.Attributes;
 
 namespace Eidolon.App.Services
 {
-    [Injectable(Dignus.DependencyInjection.LifeScope.Singleton)]
-    public class ApplicationUpdateInstaller
+    public abstract class ApplicationUpdateInstaller
     {
-        private readonly ApplicationUpdateService _updates;
+        private readonly ApplicationUpdateEnvironment _environment;
         private readonly ApplicationUpdateFiles _files;
 
-        public ApplicationUpdateInstaller(ApplicationUpdateService updates, ApplicationUpdateFiles files)
+        public ApplicationUpdateInstaller(ApplicationUpdateEnvironment environment, ApplicationUpdateFiles files)
         {
-            _updates = updates;
+            _environment = environment;
             _files = files;
+        }
+
+        internal abstract string CandidateFileName { get; }
+        internal abstract string HelperFileName { get; }
+        internal abstract bool MatchesAssetName(string name, string tag);
+        protected abstract ApplicationUpdateMessageCode GetPlatformBlockedCode();
+        internal abstract void ValidatePlatformManifest(ApplicationUpdateInstallManifest manifest);
+        internal abstract Task InstallAndRestartAsync(ApplicationUpdateInstallManifest manifest, string directory);
+
+        protected ApplicationUpdateEnvironment Environment
+        {
+            get
+            {
+                return _environment;
+            }
+        }
+
+        protected ApplicationUpdateFiles Files
+        {
+            get
+            {
+                return _files;
+            }
+        }
+
+        protected virtual Task PreparePackageAsync(ApplicationUpdateInstallManifest manifest, string directory, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        internal ApplicationUpdateMessageCode GetInstallBlockedCode()
+        {
+            if (_environment.PublishedSingleFile == false)
+            {
+                return ApplicationUpdateMessageCode.DeploymentRequired;
+            }
+            if (Debugger.IsAttached == true)
+            {
+                return ApplicationUpdateMessageCode.DeploymentRequired;
+            }
+            string path = _environment.ExecutablePath;
+            if (string.IsNullOrWhiteSpace(path) == true)
+            {
+                return ApplicationUpdateMessageCode.DeploymentRequired;
+            }
+            if (Path.IsPathFullyQualified(path) == false)
+            {
+                return ApplicationUpdateMessageCode.DeploymentRequired;
+            }
+            string name = Path.GetFileNameWithoutExtension(path);
+            if (name.Equals("dotnet", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return ApplicationUpdateMessageCode.DeploymentRequired;
+            }
+            string directory = Path.GetDirectoryName(path);
+            if (File.Exists(Path.Combine(directory, "Eidolon.dll")) == true)
+            {
+                return ApplicationUpdateMessageCode.DeploymentRequired;
+            }
+            if (File.Exists(Path.Combine(directory, "Eidolon.deps.json")) == true)
+            {
+                return ApplicationUpdateMessageCode.DeploymentRequired;
+            }
+            return GetPlatformBlockedCode();
+        }
+
+        internal void ValidateInstallEnvironment()
+        {
+            ApplicationUpdateMessageCode blocked = GetInstallBlockedCode();
+            if (blocked != ApplicationUpdateMessageCode.None)
+            {
+                throw new ApplicationUpdateException(blocked, null, Array.Empty<object>());
+            }
         }
 
         public Task<ApplicationUpdateInstallPlan> PrepareAsync(VerifiedApplicationUpdate update, CancellationToken cancellationToken = default)
@@ -31,7 +102,7 @@ namespace Eidolon.App.Services
             string directory = null;
             try
             {
-                _updates.ValidateInstallEnvironment();
+                ValidateInstallEnvironment();
                 _files.ValidateOwnedDirectory(update.Directory);
                 _files.ValidatePlainFile(update.FilePath);
                 await _files.VerifyHashAsync(update.FilePath, update.Release.Sha256, cancellationToken).ConfigureAwait(false);
@@ -39,14 +110,14 @@ namespace Eidolon.App.Services
                 {
                     throw new ApplicationUpdateException(ApplicationUpdateMessageCode.DownloadIncomplete, null, Array.Empty<object>());
                 }
-                string installed = Path.GetFullPath(_updates.Environment.ExecutablePath);
+                string installed = Path.GetFullPath(_environment.ExecutablePath);
                 _files.ValidatePlainFile(installed);
                 using Process original = Process.GetCurrentProcess();
                 string installedHash = await _files.GetHashAsync(installed, cancellationToken).ConfigureAwait(false);
                 directory = _files.CreateOwnedDirectory();
-                string candidate = Path.Combine(directory, "verified.exe");
+                string candidate = Path.Combine(directory, CandidateFileName);
                 File.Copy(update.FilePath, candidate, false);
-                File.Copy(installed, Path.Combine(directory, "helper.exe"), false);
+                File.Copy(installed, Path.Combine(directory, HelperFileName), false);
                 cancellationToken.ThrowIfCancellationRequested();
                 ApplicationUpdateInstallManifest manifest = new ApplicationUpdateInstallManifest();
                 manifest.OriginalPid = original.Id;
@@ -57,6 +128,8 @@ namespace Eidolon.App.Services
                 manifest.CandidateSize = update.Release.Size;
                 manifest.Nonce = Guid.NewGuid().ToString("N");
                 manifest.WorkingDirectory = Path.GetDirectoryName(installed);
+                manifest.CandidateVersion = update.Release.Version;
+                await PreparePackageAsync(manifest, directory, cancellationToken).ConfigureAwait(false);
                 await File.WriteAllTextAsync(Path.Combine(directory, "install.json"), JsonSerializer.Serialize(manifest), cancellationToken).ConfigureAwait(false);
                 return new ApplicationUpdateInstallPlan(directory, manifest.Nonce, update);
             }
@@ -93,7 +166,7 @@ namespace Eidolon.App.Services
             {
                 _files.ValidateOwnedDirectory(plan.Directory);
                 cancellationToken.ThrowIfCancellationRequested();
-                ProcessStartInfo start = new ProcessStartInfo(Path.Combine(plan.Directory, "helper.exe"));
+                ProcessStartInfo start = new ProcessStartInfo(Path.Combine(plan.Directory, HelperFileName));
                 start.UseShellExecute = false;
                 start.CreateNoWindow = true;
                 start.WorkingDirectory = plan.Directory;
@@ -213,6 +286,25 @@ namespace Eidolon.App.Services
             finally
             {
                 plan.Helper?.Dispose();
+            }
+        }
+
+        protected static void StartInstalled(ApplicationUpdateInstallManifest manifest, string directory, ApplicationUpdateMessageCode failureCode)
+        {
+            ProcessStartInfo start = new ProcessStartInfo(manifest.InstallPath);
+            start.UseShellExecute = false;
+            start.WorkingDirectory = manifest.WorkingDirectory;
+            start.ArgumentList.Add("--eidolon-update-cleanup");
+            start.ArgumentList.Add(directory);
+            start.ArgumentList.Add(System.Environment.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            if (failureCode != ApplicationUpdateMessageCode.None)
+            {
+                start.ArgumentList.Add(failureCode.ToString());
+            }
+            using Process relaunched = Process.Start(start);
+            if (relaunched == null)
+            {
+                throw new ApplicationUpdateException(ApplicationUpdateMessageCode.LaunchFailed, null, Array.Empty<object>());
             }
         }
 

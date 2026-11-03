@@ -81,8 +81,16 @@ namespace Eidolon.App
             _serviceContainer.RegisterType<Application>(this);
             _serviceContainer.RegisterType(desktop);
             _serviceContainer.RegisterType(CreateUpdateEnvironment());
+            if (OperatingSystem.IsMacOS() == true)
+            {
+                _serviceContainer.RegisterType<ApplicationUpdateInstaller, MacOsApplicationUpdateInstaller>(LifeScope.Singleton);
+            }
+            else
+            {
+                _serviceContainer.RegisterType<ApplicationUpdateInstaller, WindowsApplicationUpdateInstaller>(LifeScope.Singleton);
+            }
             _serviceContainer.RegisterType<ApplicationUpdateService>(provider => new ApplicationUpdateService(
-                provider.GetService<ApplicationUpdateEnvironment>(), _updateHttp, provider.GetService<ApplicationUpdateFiles>()), LifeScope.Singleton);
+                provider.GetService<ApplicationUpdateEnvironment>(), _updateHttp, provider.GetService<ApplicationUpdateFiles>(), provider.GetService<ApplicationUpdateInstaller>()), LifeScope.Singleton);
             _serviceContainer.RegisterType(TimeProvider.System);
             _serviceContainer.RegisterType(new StringLanguageSelection(new DesktopSettings().Language));
             _serviceContainer.RegisterType<AtomicJsonFile, AtomicJsonFile>(LifeScope.Singleton);
@@ -128,7 +136,7 @@ namespace Eidolon.App
             DisposeClients();
         }
 
-        private ApplicationUpdateEnvironment CreateUpdateEnvironment()
+        internal static ApplicationUpdateEnvironment CreateUpdateEnvironment()
         {
             Assembly assembly = typeof(App).Assembly;
             AssemblyInformationalVersionAttribute version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();

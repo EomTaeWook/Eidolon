@@ -6,7 +6,7 @@ namespace Eidolon.App.Services
     [Injectable(Dignus.DependencyInjection.LifeScope.Singleton)]
     public class ApplicationUpdateFiles
     {
-        private static readonly string[] _ownedNames = { "download.partial", "verified.exe", "helper.exe", "install.json", "ready", "authorized", "cancel" };
+        private static readonly string[] _ownedNames = { "download.partial", "verified.exe", "verified.zip", "helper.exe", "helper", "install.json", "ready", "authorized", "cancel" };
         private readonly string _updateRoot;
 
         public ApplicationUpdateFiles()
@@ -19,6 +19,18 @@ namespace Eidolon.App.Services
             get
             {
                 return _updateRoot;
+            }
+        }
+
+        internal StringComparison PathComparison
+        {
+            get
+            {
+                if (OperatingSystem.IsWindows() == true)
+                {
+                    return StringComparison.OrdinalIgnoreCase;
+                }
+                return StringComparison.Ordinal;
             }
         }
 
@@ -51,6 +63,11 @@ namespace Eidolon.App.Services
             }
             try
             {
+                string bundle = Path.Combine(directory, "Eidolon.app");
+                if (Directory.Exists(bundle) == true)
+                {
+                    DeletePlainDirectoryTree(bundle);
+                }
                 Directory.Delete(directory, false);
             }
             catch (IOException)
@@ -59,6 +76,21 @@ namespace Eidolon.App.Services
             catch (UnauthorizedAccessException)
             {
             }
+        }
+
+        internal void DeletePlainDirectoryTree(string directory)
+        {
+            ValidateNoLink(directory);
+            foreach (string file in Directory.EnumerateFiles(directory))
+            {
+                ValidateNoLink(file);
+                File.Delete(file);
+            }
+            foreach (string child in Directory.EnumerateDirectories(directory))
+            {
+                DeletePlainDirectoryTree(child);
+            }
+            Directory.Delete(directory, false);
         }
 
         internal async Task VerifyHashAsync(string path, string expected, CancellationToken cancellationToken)
@@ -81,7 +113,7 @@ namespace Eidolon.App.Services
         {
             string full = Path.TrimEndingDirectorySeparator(Path.GetFullPath(directory));
             string parent = Path.GetDirectoryName(full);
-            if (string.Equals(parent, _updateRoot, StringComparison.OrdinalIgnoreCase) == false)
+            if (string.Equals(parent, _updateRoot, PathComparison) == false)
             {
                 throw new ApplicationUpdateException(ApplicationUpdateMessageCode.PrepareFailed, null, Array.Empty<object>());
             }

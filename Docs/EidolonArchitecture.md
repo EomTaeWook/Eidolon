@@ -37,7 +37,7 @@ flowchart LR
 | `Eidolon.App/ViewModels/Models`, `Eidolon.App/Models` | 기능별 화면 항목·선택·입력 모델과 사용자 설정 모델 | `AssetItem`, `GenerationItem`, `GenerationReferenceDraft`, `DesktopSettings` |
 | `Eidolon.App/Presenters` | 큐 진입, UI 스레드 복귀, 진행·취소와 예약 작업 수명 | `StudioWorkPresenter`, `StudioWorkState` |
 | `Eidolon.App/Services`, `Localization` | 대화상자, 사용자 설정, 언어·테마, 파일 로그와 메시지 번역 | `SettingsStore`, `DesktopSettings`, `StringHelper`, `StudioMessageTemplates` |
-| `Eidolon.App/Services/Updates`, `Models/Updates` | 앱 버전·릴리스 조회, 검증 다운로드, 실행 파일 교체·복원과 배포 모델 | `ApplicationUpdateService`, `ApplicationUpdateInstaller`, `ApplicationUpdateHelper`, `ApplicationReleaseVersion`, `ApplicationUpdateMessageCode` |
+| `Eidolon.App/Services/Updates`, `Models/Updates` | 앱 버전·릴리스 조회, 검증 다운로드, OS별 실행 파일·앱 번들 교체·복원과 배포 모델 | `ApplicationUpdateService`, `ApplicationUpdateInstaller`, `WindowsApplicationUpdateInstaller`, `MacOsApplicationUpdateInstaller`, `ApplicationUpdateHelper`, `ApplicationReleaseVersion`, `ApplicationUpdateMessageCode` |
 | `DataContainer/Generated` | Excel에서 생성한 템플릿·컨테이너·로더 | `StringTemplate`, `TemplateContainer`, `TemplateLoader` |
 | `Mcp.Core/Controllers`, `Transport`, `Protocol`, `Tools`, `Models` | HttpListener 전송, Dignus DI의 transient JSON-RPC 컨트롤러와 도구 등록·입력 계약 | `McpHttpServer`, `McpDispatcher`, `ToolsCallController`, `McpTool`, `McpServerOptions` |
 | `Eidolon.App/Mcp`, `ViewModels/Mcp` | `CreateTools()`·private 처리 메서드로 기존 생성·조회 경계를 연결하고 서버 수명·화면 상태 관리 | `McpService`, `McpViewModel` |
@@ -305,7 +305,7 @@ Debug에서는 출력 폴더의 `Datas`를 먼저 읽고 배포 시 App의 내�
 
 ## 개발과 배포 경계
 
-개발 SDK는 .NET 10, 대상은 `net10.0`, UI는 Avalonia 12.1.4이다. 이미지 처리용 SkiaSharp는 4.153.1을 사용한다. 런타임 설치와 로컬 프로세스 관리는 Windows x64를 대상으로 한다.
+개발 SDK는 .NET 10, 대상은 `net10.0`, UI는 Avalonia 12.1.4이다. 이미지 처리용 SkiaSharp는 4.153.1을 사용한다. 앱 배포와 자동 업데이트는 Windows x64·macOS ARM64·x64를 대상으로 한다. 운영체제별 업데이트 설치 담당은 App에서 DI로 선택하고 조회·다운로드·큐·종료 승인 수명은 공유한다. 로컬 엔진·학습·프롬프트 변환기 설치는 Windows x64를 대상으로 하며 macOS는 Codex와 외부 ComfyUI 연결을 사용한다. 세부 배포 계약은 [앱 업데이트](ApplicationUpdate.md)를 따른다.
 
 `WindowsX64.pubxml`은 win-x64 자체 포함 단일 EXE, 네이티브 라이브러리 포함, 트리밍 비활성화, 압축과 임베디드 디버그 정보를 설정한다. 필수 UI·문자열·고지 리소스는 앱에 포함한다. 사용자 설정·작업 데이터는 사용자 폴더, Python 엔진·모델은 선택 설치 경로에 둔다. 실행 파일 게시와 업로드는 Git 커밋·푸시와 별도 작업이다.
 

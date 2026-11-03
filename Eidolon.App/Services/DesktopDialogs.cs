@@ -39,11 +39,16 @@ namespace Eidolon.App.Services
 
         public async Task<string> PickCodexExecutableAsync()
         {
+            string[] executablePatterns = new string[] { "*.exe" };
+            if (OperatingSystem.IsMacOS() == true)
+            {
+                executablePatterns = new string[] { "*" };
+            }
             IReadOnlyList<IStorageFile> files = await _desktop.MainWindow.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = _strings.GetString("EidolonText532"),
                 AllowMultiple = false,
-                FileTypeFilter = new[] { new FilePickerFileType("Codex") { Patterns = new[] { "*.exe" } } }
+                FileTypeFilter = new[] { new FilePickerFileType("Codex") { Patterns = executablePatterns } }
             });
             if (files.Count == 0)
             {
