@@ -13,7 +13,6 @@ namespace Eidolon.App.Views
         private const int MinimumCardWidth = 220;
         private readonly ListBox _gallery;
         private int _galleryColumns = 2;
-        private double _galleryRowHeight;
         private TopLevel _topLevel;
 
         public ResultsView()
@@ -23,6 +22,7 @@ namespace Eidolon.App.Views
             _gallery.AddHandler(PointerPressedEvent, OnGalleryPointerPressed, RoutingStrategies.Tunnel);
             _gallery.AddHandler(GotFocusEvent, OnGalleryGotFocus, RoutingStrategies.Bubble);
             _gallery.LayoutUpdated += OnGalleryLayoutUpdated;
+            _gallery.AddHandler(ScrollViewer.ScrollChangedEvent, OnGalleryLayoutUpdated, RoutingStrategies.Bubble);
             AttachedToVisualTree += OnResultsAttachedToVisualTree;
             DetachedFromVisualTree += OnResultsDetachedFromVisualTree;
         }
@@ -147,6 +147,19 @@ namespace Eidolon.App.Views
             args.Handled = true;
         }
 
+        private void OnGalleryFilterSelectionChanged(object sender, SelectionChangedEventArgs args)
+        {
+            if (_gallery == null)
+            {
+                return;
+            }
+            ScrollViewer scrollViewer = _gallery.GetVisualDescendants().OfType<ScrollViewer>().FirstOrDefault();
+            if (scrollViewer != null)
+            {
+                scrollViewer.Offset = new Vector(0, 0);
+            }
+        }
+
         private void OnGalleryLayoutUpdated(object sender, EventArgs args)
         {
             if (DataContext is not GalleryViewModel viewModel)
@@ -181,23 +194,12 @@ namespace Eidolon.App.Views
                 Resources["ResultsGalleryColumns"] = columns;
                 return;
             }
-            if (_gallery.ItemsPanelRoot == null)
+            double remainingHeight = scrollViewer.Extent.Height - scrollViewer.Offset.Y - scrollViewer.Viewport.Height;
+            if (remainingHeight > Math.Max(120, scrollViewer.Viewport.Height / 2))
             {
                 return;
             }
-            foreach (Control item in _gallery.ItemsPanelRoot.Children)
-            {
-                if (item.IsMeasureValid == true)
-                {
-                    _galleryRowHeight = Math.Max(_galleryRowHeight, item.DesiredSize.Height);
-                }
-            }
-            if (_galleryRowHeight <= 0)
-            {
-                return;
-            }
-            int rows = Math.Max(1, (int)(scrollViewer.Viewport.Height / _galleryRowHeight));
-            viewModel.SetGalleryPageSize(columns * rows);
+            _ = viewModel.LoadMoreGalleryAsync();
         }
     }
 }

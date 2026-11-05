@@ -10,11 +10,11 @@ ComfyUI와 설치된 Codex 중 생성 방식을 선택하고, 공통 생성 지�
 
 | 운영체제 | 다운로드 |
 |---|---|
-| Windows x64 | [Eidolon-v1.0.3-win-x64.exe](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.3/Eidolon-v1.0.3-win-x64.exe) |
-| macOS 14+ · Apple Silicon | [Eidolon-v1.0.3-osx-arm64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.3/Eidolon-v1.0.3-osx-arm64.app.zip) |
-| macOS 14+ · Intel | [Eidolon-v1.0.3-osx-x64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.3/Eidolon-v1.0.3-osx-x64.app.zip) |
+| Windows x64 | [Eidolon-v1.0.4-win-x64.exe](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.4/Eidolon-v1.0.4-win-x64.exe) |
+| macOS 14+ · Apple Silicon | [Eidolon-v1.0.4-osx-arm64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.4/Eidolon-v1.0.4-osx-arm64.app.zip) |
+| macOS 14+ · Intel | [Eidolon-v1.0.4-osx-x64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.4/Eidolon-v1.0.4-osx-x64.app.zip) |
 
-[릴리스 정보](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.3)
+[릴리스 정보](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.4)
 
 Windows는 단일 `.exe`를 실행하세요. 맥은 ZIP을 풀고 `Eidolon.app`을 쓰기 가능한 Applications 폴더로 옮긴 뒤 Finder에서 실행하세요. 별도 .NET 설치는 필요 없습니다. 맥 배포는 ad-hoc 서명이며 Apple 공증이 없어 최초 실행 시 시스템 설정의 개인정보 보호 및 보안에서 허용이 필요할 수 있습니다.
 

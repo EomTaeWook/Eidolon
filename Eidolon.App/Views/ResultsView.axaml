@@ -62,7 +62,7 @@
       <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
         <TextBlock Text="{DynamicResource EidolonText372}" Classes="title" />
         <TextBlock Text="{Binding GalleryCountCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
-        <ComboBox SelectedIndex="{Binding GalleryFilterIndex, Mode=TwoWay}" MinWidth="160" MinHeight="38" VerticalAlignment="Center">
+        <ComboBox SelectionChanged="OnGalleryFilterSelectionChanged" SelectedIndex="{Binding GalleryFilterIndex, Mode=TwoWay}" MinWidth="160" MinHeight="38" VerticalAlignment="Center">
           <ComboBox.SelectionBoxItemTemplate>
             <DataTemplate>
               <TextBlock Text="{ReflectionBinding $parent[ComboBox].SelectedItem.Content}" />
@@ -105,7 +105,7 @@
           <Button Grid.Column="1" Content="{DynamicResource EidolonText387}" Command="{Binding ClearGallerySelectionCommand}" Padding="10,7" Margin="0,0,8,0" />
           <Button Grid.Column="2" Content="{DynamicResource EidolonText316}" Command="{Binding DeleteGenerationCommand}" Classes="danger" Padding="10,7" />
         </Grid>
-        <ListBox x:Name="Gallery" Grid.Row="1" ItemsSource="{Binding Generations}" SelectedItems="{Binding GallerySelection, Mode=OneWay}" SelectionMode="Multiple" IsEnabled="{Binding !IsGalleryLoading}" Margin="-6,0" Background="Transparent" BorderThickness="0" ScrollViewer.AllowAutoHide="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" KeyDown="OnGalleryKeyDown">
+        <ListBox x:Name="Gallery" Grid.Row="1" ItemsSource="{Binding Generations}" SelectedItems="{Binding GallerySelection, Mode=OneWay}" SelectionMode="Multiple" IsEnabled="{Binding !IsGalleryReloading}" Margin="-6,0" Background="Transparent" BorderThickness="0" ScrollViewer.AllowAutoHide="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" KeyDown="OnGalleryKeyDown">
           <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
               <UniformGrid Columns="{DynamicResource ResultsGalleryColumns}" VerticalAlignment="Top" />
@@ -162,7 +162,7 @@
             </DataTemplate>
           </ListBox.ItemTemplate>
         </ListBox>
-        <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="12" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding IsGalleryLoading}">
+        <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="12" Margin="0,8,0,0" HorizontalAlignment="Center" IsVisible="{Binding IsGalleryLoading}">
           <StackPanel Orientation="Horizontal" Spacing="10">
             <ProgressBar IsIndeterminate="True" Width="60" Height="4" VerticalAlignment="Center" />
             <TextBlock Text="{DynamicResource EidolonText378}" Classes="muted" FontSize="12" />
@@ -175,13 +175,6 @@
           <TextBlock Text="{DynamicResource EidolonText325}" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap" />
           <TextBlock Text="{DynamicResource EidolonText304}" Classes="muted" FontSize="12" TextAlignment="Center" TextWrapping="Wrap" />
           <Button Content="{DynamicResource EidolonText106}" Command="{Binding Navigation.ShowGenerationCommand}" HorizontalAlignment="Center" Padding="16,7" Margin="0,4,0,0" />
-        </StackPanel>
-        <StackPanel Grid.Row="2" Spacing="10" Margin="0,12,0,0">
-          <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" IsVisible="{Binding HasGenerations}">
-            <Button Content="{DynamicResource EidolonText374}" Command="{Binding PreviousGalleryPageCommand}" Padding="12,8" />
-            <TextBlock Text="{Binding GalleryPageCaption}" VerticalAlignment="Center" MinWidth="90" TextAlignment="Center" />
-            <Button Content="{DynamicResource EidolonText375}" Command="{Binding NextGalleryPageCommand}" Padding="12,8" />
-          </StackPanel>
         </StackPanel>
       </Grid>
       <GridSplitter Grid.Column="1" Classes="resultsSplitter" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Focusable="True" Cursor="SizeWestEast" />
