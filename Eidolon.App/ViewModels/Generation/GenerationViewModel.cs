@@ -21,6 +21,7 @@ namespace Eidolon.App.ViewModels
         private readonly ISeedProvider _seeds;
         private readonly PromptConverter _promptConverter;
         private readonly RuntimeInstaller _runtimeInstaller;
+        private readonly CodexImageEngine _codexImageEngine;
         private Bitmap _generatedResultImage;
         private DesktopSettings _promptConversionSettings;
         private ModelAsset _promptConversionModel;
@@ -44,6 +45,7 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand ConvertPromptCommand { get; private set; }
         public AsyncCommand PickReferenceImageCommand { get; private set; }
         public AsyncCommand ClearReferenceImageCommand { get; private set; }
+        public AsyncCommand ReadReferenceFeaturesCommand { get; private set; }
         public AsyncCommand ClearEditingMaskCommand { get; private set; }
         public AsyncCommand OpenEditingMaskCommand { get; private set; }
         public AsyncCommand CloseEditingMaskCommand { get; private set; }
@@ -241,6 +243,57 @@ namespace Eidolon.App.ViewModels
                     return _editingReference;
                 }
                 return _generationReference;
+            }
+        }
+
+        public string PreservationPrompt
+        {
+            get
+            {
+                return ActiveReference.PreservationPrompt;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    value = string.Empty;
+                }
+                GenerationReferenceDraft reference = ActiveReference;
+                if (reference.PreservationPrompt == value)
+                {
+                    return;
+                }
+                reference.InvalidateFeaturesRead();
+                reference.PreservationPrompt = value;
+                RefreshReferenceFeatures();
+            }
+        }
+
+        public bool IsReadingReferenceFeatures
+        {
+            get
+            {
+                return ActiveReference.IsReadingFeatures;
+            }
+        }
+
+        public string ReferenceFeaturesError
+        {
+            get
+            {
+                if (ActiveReference.FeaturesError == null)
+                {
+                    return string.Empty;
+                }
+                return _strings.GetExceptionMessage(ActiveReference.FeaturesError);
+            }
+        }
+
+        public bool HasReferenceFeaturesError
+        {
+            get
+            {
+                return ActiveReference.FeaturesError != null;
             }
         }
 
@@ -483,6 +536,11 @@ namespace Eidolon.App.ViewModels
                 if (Set(ref _prompt, value) == true)
                 {
                     InvalidatePromptConversion(false);
+                    if (_generationReference.IsReadingFeatures == true)
+                    {
+                        _generationReference.InvalidateFeaturesRead();
+                        RefreshReferenceFeatures();
+                    }
                 }
             }
         }
@@ -498,6 +556,11 @@ namespace Eidolon.App.ViewModels
                 if (Set(ref _editingPrompt, value) == true)
                 {
                     InvalidatePromptConversion(true);
+                    if (_editingReference.IsReadingFeatures == true)
+                    {
+                        _editingReference.InvalidateFeaturesRead();
+                        RefreshReferenceFeatures();
+                    }
                 }
             }
         }
@@ -674,6 +737,142 @@ namespace Eidolon.App.ViewModels
             return string.IsNullOrWhiteSpace(prompt) == false;
         }
 
+        private Task ReadReferenceFeaturesAsync()
+        {
+            QueueReferenceFeatures(ActiveReference);
+            return Task.CompletedTask;
+        }
+
+        private void QueueReferenceFeatures(GenerationReferenceDraft reference)
+        {
+            if (Session.CanQueue == false)
+            {
+                return;
+            }
+            if (reference.ImageData.Length == 0)
+            {
+                return;
+            }
+            bool editing = ReferenceEquals(reference, _editingReference);
+            string changePrompt = Prompt;
+            if (editing == true)
+            {
+                changePrompt = EditingPrompt;
+            }
+            DesktopSettings settings = Session.CreateActiveSettings(Session.Settings);
+            byte[] sourceImageData = reference.ImageData;
+            GenerationReferenceInput input = new GenerationReferenceInput
+            {
+                ImageData = sourceImageData.ToArray(),
+                ImageName = reference.ImageName
+            };
+            string dataDirectory = Session.DataDirectory;
+            int request = reference.BeginFeaturesRead();
+            RefreshReferenceFeatures();
+            try
+            {
+                _work.Enqueue(_strings.GetString("EidolonText734") + " · " + input.ImageName, cancellationToken => ReadReferenceFeaturesAsync(reference, request, sourceImageData, input, changePrompt, editing, settings, dataDirectory, cancellationToken), () => Dispatcher.UIThread.Post(() =>
+                {
+                    reference.FinishFeaturesRead(request);
+                    RefreshReferenceFeatures();
+                }));
+            }
+            catch (Exception error)
+            {
+                if (reference.IsCurrentFeaturesRead(request) == true)
+                {
+                    reference.FeaturesError = error;
+                    reference.FinishFeaturesRead(request);
+                    RefreshReferenceFeatures();
+                }
+            }
+        }
+
+        private async Task ReadReferenceFeaturesAsync(GenerationReferenceDraft reference, int request, byte[] sourceImageData, GenerationReferenceInput input, string changePrompt, bool editing, DesktopSettings settings, string dataDirectory, CancellationToken cancellationToken)
+        {
+            using CancellationTokenSource lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, Session.Lifetime);
+            try
+            {
+                if (IsCurrentReferenceFeatures(reference, request, sourceImageData, changePrompt, editing, settings) == false)
+                {
+                    return;
+                }
+                reference.FeaturesCancellation = lifetime;
+                string features = await _codexImageEngine.DescribeReferenceFeaturesAsync(settings, input, changePrompt, dataDirectory, _work.Progress, lifetime.Token);
+                lifetime.Token.ThrowIfCancellationRequested();
+                if (IsCurrentReferenceFeatures(reference, request, sourceImageData, changePrompt, editing, settings) == false)
+                {
+                    return;
+                }
+                reference.PreservationPrompt = features;
+                Session.Status = _strings.GetString("EidolonText737");
+                Session.Percent = 100;
+            }
+            catch (OperationCanceledException) when (lifetime.IsCancellationRequested == true)
+            {
+                if (cancellationToken.IsCancellationRequested == true)
+                {
+                    throw;
+                }
+            }
+            catch (Exception error)
+            {
+                if (IsCurrentReferenceFeatures(reference, request, sourceImageData, changePrompt, editing, settings) == true)
+                {
+                    reference.FeaturesError = error;
+                    throw;
+                }
+            }
+            finally
+            {
+                if (ReferenceEquals(reference.FeaturesCancellation, lifetime) == true)
+                {
+                    reference.FeaturesCancellation = null;
+                }
+                reference.FinishFeaturesRead(request);
+                RefreshReferenceFeatures();
+            }
+        }
+
+        private bool IsCurrentReferenceFeatures(GenerationReferenceDraft reference, int request, byte[] sourceImageData, string changePrompt, bool editing, DesktopSettings settings)
+        {
+            if (Session.IsClosing == true)
+            {
+                return false;
+            }
+            if (reference.IsCurrentFeaturesRead(request) == false)
+            {
+                return false;
+            }
+            if (ReferenceEquals(reference.ImageData, sourceImageData) == false)
+            {
+                return false;
+            }
+            string currentPrompt = Prompt;
+            if (editing == true)
+            {
+                currentPrompt = EditingPrompt;
+            }
+            if (changePrompt != currentPrompt)
+            {
+                return false;
+            }
+            if (settings.CodexExecutablePath != Session.Settings.CodexExecutablePath)
+            {
+                return false;
+            }
+            return settings.CodexModel == Session.Settings.CodexModel;
+        }
+
+        private void RefreshReferenceFeatures()
+        {
+            Raise(nameof(PreservationPrompt));
+            Raise(nameof(IsReadingReferenceFeatures));
+            Raise(nameof(ReferenceFeaturesError));
+            Raise(nameof(HasReferenceFeaturesError));
+            RefreshCommands();
+        }
+
         private async Task PickReferenceImageAsync()
         {
             GenerationReferenceDraft reference = ActiveReference;
@@ -689,8 +888,10 @@ namespace Eidolon.App.ViewModels
             await LoadReferenceImageAsync(reference, path);
         }
 
-        private async Task<bool> LoadReferenceImageAsync(GenerationReferenceDraft reference, string path, string imageName = null)
+        private async Task<bool> LoadReferenceImageAsync(GenerationReferenceDraft reference, string path, string imageName = null, bool readFeatures = true)
         {
+            reference.InvalidateFeaturesRead();
+            RefreshReferenceFeatures();
             int request = reference.BeginLoad();
             CancellationToken token = Session.Lifetime;
             (byte[] Data, Bitmap Thumbnail) image = await Task.Run(() =>
@@ -759,6 +960,10 @@ namespace Eidolon.App.ViewModels
             }
             RefreshReferenceInputs();
             Session.Error = string.Empty;
+            if (readFeatures == true)
+            {
+                QueueReferenceFeatures(reference);
+            }
             return true;
         }
 
@@ -788,12 +993,12 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(HasEditingMask));
             Raise(nameof(EditingInputCaption));
             Raise(nameof(EditingPromptHint));
-            RefreshCommands();
+            RefreshReferenceFeatures();
         }
 
         internal async Task UseResultAsReferenceAsync(GenerationItem result)
         {
-            if (await LoadReferenceImageAsync(_editingReference, result.Image.FilePath) == false)
+            if (await LoadReferenceImageAsync(_editingReference, result.Image.FilePath, null, false) == false)
             {
                 return;
             }
@@ -813,6 +1018,7 @@ namespace Eidolon.App.ViewModels
             }
             Navigation.SelectedTab = 1;
             RefreshReferenceInputs();
+            QueueReferenceFeatures(_editingReference);
         }
 
         private Task QueueGenerationAsync()
@@ -839,6 +1045,10 @@ namespace Eidolon.App.ViewModels
                 {
                     throw new StudioException(StudioMessageCode.InvalidReferenceImage);
                 }
+            }
+            if (draft.IsReadingFeatures == true)
+            {
+                return Task.CompletedTask;
             }
             if (draft.AreOptionsValid == false)
             {
@@ -891,7 +1101,8 @@ namespace Eidolon.App.ViewModels
                     MaskData = draft.MaskData.ToArray(),
                     ImageName = draft.ImageName,
                     Mode = draft.Mode,
-                    ChangeStrength = draft.ChangeStrength
+                    ChangeStrength = draft.ChangeStrength,
+                    PreservationPrompt = draft.PreservationPrompt
                 };
             }
             List<ModelAsset> loras = new List<ModelAsset>();
@@ -1150,7 +1361,7 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(GenerationNegativePrompt));
         }
 
-        public GenerationViewModel(StudioSession session, StudioNavigationViewModel navigation, StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs, AssetsViewModel assets, JobStore jobs, StudioService studio, ISeedProvider seeds, PromptConverter promptConverter, RuntimeInstaller runtimeInstaller) : base(session, navigation, work, strings, dialogs)
+        public GenerationViewModel(StudioSession session, StudioNavigationViewModel navigation, StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs, AssetsViewModel assets, JobStore jobs, StudioService studio, ISeedProvider seeds, PromptConverter promptConverter, RuntimeInstaller runtimeInstaller, CodexImageEngine codexImageEngine) : base(session, navigation, work, strings, dialogs)
         {
             Assets = assets;
             _jobs = jobs;
@@ -1158,6 +1369,7 @@ namespace Eidolon.App.ViewModels
             _seeds = seeds;
             _promptConverter = promptConverter;
             _runtimeInstaller = runtimeInstaller;
+            _codexImageEngine = codexImageEngine;
             _promptConversionSettings = Session.Settings.Copy();
             if (Assets.SelectedModel != null)
             {
@@ -1230,6 +1442,10 @@ namespace Eidolon.App.ViewModels
                 {
                     return false;
                 }
+                if (_generationReference.IsReadingFeatures == true)
+                {
+                    return false;
+                }
                 if (_generationReference.AreOptionsValid == false)
                 {
                     return false;
@@ -1254,6 +1470,10 @@ namespace Eidolon.App.ViewModels
                 {
                     return false;
                 }
+                if (_editingReference.IsReadingFeatures == true)
+                {
+                    return false;
+                }
                 if (_editingReference.AreOptionsValid == false)
                 {
                     return false;
@@ -1268,6 +1488,18 @@ namespace Eidolon.App.ViewModels
                     return false;
                 }
                 return HasReferenceImage;
+            });
+            ReadReferenceFeaturesCommand = Command(ReadReferenceFeaturesAsync, () =>
+            {
+                if (Session.CanQueue == false)
+                {
+                    return false;
+                }
+                if (ActiveReference.IsReadingFeatures == true)
+                {
+                    return false;
+                }
+                return ActiveReference.ImageData.Length > 0;
             });
             ClearEditingMaskCommand = Command(() =>
             {
@@ -1335,6 +1567,18 @@ namespace Eidolon.App.ViewModels
                 {
                     InvalidatePromptConversion(false);
                     InvalidatePromptConversion(true);
+                }
+                if (previousSettings.CodexExecutablePath != Session.Settings.CodexExecutablePath)
+                {
+                    _generationReference.InvalidateFeaturesRead();
+                    _editingReference.InvalidateFeaturesRead();
+                    RefreshReferenceFeatures();
+                }
+                else if (previousSettings.CodexModel != Session.Settings.CodexModel)
+                {
+                    _generationReference.InvalidateFeaturesRead();
+                    _editingReference.InvalidateFeaturesRead();
+                    RefreshReferenceFeatures();
                 }
                 RefreshGenerationInstructions();
                 Raise(nameof(IsComfyGeneration));

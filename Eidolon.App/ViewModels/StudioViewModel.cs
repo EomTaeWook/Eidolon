@@ -27,7 +27,7 @@ namespace Eidolon.App.ViewModels
         public SettingsViewModel Settings { get; private set; }
         public AppUpdateViewModel Updates { get; private set; }
 
-        public StudioViewModel(SettingsStore settingsStore, AssetLibrary assets, JobStore jobs, RuntimeInstaller installer, ComfyEngine engine, StudioService studio, DesktopDialogs dialogs, ThemeService themes, LanguageService languages, StringHelper strings, StudioWorkPresenter work, ISeedProvider seeds, CodexModelCatalog codexModels, string dataDirectory, AssetCreationService assetCreation, AssetImageLoader assetImages, ApplicationUpdateService updates, ApplicationUpdateInstaller updateInstaller, ApplicationUpdateRestartPresenter updateRestart, PromptConverter promptConverter)
+        public StudioViewModel(SettingsStore settingsStore, AssetLibrary assets, JobStore jobs, RuntimeInstaller installer, ComfyEngine engine, StudioService studio, DesktopDialogs dialogs, ThemeService themes, LanguageService languages, StringHelper strings, StudioWorkPresenter work, ISeedProvider seeds, CodexModelCatalog codexModels, string dataDirectory, AssetCreationService assetCreation, AssetImageLoader assetImages, ApplicationUpdateService updates, ApplicationUpdateInstaller updateInstaller, ApplicationUpdateRestartPresenter updateRestart, PromptConverter promptConverter, CodexImageEngine codexImageEngine)
         {
             _engine = engine;
             _work = work;
@@ -37,7 +37,7 @@ namespace Eidolon.App.ViewModels
             Updates = new AppUpdateViewModel(Session, Navigation, work, strings, dialogs, updates, updateInstaller, updateRestart);
             Assets = new AssetsViewModel(Session, Navigation, work, strings, dialogs, assets, engine);
             Settings = new SettingsViewModel(Session, Navigation, work, strings, dialogs, Assets, themes, languages, codexModels);
-            Generation = new GenerationViewModel(Session, Navigation, work, strings, dialogs, Assets, jobs, studio, seeds, promptConverter, installer);
+            Generation = new GenerationViewModel(Session, Navigation, work, strings, dialogs, Assets, jobs, studio, seeds, promptConverter, installer, codexImageEngine);
             Training = new TrainingViewModel(Session, Navigation, work, strings, dialogs, Assets, studio);
             AssetCreation = new AssetCreationViewModel(Session, Navigation, work, strings, dialogs, Assets, assetCreation, jobs, seeds, assetImages);
             Gallery = new GalleryViewModel(Session, Navigation, work, strings, dialogs, Generation, Training, jobs, AssetCreation);

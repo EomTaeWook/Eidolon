@@ -10,6 +10,8 @@ Eidolon은 Avalonia 기반 Windows 데스크톱 이미지 생성·LoRA 학습 �
 
 기본 모델은 SDXL Base 1.0, 기본 생성 크기는 1024×1024다. SD 1.5는 가져온 모델의 호환 계열로 지원한다. Bough의 Core/App 분리, Dignus DI, 템플릿 로딩, Excel 다국어와 라이트 테마 구성을 참고한다. 재사용 문서 중 [CodingConvention](ReusableArchitecture/CodingConvention.md)과 [ReleasePolicy](ReusableArchitecture/ReleasePolicy.md)를 적용하며 Unity·Actor·Tick·RepoDB 구조는 채택하지 않는다.
 
+참고 이미지의 유지할 특징은 기존 Codex 이미지 입력 경로에서 텍스트로 추출하고 App의 참고 입력에서 확인·수정한다. 로컬 프롬프트 변환 모델의 역할은 번역·형식 정리로 유지하며, 요청·수명·실제 프롬프트 기록 계약은 [원본 특징 유지](ImageEditing.md#원본-특징-유지)가 소유한다.
+
 ## 솔루션과 의존성
 
 ```mermaid
@@ -87,6 +89,8 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 에셋 제작은 저장된 ComfyUI 또는 Codex 생성 방식을 사용한다. Codex는 체크포인트 없이 기준 이미지와 항목별 설명을 기존 생성 경계로 전달하며 모델·LoRA·참고 강도·시드 입력을 표시하지 않는다. 이어 만들기와 재생성은 묶음에 저장된 생성 방식과 지침을 사용한다.
 
 에셋 제작 탭은 정면·우측·좌측·후면·윗면의 5방향 다면도 초안을 제공한다. `AssetCreationService`는 기존 `StudioService.GenerateAsync`를 순서대로 호출하고 `JobStore`에 묶음·부분 완료·항목의 원본 Job 연결을 저장한다. `AssetFrameImporter`는 교체 이미지 사본을 준비하고 `AssetSheetExporter`는 공통 캔버스에 PNG·시트·좌표 메타데이터를 내보낸다. `AssetFrameRenderer`는 내보내기의 알파 경계를 측정하며 App의 `AssetImageLoader`는 생성 원본을 미리보기 크기로 읽는다. 원본·생성 메타데이터를 덮어쓰거나 별도 보정 이미지 저장소를 만들지 않는다. 별도 큐·GPU 사용권을 만들지 않는다. 화면·저장·품질 한계 계약은 [에셋 제작](AssetCreation.md)이 소유한다.
+
+MCP의 참고 생성·편집은 호출자가 확정한 유지 특징을 받거나 공식 sampling 응답을 받아 기존 생성 큐에 접수한다. 같은 서버·도구에서 `2025` 초기화·세션의 POST SSE와 `2026-07-28` 요청별 MRTR을 함께 지원한다. 프로토콜 세대·세션·전송 왕복과 도구 문맥은 라이브러리가, 이미지·보호된 재개 상태·요청 사본과 특징 검증은 공통 App 처리 메서드가 소유한다. sampling 미지원 시 직접 특징 입력이나 명시적 생략을 요구하며 로컬 모델로 대신 분석하지 않는다. 상세 계약은 [MCP 연결](Mcp.md#호출자-모델과-유지-특징-왕복)을 따른다.
 
 MCP는 Dignus DI와 Actor Core를 사용하는 `MCP.Core` 라이브러리와 App의 도구 어댑터로 나눈다. 라이브러리는 Core/App을 참조하지 않는다. 일반 HTTP 요청은 라이브러리의 액터 메일박스에 순환 배정하며 액터별 비동기 순차 처리를 제공한다. 액터 수·접수 제한과 수명은 [MCP 라이브러리](../Mcp.Core/README.md)가 소유한다. 도구 호출이 취소되어도 시작한 핸들러의 실제 종료까지 요청 수명 안에서 기다린다. 이미 호스트 큐에 접수한 이미지·학습 업무는 기존 큐의 수명을 따른다. `eidolon_cancel_work`는 UI 스레드에서 상태 조회의 `active_request`와 현재 실행 상태를 확인하고 기존 큐의 취소 토큰을 즉시 요청한다. 큐 소유자도 요청 제목을 다시 확인하며 새 식별자·큐·취소 저장소는 추가하지 않는다. 학습은 기존 `TrainingViewModel.CancelTrainingAsync`를 사용해 등록 단계 보호를 유지하고 `eidolon_cancel_training`도 학습 전용 도구로 보존한다. `eidolon_clear_pending`은 기존 폐기 콜백으로 대기 업무 전체만 비우며 시작 전 유지 관리 제한도 해제한다. 상태 조회는 공용 큐에서 대기 제목·건수를 같은 사본으로 읽고 현재 업무·학습 취소 가능 여부를 제공한다. HTTP 조회·준비·내보내기는 2025·2026 경로의 `notifications/cancelled`로 요청 ID의 토큰을 취소한다. 접수한 취소 신호와 실제 종료·엔진 복구, 완료 파일·삭제의 비가역성을 구분하며 상세 호출 계약은 [MCP 연결](Mcp.md#작업-취소)을 따른다. MCP 학습의 선택적 `resume_lora_id`는 기존 자산 목록에서 LoRA 종류·계열·설치 환경을 확인해 요청 사본의 `TrainingInput.ResumeLora`에 연결하며 UI와 같은 추가 학습·신규 결과 등록 경로를 사용한다. 별도 학습 큐나 이어 학습 상태 저장소를 만들지 않는다. `McpDispatcher`는 `McpControllerBase`를 상속한 타입의 `[Controller("메서드 이름")]`을 검색하고 항상 `LifeScope.Transient`로 등록한다. 인스턴스는 요청·알림마다 새로 resolve한다. 독립 솔루션·프로젝트·MIT 라이선스는 Mcp.Core 서브모듈에서 소유한다. 옵션·도구 목록·콜백은 서버 수명 동안 공유한다. 설정의 MCP 연결 메뉴에서 로컬 HTTP 서버를 켜고 끄며 루트가 종료 수명을 조합한다. 생성·편집은 기존 `GenerationViewModel`·FIFO 큐·서비스를, 조회는 기존 Session·자산·JobStore를 사용한다. 요청별 지침은 설정 사본에 적용하고 저장 설정·프리셋을 바꾸지 않는다. `McpService`의 기존 모델 조회·지침 조회 응답에 `prompt_guidance`를 제공하고 생성 도구·접속 안내에서 대상 체크포인트의 안내를 먼저 읽도록 한다. 기본 제공 파일명 전체·계열에 맞는 안내와 미확인 커스텀 모델의 구분은 App의 AssetsViewModel.GetModelPromptGuidance가 소유하며 MCP 조회와 로컬 프롬프트 변환이 재사용한다. 별도 모델 안내 등록부는 만들지 않는다. 구체적인 태그 근거·인식 한계와 상세 도구·전송·클라이언트 연결은 [MCP 연결](Mcp.md)이 소유한다.
 

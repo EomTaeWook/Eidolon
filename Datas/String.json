@@ -7324,5 +7324,47 @@
     "Name": "EidolonText731",
     "Kor": "\uBCC0\uD658\uBB38\uC744 \uD655\uC778\uD558\uACE0 \uD544\uC694\uD558\uBA74 \uC218\uC815\uD55C \uB4A4 \uC0DD\uC131\uD558\uC138\uC694.",
     "Eng": "Review and edit the converted prompt before generating."
+  },
+  {
+    "Id": 3811,
+    "Name": "EidolonText732",
+    "Kor": "\uC720\uC9C0\uD560 \uD2B9\uC9D5",
+    "Eng": "Features to preserve"
+  },
+  {
+    "Id": 3812,
+    "Name": "EidolonText733",
+    "Kor": "\uC6D0\uBCF8\uC5D0\uC11C \uC790\uB3D9 \uCD94\uCD9C\uD55C \uB0B4\uC6A9\uC785\uB2C8\uB2E4. \uBC14\uAFB8\uB824\uB294 \uD2B9\uC9D5\uC740 \uC9C0\uC6B0\uAC70\uB098 \uC218\uC815\uD558\uC138\uC694.",
+    "Eng": "Automatically extracted from the reference. Remove or edit features you want to change."
+  },
+  {
+    "Id": 3813,
+    "Name": "EidolonText734",
+    "Kor": "\uC6D0\uBCF8 \uD2B9\uC9D5\uC744 \uC77D\uB294 \uC911",
+    "Eng": "Reading reference features"
+  },
+  {
+    "Id": 3814,
+    "Name": "EidolonText735",
+    "Kor": "\uD2B9\uC9D5 \uB2E4\uC2DC \uC77D\uAE30",
+    "Eng": "Read features again"
+  },
+  {
+    "Id": 3815,
+    "Name": "EidolonText736",
+    "Kor": "\uC6D0\uBCF8 \uD2B9\uC9D5 \uCD94\uCD9C\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. \uB85C\uADF8: {0}",
+    "Eng": "Reference feature extraction failed. Log: {0}"
+  },
+  {
+    "Id": 3816,
+    "Name": "EidolonText737",
+    "Kor": "\uC6D0\uBCF8 \uD2B9\uC9D5\uC744 \uBD88\uB7EC\uC654\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Reference features loaded."
+  },
+  {
+    "Id": 3817,
+    "Name": "EidolonText738",
+    "Kor": "\uC790\uB3D9 \uCD94\uCD9C\uD558\uC9C0 \uBABB\uD558\uBA74 \uD2B9\uC9D5 \uB2E4\uC2DC \uC77D\uAE30\uB97C \uB204\uB974\uAC70\uB098 \uC720\uC9C0\uD560 \uD2B9\uC9D5\uC744 \uC9C1\uC811 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "If extraction is unavailable or cancelled, read the features again or enter them manually."
   }
 ]

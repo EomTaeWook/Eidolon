@@ -106,6 +106,20 @@ namespace Eidolon.Core.Application
             {
                 generationPrompt = convertedPrompt;
             }
+            if (reference != null)
+            {
+                if (string.IsNullOrWhiteSpace(reference.PreservationPrompt) == false)
+                {
+                    if (settings.GenerationBackend == GenerationBackend.Codex)
+                    {
+                        generationPrompt = generationPrompt.Trim() + "\nSource features to preserve unless an explicitly requested change conflicts with them. Explicit requested changes take priority:\n" + reference.PreservationPrompt.Trim();
+                    }
+                    else
+                    {
+                        generationPrompt = generationPrompt.Trim() + ", " + reference.PreservationPrompt.Trim();
+                    }
+                }
+            }
             if (settings.GenerationBackend == GenerationBackend.Codex)
             {
                 return await GenerateCodexAsync(settings, prompt, removeBackground, reference, progress, token, generationPrompt).ConfigureAwait(false);

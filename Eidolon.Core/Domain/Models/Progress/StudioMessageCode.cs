@@ -148,6 +148,8 @@ namespace Eidolon.Core.Domain
         PromptConverterReady,
         ConvertingPrompt,
         PromptConverterNotInstalled,
-        PromptConversionFailed
+        PromptConversionFailed,
+        ReadingReferenceFeatures,
+        ReferenceFeaturesFailed
     }
 }

@@ -2,6 +2,78 @@
 
 Eidolon 앱 초기화가 끝나면 MCP 서버가 자동으로 시작된다. MCP 클라이언트에 `http://127.0.0.1:8190/mcp`를 등록한다. 설정 왼쪽의 MCP 연결에서 서버 상태·주소를 확인하고 **서버 끄기**·**서버 켜기**로 수동 정지·재시작할 수 있다. **서버 실행 중**은 요청을 받을 수 있다는 뜻이며 AI 클라이언트의 연결 여부를 표시하지 않는다. 앱 종료 시 서버를 정리한다. 현재 앱 호스트는 같은 PC의 연결만 받고 브라우저의 다른 Origin은 거부한다.
 
+## 호출자 모델과 유지 특징 왕복
+
+같은 HTTP 서버와 생성·편집 도구에서 공식 MCP의 두 세대를 함께 지원한다. 이는 [공식 SDK dual-era 예제](https://github.com/modelcontextprotocol/typescript-sdk/tree/main/examples/dual-era)처럼 `2025` 초기화 경로와 `2026-07-28` 요청별 경로를 함께 처리하는 방식이다. 전송·프로토콜 세대의 선택은 `MCP.Core`가 맡고 App의 유지 특징·생성 처리 메서드는 공유한다.
+
+`2026-07-28`은 [MRTR](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/mrtr)을 사용한다. 추가 입력을 요구하면 `result.resultType`이 `input_required`이고 최종 응답은 `complete`다. 해당 요청의 `params._meta["io.modelcontextprotocol/clientCapabilities"].sampling`을 객체로 선언한 클라이언트에만 요청하며 초기화나 이전 요청의 선언을 재사용하지 않는다. `sampling/createMessage`는 이 세대에서 비권장이지만 현재 공식 규격에 남아 있는 기능이다.
+
+`2025`는 [공식 Streamable HTTP](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)의 초기화·세션과 POST 응답 SSE를 사용한다. 초기화에서 sampling을 선언한 유효한 세션에만 같은 특징 요청을 보낸다. WebSocket이나 별도 커스텀 전송은 추가하지 않는다.
+
+`eidolon_generate_image`와 `eidolon_edit_image`의 `preservation_prompt`는 호출자가 확정한 원본 유지 특징이다. 참고 이미지가 있을 때 직접 전달하면 그 값을 권위로 사용하고 추가 분석 없이 요청 사본에 고정한다. ComfyUI에는 대상 모델의 `prompt_guidance`에 맞는 간결한 영어 특징을 제공하고, 변경 요청과 충돌하는 항목은 호출자가 정리한다. 빈 문자열은 보존 지침을 명시적으로 생략한다. 원본 없는 일반 생성은 기존대로 동작하며, 원본 없이 이 필드만 전달하는 것은 거절한다.
+
+참고 이미지가 있고 이 필드를 생략한 경우 `2026-07-28` 지원 클라이언트에는 다음 흐름을 사용한다.
+
+1. 앱은 현재 옵션·선택 모델·LoRA·시드와 원본을 읽지만 생성 큐에는 아직 넣지 않는다.
+2. `inputRequests.reference_features`에 `sampling/createMessage`를 넣어 원본 이미지와 변경 요청을 전달한다. 고정 특징 추출 지침은 UI와 같은 App 리소스를 사용한다. 다른 도구나 추가 서버 문맥은 요청하지 않으며, 사용할 모델과 샘플링 승인 여부는 클라이언트가 결정한다. 서버의 로컬 Codex나 태그 변환 모델을 대신 실행하지 않는다.
+3. 호출자는 자신의 모델로 유지할 특징을 정리·확인·수정하고, 새 JSON-RPC `id`로 같은 `tools/call`을 재시도한다. 원래 `name`·`arguments`를 유지하고 `requestState`와 `inputResponses`를 **`params` 바로 아래**에 넣는다. 도구 `arguments` 안에 넣지 않는다.
+4. 앱은 상태·원본·응답을 확인한 뒤에만 기존 공용 FIFO에 생성을 접수한다. `accepted=true`는 접수이며 완성 이미지나 정확히 한 번 실행을 의미하지 않는다. 수락된 요청은 재전송하지 말고 기존 상태·이미지 조회 도구로 확인한다.
+
+클라이언트 응답은 표준 sampling 결과의 `role=assistant`, 모델 정보와 text content를 사용하며, text는 `{"features":"...","error":""}` 형태의 추출 결과다. `features`를 수정해 확정할 수 있다. 앱은 확정 특징을 다시 분석하거나 자동으로 덮어쓰지 않는다. 빈 값·거부·중단/잘림·잘못된 응답은 생성을 접수하지 않는다. 필요한 응답이 빠지면 지원 클라이언트에 같은 왕복 요청을 다시 제시하고, 관계없는 응답 키는 사용하지 않는다.
+
+### 2026 요청 예시
+
+초기 요청의 `params`는 다음과 같다. HTTP 헤더의 `MCP-Protocol-Version`, `Mcp-Method`, `Mcp-Name`도 기존 현대 규격 검증에 맞춰 보낸다.
+
+```json
+{
+  "name": "eidolon_edit_image",
+  "arguments": {
+    "prompt": "Change only the hat to red",
+    "reference_path": "D:/Images/character.png"
+  },
+  "_meta": {
+    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+    "io.modelcontextprotocol/clientCapabilities": { "sampling": {} }
+  }
+}
+```
+
+앱이 `input_required`와 opaque `requestState`를 반환하면, 새 RPC ID로 같은 요청의 `params`에 다음 두 필드를 추가한다. 매번 필요한 `_meta`와 HTTP 헤더도 유지한다.
+
+```json
+{
+  "requestState": "<서버가 준 문자열을 그대로 반환>",
+  "inputResponses": {
+    "reference_features": {
+      "role": "assistant",
+      "model": "<클라이언트가 선택한 모델>",
+      "content": {
+        "type": "text",
+        "text": "{\"features\":\"round face, short silhouette, blue coat, one staff in screen-right hand\",\"error\":\"\"}"
+      },
+      "stopReason": "endTurn"
+    }
+  }
+}
+```
+
+### 2025 특징 요청
+
+초기화에서 `capabilities.sampling`을 선언하고 `notifications/initialized`를 마친 유효 세션의 참고 생성·편집 요청도 같은 처리 메서드와 특징 입력을 사용한다. `MCP.Core`는 내부 입력 요구 결과를 해당 `tools/call`의 POST 응답 SSE에 공식 `sampling/createMessage` JSON-RPC 요청으로 보낸다. 클라이언트는 그 서버 요청 ID에 대응하는 JSON-RPC 결과나 오류를 같은 MCP 주소에 별도 POST하고 서버는 수락한 응답에 빈 HTTP 202를 반환한다. 응답은 해당 세션·인증·서버 요청 ID에만 연결하며 한 번만 수락한다.
+
+라이브러리는 수락한 특징 응답을 원래 RPC ID와 서버 전용 내부 재진입 표식으로 같은 도구 처리 메서드에 연결한다. App이 생성 큐에 넣는 시점은 특징 응답과 재개 검증이 끝난 뒤이며 원래 도구 호출은 SSE의 최종 도구 응답으로 마친다. `2025` 클라이언트가 MRTR의 `inputResponses`·`requestState`를 직접 보내거나 `tools/call`을 재시도하는 방식은 사용하지 않는다. 호출 취소·시간 초과·서버 종료는 대기 중인 sampling 응답을 정리하며, 거부·오류·취소된 응답으로 생성 큐에 진입하지 않는다. 이미 접수한 생성의 취소는 기존 업무 취소 도구를 사용한다.
+
+sampling을 선언하지 않았거나 해당 세대의 왕복을 지원하지 않는 클라이언트는 참고 생성·편집에 `preservation_prompt`를 직접 제공한다. 생략하면 필요한 입력을 안내하는 도구 오류를 받고 생성은 접수되지 않는다. 보존을 원하지 않으면 `preservation_prompt: ""`를 명시한다. 직접 제공하는 새 요청에는 이전 왕복의 `requestState`·`inputResponses`를 붙이지 않는다. 다면도 도구의 입력과 기존 일반 생성·학습·삭제·취소 범위는 이 기능으로 바꾸지 않는다.
+
+### 상태와 책임 경계
+
+`requestState`는 기존 `McpService` 인스턴스 수명의 임시 키로 무결성과 기밀성을 보호하고 5분 만료 시간을 둔다. `2026` 호출자는 내용을 해석하거나 고치지 않고 그대로 돌려주며, `2025`에서는 라이브러리의 같은 호출 내부 재진입에만 사용한다. 서버는 검증 전에 그 안의 경로·설정을 사용하지 않으며 프로토콜 세대·도구·인증 범위·2025 세션·원래 인자·RPC ID·원본 이미지 해시·실행 환경을 확인한다. `2026` 재시도에는 새 RPC ID가 필요하고, `2025` 내부 재진입은 라이브러리의 신뢰 표식과 원래 RPC ID 일치를 함께 확인한다. 원본이나 관련 설정이 바뀌었거나 앱 재시작/만료로 상태가 무효이면 처음부터 요청한다. 이미지 bytes는 상태에 넣지 않고 재진입에서 같은 원본을 다시 읽어 확인한다. App에 대기 요청 저장소·재개 세션·추가 큐·일회용 토큰 저장소를 만들지 않는다. 이 상태는 별도 HTTP 호출의 정확히 한 번 접수나 재전송 중복 제거를 제공하지 않는다.
+
+`MCP.Core`는 요청별 도구 호출 문맥, 공식 `InputRequiredResult`의 직렬화와 `2025` 프로토콜 세션·POST SSE 왕복을 소유한다. App이 특징 판단 내용·이미지 검증·요청 옵션과 재개 상태를 소유하고, Core의 기존 `GenerationReferenceInput.PreservationPrompt`와 실제 `PositivePrompt` 합성 경로로 전달한다. 최종 접수 응답은 특징과 그 출처를 돌려주며 실제 적용 프롬프트는 완료 이미지의 기존 메타데이터에서 확인한다. UI의 직접 Codex 특징 읽기는 [원본 특징 유지](ImageEditing.md#원본-특징-유지)의 기존 흐름을 유지한다.
+
+이번 연결은 소스 편집만 진행했으며 빌드·테스트·실제 MCP 클라이언트 sampling·취소/재시도·이미지 생성으로 확인하지 않았다. 클라이언트가 HTTP MCP를 지원한다는 이유만으로 해당 세대의 sampling 왕복도 지원한다고 판단하지 않는다.
+
 ## 도구
 
 | 도구 | 기능 |
@@ -24,7 +96,7 @@ Eidolon 앱 초기화가 끝나면 MCP 서버가 자동으로 시작된다. MCP 
 | `eidolon_regenerate_asset_frame` | 선택 항목의 설명·시드로 그 항목만 다시 요청 |
 | `eidolon_export_asset_collection` | 개별 PNG·시트·좌표 메타데이터·원본 사본 내보내기 |
 
-이미지·학습 요청은 UI와 같은 FIFO 큐에 추가한다. 반환되는 `accepted`·`seed`는 수락 사실과 고정한 생성 시드이며 완료 결과가 아니다. 상태를 조회하고 결과 목록에서 이미지 경로·프롬프트·시드를 확인한다. HTTP 서버를 끄거나 클라이언트 연결을 닫아도 이미 추가한 생성·학습 요청을 지우지 않는다. 대기 요청은 UI의 기존 대기열에서 관리한다. 이미지 전송은 파일 경로 조회이며 MCP 응답에 이미지 바이트를 포함하지 않는다. 설치 도구는 현재 제공하지 않는다.
+이미지·학습 요청은 UI와 같은 FIFO 큐에 추가한다. 반환되는 `accepted`·`seed`는 수락 사실과 고정한 생성 시드이며 완료 결과가 아니다. 상태를 조회하고 결과 목록에서 이미지 경로·프롬프트·시드를 확인한다. HTTP 서버를 끄거나 클라이언트 연결을 닫아도 이미 추가한 생성·학습 요청을 지우지 않는다. 대기 요청은 UI의 기존 대기열에서 관리한다. 생성 결과 목록은 파일 경로로 조회한다. 특징 판단 sampling 요청에서는 호출자의 모델이 원본을 볼 수 있도록 검증·정규화한 참고 PNG를 표준 이미지 content로 전달한다. 설치 도구는 현재 제공하지 않는다.
 
 `model_id`를 생략하면 UI에서 선택한 모델을 사용한다. `lora_ids`를 생략하면 선택 모델과 같은 계열의 현재 선택 LoRA를 사용하며 빈 배열을 주면 해당 요청에서 LoRA를 제외한다. 다른 모델·LoRA를 지정해도 UI의 선택은 변경하지 않는다.
 
@@ -194,7 +266,7 @@ MCP 취소는 HTTP 호출, 접수 후 실행 중인 업무, 아직 대기 중인
 
 ## HTTP 메시지
 
-JSON-RPC 메시지 하나를 UTF-8 JSON으로 POST한다. 클라이언트의 Accept는 JSON과 event-stream을 함께 허용한다. 서버는 JSON 응답을 사용한다.
+JSON-RPC 메시지 하나를 UTF-8 JSON으로 POST한다. 클라이언트의 Accept는 JSON과 event-stream을 함께 허용한다. `2026-07-28`은 JSON 응답으로 MRTR을 처리하며, `2025`의 sampling 왕복은 원래 POST 응답을 SSE로 연다. sampling 응답도 같은 MCP 주소에 새 HTTP POST로 보낸다.
 
 최신 `2026-07-28` 클라이언트의 예:
 
@@ -229,7 +301,9 @@ Mcp-Name: eidolon_generate_image
 }
 ```
 
-기존 2025 계열 클라이언트는 `initialize` → `notifications/initialized` 뒤 `tools/list`·`tools/call`을 사용한다. 초기화 응답의 버전을 이후 `MCP-Protocol-Version`에 넣는다. 세션 ID는 발급하지 않으므로 세션 헤더나 별도 SSE 연결이 필요하지 않다. 구 HTTP+SSE나 stdio 전용 연결은 지원하지 않는다.
+기존 `2025` 계열 클라이언트는 `initialize` → `notifications/initialized` 뒤 `tools/list`·`tools/call`을 사용한다. 초기화 응답의 버전을 이후 `MCP-Protocol-Version`에 넣고, 발급받은 `Mcp-Session-Id`를 이후 모든 요청·알림·sampling 응답 POST에 전달한다. 프로토콜 세션은 발급 시점부터 30분 유효하며 인증 범위·협상 버전·초기화 상태에 연결된다. 세션이 만료되거나 서버가 재시작했으면 새 `initialize`로 시작한다.
+
+`2026-07-28`은 초기화·세션 없이 요청별 `_meta`로 처리하고 `2025` 세션의 기능 선언을 가져오지 않는다. `GET`·`DELETE`에는 HTTP 405와 `Allow: POST`를 반환한다. 서버의 SSE는 `2025` 원래 POST 응답에서만 열며 독립 GET 스트림·재연결·이벤트 재전송은 제공하지 않는다. 구 `2024-11-05` HTTP+SSE 전송이나 stdio 전용 연결은 지원하지 않는다.
 
 `notifications/cancelled`는 2025 계열과 `2026-07-28` 경로에서 진행 중인 HTTP 호출에만 적용한다. 여러 클라이언트를 동시에 연결할 때 호출 ID를 서로 겹치지 않게 사용한다. 취소 알림으로 이미 대기열에 추가한 이미지·학습 요청을 취소하지는 않는다. 접수 후 실행 중인 업무는 `eidolon_cancel_work`, 대기 업무는 `eidolon_clear_pending`을 사용한다.
 

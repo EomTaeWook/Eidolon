@@ -6,7 +6,7 @@ on:
       release_tag:
         description: Stable version tag used for package names
         required: true
-        default: v1.0.4
+        default: v1.0.5
         type: string
       source_ref:
         description: Source branch, commit or existing tag to build

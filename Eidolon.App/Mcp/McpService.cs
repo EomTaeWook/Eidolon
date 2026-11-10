@@ -8,6 +8,9 @@ using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
 using MCP.Core.Models.Tools;
 using MCP.Core.Tools;
+using SkiaSharp;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -16,6 +19,9 @@ namespace Eidolon.App.Mcp
 {
     public class McpService
     {
+        private const string ReferenceFeaturesInputName = "reference_features";
+        private const int MaximumContinuationBytes = 196608;
+        private readonly byte[] _referenceContinuationKey = RandomNumberGenerator.GetBytes(32);
         private readonly StudioSession _session;
         private readonly AssetsViewModel _assets;
         private readonly GenerationViewModel _generation;
@@ -82,10 +88,10 @@ namespace Eidolon.App.Mcp
                     "Discard all requests currently waiting in the shared work queue, including UI and other MCP clients' pending work. Runs immediately without waiting behind the active work. Does not cancel active work, completed work or scheduled connection-setting changes. Read eidolon_get_status.pending_requests first. To stop both waiting and active work, clear pending requests first, refresh status, then cancel the current work. Completed files are preserved; discarding a prepared multi-view request marks its unfinished collection as cancelled. Poll status after the response.")
                 { ReadOnly = false, Destructive = false, Idempotent = false, OpenWorld = false }, ClearPendingAsync),
                 new McpTool(new McpToolDefinition("eidolon_generate_image",
-                    "Queue text-to-image generation, optionally with a reference image. Accept prompt as tags, descriptive phrases or natural-language sentences. For ComfyUI, an installed local converter adapts prompt to the captured checkpoint in the work queue; without it, provide English input already suited to that model. Codex receives prompt directly without local conversion. Keep positive_prompt and negative_prompt in English using the target model's format. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Specify the subject, appearance, pose, composition, viewpoint, style, materials, colors, lighting and background in relevant detail; put unwanted elements in negative_prompt. Returns accepted and the fixed seed, not a completed image. Poll eidolon_get_status then eidolon_list_images. Uses saved instructions unless positive_prompt or negative_prompt is provided. Omitting model_id uses the UI model; omitting lora_ids uses compatible selected UI LoRAs. An empty lora_ids array disables LoRAs for this request. Does not change UI inputs or saved settings.",
+                    "Queue text-to-image generation, optionally with a reference image. Accept prompt as tags, descriptive phrases or natural-language sentences. For ComfyUI, an installed local converter adapts prompt to the captured checkpoint in the work queue; without it, provide English input already suited to that model. Codex receives prompt directly without local conversion. Keep positive_prompt and negative_prompt in English using the target model's format. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Specify the subject, appearance, pose, composition, viewpoint, style, materials, colors, lighting and background in relevant detail; put unwanted elements in negative_prompt. Returns accepted and the fixed seed, not a completed image. Poll eidolon_get_status then eidolon_list_images. Uses saved instructions unless positive_prompt or negative_prompt is provided. Omitting model_id uses the UI model; omitting lora_ids uses compatible selected UI LoRAs. An empty lora_ids array disables LoRAs for this request. Does not change UI inputs or saved settings. With reference_path, preservation_prompt is the caller-confirmed final preservation text: provide suitable English for ComfyUI and resolve conflicts with requested changes before submitting. An explicit empty string skips preservation. If omitted, clients declaring sampling can use MCP 2026-07-28 input_required/inputResponses/requestState or the official 2025 initialized Streamable HTTP POST SSE round trip; other clients must provide preservation_prompt. No generation is queued until this round trip is complete. Acceptance echoes the captured preservation text; final application is recorded in result PositivePrompt.",
                     ImageSchema(false)), GenerateImageAsync),
                 new McpTool(new McpToolDefinition("eidolon_edit_image",
-                    "Queue a style edit using an existing local reference image. Requires reference_path. Accept prompt as tags, descriptive phrases or natural-language sentences. For ComfyUI, an installed local converter adapts prompt to the captured checkpoint in the work queue; without it, provide English input already suited to that model. Codex receives prompt directly without local conversion. Keep positive_prompt and negative_prompt in English using the target model's format. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe the desired style, textures, colors, lighting and details to preserve from the reference; put unwanted elements in negative_prompt. ComfyUI style edits automatically extract Canny edges and apply a compatible ControlNet to constrain the reference shape. The managed local runtime prepares the control weights on first use; external servers must provide the required Canny ControlNet and core nodes. Stored result metadata includes OutlineControlModel and OutlineControlStrength. Lower change_strength preserves more of the original; default 0.35. Returns accepted and the fixed seed. Poll status and list_images for completion or preparation errors. Request instruction overrides do not change saved settings.",
+                    "Queue a style edit using an existing local reference image. Requires reference_path. Accept prompt as tags, descriptive phrases or natural-language sentences. For ComfyUI, an installed local converter adapts prompt to the captured checkpoint in the work queue; without it, provide English input already suited to that model. Codex receives prompt directly without local conversion. Keep positive_prompt and negative_prompt in English using the target model's format. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe the desired style, textures, colors, lighting and details to preserve from the reference; put unwanted elements in negative_prompt. ComfyUI style edits automatically extract Canny edges and apply a compatible ControlNet to constrain the reference shape. The managed local runtime prepares the control weights on first use; external servers must provide the required Canny ControlNet and core nodes. Stored result metadata includes OutlineControlModel and OutlineControlStrength. Lower change_strength preserves more of the original; default 0.35. Returns accepted and the fixed seed. Poll status and list_images for completion or preparation errors. Request instruction overrides do not change saved settings. With reference_path, preservation_prompt is the caller-confirmed final preservation text: provide suitable English for ComfyUI and resolve conflicts with requested changes before submitting. An explicit empty string skips preservation. If omitted, clients declaring sampling can use MCP 2026-07-28 input_required/inputResponses/requestState or the official 2025 initialized Streamable HTTP POST SSE round trip; other clients must provide preservation_prompt. No generation is queued until this round trip is complete. Acceptance echoes the captured preservation text; final application is recorded in result PositivePrompt.",
                     ImageSchema(true)), EditImageAsync),
                 new McpTool(new McpToolDefinition("eidolon_list_images",
                     "Read generated PNG paths and stored generation metadata from the current output folder, newest first. JSON metadata may be absent. Paths refer to local files; this tool does not transfer image bytes.")
@@ -273,6 +279,7 @@ namespace Eidolon.App.Mcp
                     ["positive_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional request-only English instructions in the target model's preferred format: tags, descriptive phrases or natural-language sentences. Follow prompt_guidance and preserve requested style, composition, lighting, background and quality. The local converter does not rewrite these instructions; use only requested and model-supported special tags. Omit to use saved instructions; an empty string clears them for this request." },
                     ["negative_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional request-only English exclusions in the target model's preferred format. Follow checkpoint-specific negative guidance and avoid exclusions that conflict with the requested subject or style. The local converter does not rewrite these exclusions. Omit to use saved exclusions; an empty string clears them for this request." },
                     ["reference_path"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 },
+                    ["preservation_prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 8192, ["description"] = "Caller-confirmed reference features to preserve. Requires reference_path. For ComfyUI use concise English in the target checkpoint format, and remove features conflicting with the requested changes. An explicit empty string skips preservation instructions. If omitted with a reference, clients declaring sampling use MCP 2026-07-28 input_required or initialized 2025 Streamable HTTP POST SSE sampling; other clients must provide this argument explicitly." },
                     ["change_strength"] = new JsonObject { ["type"] = "number", ["minimum"] = 0.05, ["maximum"] = 0.95 }
                 },
                 ["required"] = required,
@@ -575,71 +582,637 @@ namespace Eidolon.App.Mcp
             }, token);
         }
 
-        private Task<McpToolResult> GenerateImageAsync(JsonObject arguments, CancellationToken token)
+        private Task<McpToolResult> GenerateImageAsync(JsonObject arguments, McpToolCallContext context, CancellationToken token)
         {
-            return QueueImageAsync(arguments, false, token);
+            return QueueImageAsync(arguments, context, false, token);
         }
 
-        private Task<McpToolResult> EditImageAsync(JsonObject arguments, CancellationToken token)
+        private Task<McpToolResult> EditImageAsync(JsonObject arguments, McpToolCallContext context, CancellationToken token)
         {
-            return QueueImageAsync(arguments, true, token);
+            return QueueImageAsync(arguments, context, true, token);
         }
 
-        private async Task<McpToolResult> QueueImageAsync(JsonObject arguments, bool editing, CancellationToken token)
+        private async Task<McpToolResult> QueueImageAsync(JsonObject arguments, McpToolCallContext context, bool editing, CancellationToken token)
         {
             try
             {
+                string prompt = arguments["prompt"].GetValue<string>().Trim();
+                if (string.IsNullOrWhiteSpace(prompt) == true)
+                {
+                    throw new ArgumentException("prompt must contain an image description.");
+                }
+                McpReferenceContinuation continuation = null;
+                if (string.IsNullOrEmpty(context.RequestState) == false)
+                {
+                    continuation = ReadReferenceContinuation(context.RequestState, context, editing);
+                    if (JsonNode.DeepEquals(continuation.Arguments, arguments) == false)
+                    {
+                        throw new ArgumentException("The reference continuation arguments changed. Start a new request.");
+                    }
+                    if (context.IsInputContinuation == true)
+                    {
+                        if (context.IsModern == true)
+                        {
+                            throw new ArgumentException("Internal reference continuation requires the original initialized 2025 request.");
+                        }
+                        if (string.IsNullOrEmpty(context.SessionId) == true)
+                        {
+                            throw new ArgumentException("Internal reference continuation requires a valid initialized session.");
+                        }
+                        if (JsonNode.DeepEquals(continuation.OriginalRequestId, context.RequestId) == false)
+                        {
+                            throw new ArgumentException("Internal reference continuation must preserve the original JSON-RPC request id.");
+                        }
+                    }
+                    else
+                    {
+                        if (context.IsModern == false)
+                        {
+                            throw new ArgumentException("A 2025 reference continuation must remain inside its original Streamable HTTP request.");
+                        }
+                        if (JsonNode.DeepEquals(continuation.OriginalRequestId, context.RequestId) == true)
+                        {
+                            throw new ArgumentException("A continuation retry requires a new JSON-RPC request id.");
+                        }
+                    }
+                }
+                else if (context.IsInputContinuation == true)
+                {
+                    throw new ArgumentException("Internal reference continuation requires the original protected requestState.");
+                }
+                else if (context.InputResponses.Count > 0)
+                {
+                    throw new ArgumentException("inputResponses requires the original requestState.");
+                }
+                if (arguments.ContainsKey("preservation_prompt") == true)
+                {
+                    if (arguments["reference_path"] == null)
+                    {
+                        throw new ArgumentException("preservation_prompt requires reference_path.");
+                    }
+                }
                 GenerationReferenceInput reference = await ReadReferenceAsync(arguments, editing, token).ConfigureAwait(false);
+                McpGenerationOptions options = await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    EnsureAvailable(token);
+                    if (_session.CanQueue == false)
+                    {
+                        throw new ArgumentException("Eidolon is not ready to accept an image request.");
+                    }
+                    if (continuation == null)
+                    {
+                        return CreateGenerationOptions(arguments);
+                    }
+                    EnsureReferenceGenerationEnvironment(arguments, continuation);
+                    return continuation.Options;
+                });
+                string preservationSource = "none";
+                if (reference != null)
+                {
+                    if (continuation != null)
+                    {
+                        string referenceHash = Convert.ToHexStringLower(SHA256.HashData(reference.ImageData));
+                        if (referenceHash != continuation.ReferenceSha256)
+                        {
+                            throw new ArgumentException("The reference image changed during sampling. Start a new request.");
+                        }
+                        if (context.InputResponses.ContainsKey(ReferenceFeaturesInputName) == false)
+                        {
+                            RequireReferenceSampling(context);
+                            return await RequestReferenceFeaturesAsync(reference, prompt, context.RequestState, token).ConfigureAwait(false);
+                        }
+                        reference.PreservationPrompt = ReadSampledReferenceFeatures(context.InputResponses[ReferenceFeaturesInputName]);
+                        preservationSource = "sampling";
+                    }
+                    else if (arguments.ContainsKey("preservation_prompt") == true)
+                    {
+                        reference.PreservationPrompt = arguments["preservation_prompt"].GetValue<string>().Trim();
+                        preservationSource = "caller";
+                    }
+                    else
+                    {
+                        RequireReferenceSampling(context);
+                        string requestState = CreateReferenceContinuation(arguments, options, reference, context, editing);
+                        return await RequestReferenceFeaturesAsync(reference, prompt, requestState, token).ConfigureAwait(false);
+                    }
+                }
+                else if (continuation != null)
+                {
+                    throw new ArgumentException("Reference continuation requires the original reference_path.");
+                }
                 return await OnUiAsync(() =>
                 {
-                    string prompt = arguments["prompt"].GetValue<string>().Trim();
-                    if (string.IsNullOrWhiteSpace(prompt) == true)
+                    if (continuation != null)
                     {
-                        throw new ArgumentException("prompt must contain an image description.");
+                        EnsureReferenceGenerationEnvironment(arguments, continuation);
                     }
                     if (_session.CanQueue == false)
                     {
                         throw new ArgumentException("Eidolon is not ready to accept an image request.");
                     }
-                    McpGenerationOptions options = CreateGenerationOptions(arguments);
-                    ModelAsset model = options.Model;
-                    List<ModelAsset> loras = options.Loras;
-                    DesktopSettings settings = options.Settings;
-                    long seed = options.Seed;
-                    bool removeBackground = options.RemoveBackground;
                     string titleKey = "EidolonText106";
                     if (editing == true)
                     {
                         titleKey = "EidolonText456";
                     }
                     token.ThrowIfCancellationRequested();
-                    _generation.EnqueueGeneration(settings, prompt, model, loras, removeBackground, seed, reference, titleKey);
+                    _generation.EnqueueGeneration(options.Settings, prompt, options.Model, options.Loras, options.RemoveBackground, options.Seed, reference, titleKey);
                     JsonObject result = new JsonObject
                     {
                         ["accepted"] = true,
                         ["prompt"] = prompt,
-                        ["positive_prompt"] = settings.PositivePrompt,
-                        ["negative_prompt"] = settings.NegativePrompt,
-                        ["output_directory"] = settings.GenerationDirectory,
-                        ["generation_backend"] = settings.GenerationBackend.ToString()
+                        ["positive_prompt"] = options.Settings.PositivePrompt,
+                        ["negative_prompt"] = options.Settings.NegativePrompt,
+                        ["output_directory"] = options.Settings.GenerationDirectory,
+                        ["generation_backend"] = options.Settings.GenerationBackend.ToString()
                     };
-                    if (settings.GenerationBackend == GenerationBackend.ComfyUI)
+                    if (reference != null)
                     {
-                        result["seed"] = seed;
-                        result["model_id"] = model.Id;
+                        result["preservation_prompt"] = reference.PreservationPrompt;
+                        result["preservation_source"] = preservationSource;
+                    }
+                    if (options.Settings.GenerationBackend == GenerationBackend.ComfyUI)
+                    {
+                        result["seed"] = options.Seed;
+                        result["model_id"] = options.Model.Id;
                     }
                     else
                     {
-                        result["codex_model"] = settings.CodexModel;
+                        result["codex_model"] = options.Settings.CodexModel;
                     }
                     return result;
                 }, token).ConfigureAwait(false);
             }
-            catch (Exception error) when (error is StudioException || error is IOException || error is UnauthorizedAccessException)
+            catch (StudioException error)
             {
                 string message = await Dispatcher.UIThread.InvokeAsync(() => _strings.GetExceptionMessage(error));
                 return new McpToolResult(message, true);
             }
+            catch (IOException error)
+            {
+                string message = await Dispatcher.UIThread.InvokeAsync(() => _strings.GetExceptionMessage(error));
+                return new McpToolResult(message, true);
+            }
+            catch (UnauthorizedAccessException error)
+            {
+                string message = await Dispatcher.UIThread.InvokeAsync(() => _strings.GetExceptionMessage(error));
+                return new McpToolResult(message, true);
+            }
+        }
+
+        private void RequireReferenceSampling(McpToolCallContext context)
+        {
+            if (context.IsModern == false)
+            {
+                if (string.IsNullOrEmpty(context.SessionId) == true)
+                {
+                    throw new ArgumentException("Provide preservation_prompt for this reference request, or an empty string to skip preservation. Automatic reference sampling requires a valid initialized 2025 session or MCP 2026-07-28, with client-declared sampling support.");
+                }
+            }
+            if (context.ClientCapabilities["sampling"] is not JsonObject)
+            {
+                throw new ArgumentException("The client did not declare sampling support. Provide caller-confirmed preservation_prompt, or an empty string to skip preservation.");
+            }
+        }
+
+        private void EnsureReferenceGenerationEnvironment(JsonObject arguments, McpReferenceContinuation continuation)
+        {
+            if (continuation.ExpiresAtUtc <= DateTimeOffset.UtcNow)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            JsonObject resumedArguments = (JsonObject)arguments.DeepClone();
+            if (continuation.Options.Settings.GenerationBackend == GenerationBackend.ComfyUI)
+            {
+                if (resumedArguments.ContainsKey("seed") == false)
+                {
+                    resumedArguments["seed"] = continuation.Options.Seed;
+                }
+            }
+            McpGenerationOptions currentOptions = CreateGenerationOptions(resumedArguments);
+            if (JsonNode.DeepEquals(DescribeImageOptions(currentOptions), DescribeImageOptions(continuation.Options)) == false)
+            {
+                throw new ArgumentException("The generation environment changed during reference sampling. Start a new request.");
+            }
+        }
+
+        private JsonObject DescribeImageOptions(McpGenerationOptions options)
+        {
+            DesktopSettings settings = options.Settings;
+            JsonObject result = new JsonObject
+            {
+                ["generation_backend"] = settings.GenerationBackend.ToString(),
+                ["generation_directory"] = settings.GenerationDirectory,
+                ["positive_prompt"] = settings.PositivePrompt,
+                ["negative_prompt"] = settings.NegativePrompt,
+                ["remove_background"] = options.RemoveBackground
+            };
+            if (settings.GenerationBackend == GenerationBackend.ComfyUI)
+            {
+                result["install_directory"] = settings.InstallDirectory;
+                result["server_address"] = settings.ServerAddress;
+                result["use_server_assets"] = settings.UseServerAssets;
+                result["use_cpu"] = settings.UseCpu;
+                result["model"] = JsonSerializer.SerializeToNode(options.Model);
+                result["loras"] = JsonSerializer.SerializeToNode(options.Loras);
+                result["seed"] = options.Seed;
+            }
+            else
+            {
+                result["codex_executable_path"] = settings.CodexExecutablePath;
+                result["codex_model"] = settings.CodexModel;
+            }
+            return result;
+        }
+
+        private string CreateReferenceContinuation(JsonObject arguments, McpGenerationOptions options, GenerationReferenceInput reference, McpToolCallContext context, bool editing)
+        {
+            if (context.RequestId == null)
+            {
+                throw new ArgumentException("Reference sampling requires a JSON-RPC request id.");
+            }
+            DesktopSettings settings = options.Settings.Copy();
+            settings.PromptPresets.Clear();
+            settings.AdditionalSettings.Clear();
+            settings.ActivePromptPresetId = string.Empty;
+            McpReferenceContinuation continuation = new McpReferenceContinuation
+            {
+                Arguments = (JsonObject)arguments.DeepClone(),
+                OriginalRequestId = context.RequestId.DeepClone(),
+                ExpiresAtUtc = DateTimeOffset.UtcNow.AddMinutes(5),
+                ReferenceSha256 = Convert.ToHexStringLower(SHA256.HashData(reference.ImageData)),
+                UseServerAssets = settings.UseServerAssets,
+                Options = new McpGenerationOptions
+                {
+                    Settings = settings,
+                    Model = options.Model,
+                    Loras = options.Loras,
+                    Seed = options.Seed,
+                    RemoveBackground = options.RemoveBackground
+                }
+            };
+            byte[] payload = JsonSerializer.SerializeToUtf8Bytes(continuation);
+            if (payload.Length > MaximumContinuationBytes)
+            {
+                throw new ArgumentException("The reference request snapshot is too large. Provide preservation_prompt directly instead.");
+            }
+            byte[] protectedState = new byte[28 + payload.Length];
+            RandomNumberGenerator.Fill(protectedState.AsSpan(0, 12));
+            using AesGcm encryption = new AesGcm(_referenceContinuationKey, 16);
+            encryption.Encrypt(protectedState.AsSpan(0, 12), payload, protectedState.AsSpan(28), protectedState.AsSpan(12, 16), ReferenceContinuationPurpose(context, editing));
+            return Convert.ToBase64String(protectedState);
+        }
+
+        private McpReferenceContinuation ReadReferenceContinuation(string requestState, McpToolCallContext context, bool editing)
+        {
+            if (requestState.Length > ((MaximumContinuationBytes + 30) / 3) * 4)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            McpReferenceContinuation continuation;
+            try
+            {
+                byte[] protectedState = Convert.FromBase64String(requestState);
+                if (protectedState.Length <= 28)
+                {
+                    throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+                }
+                if (protectedState.Length > MaximumContinuationBytes + 28)
+                {
+                    throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+                }
+                byte[] payload = new byte[protectedState.Length - 28];
+                using AesGcm encryption = new AesGcm(_referenceContinuationKey, 16);
+                encryption.Decrypt(protectedState.AsSpan(0, 12), protectedState.AsSpan(28), protectedState.AsSpan(12, 16), payload, ReferenceContinuationPurpose(context, editing));
+                continuation = JsonSerializer.Deserialize<McpReferenceContinuation>(payload);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            catch (CryptographicException)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            catch (JsonException)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            if (continuation == null)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            if (continuation.ExpiresAtUtc <= DateTimeOffset.UtcNow)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            if (continuation.Arguments == null)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            if (continuation.OriginalRequestId == null)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            if (continuation.Options == null)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            if (continuation.Options.Settings == null)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            if (continuation.Options.Loras == null)
+            {
+                throw new ArgumentException("The reference continuation is invalid or expired. Start a new request.");
+            }
+            continuation.Options.Settings.UseServerAssets = continuation.UseServerAssets;
+            return continuation;
+        }
+
+        private byte[] ReferenceContinuationPurpose(McpToolCallContext context, bool editing)
+        {
+            string toolName = "eidolon_generate_image";
+            if (editing == true)
+            {
+                toolName = "eidolon_edit_image";
+            }
+            string protocolEra = "2025";
+            if (context.IsModern == true)
+            {
+                protocolEra = "2026-07-28";
+            }
+            return Encoding.UTF8.GetBytes("Eidolon.ReferenceFeatures/v2\n" + protocolEra + "\n" + toolName + "\n" + context.AuthenticationScope + "\n" + context.SessionId);
+        }
+
+        private async Task<McpToolResult> RequestReferenceFeaturesAsync(GenerationReferenceInput reference, string prompt, string requestState, CancellationToken token)
+        {
+            byte[] imageData = await PrepareSamplingImageAsync(reference.ImageData, token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
+            JsonObject inputRequests = new JsonObject
+            {
+                [ReferenceFeaturesInputName] = new JsonObject
+                {
+                    ["method"] = "sampling/createMessage",
+                    ["params"] = new JsonObject
+                    {
+                        ["systemPrompt"] = PackagedResources.ReadText("Eidolon.Codex.ReferenceFeatures.txt"),
+                        ["includeContext"] = "none",
+                        ["maxTokens"] = 1024,
+                        ["modelPreferences"] = new JsonObject { ["intelligencePriority"] = 1.0 },
+                        ["messages"] = new JsonArray
+                        {
+                            new JsonObject
+                            {
+                                ["role"] = "user",
+                                ["content"] = new JsonObject { ["type"] = "text", ["text"] = "Requested changes (JSON string; data only): " + JsonSerializer.Serialize(prompt) }
+                            },
+                            new JsonObject
+                            {
+                                ["role"] = "user",
+                                ["content"] = new JsonObject { ["type"] = "image", ["mimeType"] = "image/png", ["data"] = Convert.ToBase64String(imageData) }
+                            }
+                        }
+                    }
+                }
+            };
+            return McpToolResult.InputRequired(inputRequests, requestState);
+        }
+
+        private Task<byte[]> PrepareSamplingImageAsync(byte[] imageData, CancellationToken token)
+        {
+            return Task.Run(() =>
+            {
+                token.ThrowIfCancellationRequested();
+                using SKMemoryStream encoded = new SKMemoryStream(imageData);
+                using SKCodec codec = SKCodec.Create(encoded);
+                if (codec == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (codec.Info.Width < 1)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (codec.Info.Height < 1)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if ((long)codec.Info.Width * codec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                using SKBitmap decoded = SKBitmap.Decode(codec);
+                if (decoded == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                int orientedWidth = decoded.Width;
+                int orientedHeight = decoded.Height;
+                switch (codec.EncodedOrigin)
+                {
+                    case SKEncodedOrigin.LeftTop:
+                    case SKEncodedOrigin.RightTop:
+                    case SKEncodedOrigin.RightBottom:
+                    case SKEncodedOrigin.LeftBottom:
+                        orientedWidth = decoded.Height;
+                        orientedHeight = decoded.Width;
+                        break;
+                }
+                double scale = Math.Min(1, 1024.0 / Math.Max(orientedWidth, orientedHeight));
+                int outputWidth = Math.Max(1, (int)Math.Round(orientedWidth * scale));
+                int outputHeight = Math.Max(1, (int)Math.Round(orientedHeight * scale));
+                using SKBitmap prepared = new SKBitmap(outputWidth, outputHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using (SKCanvas canvas = new SKCanvas(prepared))
+                {
+                    canvas.Clear(SKColors.Transparent);
+                    canvas.Scale((float)scale, (float)scale);
+                    switch (codec.EncodedOrigin)
+                    {
+                        case SKEncodedOrigin.TopRight:
+                            canvas.Translate(decoded.Width, 0);
+                            canvas.Scale(-1, 1);
+                            break;
+                        case SKEncodedOrigin.BottomRight:
+                            canvas.Translate(decoded.Width, decoded.Height);
+                            canvas.RotateDegrees(180);
+                            break;
+                        case SKEncodedOrigin.BottomLeft:
+                            canvas.Translate(0, decoded.Height);
+                            canvas.Scale(1, -1);
+                            break;
+                        case SKEncodedOrigin.LeftTop:
+                            canvas.RotateDegrees(90);
+                            canvas.Scale(1, -1);
+                            break;
+                        case SKEncodedOrigin.RightTop:
+                            canvas.Translate(decoded.Height, 0);
+                            canvas.RotateDegrees(90);
+                            break;
+                        case SKEncodedOrigin.RightBottom:
+                            canvas.Translate(decoded.Height, decoded.Width);
+                            canvas.RotateDegrees(90);
+                            canvas.Scale(-1, 1);
+                            break;
+                        case SKEncodedOrigin.LeftBottom:
+                            canvas.Translate(0, decoded.Width);
+                            canvas.RotateDegrees(270);
+                            break;
+                    }
+                    using SKImage sourceImage = SKImage.FromBitmap(decoded);
+                    canvas.DrawImage(sourceImage, 0, 0, new SKSamplingOptions(SKFilterMode.Linear));
+                }
+                token.ThrowIfCancellationRequested();
+                using SKImage preparedImage = SKImage.FromBitmap(prepared);
+                using SKData preparedData = preparedImage.Encode(SKEncodedImageFormat.Png, 100);
+                if (preparedData == null)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                }
+                if (preparedData.Size > 8 * 1024 * 1024)
+                {
+                    throw new ArgumentException("The reference image is too large for client sampling. Provide preservation_prompt directly.");
+                }
+                token.ThrowIfCancellationRequested();
+                return preparedData.ToArray();
+            }, token);
+        }
+
+        private string ReadSampledReferenceFeatures(JsonNode responseNode)
+        {
+            if (responseNode is not JsonObject response)
+            {
+                throw new ArgumentException("The sampling response must be a CreateMessageResult object.");
+            }
+            if (response["role"]?.GetValueKind() != JsonValueKind.String)
+            {
+                throw new ArgumentException("The sampling response requires assistant role.");
+            }
+            if (response["role"].GetValue<string>() != "assistant")
+            {
+                throw new ArgumentException("The sampling response requires assistant role.");
+            }
+            if (response["model"]?.GetValueKind() != JsonValueKind.String)
+            {
+                throw new ArgumentException("The sampling response requires the responding model name.");
+            }
+            if (string.IsNullOrWhiteSpace(response["model"].GetValue<string>()) == true)
+            {
+                throw new ArgumentException("The sampling response requires the responding model name.");
+            }
+            if (response.ContainsKey("stopReason") == true)
+            {
+                if (response["stopReason"]?.GetValueKind() != JsonValueKind.String)
+                {
+                    throw new ArgumentException("The sampling response has an invalid stopReason.");
+                }
+                string stopReason = response["stopReason"].GetValue<string>();
+                if (stopReason == "maxTokens")
+                {
+                    throw new ArgumentException("Reference sampling was truncated. Provide complete preservation_prompt or retry sampling.");
+                }
+                if (stopReason == "refusal")
+                {
+                    throw new ArgumentException("Reference sampling was declined. Provide preservation_prompt explicitly.");
+                }
+                if (stopReason == "toolUse")
+                {
+                    throw new ArgumentException("Reference sampling must return features without invoking tools.");
+                }
+            }
+            StringBuilder responseText = new StringBuilder();
+            if (response["content"] is JsonObject content)
+            {
+                AppendReferenceSamplingText(content, responseText);
+            }
+            else if (response["content"] is JsonArray contents)
+            {
+                if (contents.Count != 1)
+                {
+                    throw new ArgumentException("Reference sampling must return one text content block.");
+                }
+                foreach (JsonNode contentNode in contents)
+                {
+                    if (contentNode is not JsonObject textContent)
+                    {
+                        throw new ArgumentException("Reference sampling must return text content only.");
+                    }
+                    AppendReferenceSamplingText(textContent, responseText);
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Reference sampling must return text content only.");
+            }
+            try
+            {
+                using JsonDocument document = JsonDocument.Parse(responseText.ToString());
+                JsonElement result = document.RootElement;
+                if (result.ValueKind != JsonValueKind.Object)
+                {
+                    throw new ArgumentException("Reference sampling must return a features/error JSON object.");
+                }
+                if (result.EnumerateObject().Count() != 2)
+                {
+                    throw new ArgumentException("Reference sampling must return only features and error.");
+                }
+                if (result.TryGetProperty("features", out JsonElement features) == false)
+                {
+                    throw new ArgumentException("Reference sampling did not return features.");
+                }
+                if (result.TryGetProperty("error", out JsonElement error) == false)
+                {
+                    throw new ArgumentException("Reference sampling did not return error.");
+                }
+                if (features.ValueKind != JsonValueKind.String)
+                {
+                    throw new ArgumentException("Reference sampling features must be text.");
+                }
+                if (error.ValueKind != JsonValueKind.String)
+                {
+                    throw new ArgumentException("Reference sampling error must be text.");
+                }
+                if (string.IsNullOrWhiteSpace(error.GetString()) == false)
+                {
+                    throw new ArgumentException("Reference sampling failed. Provide preservation_prompt explicitly or start a new request.");
+                }
+                string preservationPrompt = features.GetString().Trim();
+                if (preservationPrompt.Length == 0)
+                {
+                    throw new ArgumentException("Reference sampling returned no features. Provide preservation_prompt explicitly; use an empty string to intentionally skip preservation.");
+                }
+                if (preservationPrompt.Length > 8192)
+                {
+                    throw new ArgumentException("Reference sampling features exceed 8192 characters.");
+                }
+                return preservationPrompt;
+            }
+            catch (JsonException)
+            {
+                throw new ArgumentException("Reference sampling must return valid features/error JSON text.");
+            }
+        }
+
+        private void AppendReferenceSamplingText(JsonObject content, StringBuilder responseText)
+        {
+            if (content["type"]?.GetValueKind() != JsonValueKind.String)
+            {
+                throw new ArgumentException("Reference sampling must return text content only.");
+            }
+            if (content["type"].GetValue<string>() != "text")
+            {
+                throw new ArgumentException("Reference sampling must return text content only.");
+            }
+            if (content["text"]?.GetValueKind() != JsonValueKind.String)
+            {
+                throw new ArgumentException("Reference sampling must return text content only.");
+            }
+            string text = content["text"].GetValue<string>();
+            if (text.Length > 65536 - responseText.Length)
+            {
+                throw new ArgumentException("Reference sampling text exceeds the result size limit.");
+            }
+            responseText.Append(text);
         }
 
         private async Task<GenerationReferenceInput> ReadReferenceAsync(JsonObject arguments, bool editing, CancellationToken token)
@@ -824,6 +1397,7 @@ namespace Eidolon.App.Mcp
         {
             JsonObject schema = ImageSchema(false);
             JsonObject properties = schema["properties"].AsObject();
+            properties.Remove("preservation_prompt");
             schema["required"] = new JsonArray("reference_path");
             properties["prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional English-only subject description as detailed comma-separated tags or short tag phrases for appearance, proportions, materials, textures, colors, style, lighting and background. Translate the user's request into English. For ComfyUI, use the target checkpoint prompt_guidance from eidolon_list_models; read the backend and saved instruction prefixes with eidolon_get_instructions first. Omit to use the reference subject without an additional description." };
             properties["frame_size"] = new JsonObject { ["type"] = "integer", ["minimum"] = 16, ["maximum"] = AssetCreationInput.MaximumFrameSize };

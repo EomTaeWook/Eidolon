@@ -6,6 +6,7 @@ namespace Eidolon.App.ViewModels
     public class GenerationReferenceDraft : IDisposable
     {
         private int _loadRequest;
+        private int _featuresRequest;
 
         public GenerationReferenceDraft(GenerationReferenceMode mode, double strength)
         {
@@ -19,6 +20,10 @@ namespace Eidolon.App.ViewModels
         public byte[] MaskData { get; set; } = Array.Empty<byte>();
         public string ImageName { get; private set; } = string.Empty;
         public Bitmap Thumbnail { get; private set; }
+        public string PreservationPrompt { get; set; } = string.Empty;
+        public bool IsReadingFeatures { get; private set; }
+        public Exception FeaturesError { get; set; }
+        public CancellationTokenSource FeaturesCancellation { get; set; }
         public bool HasImage
         {
             get
@@ -74,8 +79,38 @@ namespace Eidolon.App.ViewModels
             return request == _loadRequest;
         }
 
+        public int BeginFeaturesRead()
+        {
+            InvalidateFeaturesRead();
+            IsReadingFeatures = true;
+            return _featuresRequest;
+        }
+
+        public bool IsCurrentFeaturesRead(int request)
+        {
+            return request == _featuresRequest;
+        }
+
+        public void InvalidateFeaturesRead()
+        {
+            _featuresRequest++;
+            FeaturesCancellation?.Cancel();
+            IsReadingFeatures = false;
+            FeaturesError = null;
+        }
+
+        public void FinishFeaturesRead(int request)
+        {
+            if (IsCurrentFeaturesRead(request) == true)
+            {
+                IsReadingFeatures = false;
+            }
+        }
+
         public void SetImage(byte[] data, Bitmap thumbnail, string name)
         {
+            InvalidateFeaturesRead();
+            PreservationPrompt = string.Empty;
             Bitmap previous = Thumbnail;
             ImageData = data;
             MaskData = Array.Empty<byte>();
@@ -97,6 +132,8 @@ namespace Eidolon.App.ViewModels
         public void Clear()
         {
             _loadRequest++;
+            InvalidateFeaturesRead();
+            PreservationPrompt = string.Empty;
             Bitmap previous = Thumbnail;
             ImageData = Array.Empty<byte>();
             MaskData = Array.Empty<byte>();

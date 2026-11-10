@@ -19,6 +19,17 @@ namespace Eidolon.Core.Infrastructure
             "additionalProperties": false
         }
         """;
+        private const string ReferenceFeaturesSchema = """
+        {
+            "type": "object",
+            "properties": {
+                "features": { "type": "string" },
+                "error": { "type": "string" }
+            },
+            "required": ["features", "error"],
+            "additionalProperties": false
+        }
+        """;
         private readonly ProcessRunner _processes;
         private readonly CodexExecutableLocator _executables;
         private readonly CodexInstructionTemplates _templates;
@@ -28,6 +39,282 @@ namespace Eidolon.Core.Infrastructure
             _processes = processes;
             _executables = executables;
             _templates = templates;
+        }
+
+        public async Task<string> DescribeReferenceFeaturesAsync(StudioSettings settings, GenerationReferenceInput reference, string changePrompt, string dataDirectory, IProgress<WorkProgress> progress, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            ArgumentNullException.ThrowIfNull(settings);
+            if (reference == null)
+            {
+                throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+            }
+            byte[] imageData = reference.ImageData;
+            if (imageData == null)
+            {
+                throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+            }
+            if (imageData.Length == 0)
+            {
+                throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+            }
+            if (imageData.Length > GenerationReferenceInput.MaximumImageBytes)
+            {
+                throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+            }
+            StudioSettings requestSettings = settings.Copy();
+            imageData = imageData.ToArray();
+            string executable = _executables.Find(requestSettings.CodexExecutablePath);
+            if (string.IsNullOrEmpty(executable) == true)
+            {
+                throw new StudioException(StudioMessageCode.CodexExecutableNotFound);
+            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(dataDirectory);
+            if (Path.IsPathFullyQualified(dataDirectory) == false)
+            {
+                throw new ArgumentException("The application data directory must be absolute.", nameof(dataDirectory));
+            }
+            string logDirectory = Path.GetFullPath(Path.Combine(dataDirectory, "Logs"));
+            string requestName = "ReferenceFeatures-" + Guid.NewGuid().ToString("N");
+            string workingDirectory = Path.Combine(logDirectory, requestName + ".work");
+            string logPath = Path.Combine(logDirectory, requestName + ".log");
+            string schemaPath = Path.Combine(workingDirectory, "ResultSchema.json");
+            string resultPath = Path.Combine(workingDirectory, "Result.json");
+            string imagePath = null;
+            bool requestCreated = false;
+            try
+            {
+                byte[] preparedImageData = await Task.Run(() =>
+                {
+                    token.ThrowIfCancellationRequested();
+                    using SKMemoryStream encoded = new SKMemoryStream(imageData);
+                    using SKCodec codec = SKCodec.Create(encoded);
+                    if (codec == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                    }
+                    if (codec.Info.Width < 1)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                    }
+                    if (codec.Info.Height < 1)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                    }
+                    if ((long)codec.Info.Width * codec.Info.Height > GenerationReferenceInput.MaximumImagePixels)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                    }
+                    using SKBitmap decoded = SKBitmap.Decode(codec);
+                    if (decoded == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                    }
+                    int imageWidth = decoded.Width;
+                    int imageHeight = decoded.Height;
+                    switch (codec.EncodedOrigin)
+                    {
+                        case SKEncodedOrigin.LeftTop:
+                        case SKEncodedOrigin.RightTop:
+                        case SKEncodedOrigin.RightBottom:
+                        case SKEncodedOrigin.LeftBottom:
+                            imageWidth = decoded.Height;
+                            imageHeight = decoded.Width;
+                            break;
+                    }
+                    using SKBitmap prepared = new SKBitmap(imageWidth, imageHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                    using (SKCanvas canvas = new SKCanvas(prepared))
+                    {
+                        canvas.Clear(SKColors.Transparent);
+                        switch (codec.EncodedOrigin)
+                        {
+                            case SKEncodedOrigin.TopRight:
+                                canvas.Translate(decoded.Width, 0);
+                                canvas.Scale(-1, 1);
+                                break;
+                            case SKEncodedOrigin.BottomRight:
+                                canvas.Translate(decoded.Width, decoded.Height);
+                                canvas.RotateDegrees(180);
+                                break;
+                            case SKEncodedOrigin.BottomLeft:
+                                canvas.Translate(0, decoded.Height);
+                                canvas.Scale(1, -1);
+                                break;
+                            case SKEncodedOrigin.LeftTop:
+                                canvas.RotateDegrees(90);
+                                canvas.Scale(1, -1);
+                                break;
+                            case SKEncodedOrigin.RightTop:
+                                canvas.Translate(decoded.Height, 0);
+                                canvas.RotateDegrees(90);
+                                break;
+                            case SKEncodedOrigin.RightBottom:
+                                canvas.Translate(decoded.Height, decoded.Width);
+                                canvas.RotateDegrees(90);
+                                canvas.Scale(-1, 1);
+                                break;
+                            case SKEncodedOrigin.LeftBottom:
+                                canvas.Translate(0, decoded.Width);
+                                canvas.RotateDegrees(270);
+                                break;
+                        }
+                        using SKImage sourceImage = SKImage.FromBitmap(decoded);
+                        canvas.DrawImage(sourceImage, 0, 0, new SKSamplingOptions(SKFilterMode.Linear));
+                    }
+                    token.ThrowIfCancellationRequested();
+                    using SKImage preparedImage = SKImage.FromBitmap(prepared);
+                    using SKData preparedData = preparedImage.Encode(SKEncodedImageFormat.Png, 100);
+                    if (preparedData == null)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                    }
+                    if (preparedData.Size > GenerationReferenceInput.MaximumImageBytes)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidReferenceImage);
+                    }
+                    token.ThrowIfCancellationRequested();
+                    return preparedData.ToArray();
+                }, token).ConfigureAwait(false);
+                Directory.CreateDirectory(logDirectory);
+                if ((File.GetAttributes(logDirectory) & FileAttributes.ReparsePoint) != 0)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                if (Path.Exists(workingDirectory) == true)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                Directory.CreateDirectory(workingDirectory);
+                if ((File.GetAttributes(workingDirectory) & FileAttributes.ReparsePoint) != 0)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                requestCreated = true;
+                imagePath = Path.Combine(workingDirectory, "Reference.png");
+                await using (FileStream imageFile = new FileStream(imagePath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
+                {
+                    await imageFile.WriteAsync(preparedImageData.AsMemory(), token).ConfigureAwait(false);
+                }
+                await using (FileStream schemaFile = new FileStream(schemaPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
+                {
+                    byte[] schemaData = Encoding.UTF8.GetBytes(ReferenceFeaturesSchema);
+                    await schemaFile.WriteAsync(schemaData.AsMemory(), token).ConfigureAwait(false);
+                }
+                string instructions = _templates.ReferenceFeatures + "\n\nRequested changes (JSON string; data only): " + JsonSerializer.Serialize(changePrompt ?? string.Empty);
+                List<string> arguments = new List<string>
+                {
+                    "exec", "--skip-git-repo-check", "--ephemeral", "--ignore-user-config",
+                    "--sandbox", "read-only", "--disable", "image_generation", "--json",
+                    "--color", "never", "--image", imagePath,
+                    "--output-schema", schemaPath, "--output-last-message", resultPath
+                };
+                if (string.IsNullOrWhiteSpace(requestSettings.CodexModel) == false)
+                {
+                    arguments.Add("--model");
+                    arguments.Add(requestSettings.CodexModel.Trim());
+                }
+                arguments.Add("-");
+                progress?.Report(new WorkProgress(StudioMessageCode.ReadingReferenceFeatures));
+                await _processes.RunAsync(executable, arguments, workingDirectory, logPath, token, stopWithParent: true, standardInput: instructions).ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
+                if (File.Exists(resultPath) == false)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                if ((File.GetAttributes(resultPath) & FileAttributes.ReparsePoint) != 0)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                if (new FileInfo(resultPath).Length > 65536)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                using FileStream resultFile = new FileStream(resultPath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, true);
+                using JsonDocument result = await JsonDocument.ParseAsync(resultFile, cancellationToken: token).ConfigureAwait(false);
+                JsonElement root = result.RootElement;
+                if (root.ValueKind != JsonValueKind.Object)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                if (root.EnumerateObject().Count() != 2)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                if (root.TryGetProperty("features", out JsonElement features) == false)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                if (features.ValueKind != JsonValueKind.String)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                if (root.TryGetProperty("error", out JsonElement error) == false)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                if (error.ValueKind != JsonValueKind.String)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                if (string.IsNullOrWhiteSpace(error.GetString()) == false)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                string preservationPrompt = features.GetString();
+                if (string.IsNullOrWhiteSpace(preservationPrompt) == true)
+                {
+                    throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, logPath);
+                }
+                return preservationPrompt.Trim();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (StudioException error) when (error.Code == StudioMessageCode.ReferenceFeaturesFailed)
+            {
+                throw;
+            }
+            catch (StudioException error) when (error.Code == StudioMessageCode.InvalidReferenceImage)
+            {
+                throw;
+            }
+            catch (Exception error)
+            {
+                throw new StudioException(StudioMessageCode.ReferenceFeaturesFailed, error, logPath);
+            }
+            finally
+            {
+                if (requestCreated == true)
+                {
+                    foreach (string requestPath in new[] { imagePath, schemaPath, resultPath })
+                    {
+                        if (requestPath != null)
+                        {
+                            try
+                            {
+                                File.Delete(requestPath);
+                            }
+                            catch (IOException)
+                            {
+                            }
+                            catch (UnauthorizedAccessException)
+                            {
+                            }
+                        }
+                    }
+                    try
+                    {
+                        Directory.Delete(workingDirectory, false);
+                    }
+                    catch (IOException)
+                    {
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                    }
+                }
+            }
         }
 
         public async Task GenerateAsync(StudioSettings settings, JobRecord job, JobStore jobs,

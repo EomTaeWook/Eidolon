@@ -26,6 +26,20 @@
           <Path Data="M4,4 L16,16 M16,4 L4,16" Width="14" Height="14" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.5" />
         </Button>
       </Grid>
+      <StackPanel Spacing="6">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBlock Text="{DynamicResource EidolonText732}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+          <Button Grid.Column="1" Content="{DynamicResource EidolonText735}" Command="{Binding ReadReferenceFeaturesCommand}" Classes="quiet" />
+        </Grid>
+        <TextBox Text="{Binding PreservationPrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="84" MaxHeight="180" Watermark="{DynamicResource EidolonText732}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+        <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsReadingReferenceFeatures}">
+          <ProgressBar IsIndeterminate="True" Width="40" Height="3" VerticalAlignment="Center" />
+          <TextBlock Text="{DynamicResource EidolonText734}" Classes="muted" FontSize="11" TextWrapping="Wrap" />
+        </StackPanel>
+        <TextBlock Text="{DynamicResource EidolonText733}" Classes="muted" FontSize="11" TextWrapping="Wrap" />
+        <TextBlock Text="{DynamicResource EidolonText738}" Classes="muted" FontSize="11" TextWrapping="Wrap" />
+        <SelectableTextBlock Text="{Binding ReferenceFeaturesError}" Foreground="{DynamicResource ErrorTextBrush}" FontSize="11" TextWrapping="Wrap" IsVisible="{Binding HasReferenceFeaturesError}" />
+      </StackPanel>
       <DropDownButton IsVisible="{Binding IsComfyGeneration}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinHeight="40" CornerRadius="8" Padding="12,8" ToolTip.Tip="{DynamicResource EidolonText448}" AutomationProperties.Name="{DynamicResource EidolonText448}">
         <TextBlock Text="{Binding ReferenceStrengthCaption}" FontSize="12" />
         <DropDownButton.Flyout>

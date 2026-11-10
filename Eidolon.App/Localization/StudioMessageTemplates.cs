@@ -300,6 +300,10 @@ namespace Eidolon.App.Localization
                     return "EidolonText710";
                 case StudioMessageCode.PromptConversionFailed:
                     return "EidolonText711";
+                case StudioMessageCode.ReadingReferenceFeatures:
+                    return "EidolonText734";
+                case StudioMessageCode.ReferenceFeaturesFailed:
+                    return "EidolonText736";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(code), code, null);
             }

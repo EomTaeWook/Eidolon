@@ -10,11 +10,11 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 | Platform | Download |
 |---|---|
-| Windows x64 | [Eidolon-v1.0.4-win-x64.exe](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.4/Eidolon-v1.0.4-win-x64.exe) |
-| macOS 14+ · Apple Silicon | [Eidolon-v1.0.4-osx-arm64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.4/Eidolon-v1.0.4-osx-arm64.app.zip) |
-| macOS 14+ · Intel | [Eidolon-v1.0.4-osx-x64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.4/Eidolon-v1.0.4-osx-x64.app.zip) |
+| Windows x64 | [Eidolon-v1.0.5-win-x64.exe](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.5/Eidolon-v1.0.5-win-x64.exe) |
+| macOS 14+ · Apple Silicon | [Eidolon-v1.0.5-osx-arm64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.5/Eidolon-v1.0.5-osx-arm64.app.zip) |
+| macOS 14+ · Intel | [Eidolon-v1.0.5-osx-x64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.5/Eidolon-v1.0.5-osx-x64.app.zip) |
 
-[Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.4)
+[Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.5)
 
 On Windows, run the single `.exe`. On Mac, extract the ZIP, move `Eidolon.app` to a writable Applications folder, and open it in Finder. No separate .NET installation is required. The Mac apps are ad-hoc signed without Apple notarization; the first launch may require approval under Privacy & Security in System Settings.
 
