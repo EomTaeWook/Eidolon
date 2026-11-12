@@ -1440,6 +1440,9 @@ namespace Eidolon.App.Mcp
             {
                 return fallback;
             }
+            return (int)arguments[name].GetValue<double>();
+        }
+
         private JsonObject ModelingSchema()
         {
             JsonObject views = new JsonObject();
@@ -1757,9 +1760,6 @@ namespace Eidolon.App.Mcp
                     throw new IOException("The modeling result is outside the managed directory.");
                 }
             }
-        }
-
-            return (int)arguments[name].GetValue<double>();
         }
         private Task<McpToolResult> CreateViewsAsync(JsonObject arguments, CancellationToken cancellationToken)
         {
