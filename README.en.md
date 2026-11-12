@@ -24,9 +24,9 @@ On Mac, use your installed, signed-in Codex or an external ComfyUI server. Local
 
 ### Image generation
 
-![Image generation](Docs/images/readme-generation.png)
+![Watercolor woodland scene and its prompt in Eidolon](Docs/images/readme-generation.png)
 
-Enter a prompt and choose a model and reference image.
+A watercolor woodland scene generated from a prompt and displayed in the app.
 
 ### Results gallery
 
@@ -36,21 +36,15 @@ Select a result to inspect its image and generation settings.
 
 ### Multi-view creation
 
-![Multi-view creation](Docs/images/readme-asset-creation.png)
+![Four telescope views generated from a reference photo in Eidolon](Docs/images/readme-asset-creation.png)
 
-Set up a job to create front, right, left, and back views from a reference image.
+Front, left, right, and back views generated from one telescope reference photo.
 
 ### 3D modeling
 
 ![Completed model and reference images in the 3D Modeling screen](Docs/images/modeling.png)
 
 Review the completed model alongside its reference images. Save the result as a Blender or GLB file, or continue editing it.
-
-### LoRA training
-
-![LoRA training](Docs/images/readme-training.png)
-
-Add training images to the white or black background lists before configuring training.
 
 ## Core experience
 

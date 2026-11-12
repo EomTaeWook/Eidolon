@@ -24,9 +24,9 @@ Windows는 단일 `.exe`를 실행하세요. 맥은 ZIP을 풀고 `Eidolon.app`�
 
 ### 이미지 생성
 
-![이미지 생성](Docs/images/readme-generation.png)
+![Eidolon에서 생성한 수채화풍 숲길 장면과 생성 프롬프트](Docs/images/readme-generation.png)
 
-프롬프트를 입력하고 모델과 참고 이미지를 선택하는 화면입니다.
+프롬프트로 생성한 수채화풍 숲길 장면을 앱에서 확인한 화면입니다.
 
 ### 결과 갤러리
 
@@ -36,21 +36,15 @@ Windows는 단일 `.exe`를 실행하세요. 맥은 ZIP을 풀고 `Eidolon.app`�
 
 ### 다면도 제작
 
-![다면도 제작](Docs/images/readme-asset-creation.png)
+![Eidolon에서 망원경 참고 사진으로 만든 네 방향 이미지](Docs/images/readme-asset-creation.png)
 
-기준 이미지에서 정면·우측·좌측·후면을 만드는 작업을 준비합니다.
+망원경 사진 한 장으로 생성한 정면·좌측·우측·후면 다면도입니다.
 
 ### 3D 모델링
 
 ![3D 모델링 화면의 완성된 모델과 참고 이미지](Docs/images/modeling.png)
 
 완성된 3D 모델과 참고 이미지를 함께 확인합니다. 결과를 Blender 또는 GLB 파일로 저장하거나 이어서 수정할 수 있습니다.
-
-### LoRA 학습
-
-![LoRA 학습](Docs/images/readme-training.png)
-
-흰색·검정색 배경별 이미지 목록에 학습 데이터를 추가한 뒤 학습 설정을 진행합니다.
 
 ## 핵심 경험
 
