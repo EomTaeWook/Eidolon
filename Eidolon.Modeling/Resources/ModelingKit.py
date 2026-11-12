@@ -408,9 +408,22 @@ def fit_surface(name, target_name, offset=0):
     evaluated_target = target.evaluated_get(bpy.context.evaluated_depsgraph_get())
     if not evaluated_target.data.polygons:
         raise ValueError("The evaluated target mesh has no surface faces.")
+    for modifier in source.modifiers:
+        if modifier.type != "SHRINKWRAP" or modifier.target != target:
+            continue
+        if modifier.wrap_method != "NEAREST_SURFACEPOINT" or modifier.wrap_mode not in ("ABOVE_SURFACE", "ON_SURFACE"):
+            continue
+        modifier_base_name, name_separator, name_suffix = modifier.name.partition(".")
+        if modifier_base_name != "Surface Fit":
+            continue
+        if name_separator and not (len(name_suffix) >= 3 and name_suffix.isascii() and name_suffix.isdecimal()):
+            continue
+        modifier.wrap_mode = "ON_SURFACE"
+        modifier.offset = offset
+        return
     modifier = source.modifiers.new("Surface Fit", "SHRINKWRAP")
     modifier.wrap_method = "NEAREST_SURFACEPOINT"
-    modifier.wrap_mode = "ABOVE_SURFACE"
+    modifier.wrap_mode = "ON_SURFACE"
     modifier.offset = offset
     modifier.target = target
 
