@@ -169,6 +169,25 @@ namespace Eidolon.App.ViewModels
                 return Metadata != null;
             }
         }
+        public string ModelNameCaption
+        {
+            get
+            {
+                if (Metadata == null)
+                {
+                    return string.Empty;
+                }
+                if (Metadata.GenerationBackend == GenerationBackend.Codex)
+                {
+                    return "GPT";
+                }
+                if (Metadata.Model == null)
+                {
+                    return string.Empty;
+                }
+                return Metadata.Model.Name;
+            }
+        }
         public string Label { get; private set; }
         public string FileName
         {

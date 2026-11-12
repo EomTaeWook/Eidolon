@@ -43,6 +43,7 @@ namespace Eidolon.Core.Domain
         public int Number { get; set; }
         public string Label { get; set; } = string.Empty;
         public string Prompt { get; set; } = string.Empty;
+        public string ConvertedPrompt { get; set; } = string.Empty;
         public JobState State { get; set; } = JobState.Preparing;
         public string ImagePath { get; set; } = string.Empty;
         public string SourceJobId { get; set; } = string.Empty;

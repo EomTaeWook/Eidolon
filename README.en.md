@@ -22,33 +22,35 @@ On Mac, use your installed, signed-in Codex or an external ComfyUI server. Local
 
 ## Actual app screens
 
-Eidolon 1.0.0 in Korean with the light theme. Pastel images were generated through the app using ComfyUI and Illustrious-XL-v0.1, then used for editing and asset creation.
-
 ### Image generation
 
-![Pastel knight output above the prompt input in the Generate screen](Docs/images/generation.png)
+![Image generation](Docs/images/readme-generation.png)
 
-Describe the image and choose a reference and background options. Review the generated result above while preparing the next request in the input below.
+Enter a prompt and choose a model and reference image.
 
-### Results
+### Results gallery
 
-![Eidolon Results screen with an image gallery, selected image and generation details, and reuse, edit and training actions](Docs/images/results.png)
+![Results gallery](Docs/images/readme-results.png)
 
-Select an image in the gallery to read its prompt and generation settings. Save the result, reuse its prompt, edit it, or use it for training.
+Select a result to inspect its image and generation settings.
+
+### Multi-view creation
+
+![Multi-view creation](Docs/images/readme-asset-creation.png)
+
+Set up a job to create front, right, left, and back views from a reference image.
 
 ### 3D modeling
 
-![Eidolon 3D Modeling screen showing a generated telescope and its actual triangle count](Docs/images/modeling.png)
+![Completed model and reference images in the 3D Modeling screen](Docs/images/modeling.png)
 
-The app shows a telescope generated from a reference image in the 3D preview. You can save the result as a Blender or GLB file or continue editing it.
+Review the completed model alongside its reference images. Save the result as a Blender or GLB file, or continue editing it.
 
 ### LoRA training
 
-![Eidolon three-step LoRA training flow with separate white and black background image selection lists](Docs/images/training.png)
+![LoRA training](Docs/images/readme-training.png)
 
-Add training images to the white or black background lists. Review the images, name and trigger, then configure training. The app prepares the dataset automatically.
-
-The training screenshot shows image selection; training was not started. See the [user guide](Docs/Usage.md) in Korean for more captures and instructions covering conversion, training steps, generation settings, app settings, and MCP.
+Add training images to the white or black background lists before configuring training.
 
 ## Core experience
 

@@ -1,12 +1,22 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.PromptDetailsView" x:DataType="vm:GenerationItem">
-  <StackPanel Spacing="8" IsVisible="{Binding HasMetadata}">
-    <TextBlock Text="{DynamicResource EidolonText292}" Classes="label" />
-    <SelectableTextBlock Text="{Binding Metadata.UserPrompt, FallbackValue=''}" TextWrapping="Wrap" FontSize="13" />
-    <TextBlock Text="{DynamicResource EidolonText293}" Classes="label" />
-    <SelectableTextBlock Text="{Binding Metadata.PositivePrompt, FallbackValue=''}" TextWrapping="Wrap" FontSize="13" />
-    <TextBlock Text="{DynamicResource EidolonText294}" Classes="label" />
-    <SelectableTextBlock Text="{Binding Metadata.NegativePrompt, FallbackValue=''}" TextWrapping="Wrap" FontSize="13" />
-    <TextBlock Text="{DynamicResource EidolonText440}" Classes="label" IsVisible="{Binding HasReferenceImage}" />
-    <SelectableTextBlock Text="{Binding ReferenceCaption}" TextWrapping="Wrap" FontSize="13" IsVisible="{Binding HasReferenceImage}" />
+  <StackPanel Spacing="12" IsVisible="{Binding HasMetadata}">
+    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,12">
+      <StackPanel Spacing="4">
+        <TextBlock Text="{DynamicResource EidolonText292}" Classes="label" Margin="0" />
+        <SelectableTextBlock Text="{Binding Metadata.UserPrompt, FallbackValue=''}" TextWrapping="Wrap" FontSize="13" />
+      </StackPanel>
+    </Border>
+    <StackPanel Spacing="4">
+      <TextBlock Text="{DynamicResource EidolonText293}" Classes="label" Margin="0" />
+      <SelectableTextBlock Text="{Binding Metadata.PositivePrompt, FallbackValue=''}" TextWrapping="Wrap" FontSize="13" />
+    </StackPanel>
+    <StackPanel Spacing="4">
+      <TextBlock Text="{DynamicResource EidolonText294}" Classes="label" Margin="0" />
+      <SelectableTextBlock Text="{Binding Metadata.NegativePrompt, FallbackValue=''}" TextWrapping="Wrap" FontSize="13" />
+    </StackPanel>
+    <StackPanel Spacing="4" IsVisible="{Binding HasReferenceImage}">
+      <TextBlock Text="{DynamicResource EidolonText440}" Classes="label" Margin="0" />
+      <SelectableTextBlock Text="{Binding ReferenceCaption}" TextWrapping="Wrap" FontSize="13" />
+    </StackPanel>
   </StackPanel>
 </UserControl>

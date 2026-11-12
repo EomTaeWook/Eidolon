@@ -17,20 +17,31 @@ namespace Eidolon.Core.Application
             return prompt.Trim();
         }
 
-        public AssetFrame CreateFrame(AssetCollection collection, int frameIndex)
+        public AssetFrame CreateFrame(AssetCollection collection, int frameIndex, string subjectOverride = null)
         {
-            string label;
-            string instruction;
-            switch (frameIndex)
+            string subject = subjectOverride ?? collection.Prompt;
+            string label = frameIndex switch
             {
-                case 0:
-                    label = "front";
+                0 => "front",
+                1 => "left",
+                2 => "right",
+                3 => "back",
+                4 => "top",
+                _ => throw new StudioException(StudioMessageCode.InvalidAssetCollection)
+            };
+            if (frameIndex < collection.Frames.Count)
+            {
+                label = collection.Frames[frameIndex].Label;
+            }
+            string instruction;
+            switch (label)
+            {
+                case "front":
                     instruction = "Required camera view: FRONT, azimuth exactly 0 degrees relative to the subject's anatomical front"
                         + ", strict orthographic frontal view, camera centered directly in front at subject mid-height"
                         + ", horizontal optical axis, show the front surfaces without exposing a lateral or rear view";
                     break;
-                case 1:
-                    label = "right";
+                case "right":
                     instruction = "Required camera view: RIGHT SIDE, exactly 90 degrees from the front toward the subject's anatomical RIGHT"
                         + ", strict orthographic right lateral profile, camera located exactly on the subject's right at mid-height"
                         + ", SCREEN DIRECTION: the subject's front, nose and forward-facing silhouette point toward SCREEN RIGHT"
@@ -42,8 +53,7 @@ namespace Eidolon.Core.Application
                         + ", keep equipment on its original anatomical side and respect near-side occlusion of far-side objects"
                         + ", never pull far-side objects forward or turn them toward the camera to make them visible, no three-quarter or opposite-side substitution";
                     break;
-                case 2:
-                    label = "left";
+                case "left":
                     instruction = "Required camera view: LEFT SIDE, exactly 90 degrees from the front toward the subject's anatomical LEFT"
                         + ", strict orthographic left lateral profile, camera located exactly on the subject's left at mid-height"
                         + ", SCREEN DIRECTION: the subject's front, nose and forward-facing silhouette point toward SCREEN LEFT"
@@ -55,8 +65,7 @@ namespace Eidolon.Core.Application
                         + ", keep equipment on its original anatomical side and respect near-side occlusion of far-side objects"
                         + ", never pull far-side objects forward or turn them toward the camera to make them visible, no three-quarter or opposite-side substitution";
                     break;
-                case 3:
-                    label = "back";
+                case "back":
                     instruction = "Required camera view: BACK, azimuth exactly 180 degrees relative to the subject's anatomical front"
                         + ", strict orthographic rear view, camera centered directly behind at subject mid-height"
                         + ", every body part, including the head, must use the same rear camera projection as the torso"
@@ -65,8 +74,7 @@ namespace Eidolon.Core.Application
                         + ", do not turn the head or equipment toward the camera or combine a rear torso with a lateral or frontal head"
                         + ", front-facing details are occluded rather than moved onto the rear, no lateral or frontal view";
                     break;
-                case 4:
-                    label = "top";
+                case "top":
                     instruction = "Strict orthographic TOP PLAN VIEW, zenith camera directly above the reference subject looking vertically down parallel to gravity"
                         + ", compact overhead footprint, not a high-angle portrait; ground plane parallel to image plane"
                         + ", only upward-facing surfaces are visible; camera projection and occlusion take priority over displaying identity details"
@@ -80,11 +88,11 @@ namespace Eidolon.Core.Application
                     throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
             string prompt = instruction;
-            if (frameIndex == 4)
+            if (label == "top")
             {
-                if (string.IsNullOrWhiteSpace(collection.Prompt) == false)
+                if (string.IsNullOrWhiteSpace(subject) == false)
                 {
-                    prompt += ", subject appearance only (projection and occlusion take priority): " + collection.Prompt;
+                    prompt += ", subject appearance only (projection and occlusion take priority): " + subject;
                 }
             }
             else
@@ -98,7 +106,7 @@ namespace Eidolon.Core.Application
                     + ", respect natural occlusion from this viewpoint; never swap, mirror, remove or reposition equipment to expose it"
                     + ", centered composition and comparable image scale, keep the complete projected silhouette inside the frame while leaving occluded surfaces hidden"
                     + ", plain background, no labels, text, watermark or multi-view collage"
-                    + ", subject description (appearance only): " + collection.Prompt
+                    + ", subject description (appearance only): " + subject
                     + ", the required camera view and natural occlusion take precedence over any conflicting viewpoint or visibility request in the reference or description";
             }
             if (collection.PixelArt == true)

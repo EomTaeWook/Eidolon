@@ -65,7 +65,7 @@ namespace Eidolon.App.Mcp
                     OpenWorld = false
                 }, GetStatusAsync),
                 new McpTool(new McpToolDefinition("eidolon_list_models",
-                    "List available checkpoints and LoRAs with asset IDs, engine filenames, compatible families, trigger words and prompt_guidance. Before ComfyUI generation, editing or asset creation, read the target checkpoint's prompt_guidance, using selected_model_id when model_id is omitted. Guidance is matched by filename, not a verified weight identity; renamed or custom checkpoints require their own model card. A shared SDXL family does not imply shared quality, rating or source tags. Model and LoRA families must match.")
+                    "List available checkpoints and LoRAs with asset IDs, engine filenames, compatible families, trigger words and prompt_guidance. Before ComfyUI image generation or editing, read the target checkpoint's prompt_guidance, using selected_model_id when model_id is omitted. For a saved ComfyUI asset collection, use its captured checkpoint's guidance when regenerating a view. Guidance is matched by filename, not a verified weight identity; renamed or custom checkpoints require their own model card. A shared SDXL family does not imply shared quality, rating or source tags. Model and LoRA families must match.")
                 {
                     ReadOnly = true,
                     Idempotent = true,
@@ -73,7 +73,7 @@ namespace Eidolon.App.Mcp
                 }, ListModelsAsync),
                 new McpTool(new McpToolDefinition("eidolon_delete_model", "Queue permanent deletion of one registered local checkpoint or LoRA file by asset_id from eidolon_list_models. This deletes the actual file, not only its library entry. Set confirm=true only after the user explicitly approves deleting this exact asset's real file; do not infer permission from a generic cleanup request. Arbitrary paths and external server assets are not accepted. Requires initialization, an idle current work and pending queue, and an installed local runtime using local assets. Busy or unavailable requests are rejected. Returns only accepted=true and asset_id, meaning queue acceptance, not completed deletion. Poll eidolon_get_status for completion or errors, then eidolon_list_models to refresh the available assets. Does not change the UI selection to choose the deletion target.", DeleteModelSchema()) { Destructive = true, ReadOnly = false, OpenWorld = false }, DeleteModelAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_instructions",
-                    "Read saved positive and negative instructions, generation_backend, selected_model_id and prompt_guidance for the active backend and selected checkpoint. Read this before image generation, editing or asset creation. For a different ComfyUI checkpoint, read its prompt_guidance from eidolon_list_models. Resolve conflicting model-specific tags with request-only instruction overrides; saved settings remain unchanged.")
+                    "Read saved positive and negative instructions, generation_backend, selected_model_id and prompt_guidance for the active backend and selected checkpoint. Read this before image generation, editing or asset creation. New five-view creation always uses GPT through Codex CLI; use the saved instructions, not the active backend or checkpoint guidance, for those requests. For a different ComfyUI checkpoint, read its prompt_guidance from eidolon_list_models. Resolve conflicting model-specific tags with request-only instruction overrides; saved settings remain unchanged.")
                 {
                     ReadOnly = true,
                     Idempotent = true,
@@ -94,9 +94,6 @@ namespace Eidolon.App.Mcp
                 new McpTool(new McpToolDefinition("eidolon_generate_image",
                     "Queue text-to-image generation, optionally with a reference image. Accept prompt as tags, descriptive phrases or natural-language sentences. For ComfyUI, an installed local converter adapts prompt to the captured checkpoint in the work queue; without it, provide English input already suited to that model. Codex receives prompt directly without local conversion. Keep positive_prompt and negative_prompt in English using the target model's format. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Specify the subject, appearance, pose, composition, viewpoint, style, materials, colors, lighting and background in relevant detail; put unwanted elements in negative_prompt. Returns accepted and the fixed seed, not a completed image. Poll eidolon_get_status then eidolon_list_images. Uses saved instructions unless positive_prompt or negative_prompt is provided. Omitting model_id uses the UI model; omitting lora_ids uses compatible selected UI LoRAs. An empty lora_ids array disables LoRAs for this request. Does not change UI inputs or saved settings. With reference_path, preservation_prompt is the caller-confirmed final preservation text: provide suitable English for ComfyUI and resolve conflicts with requested changes before submitting. An explicit empty string skips preservation. If omitted, clients declaring sampling can use MCP 2026-07-28 input_required/inputResponses/requestState or the official 2025 initialized Streamable HTTP POST SSE round trip; other clients must provide preservation_prompt. No generation is queued until this round trip is complete. Acceptance echoes the captured preservation text; final application is recorded in result PositivePrompt.",
                     ImageSchema(false)), GenerateImageAsync),
-                new McpTool(new McpToolDefinition("eidolon_edit_image",
-                    "Queue a style edit using an existing local reference image. Requires reference_path. Accept prompt as tags, descriptive phrases or natural-language sentences. For ComfyUI, an installed local converter adapts prompt to the captured checkpoint in the work queue; without it, provide English input already suited to that model. Codex receives prompt directly without local conversion. Keep positive_prompt and negative_prompt in English using the target model's format. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe the desired style, textures, colors, lighting and details to preserve from the reference; put unwanted elements in negative_prompt. ComfyUI style edits automatically extract Canny edges and apply a compatible ControlNet to constrain the reference shape. The managed local runtime prepares the control weights on first use; external servers must provide the required Canny ControlNet and core nodes. Stored result metadata includes OutlineControlModel and OutlineControlStrength. Lower change_strength preserves more of the original; default 0.35. Returns accepted and the fixed seed. Poll status and list_images for completion or preparation errors. Request instruction overrides do not change saved settings. With reference_path, preservation_prompt is the caller-confirmed final preservation text: provide suitable English for ComfyUI and resolve conflicts with requested changes before submitting. An explicit empty string skips preservation. If omitted, clients declaring sampling can use MCP 2026-07-28 input_required/inputResponses/requestState or the official 2025 initialized Streamable HTTP POST SSE round trip; other clients must provide preservation_prompt. No generation is queued until this round trip is complete. Acceptance echoes the captured preservation text; final application is recorded in result PositivePrompt.",
-                    ImageSchema(true)), EditImageAsync),
                 new McpTool(new McpToolDefinition("eidolon_list_images",
                     "Read generated PNG paths and stored generation metadata from the current output folder, newest first. JSON metadata may be absent. Paths refer to local files; this tool does not transfer image bytes.")
                 {
@@ -114,7 +111,7 @@ namespace Eidolon.App.Mcp
                     Idempotent = true,
                     OpenWorld = false
                 }, ListImagesAsync),
-                new McpTool(new McpToolDefinition("eidolon_create_views", "Queue exactly four views in this order: front, anatomical right side, anatomical left side, back. Only the camera moves; preserve the reference pose, geometry, proportions and equipment on their original anatomical sides. Right and left are separate true side views, never mirrored copies. Side cameras are exactly 90 degrees from the front and back is 180 degrees; no diagonal or mixed views. All supplied prompts MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe appearance, materials, colors and style without changing the required viewpoints or pose. Only reference_path is required; prompt is optional. Frame size defaults to 1024. Sheet columns default to 4 and accept integers from 1 to 4. Uses the saved ComfyUI or Codex backend. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. These are AI reference images, not geometrically verified projections; review each result. Returns collection_id; poll eidolon_get_asset_collection.", AssetCreationSchema()), CreateViewsAsync),
+                new McpTool(new McpToolDefinition("eidolon_create_views", "Queue exactly four views using GPT through the existing Codex CLI image generation path, regardless of the saved image generation backend. Uses the saved Codex execution model and instructions without changing saved settings. The order is front, anatomical right side, anatomical left side, back. Only the camera moves; preserve the reference pose, geometry, proportions and equipment on their original anatomical sides. Right and left are separate true side views, never mirrored copies. Side cameras are exactly 90 degrees from the front and back is 180 degrees; no diagonal or mixed views. Only reference_path is required; prompt is optional. Describe appearance, materials, colors and style in clear English without changing the required viewpoints or pose. Read saved instructions with eidolon_get_instructions. Frame size defaults to 1024. Sheet columns default to 4 and accept integers from 1 to 4. model_id, lora_ids, seed and change_strength are not supported. These are AI reference images, not geometrically verified projections; review each result. Returns collection_id; poll eidolon_get_asset_collection.", AssetCreationSchema()), CreateViewsAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_asset_collection", "Read a collection state and ordered frame paths, prompts, seeds and errors.",
                     CollectionSchema()) { ReadOnly = true, Idempotent = true, OpenWorld = false }, GetAssetCollectionAsync),
                 new McpTool(new McpToolDefinition("eidolon_list_asset_collections", "List the latest 20 asset collections with IDs and completion counts.")
@@ -589,11 +586,6 @@ namespace Eidolon.App.Mcp
         private Task<McpToolResult> GenerateImageAsync(JsonObject arguments, McpToolCallContext context, CancellationToken token)
         {
             return QueueImageAsync(arguments, context, false, token);
-        }
-
-        private Task<McpToolResult> EditImageAsync(JsonObject arguments, McpToolCallContext context, CancellationToken token)
-        {
-            return QueueImageAsync(arguments, context, true, token);
         }
 
         private async Task<McpToolResult> QueueImageAsync(JsonObject arguments, McpToolCallContext context, bool editing, CancellationToken token)
@@ -1402,8 +1394,14 @@ namespace Eidolon.App.Mcp
             JsonObject schema = ImageSchema(false);
             JsonObject properties = schema["properties"].AsObject();
             properties.Remove("preservation_prompt");
+            properties.Remove("model_id");
+            properties.Remove("lora_ids");
+            properties.Remove("seed");
+            properties.Remove("change_strength");
             schema["required"] = new JsonArray("reference_path");
-            properties["prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional English-only subject description as detailed comma-separated tags or short tag phrases for appearance, proportions, materials, textures, colors, style, lighting and background. Translate the user's request into English. For ComfyUI, use the target checkpoint prompt_guidance from eidolon_list_models; read the backend and saved instruction prefixes with eidolon_get_instructions first. Omit to use the reference subject without an additional description." };
+            properties["prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional clear English description of the subject's appearance, proportions, materials, textures, colors, style, lighting and background. Keep the fixed pose and camera directions. Omit to use the reference subject without an additional description." };
+            properties["positive_prompt"]["description"] = "Optional request-only English instructions for GPT. Omit to use saved instructions; an empty string clears them for this request.";
+            properties["negative_prompt"]["description"] = "Optional request-only English exclusions for GPT. Omit to use saved exclusions; an empty string clears them for this request.";
             properties["frame_size"] = new JsonObject { ["type"] = "integer", ["minimum"] = 16, ["maximum"] = AssetCreationInput.MaximumFrameSize };
             properties["columns"] = new JsonObject { ["type"] = "integer", ["minimum"] = 1, ["maximum"] = AssetCreationInput.ViewCount, ["default"] = AssetCreationInput.ViewCount };
             properties["pixel_art"] = new JsonObject { ["type"] = "boolean" };
@@ -1442,7 +1440,6 @@ namespace Eidolon.App.Mcp
             }
             return (int)arguments[name].GetValue<double>();
         }
-
         private JsonObject ModelingSchema()
         {
             JsonObject views = new JsonObject();
@@ -1760,25 +1757,37 @@ namespace Eidolon.App.Mcp
                 }
             }
         }
+
         private Task<McpToolResult> CreateViewsAsync(JsonObject arguments, CancellationToken cancellationToken)
         {
             return ExecuteAssetAsync(() => CreateAssetAsync(arguments, cancellationToken));
         }
         private async Task<McpToolResult> CreateAssetAsync(JsonObject arguments, CancellationToken cancellationToken)
         {
-            GenerationReferenceInput reference = await ReadReferenceAsync(arguments, false, cancellationToken).ConfigureAwait(false);
-            if (arguments["change_strength"] == null)
+            foreach (string optionName in new[] { "model_id", "lora_ids", "seed", "change_strength" })
             {
-                reference.ChangeStrength = 0.45;
+                if (arguments.ContainsKey(optionName) == true)
+                {
+                    throw new ArgumentException(optionName + " is not supported by eidolon_create_views; new collections use GPT through Codex CLI.");
+                }
             }
+            GenerationReferenceInput reference = await ReadReferenceAsync(arguments, false, cancellationToken).ConfigureAwait(false);
             Task<AssetCollection> queuedCollectionTask = await Dispatcher.UIThread.InvokeAsync<Task<AssetCollection>>(() =>
             {
                 EnsureAvailable(cancellationToken);
-                McpGenerationOptions generationOptions = CreateGenerationOptions(arguments, true);
+                DesktopSettings settings = _session.Settings.Copy();
+                settings.GenerationBackend = GenerationBackend.Codex;
+                if (arguments.ContainsKey("positive_prompt") == true)
+                {
+                    settings.PositivePrompt = arguments["positive_prompt"].GetValue<string>();
+                }
+                if (arguments.ContainsKey("negative_prompt") == true)
+                {
+                    settings.NegativePrompt = arguments["negative_prompt"].GetValue<string>();
+                }
                 AssetCreationInput input = new AssetCreationInput
                 {
-                    Kind = AssetCreationKind.FourViews, Reference = reference, Seed = generationOptions.Seed,
-                    RemoveBackground = generationOptions.RemoveBackground,
+                    Kind = AssetCreationKind.FourViews, Reference = reference,
                     FrameWidth = ReadInteger(arguments, "frame_size", AssetCreationInput.DefaultViewFrameSize), FrameHeight = ReadInteger(arguments, "frame_size", AssetCreationInput.DefaultViewFrameSize),
                     Columns = ReadInteger(arguments, "columns", AssetCreationInput.ViewCount)
                 };
@@ -1790,20 +1799,16 @@ namespace Eidolon.App.Mcp
                 {
                     input.PixelArt = arguments["pixel_art"].GetValue<bool>();
                 }
-                return _creation.EnqueueAsync(generationOptions.Settings, generationOptions.Model, generationOptions.Loras, input, cancellationToken);
+                if (arguments["remove_background"] != null)
+                {
+                    input.RemoveBackground = arguments["remove_background"].GetValue<bool>();
+                }
+                return _creation.EnqueueAsync(settings, input, cancellationToken);
             });
             AssetCollection collection = await queuedCollectionTask.ConfigureAwait(false);
             JsonObject result = new JsonObject { ["accepted"] = true, ["collection_id"] = collection.Id,
-                ["generation_backend"] = collection.Settings.GenerationBackend.ToString(),
+                ["generation_backend"] = collection.Settings.GenerationBackend.ToString(), ["codex_model"] = collection.Settings.CodexModel,
                 ["frame_count"] = collection.Frames.Count, ["state"] = "Preparing" };
-            if (collection.Settings.GenerationBackend == GenerationBackend.ComfyUI)
-            {
-                result["seed"] = collection.Seed;
-            }
-            else
-            {
-                result["codex_model"] = collection.Settings.CodexModel;
-            }
             return new McpToolResult(result);
         }
         private Task<McpToolResult> GetAssetCollectionAsync(JsonObject arguments, CancellationToken token)

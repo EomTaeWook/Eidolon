@@ -107,6 +107,13 @@ namespace Eidolon.App.ViewModels
                 return Frames.Any(frame => frame.HasImage == true);
             }
         }
+        public bool HasSelectedImage
+        {
+            get
+            {
+                return Preview != null;
+            }
+        }
         public bool CanExport
         {
             get
@@ -198,6 +205,7 @@ namespace Eidolon.App.ViewModels
                 {
                     RefreshCommands();
                     Raise(nameof(Preview));
+                    Raise(nameof(HasSelectedImage));
                 }
             }
         }
@@ -213,7 +221,7 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        public Task ShowAsync(string id)
+        public Task ShowAsync(string id, int frameNumber = 0)
         {
             if (Session.IsClosing == true)
             {
@@ -226,7 +234,7 @@ namespace Eidolon.App.ViewModels
             _loadLifetime?.Cancel();
             _loads.RemoveAll(loadTask => loadTask.IsCompleted == true);
             Task previousLoad = Task.WhenAll(_loads);
-            Task load = LoadAsync(id, requestNumber, previousLoad);
+            Task load = LoadAsync(id, frameNumber, requestNumber, previousLoad);
             _loads.Add(load);
             return load;
         }
@@ -240,7 +248,7 @@ namespace Eidolon.App.ViewModels
             return ShowAsync(_collection.Id);
         }
 
-        private async Task LoadAsync(string collectionId, int requestNumber, Task previousLoad)
+        private async Task LoadAsync(string collectionId, int frameNumber, int requestNumber, Task previousLoad)
         {
             await previousLoad;
             if (Session.IsClosing == true)
@@ -251,14 +259,17 @@ namespace Eidolon.App.ViewModels
             {
                 return;
             }
-            int selectedNumber = 1;
+            int selectedNumber = frameNumber;
             if (_collection != null)
             {
                 if (_collection.Id == collectionId)
                 {
-                    if (SelectedFrame != null)
+                    if (selectedNumber == 0)
                     {
-                        selectedNumber = SelectedFrame.Frame.Number;
+                        if (SelectedFrame != null)
+                        {
+                            selectedNumber = SelectedFrame.Frame.Number;
+                        }
                     }
                 }
             }
@@ -354,13 +365,32 @@ namespace Eidolon.App.ViewModels
                     Raise(nameof(HasExport));
                 }
                 _collection = loaded.Collection;
-                for (int index = 0; index < _collection.Frames.Count; index++)
+                IEnumerable<int> frameIndices = Enumerable.Range(0, _collection.Frames.Count);
+                if (_collection.Kind == AssetCreationKind.FiveViews)
+                {
+                    if (_collection.Frames[1].Label == "right")
+                    {
+                        if (_collection.Frames[2].Label == "left")
+                        {
+                            frameIndices = new[] { 0, 2, 1, 3, 4 };
+                        }
+                    }
+                }
+                foreach (int index in frameIndices)
                 {
                     AssetFrameItem item = new AssetFrameItem(_collection.Frames[index], _strings);
                     item.SetImage(loaded.Images[index]);
                     Frames.Add(item);
                 }
                 SelectedFrame = Frames.FirstOrDefault(frame => frame.Frame.Number == selectedNumber);
+                if (selectedNumber == 0)
+                {
+                    SelectedFrame = Frames.FirstOrDefault(frame => frame.HasImage);
+                }
+                if (SelectedFrame == null)
+                {
+                    SelectedFrame = Frames.FirstOrDefault(frame => frame.Frame.Number == 1);
+                }
                 if (SelectedFrame == null)
                 {
                     SelectedFrame = Frames.FirstOrDefault();
@@ -461,7 +491,13 @@ namespace Eidolon.App.ViewModels
             _requestedId = string.Empty;
             Raise(nameof(IsCurrent));
             RefreshCommands();
-            await CloseAsync();
+            Task closing = CloseAsync();
+            int requestNumber = _request;
+            await closing;
+            if (requestNumber != _request)
+            {
+                return;
+            }
             SelectedFrame = null;
             foreach (AssetFrameItem frame in Frames)
             {

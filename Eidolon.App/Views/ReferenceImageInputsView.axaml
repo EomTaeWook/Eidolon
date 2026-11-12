@@ -14,34 +14,30 @@
       </StackPanel>
     </Button>
     <StackPanel Spacing="10" IsVisible="{Binding HasReferenceImage}">
-      <Grid ColumnDefinitions="48,12,*">
-        <Border Width="48" Height="48" CornerRadius="8" ClipToBounds="True" Background="{DynamicResource WindowBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+      <Grid ColumnDefinitions="64,12,*">
+        <Border Width="64" Height="64" CornerRadius="8" ClipToBounds="True" Background="{DynamicResource WindowBrush}">
           <Image Source="{Binding ReferenceThumbnail}" Stretch="Uniform" />
         </Border>
-        <TextBlock Grid.Column="2" Text="{Binding ReferenceImageName}" TextTrimming="CharacterEllipsis" FontSize="13" ToolTip.Tip="{Binding ReferenceImageName}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text="{Binding ReferenceImageName}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" FontSize="13" FontWeight="SemiBold" ToolTip.Tip="{Binding ReferenceImageName}" VerticalAlignment="Center" />
       </Grid>
       <Grid ColumnDefinitions="*,Auto">
         <Button Command="{Binding PickReferenceImageCommand}" Content="{DynamicResource EidolonText442}" Classes="quiet" HorizontalAlignment="Left" ToolTip.Tip="{Binding ReferenceImageHint}" />
-        <Button Grid.Column="1" Command="{Binding ClearReferenceImageCommand}" Classes="quiet" ToolTip.Tip="{DynamicResource EidolonText443}" AutomationProperties.Name="{DynamicResource EidolonText443}">
-          <Path Data="M4,4 L16,16 M16,4 L4,16" Width="14" Height="14" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.5" />
-        </Button>
+        <Button Grid.Column="1" Command="{Binding ClearReferenceImageCommand}" Content="{DynamicResource EidolonText443}" Classes="quiet" ToolTip.Tip="{DynamicResource EidolonText443}" AutomationProperties.Name="{DynamicResource EidolonText443}" />
       </Grid>
-      <StackPanel Spacing="6">
-        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-          <TextBlock Text="{DynamicResource EidolonText732}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
-          <Button Grid.Column="1" Content="{DynamicResource EidolonText735}" Command="{Binding ReadReferenceFeaturesCommand}" Classes="quiet" />
-        </Grid>
-        <TextBox Text="{Binding PreservationPrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="84" MaxHeight="180" PlaceholderText="{DynamicResource EidolonText732}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+      <StackPanel Spacing="8">
+        <TextBlock Text="{DynamicResource EidolonText732}" FontSize="13" FontWeight="SemiBold" ToolTip.Tip="{DynamicResource EidolonText733}" />
+        <TextBox Text="{Binding PreservationPrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="96" PlaceholderText="{DynamicResource EidolonText732}" ToolTip.Tip="{DynamicResource EidolonText733}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+        <Button Command="{Binding ReadReferenceFeaturesCommand}" Classes="quiet" HorizontalAlignment="Left" ToolTip.Tip="{DynamicResource EidolonText738}">
+          <TextBlock Text="{DynamicResource EidolonText735}" TextWrapping="Wrap" />
+        </Button>
         <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsReadingReferenceFeatures}">
           <ProgressBar IsIndeterminate="True" Width="40" Height="3" VerticalAlignment="Center" />
           <TextBlock Text="{DynamicResource EidolonText734}" Classes="muted" FontSize="11" TextWrapping="Wrap" />
         </StackPanel>
-        <TextBlock Text="{DynamicResource EidolonText733}" Classes="muted" FontSize="11" TextWrapping="Wrap" />
-        <TextBlock Text="{DynamicResource EidolonText738}" Classes="muted" FontSize="11" TextWrapping="Wrap" />
         <SelectableTextBlock Text="{Binding ReferenceFeaturesError}" Foreground="{DynamicResource ErrorTextBrush}" FontSize="11" TextWrapping="Wrap" IsVisible="{Binding HasReferenceFeaturesError}" />
       </StackPanel>
       <DropDownButton IsVisible="{Binding IsComfyGeneration}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinHeight="40" CornerRadius="8" Padding="12,8" ToolTip.Tip="{DynamicResource EidolonText448}" AutomationProperties.Name="{DynamicResource EidolonText448}">
-        <TextBlock Text="{Binding ReferenceStrengthCaption}" FontSize="12" />
+        <TextBlock Text="{Binding ReferenceStrengthCaption}" FontSize="12" TextWrapping="Wrap" />
         <DropDownButton.Flyout>
           <Flyout Placement="LeftEdgeAlignedTop">
             <StackPanel Width="260" Spacing="10">

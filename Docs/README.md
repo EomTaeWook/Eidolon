@@ -11,8 +11,9 @@
 | [MCP 연결](Mcp.md) | 별도 HTTP 라이브러리, 앱 도구, 요청별 지침과 클라이언트 연결 |
 | [에셋 제작](AssetCreation.md) | ComfyUI·Codex 스프라이트와 사면도 초안, 재생·수정·삭제·내보내기 계약 |
 | [외부 소프트웨어 고지](ThirdPartyNotices.md) | 외부 엔진·라이브러리와 기본 모델의 고지 |
-| [재사용 아키텍처](ReusableArchitecture/README.md) | 프로젝트에서 선택해 적용하는 공통 구조·컨벤션 카탈로그 |
+| [코딩 컨벤션](CodingConvention.md) | Eidolon의 C# 형식, 데이터 소유권, 생성물과 문서 작성 규칙 |
+| [릴리스 정책](ReleasePolicy.md) | Windows·macOS 배포 형식, 게시와 다운로드 안내 |
 
-Eidolon은 재사용 문서 중 [CodingConvention](ReusableArchitecture/CodingConvention.md)과 [ReleasePolicy](ReusableArchitecture/ReleasePolicy.md)를 적용한다. 실제 프로젝트 책임·경로와 사용자 지시는 Eidolon 문서와 루트 [AGENTS.md](../AGENTS.md)를 따른다.
+현재 경로에 적용되는 지침과 사용자 지시의 우선순위는 루트 [AGENTS.md](../AGENTS.md)와 작업 규칙을 따른다.
 
 프로그램의 실행·사용 안내는 루트 [README.md](../README.md)에 있다. 현재 검증 중단 지시는 작업 규칙에 기록하며 문서 작성이나 Git 커밋·푸시가 실행 검증을 의미하지 않는다.

@@ -24,7 +24,7 @@ namespace Eidolon.Core.Application
             _prompts = prompts;
         }
 
-        public AssetCollection Prepare(StudioSettings settings, ModelAsset model, IReadOnlyList<ModelAsset> loras, AssetCreationInput input, CancellationToken cancellationToken)
+        public AssetCollection Prepare(StudioSettings settings, AssetCreationInput input, CancellationToken cancellationToken)
         {
             if (input == null)
             {
@@ -35,51 +35,9 @@ namespace Eidolon.Core.Application
             {
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
-            if (loras == null)
-            {
-                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
-            }
-            settings.Validate();
-            ModelAsset generationModel = new();
-            List<ModelAsset> generationLoras = new();
-            long seed = 0;
-            if (settings.GenerationBackend == GenerationBackend.ComfyUI)
-            {
-                if (model == null)
-                {
-                    throw new StudioException(StudioMessageCode.ModelRequired);
-                }
-                if (model.Kind != AssetKind.Checkpoint)
-                {
-                    throw new StudioException(StudioMessageCode.ModelRequired);
-                }
-                if (model.Family == ModelFamily.Unknown)
-                {
-                    throw new StudioException(StudioMessageCode.ModelRequired);
-                }
-                foreach (ModelAsset lora in loras)
-                {
-                    if (lora == null)
-                    {
-                        throw new StudioException(StudioMessageCode.ModelFamilyMismatch);
-                    }
-                    if (lora.Kind != AssetKind.Lora)
-                    {
-                        throw new StudioException(StudioMessageCode.ModelFamilyMismatch);
-                    }
-                    if (lora.Family != model.Family)
-                    {
-                        throw new StudioException(StudioMessageCode.ModelFamilyMismatch);
-                    }
-                    if (lora.RuntimeRoot != model.RuntimeRoot)
-                    {
-                        throw new StudioException(StudioMessageCode.ModelFamilyMismatch);
-                    }
-                }
-                generationModel = model.Copy();
-                generationLoras = loras.Select(lora => lora.Copy()).ToList();
-                seed = input.Seed;
-            }
+            StudioSettings generationSettings = settings.Copy();
+            generationSettings.GenerationBackend = GenerationBackend.Codex;
+            generationSettings.Validate();
             using SKMemoryStream memory = new(input.Reference.ImageData);
             using SKCodec codec = SKCodec.Create(memory);
             if (codec == null)
@@ -102,10 +60,9 @@ namespace Eidolon.Core.Application
             AssetCollection collection = new()
             {
                 Kind = input.Kind, Prompt = _prompts.Subject(input.Prompt),
-                Settings = settings.Copy(), Model = generationModel, Loras = generationLoras,
-                UseServerAssets = settings.UseServerAssets,
-                ReferenceName = Path.GetFileName(input.Reference.ImageName), ChangeStrength = input.Reference.ChangeStrength,
-                Seed = seed, RemoveBackground = input.RemoveBackground, PixelArt = input.PixelArt,
+                Settings = generationSettings, UseServerAssets = generationSettings.UseServerAssets,
+                ReferenceName = Path.GetFileName(input.Reference.ImageName),
+                RemoveBackground = input.RemoveBackground, PixelArt = input.PixelArt,
                 FrameWidth = input.FrameWidth, FrameHeight = input.FrameHeight, Columns = input.Columns,
                 CreatedAtUtc = _time.GetUtcNow()
             };
@@ -124,19 +81,27 @@ namespace Eidolon.Core.Application
             return collection;
         }
 
-        public async Task GenerateAsync(string collectionId, IProgress<WorkProgress> progress, CancellationToken cancellationToken)
+        public async Task GenerateAsync(string collectionId, IProgress<WorkProgress> progress, CancellationToken cancellationToken, Func<CancellationToken, Task<string>> convertSubject = null)
         {
             AssetCollection collection = _jobs.LoadAssetCollection(collectionId);
             if (collection.Kind == AssetCreationKind.SpriteAnimation)
             {
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
+            bool isPrepared = collection.State == JobState.Preparing;
             collection.State = JobState.Running;
             collection.ErrorCode = default;
             collection.ErrorArguments = Array.Empty<object>();
             _jobs.SaveAssetCollection(collection);
             try
             {
+                if (isPrepared == true)
+                {
+                    if (convertSubject != null)
+                    {
+                        await SaveConvertedPromptsAsync(collection, convertSubject, cancellationToken).ConfigureAwait(false);
+                    }
+                }
                 for (int frameIndex = 0; frameIndex < collection.Frames.Count; frameIndex++)
                 {
                     if (collection.Frames[frameIndex].State == JobState.Completed)
@@ -159,6 +124,42 @@ namespace Eidolon.Core.Application
             {
                 _jobs.SaveAssetCollection(collection);
             }
+        }
+
+        private async Task SaveConvertedPromptsAsync(AssetCollection collection, Func<CancellationToken, Task<string>> convertSubject, CancellationToken cancellationToken)
+        {
+            if (collection.Kind != AssetCreationKind.FiveViews)
+            {
+                return;
+            }
+            if (collection.Settings.GenerationBackend != GenerationBackend.ComfyUI)
+            {
+                return;
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            string convertedSubject = await convertSubject(cancellationToken).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (string.IsNullOrWhiteSpace(convertedSubject) == true)
+            {
+                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+            }
+            convertedSubject = convertedSubject.Trim();
+            string[] convertedPrompts = new string[collection.Frames.Count];
+            for (int frameIndex = 0; frameIndex < collection.Frames.Count; frameIndex++)
+            {
+                string convertedPrompt = _prompts.CreateFrame(collection, frameIndex, convertedSubject).Prompt;
+                if (convertedPrompt.Length > 16000)
+                {
+                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                }
+                convertedPrompts[frameIndex] = convertedPrompt;
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            for (int frameIndex = 0; frameIndex < collection.Frames.Count; frameIndex++)
+            {
+                collection.Frames[frameIndex].ConvertedPrompt = convertedPrompts[frameIndex];
+            }
+            _jobs.SaveAssetCollection(collection);
         }
 
         public async Task RegenerateAsync(string collectionId, int frameNumber, string prompt, long seed, IProgress<WorkProgress> progress, CancellationToken cancellationToken)
@@ -188,12 +189,18 @@ namespace Eidolon.Core.Application
             {
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }
-            collection.Frames[frameNumber - 1].Prompt = prompt.Trim();
+            AssetFrame frame = collection.Frames[frameNumber - 1];
+            string requestedPrompt = prompt.Trim();
+            if (frame.Prompt != requestedPrompt)
+            {
+                frame.Prompt = requestedPrompt;
+                frame.ConvertedPrompt = string.Empty;
+            }
             if (collection.Settings.GenerationBackend == GenerationBackend.Codex)
             {
                 seed = 0;
             }
-            collection.Frames[frameNumber - 1].Seed = seed;
+            frame.Seed = seed;
             collection.State = JobState.Running;
             try
             {
@@ -242,7 +249,7 @@ namespace Eidolon.Core.Application
                     }
                     requestSettings.NegativePrompt += "eye-level view, high-angle portrait, three-quarter view, diagonal camera, frontal elevation, visible front-facing chest, standing full-body portrait, unforeshortened vertical torso or legs, face turned up toward camera";
                 }
-                JobRecord generatedJob = await _studio.GenerateAsync(requestSettings, frame.Prompt, collection.Model.Copy(), collection.Loras.Select(lora => lora.Copy()).ToList(), collection.RemoveBackground, frame.Seed, reference, new AssetCreationProgress(progress, frameIndex, collection.Frames.Count, singleFrame), cancellationToken).ConfigureAwait(false);
+                JobRecord generatedJob = await _studio.GenerateAsync(requestSettings, frame.Prompt, collection.Model.Copy(), collection.Loras.Select(lora => lora.Copy()).ToList(), collection.RemoveBackground, frame.Seed, reference, new AssetCreationProgress(progress, frameIndex, collection.Frames.Count, singleFrame), cancellationToken, frame.ConvertedPrompt).ConfigureAwait(false);
                 string generatedImagePath = _jobs.ImagePath(generatedJob, generatedJob.ImageFiles.Last());
                 _jobs.SaveAssetFrameMetadata(collection, frame, generatedJob, generatedImagePath, cancellationToken);
                 frame.ImagePath = generatedImagePath;

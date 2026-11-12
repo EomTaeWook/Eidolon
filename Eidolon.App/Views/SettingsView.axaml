@@ -26,31 +26,44 @@
     <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="12,8">
       <TextBlock Text="{DynamicResource EidolonText110}" FontSize="16" FontWeight="SemiBold" />
     </Border>
-    <ScrollViewer x:Name="SettingsScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-      <StackPanel Margin="16" Spacing="8" MaxWidth="700" HorizontalAlignment="Left">
-        <views:AppUpdateView x:Name="UpdateSection" DataContext="{Binding Updates}" />
-        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" />
-        <views:GeneralSettingsView />
-        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" />
-        <StackPanel x:Name="EngineSection" Spacing="8">
-          <TextBlock Text="{DynamicResource EidolonText593}" FontSize="16" FontWeight="SemiBold" />
-          <views:EngineView DataContext="{Binding Engine}" />
-        </StackPanel>
-        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" />
-        <StackPanel x:Name="McpSection" Spacing="8" DataContext="{Binding Mcp}" x:DataType="vm:McpViewModel">
-          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-            <TextBlock Text="{DynamicResource EidolonText595}" FontSize="16" FontWeight="SemiBold" />
-            <TextBlock Grid.Column="1" Text="{Binding StatusCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
-          </Grid>
-          <TextBlock Text="{DynamicResource EidolonText596}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
-          <TextBox Text="{Binding Endpoint, Mode=OneWay}" IsReadOnly="True" Classes="folderPath" />
-          <WrapPanel>
-            <Button Content="{DynamicResource EidolonText600}" Command="{Binding StartCommand}" Classes="primary" Margin="0,0,8,0" />
-            <Button Content="{DynamicResource EidolonText601}" Command="{Binding StopCommand}" />
-          </WrapPanel>
-          <TextBlock Text="{DynamicResource EidolonText597}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
-        </StackPanel>
-      </StackPanel>
-    </ScrollViewer>
+    <TabControl Grid.Row="1" SelectedIndex="{Binding Navigation.SelectedSettingsTab, Mode=TwoWay}" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+      <TabItem Header="{DynamicResource EidolonText594}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" AllowAutoHide="False">
+          <views:GeneralSettingsView Margin="16" MaxWidth="700" HorizontalAlignment="Left" />
+        </ScrollViewer>
+      </TabItem>
+      <TabItem Header="{DynamicResource EidolonText109}">
+        <views:EngineView DataContext="{Binding Engine}" />
+      </TabItem>
+      <TabItem Header="{DynamicResource EidolonText595}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" AllowAutoHide="False">
+          <StackPanel Margin="16" Spacing="8" MaxWidth="700" HorizontalAlignment="Left" DataContext="{Binding Mcp}" x:DataType="vm:McpViewModel">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <TextBlock Text="{Binding StatusCaption}" Classes="muted" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center" />
+              <Panel Grid.Column="1" VerticalAlignment="Center">
+                <Button Content="{DynamicResource EidolonText600}" Command="{Binding StartCommand}" Classes="primary" IsVisible="{Binding !IsRunning}" />
+                <Button Content="{DynamicResource EidolonText601}" Command="{Binding StopCommand}" IsVisible="{Binding IsRunning}" />
+              </Panel>
+            </Grid>
+            <TextBox Text="{Binding Endpoint, Mode=OneWay}" IsReadOnly="True" Classes="folderPath" ToolTip.Tip="{Binding Endpoint}" />
+            <StackPanel Spacing="4">
+              <TextBlock Text="{DynamicResource EidolonText596}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+              <TextBlock Text="{DynamicResource EidolonText597}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+            </StackPanel>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+      <TabItem Header="{DynamicResource EidolonText666}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" AllowAutoHide="False">
+          <views:AppUpdateView DataContext="{Binding Updates}" Margin="16" MaxWidth="700" HorizontalAlignment="Left">
+            <views:AppUpdateView.Styles>
+              <Style Selector="TextBlock[FontSize=16][FontWeight=SemiBold]">
+                <Setter Property="IsVisible" Value="False" />
+              </Style>
+            </views:AppUpdateView.Styles>
+          </views:AppUpdateView>
+        </ScrollViewer>
+      </TabItem>
+    </TabControl>
   </Grid>
 </UserControl>

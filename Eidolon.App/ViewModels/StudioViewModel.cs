@@ -45,7 +45,7 @@ namespace Eidolon.App.ViewModels
             Settings = new SettingsViewModel(Session, Navigation, work, strings, dialogs, Assets, themes, languages, codexModels);
             Generation = new GenerationViewModel(Session, Navigation, work, strings, dialogs, Assets, jobs, studio, seeds, promptConverter, installer, codexImageEngine);
             Training = new TrainingViewModel(Session, Navigation, work, strings, dialogs, Assets, studio);
-            AssetCreation = new AssetCreationViewModel(Session, Navigation, work, strings, dialogs, Assets, assetCreation, jobs, seeds, assetImages);
+            AssetCreation = new AssetCreationViewModel(Session, Navigation, work, strings, dialogs, assetCreation, jobs, seeds, assetImages);
             Modeling = new ModelingViewModel(Session, Navigation, work, strings, dialogs, modelingService, blenderInstaller, codexExecutableLocator, jobs, assetImages, modelingAgentStatusChecker);
             Gallery = new GalleryViewModel(Session, Navigation, work, strings, dialogs, Generation, Training, jobs, AssetCreation);
             Engine = new EngineViewModel(Session, Navigation, work, strings, dialogs, Assets, Settings, assets, installer, engine, jobs, blenderInstaller);
@@ -75,10 +75,6 @@ namespace Eidolon.App.ViewModels
                 }
                 await Gallery.RefreshGalleryAsync(true);
                 await AssetCreation.RefreshCollectionsAsync();
-                if (Session.IsClosing == true)
-                {
-                    return;
-                }
                 await Modeling.RefreshCollectionsAsync();
                 if (Session.IsClosing == true)
                 {
@@ -138,14 +134,15 @@ namespace Eidolon.App.ViewModels
 
         private void OnWorkFinished(StudioWorkState state, Exception failure)
         {
+            bool galleryRefreshHandled = Gallery.ConsumeGalleryRefreshHandled();
             if (Session.IsClosing == true)
             {
                 return;
             }
-            _refreshAfterWork = RefreshAfterWorkAsync(_refreshAfterWork);
+            _refreshAfterWork = RefreshAfterWorkAsync(_refreshAfterWork, galleryRefreshHandled);
         }
 
-        private async Task RefreshAfterWorkAsync(Task previousRefresh)
+        private async Task RefreshAfterWorkAsync(Task previousRefresh, bool galleryRefreshHandled)
         {
             try
             {
@@ -154,7 +151,10 @@ namespace Eidolon.App.ViewModels
                 {
                     return;
                 }
-                await Gallery.RefreshGalleryAsync();
+                if (galleryRefreshHandled == false)
+                {
+                    await Gallery.RefreshGalleryAsync();
+                }
                 if (Session.IsClosing == true)
                 {
                     return;

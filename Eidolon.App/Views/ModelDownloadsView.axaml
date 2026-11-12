@@ -2,21 +2,21 @@
     <ItemsControl ItemsSource="{Binding DownloadableModels}">
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="vm:ModelDownloadItem">
-          <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,14">
-            <Grid ColumnDefinitions="40,*,Auto">
-              <Border Width="32" Height="32" Background="{DynamicResource BadgeBrush}" CornerRadius="8" VerticalAlignment="Top" Margin="0,2,0,0">
+          <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,10">
+            <Grid ColumnDefinitions="28,*,Auto" ColumnSpacing="10">
+              <Border Width="28" Height="28" Background="{DynamicResource BadgeBrush}" CornerRadius="6" VerticalAlignment="Top" ToolTip.Tip="{Binding Model.FileName}">
                 <Path Data="{StaticResource EidolonIconImage}" Width="17" Height="17" Stretch="Uniform" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Center" />
               </Border>
-              <StackPanel Grid.Column="1" Spacing="4" Margin="8,0,16,0">
-                <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap" />
+              <StackPanel Grid.Column="1" Spacing="3">
+                <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Name}" />
+                <TextBlock Text="{DynamicResource EidolonText348}" IsVisible="{Binding IsInstalled}" Foreground="{DynamicResource AccentBrush}" FontSize="12" TextWrapping="Wrap" />
                 <TextBlock Text="{Binding Detail}" Classes="muted" FontSize="12" />
                 <TextBlock Text="{Binding Description}" Classes="muted" FontSize="12" />
               </StackPanel>
-              <StackPanel Grid.Column="2" Spacing="6" VerticalAlignment="Center" MinWidth="100">
+              <Panel Grid.Column="2" VerticalAlignment="Top">
                 <Button Content="{Binding InstallCaption}" Command="{Binding InstallCommand}" Classes="primary" IsVisible="{Binding !IsInstalled}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="14,8" />
-                <TextBlock Text="{DynamicResource EidolonText348}" IsVisible="{Binding IsInstalled}" Foreground="{DynamicResource AccentBrush}" FontSize="12" HorizontalAlignment="Center" />
-                <Button Content="{DynamicResource EidolonText355}" Command="{Binding DeleteCommand}" Classes="danger" IsVisible="{Binding IsInstalled}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="14,8" />
-              </StackPanel>
+                <Button Content="{DynamicResource EidolonText355}" Command="{Binding DeleteCommand}" Classes="danger" IsVisible="{Binding IsInstalled}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" MinHeight="40" Padding="14,8" />
+              </Panel>
             </Grid>
           </Border>
         </DataTemplate>

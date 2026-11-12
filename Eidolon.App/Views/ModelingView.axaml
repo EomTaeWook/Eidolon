@@ -203,12 +203,6 @@
     <Border Grid.Row="4" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="16,12">
       <StackPanel Spacing="8">
         <StackPanel Spacing="8" IsEnabled="{Binding Session.CanEditGenerationInputs}">
-          <Border Background="{DynamicResource BadgeBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="8" Padding="10" IsVisible="{Binding HasSourceBlendPath}">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-              <TextBlock Text="{Binding SourceBlendTargetCaption}" ToolTip.Tip="{Binding SourceBlendPath}" Foreground="{DynamicResource TextBrush}" FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-              <Button Grid.Column="1" Content="{DynamicResource EidolonText828}" Command="{Binding ClearBlendCommand}" Padding="10,4" MinHeight="32" FontSize="12" />
-            </Grid>
-          </Border>
           <TextBlock Text="{DynamicResource EidolonText807}" Classes="label" IsVisible="{Binding !HasSourceBlendPath}" />
           <TextBlock Text="{DynamicResource EidolonText750}" Classes="label" IsVisible="{Binding HasSourceBlendPath}" />
           <TextBox Text="{Binding Instructions, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="80" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="{DynamicResource EidolonText751}" />

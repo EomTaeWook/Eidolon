@@ -170,6 +170,42 @@ def mesh(name, vertices, faces, location=(0, 0, 0)):
     make_object(name, mesh_data, position)
 
 
+def loft(name, rings, location=(0, 0, 0)):
+    if not isinstance(rings, (list, tuple)) or len(rings) < 2:
+        raise ValueError("A loft needs at least two rings.")
+    if not isinstance(rings[0], (list, tuple)) or len(rings[0]) < 3:
+        raise ValueError("A loft ring needs at least three points.")
+    points_per_ring = len(rings[0])
+    vertex_count = len(rings) * points_per_ring
+    if 2 * vertex_count - 4 > MAX_TRIANGLE_COUNT:
+        raise ValueError("The loft exceeds the supported triangle count.")
+
+    vertices = []
+    previous_ring = None
+    for ring in rings:
+        if not isinstance(ring, (list, tuple)) or len(ring) != points_per_ring:
+            raise ValueError("All loft rings must have the same number of points.")
+        coordinates = tuple(vector(point) for point in ring)
+        if len(set(coordinates)) != points_per_ring:
+            raise ValueError("A loft ring cannot repeat a point.")
+        if previous_ring is not None:
+            if any(previous == current for previous, current in zip(previous_ring, coordinates)):
+                raise ValueError("Corresponding points on adjacent loft rings must differ.")
+        vertices.extend(coordinates)
+        previous_ring = coordinates
+
+    faces = []
+    for ring_index in range(len(rings) - 1):
+        first = ring_index * points_per_ring
+        following = first + points_per_ring
+        for point_index in range(points_per_ring):
+            next_point_index = (point_index + 1) % points_per_ring
+            faces.append((first + point_index, first + next_point_index, following + next_point_index, following + point_index))
+    faces.append(tuple(range(points_per_ring - 1, -1, -1)))
+    faces.append(tuple(range(vertex_count - points_per_ring, vertex_count)))
+    mesh(name, vertices, faces, location)
+
+
 def curve(name, points, radius, closed=False, smooth=True):
     name = new_object_name(name)
     thickness = positive(radius)
@@ -463,7 +499,7 @@ def boolean(name, cutter_name, operation):
 
 
 OPERATIONS = {
-    "primitive": primitive, "mesh": mesh, "curve": curve, "empty": empty,
+    "primitive": primitive, "mesh": mesh, "loft": loft, "curve": curve, "empty": empty,
     "transform": transform, "duplicate": duplicate, "parent": parent, "delete": delete, "visible": visible,
     "material": material, "update_material": update_material, "assign_material": assign_material, "smooth": smooth,
     "bevel": bevel, "mirror": mirror, "subdivide": subdivide, "fit_surface": fit_surface,

@@ -31,11 +31,13 @@ namespace Eidolon.App.ViewModels
         private bool _isGalleryLoading;
         private bool _isGalleryAppending;
         private bool _hasMigratedGenerationMetadata;
+        private bool _galleryRefreshHandled;
         private string _galleryError = string.Empty;
         private CancellationTokenSource _galleryLoadCancellation;
         private Task _galleryLoadTask = Task.CompletedTask;
         private Bitmap _preview;
         private string _previewPath = string.Empty;
+        private bool _hasSavedAssetCollection;
         public ObservableCollection<GenerationItem> Generations { get; private set; } = new ObservableCollection<GenerationItem>();
 
         public int GalleryFilterIndex
@@ -253,6 +255,7 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand ReusePromptCommand { get; private set; }
         public AsyncCommand UseResultForTrainingCommand { get; private set; }
         public AsyncCommand UseResultForAssetCreationCommand { get; private set; }
+        public AsyncCommand OpenAssetCollectionCommand { get; private set; }
         public AsyncCommand OpenImageFolderCommand { get; private set; }
 
         public GenerationItem SelectedResult
@@ -290,6 +293,7 @@ namespace Eidolon.App.ViewModels
                         Set(ref _selectedGeneration, value, nameof(SelectedGeneration));
                     }
                     ShowPreview(value);
+                    UpdateSavedAssetCollection();
                     RefreshCommands();
                 }
             }
@@ -300,6 +304,14 @@ namespace Eidolon.App.ViewModels
             get
             {
                 return SelectedResult != null;
+            }
+        }
+
+        public bool HasSavedAssetCollection
+        {
+            get
+            {
+                return _hasSavedAssetCollection;
             }
         }
 
@@ -392,8 +404,36 @@ namespace Eidolon.App.ViewModels
                         return;
                     }
                     string collectionId = collection.Metadata.AssetCollectionId;
-                    string caption = collection.Label;
-                    if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText656"), _strings.Format("EidolonText657", caption)) == false)
+                    string collectionDirectory = _jobs.OutputDirectory(Session.Settings.GenerationDirectory);
+                    List<string> collectionPaths = await Task.Run(() =>
+                    {
+                        GenerationPage page = _jobs.LoadGenerationPage(collectionDirectory, 1, DeletePageSize, Session.Lifetime, false, true, true);
+                        for (int pageNumber = 1; pageNumber <= page.PageCount; pageNumber++)
+                        {
+                            Session.Lifetime.ThrowIfCancellationRequested();
+                            if (pageNumber > 1)
+                            {
+                                page = _jobs.LoadGenerationPage(collectionDirectory, pageNumber, DeletePageSize, Session.Lifetime, false, true, true);
+                            }
+                            foreach (GenerationImage image in page.Images)
+                            {
+                                if (image.Metadata == null)
+                                {
+                                    continue;
+                                }
+                                if (string.Equals(image.Metadata.AssetCollectionId, collectionId, StringComparison.OrdinalIgnoreCase) == true)
+                                {
+                                    return image.CollectionImages.Select(member => member.FilePath).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                                }
+                            }
+                        }
+                        return new List<string>();
+                    }, Session.Lifetime);
+                    if (collectionPaths.Count == 0)
+                    {
+                        return;
+                    }
+                    if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText318"), _strings.Format("EidolonText319", collectionPaths.Count)) == false)
                     {
                         return;
                     }
@@ -409,7 +449,47 @@ namespace Eidolon.App.ViewModels
                     {
                         return;
                     }
-                    await _creation.DeleteCollectionAsync(collectionId, caption);
+                    if (string.Equals(collectionDirectory, _jobs.OutputDirectory(Session.Settings.GenerationDirectory), StringComparison.OrdinalIgnoreCase) == false)
+                    {
+                        return;
+                    }
+                    _galleryRefreshHandled = false;
+                    await Session.WorkAsync(async token =>
+                    {
+                        try
+                        {
+                            await _galleryLoadTask;
+                            token.ThrowIfCancellationRequested();
+                            int deletedCount = await Task.Run(() =>
+                            {
+                                List<string> existingPaths = collectionPaths.Where(File.Exists).ToList();
+                                foreach (string path in existingPaths)
+                                {
+                                    token.ThrowIfCancellationRequested();
+                                    GenerationImage image = _jobs.FindGenerationImage(collectionDirectory, path, token);
+                                    if (image == null)
+                                    {
+                                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                                    }
+                                    if (image.Metadata == null)
+                                    {
+                                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                                    }
+                                    if (string.Equals(image.Metadata.AssetCollectionId, collectionId, StringComparison.OrdinalIgnoreCase) == false)
+                                    {
+                                        throw new StudioException(StudioMessageCode.InvalidGenerationRecord);
+                                    }
+                                }
+                                _jobs.DeleteGenerationImages(collectionDirectory, collectionPaths, token);
+                                return existingPaths.Count(path => File.Exists(path) == false);
+                            }, token);
+                            Session.Status = _strings.Format("EidolonText323", deletedCount);
+                        }
+                        finally
+                        {
+                            _galleryRefreshHandled = false;
+                        }
+                    });
                     return;
                 }
             }
@@ -418,6 +498,8 @@ namespace Eidolon.App.ViewModels
                 return;
             }
             string directory = _jobs.OutputDirectory(Session.Settings.GenerationDirectory);
+            int galleryFilterIndex = GalleryFilterIndex;
+            int galleryRequestNumber = _galleryLoadRequest;
             List<string> paths = new List<string>();
             if (all == true)
             {
@@ -471,16 +553,142 @@ namespace Eidolon.App.ViewModels
             await Session.WorkAsync(async token =>
             {
                 token.ThrowIfCancellationRequested();
+                if (all == true)
+                {
+                    try
+                    {
+                        await Task.Run(() => _jobs.DeleteGenerationImages(directory, paths, token), token);
+                    }
+                    finally
+                    {
+                        await RefreshGalleryAsync();
+                    }
+                    Session.Status = _strings.Format("EidolonText323", paths.Count);
+                    return;
+                }
+                bool galleryRefreshHandled = false;
                 try
                 {
-                    await Task.Run(() => _jobs.DeleteGenerationImages(directory, paths, token), token);
+                    await _galleryLoadTask;
+                    token.ThrowIfCancellationRequested();
+                    int expectedGenerationCount = _generationCount;
+                    int metadataPageSize = Math.Max(1, Generations.Count);
+                    bool includeImages = galleryFilterIndex != 2;
+                    bool includeAssetCollections = galleryFilterIndex != 1;
+                    (List<string> DeletedPaths, GenerationPage Page) snapshot = await Task.Run(() =>
+                    {
+                        List<string> existingPaths = paths.Where(File.Exists).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                        _jobs.DeleteGenerationImages(directory, paths, token);
+                        token.ThrowIfCancellationRequested();
+                        List<string> deletedPaths = existingPaths.Where(path => File.Exists(path) == false).ToList();
+                        GenerationPage page = _jobs.LoadGenerationPage(directory, 1, metadataPageSize, token, includeImages, includeAssetCollections, true);
+                        return (deletedPaths, page);
+                    }, token);
+                    token.ThrowIfCancellationRequested();
+                    bool canUpdateGallery = MatchesGalleryContext(directory, galleryFilterIndex, galleryRequestNumber);
+                    if (snapshot.Page.TotalCount != expectedGenerationCount - snapshot.DeletedPaths.Count)
+                    {
+                        canUpdateGallery = false;
+                    }
+                    if (canUpdateGallery == true)
+                    {
+                        List<GenerationItem> deletedItems = Generations.Where(item =>
+                        {
+                            if (item.IsAssetCollection == true)
+                            {
+                                return false;
+                            }
+                            if (item.IsCollectionImage == true)
+                            {
+                                return false;
+                            }
+                            return snapshot.DeletedPaths.Contains(item.Image.FilePath, StringComparer.OrdinalIgnoreCase);
+                        }).ToList();
+                        List<GenerationItem> remainingItems = Generations.Except(deletedItems).ToList();
+                        List<string> remainingPaths = remainingItems.Select(item => item.Image.FilePath).ToList();
+                        IEnumerable<string> expectedPaths = snapshot.Page.Images.Take(remainingPaths.Count).Select(image => image.FilePath);
+                        if (remainingPaths.SequenceEqual(expectedPaths, StringComparer.OrdinalIgnoreCase) == true)
+                        {
+                            if (SelectedResult != null)
+                            {
+                                if (snapshot.DeletedPaths.Contains(SelectedResult.Image.FilePath, StringComparer.OrdinalIgnoreCase) == true)
+                                {
+                                    SelectedResult = null;
+                                }
+                            }
+                            if (SelectedGeneration != null)
+                            {
+                                if (snapshot.DeletedPaths.Contains(SelectedGeneration.Image.FilePath, StringComparer.OrdinalIgnoreCase) == true)
+                                {
+                                    Set(ref _selectedGeneration, null, nameof(SelectedGeneration));
+                                }
+                            }
+                            foreach (GenerationItem item in GallerySelection.ToList())
+                            {
+                                if (snapshot.DeletedPaths.Contains(item.Image.FilePath, StringComparer.OrdinalIgnoreCase) == true)
+                                {
+                                    GallerySelection.Remove(item);
+                                }
+                            }
+                            foreach (GenerationItem item in deletedItems)
+                            {
+                                Generations.Remove(item);
+                                item.Dispose();
+                            }
+                            _generationCount = snapshot.Page.TotalCount;
+                            _galleryPageCount = Math.Max(1, (_generationCount + GalleryPageSize - 1) / GalleryPageSize);
+                            _galleryPageNumber = Generations.Count / GalleryPageSize;
+                            if (Generations.Count == _generationCount)
+                            {
+                                _galleryPageNumber = _galleryPageCount;
+                            }
+                            Raise(nameof(GalleryCountCaption));
+                            Raise(nameof(HasGenerations));
+                            Raise(nameof(IsGalleryEmpty));
+                            RefreshCommands();
+                            galleryRefreshHandled = true;
+                        }
+                    }
+                    Session.Status = _strings.Format("EidolonText323", snapshot.DeletedPaths.Count);
+                }
+                catch
+                {
+                    galleryRefreshHandled = false;
+                    throw;
                 }
                 finally
                 {
-                    await RefreshGalleryAsync();
+                    if (galleryRefreshHandled == true)
+                    {
+                        galleryRefreshHandled = MatchesGalleryContext(directory, galleryFilterIndex, galleryRequestNumber);
+                    }
+                    _galleryRefreshHandled = galleryRefreshHandled;
                 }
-                Session.Status = _strings.Format("EidolonText323", paths.Count);
             });
+        }
+
+        private bool MatchesGalleryContext(string directory, int galleryFilterIndex, int galleryRequestNumber)
+        {
+            if (Session.IsClosing == true)
+            {
+                return false;
+            }
+            if (galleryFilterIndex != GalleryFilterIndex)
+            {
+                return false;
+            }
+            if (galleryRequestNumber != _galleryLoadRequest)
+            {
+                return false;
+            }
+            return string.Equals(directory, _jobs.OutputDirectory(Session.Settings.GenerationDirectory), StringComparison.OrdinalIgnoreCase);
+        }
+
+        internal bool ConsumeGalleryRefreshHandled()
+        {
+            bool galleryRefreshHandled = _galleryRefreshHandled;
+            _galleryRefreshHandled = false;
+            return galleryRefreshHandled;
         }
 
         private Task OpenImageFolderAsync()
@@ -527,7 +735,7 @@ namespace Eidolon.App.ViewModels
 
         internal Task RefreshGalleryAsync(bool markInterrupted = false)
         {
-            int pageSize = Math.Max(1, _galleryPageNumber) * GalleryPageSize;
+            int pageSize = Math.Max(1, (Generations.Count + GalleryPageSize - 1) / GalleryPageSize) * GalleryPageSize;
             return LoadGalleryPageAsync(1, true, markInterrupted, false, false, pageSize);
         }
 
@@ -925,6 +1133,7 @@ namespace Eidolon.App.ViewModels
                 }
                 return HasPreview;
             });
+            OpenAssetCollectionCommand = Command(OpenAssetCollectionAsync, CanOpenAssetCollection);
             SelectGenerationCommand = new AsyncCommand(SelectGenerationAsync, () =>
             {
                 if (Session.IsClosing == true)
@@ -1018,6 +1227,74 @@ namespace Eidolon.App.ViewModels
             return _creation.UseAsReferenceAsync(_previewPath, prompt);
         }
 
+        private void UpdateSavedAssetCollection()
+        {
+            Set(ref _hasSavedAssetCollection, FindSavedAssetCollection(), nameof(HasSavedAssetCollection));
+        }
+
+        private bool FindSavedAssetCollection()
+        {
+            if (Navigation.IsResultsView == false)
+            {
+                return false;
+            }
+            if (SelectedGeneration?.IsAssetCollection != true)
+            {
+                return false;
+            }
+            if (SelectedGeneration.CollectionImages.Contains(SelectedResult) == false)
+            {
+                return false;
+            }
+            GenerationMetadata metadata = SelectedResult?.Metadata;
+            if (metadata == null)
+            {
+                return false;
+            }
+            if (Guid.TryParseExact(metadata.AssetCollectionId, "N", out _) == false)
+            {
+                return false;
+            }
+            if (metadata.AssetFrameNumber < 1)
+            {
+                return false;
+            }
+            try
+            {
+                AssetCollection collection = _jobs.LoadAssetCollection(metadata.AssetCollectionId);
+                if (collection.Kind == AssetCreationKind.SpriteAnimation)
+                {
+                    return false;
+                }
+                return metadata.AssetFrameNumber <= collection.Frames.Count;
+            }
+            catch (Exception error) when (error is StudioException or IOException or UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+
+        private bool CanOpenAssetCollection()
+        {
+            if (HasSavedAssetCollection == false)
+            {
+                return false;
+            }
+            return _creation.CanOpenCollection();
+        }
+
+        private Task OpenAssetCollectionAsync()
+        {
+            UpdateSavedAssetCollection();
+            RefreshCommands();
+            if (CanOpenAssetCollection() == false)
+            {
+                return Task.CompletedTask;
+            }
+            GenerationMetadata metadata = SelectedResult.Metadata;
+            return _creation.OpenCollectionAsync(metadata.AssetCollectionId, metadata.AssetFrameNumber);
+        }
+
         internal Task WaitForLoadAsync()
         {
             return _galleryLoadTask;
@@ -1037,6 +1314,8 @@ namespace Eidolon.App.ViewModels
             if (Navigation.IsResultsView == true)
             {
                 SelectedResult = SelectedGeneration;
+                UpdateSavedAssetCollection();
+                RefreshCommands();
             }
         }
 

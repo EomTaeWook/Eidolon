@@ -5,33 +5,33 @@
     </Style>
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,*,Auto">
-    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="18,12">
+    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="16,12">
       <Grid ColumnDefinitions="*,Auto">
-        <StackPanel Spacing="3" Margin="0,0,12,0" VerticalAlignment="Center">
+        <StackPanel Spacing="4" Margin="0,0,12,0" VerticalAlignment="Center">
           <TextBlock Text="{DynamicResource EidolonText440}" FontWeight="SemiBold" FontSize="14" />
           <TextBlock Text="{Binding ReferenceImageName}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ReferenceImageName}" IsVisible="{Binding HasReferenceImage}" />
         </StackPanel>
-        <Button Grid.Column="1" Content="{DynamicResource EidolonText291}" Command="{Binding Navigation.ShowResultsCommand}" Padding="12,6" Margin="8,0,0,0" />
+        <Button Grid.Column="1" Content="{DynamicResource EidolonText291}" Command="{Binding Navigation.ShowResultsCommand}" Padding="12,6" FontSize="13" Margin="8,0,0,0" />
       </Grid>
     </Border>
-    <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" Padding="12" ClipToBounds="True">
+    <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" Padding="16" ClipToBounds="True">
       <Grid>
         <views:TransparencyBackground IsVisible="{Binding HasReferenceImage}" />
         <views:ReferenceMaskEditor Classes.maskEditing="{Binding ShowEditingMaskEditor}" ImageData="{Binding EditingImageData}" MaskData="{Binding EditingMaskData, Mode=TwoWay}" BrushSize="{Binding EditingBrushSize}" IsErasing="{Binding IsErasingMask}" IsVisible="{Binding HasReferenceImage}" IsHitTestVisible="{Binding ShowEditingMaskEditor}" IsEnabled="{Binding Session.CanEditGenerationInputs}" MinWidth="1" MinHeight="1" />
-        <StackPanel Spacing="12" MaxWidth="340" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !HasReferenceImage}">
-          <Path Data="{StaticResource EidolonIconImage}" Width="40" Height="40" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" HorizontalAlignment="Center" />
-          <TextBlock Text="{DynamicResource EidolonText459}" Classes="muted" FontSize="14" TextWrapping="Wrap" TextAlignment="Center" />
+        <StackPanel Spacing="12" MaxWidth="300" Margin="16" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !HasReferenceImage}">
+          <Path Data="{StaticResource EidolonIconImage}" Width="32" Height="32" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" HorizontalAlignment="Center" />
+          <TextBlock Text="{DynamicResource EidolonText459}" Classes="muted" FontSize="13" TextWrapping="Wrap" TextAlignment="Center" />
           <Button Content="{DynamicResource EidolonText441}" Command="{Binding PickReferenceImageCommand}" Classes="primary" HorizontalAlignment="Center" />
         </StackPanel>
       </Grid>
     </Border>
-    <Border Grid.Row="2" Background="{DynamicResource FooterBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="18,12" IsVisible="{Binding ShowEditingMaskEditor}">
+    <Border Grid.Row="2" Background="{DynamicResource FooterBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="16,8" IsVisible="{Binding ShowEditingMaskEditor}">
       <StackPanel Spacing="8">
         <WrapPanel>
-          <TextBlock Text="{DynamicResource EidolonText722}" FontSize="12" VerticalAlignment="Center" Margin="0,0,10,8" />
-          <Slider Minimum="1" Maximum="128" Value="{Binding EditingBrushSize, Mode=TwoWay}" Width="160" VerticalAlignment="Center" Margin="0,0,16,8" IsEnabled="{Binding Session.CanEditGenerationInputs}" AutomationProperties.Name="{DynamicResource EidolonText722}" />
-          <CheckBox Content="{DynamicResource EidolonText723}" IsChecked="{Binding IsErasingMask, Mode=TwoWay}" FontSize="12" Margin="0,0,16,8" IsEnabled="{Binding Session.CanEditGenerationInputs}" />
-          <Button Content="{DynamicResource EidolonText724}" Command="{Binding ClearEditingMaskCommand}" Padding="10,6" Margin="0,0,0,8" />
+          <TextBlock Text="{DynamicResource EidolonText722}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+          <Slider Minimum="1" Maximum="128" Value="{Binding EditingBrushSize, Mode=TwoWay}" Width="128" VerticalAlignment="Center" Margin="0,0,12,4" IsEnabled="{Binding Session.CanEditGenerationInputs}" AutomationProperties.Name="{DynamicResource EidolonText722}" />
+          <CheckBox Content="{DynamicResource EidolonText723}" IsChecked="{Binding IsErasingMask, Mode=TwoWay}" FontSize="12" Margin="0,0,12,4" IsEnabled="{Binding Session.CanEditGenerationInputs}" />
+          <Button Content="{DynamicResource EidolonText724}" Command="{Binding ClearEditingMaskCommand}" Padding="8,4" MinHeight="32" FontSize="12" Margin="0,0,0,4" />
         </WrapPanel>
         <TextBlock Text="{DynamicResource EidolonText725}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
       </StackPanel>

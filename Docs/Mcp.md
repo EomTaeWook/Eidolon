@@ -89,7 +89,7 @@ sampling을 선언하지 않았거나 해당 세대의 왕복을 지원하지 �
 | `eidolon_generate_image` | 설명과 선택적 참고 이미지로 생성 요청 추가 |
 | `eidolon_edit_image` | 참고 이미지와 설명으로 그림체 편집 요청 추가 |
 | `eidolon_list_images` | 현재 출력 폴더의 PNG 경로와 저장된 생성 조건을 페이지로 조회 |
-| `eidolon_create_views` | 정면·우측·좌측·후면 4방향 다면도 초안 제작 요청 추가 |
+| `eidolon_create_views` | GPT(Codex CLI)로 정면·좌측·우측·후면 4방향 다면도 초안 제작 요청 추가 |
 | `eidolon_get_asset_collection` | 묶음 상태와 항목별 이미지·설명·시드·오류 조회 |
 | `eidolon_list_asset_collections` | 최근 제작 묶음 20개의 ID·상태·완료 수 조회 |
 | `eidolon_resume_asset_collection` | 미완성 묶음의 남은 항목만 다시 요청 |
@@ -106,7 +106,7 @@ sampling을 선언하지 않았거나 해당 세대의 왕복을 지원하지 �
 
 요청별 `positive_prompt`·`negative_prompt`와 저장 지침·LoRA 트리거는 로컬 변환기가 다시 작성하지 않는다. 클라이언트는 요청별 지침을 대상 모델의 안내에 맞는 영어 태그·구문·문장으로 작성하며 제외 조건은 `negative_prompt`에 둔다. 다면도·선택 재생성과 학습 캡션은 기존 영어 작성 계약을 유지하며 로컬 자동 변환 대상에 포함하지 않는다. 요청에 필요한 대상·개수·포즈·관계·시점·스타일·제외 조건을 보존하고 요청하지 않은 품질·수위·출처 태그를 임의로 추가하지 않는다. 선택 입력의 생략·지침을 비우는 빈 문자열과 기존 저장 지침은 유지한다.
 
-생성·편집·에셋 제작 전에는 `eidolon_get_instructions`로 저장된 지침과 `generation_backend`·`selected_model_id`·`prompt_guidance`를 읽는다. ComfyUI이면 `eidolon_list_models`의 대상 체크포인트 항목에서 `engine_name`·`prompt_guidance`를 확인한다. `model_id`를 생략할 때는 응답의 `selected_model_id`에 해당하는 안내를 사용한다. 다른 체크포인트를 명시할 때는 그 항목의 안내를 사용하며 저장된 공통 지침과 충돌하는 태그는 요청별 `positive_prompt`·`negative_prompt` 사본으로 조정한다. 모델 목록 응답에도 현재 `generation_backend`를 표시한다. Codex일 때는 로컬 체크포인트 태그 안내를 적용하지 않는다. 프레임 재생성은 `eidolon_get_asset_collection`의 저장된 생성 방식·체크포인트를 기준으로 하며 현재 UI 선택을 대신 사용하지 않는다.
+생성·에셋 제작 전에는 `eidolon_get_instructions`로 저장된 공통 지침을 읽는다. 일반 이미지 생성은 응답의 `generation_backend`·`selected_model_id`·`prompt_guidance`를 참고한다. ComfyUI이면 `eidolon_list_models`의 대상 체크포인트 항목에서 `engine_name`·`prompt_guidance`를 확인한다. `model_id`를 생략할 때는 응답의 `selected_model_id`에 해당하는 안내를 사용한다. 다른 체크포인트를 명시할 때는 그 항목의 안내를 사용하며 저장된 공통 지침과 충돌하는 태그는 요청별 `positive_prompt`·`negative_prompt` 사본으로 조정한다. 모델 목록 응답에도 현재 `generation_backend`를 표시한다. 신규 다면도는 GPT로 고정하므로 기본 생성 방식과 로컬 체크포인트 안내를 적용하지 않는다. 프레임 재생성은 `eidolon_get_asset_collection`의 저장된 생성 방식·체크포인트를 기준으로 하며 현재 UI 선택을 대신 사용하지 않는다.
 
 기본 제공 체크포인트 안내는 파일명 전체와 모델 계열을 함께 비교한다. 표시 이름·파일명 일부·SDXL 호환성만으로 학습 태그를 추정하지 않는다. 파일명 일치는 가중치 해시 검증이나 임의로 이름을 바꾼 모델의 신원 확인을 뜻하지 않으며 응답에도 이 한계를 안내한다. 다른 버전·커스텀 파일은 해당 체크포인트의 모델 카드 확인을 요구하고, 확인되지 않은 품질·수위·출처 태그를 필수값으로 만들어 붙이지 않는다.
 
@@ -256,13 +256,13 @@ MCP 취소는 HTTP 호출, 접수 후 실행 중인 업무, 아직 대기 중인
 
 ## 에셋 제작 호출
 
-`eidolon_create_views`에는 `reference_path`만 필수이며 `prompt`는 선택 입력이다. 대상 설명이 없으면 기준 이미지의 같은 대상을 요청한다. 캐릭터·물체 구분 없이 정면·우측·좌측·후면 순서의 4항목(`FourViews`)을 만들며 방향 종류나 장수를 입력하지 않는다. 우측·좌측은 대상 자신의 면을 뜻하며 각각의 실제 방향을 요청한다. 스프라이트 생성 도구와 `action`·`frame_count`·`fps`·`frame_descriptions` 인자는 제공하지 않는다.
+`eidolon_create_views`에는 `reference_path`만 필수이며 `prompt`는 선택 입력이다. 대상 설명이 없으면 기준 이미지의 같은 대상을 요청한다. 캐릭터·물체 구분 없이 정면·좌측·우측·후면 순서로 4항목을 만들며 방향 종류나 장수를 입력하지 않는다. 우측·좌측은 대상 자신의 면을 뜻하며 각각의 실제 방향을 요청한다. 스프라이트 생성 도구와 `action`·`frame_count`·`fps`·`frame_descriptions` 인자는 제공하지 않는다.
 
-다면도 제작은 저장된 ComfyUI 또는 Codex 생성 방식과 지침 사본을 사용한다. ComfyUI는 이미지 생성과 같은 `model_id`·`lora_ids`·`seed`를 사용하며 참고 강도 기본값은 0.45다. Codex는 체크포인트 없이 제작하며 `model_id`·`lora_ids`·`seed`·`change_strength`를 지정하면 오류를 반환한다. 배경 투명화 기본값은 true이며 Codex는 내장 이미지 생성에 알파 출력을 요청한다. `frame_size`는 내보낼 정사각형 크기(기본 1024, 16~2048), `columns`는 시트 열 수(기본 4, 1~4), `pixel_art`는 픽셀 아트 설명과 nearest 보간을 지정한다. ComfyUI 생성 해상도는 기존 모델 프리셋을 따른다. 이 호출은 참고 생성 초안이며 대상 유지·기하학적으로 정확한 다면도를 보장하지 않는다.
+새 다면도는 저장된 이미지 생성 방식과 관계없이 GPT(Codex CLI의 기존 이미지 생성 경로)를 사용한다. 저장한 Codex 실행 경로·모델과 공통 지침을 사용하며, 필요하면 요청의 `positive_prompt`·`negative_prompt`로 지침 사본을 바꿀 수 있다. `model_id`·`lora_ids`·`seed`·`change_strength`는 스키마에 없으며 지정하면 접수 전에 인자 오류를 반환한다. 배경 투명화 기본값은 true이며 내장 이미지 생성에 알파 출력을 요청한다. `frame_size`는 내보낼 정사각형 크기(기본 1024, 16~2048), `columns`는 시트 열 수(기본 5, 1~32), `pixel_art`는 픽셀 아트 설명과 nearest 보간을 지정한다. 이 호출은 참고 생성 초안이며 대상 유지·기하학적으로 정확한 다면도를 보장하지 않는다.
 
-응답의 `accepted`·`collection_id`·`generation_backend`는 요청 접수와 생성 방식이다. ComfyUI 응답에는 `seed`, Codex 응답에는 `codex_model`을 포함한다. `eidolon_get_asset_collection`에 `collection_id`를 주어 완료를 조회한다. 조회 결과는 묶음 DTO의 `Settings`·`State`·`Frames`와 항목의 `Number`·`ImagePath`·`SourceJobId`·`Seed`(요청 시드)·`ImageSeed`(현재 이미지의 실제 시드)·`ErrorCode`·`ErrorArguments`를 포함한다. Codex의 DTO 시드 필드는 0이며 적용된 시드를 뜻하지 않는다. 묶음 조건은 요청 당시의 사본이며 나중의 설정 변경에 영향받지 않는다.
+응답에는 `accepted`·`collection_id`·`generation_backend`(`Codex`)·`codex_model`이 포함되며 완료를 뜻하지 않는다. `eidolon_get_asset_collection`에 `collection_id`를 주어 완료를 조회한다. 조회 결과는 묶음 DTO의 `Settings`·`State`·`Frames`와 항목의 `Number`·`ImagePath`·`SourceJobId`·`Seed`(요청 시드)·`ImageSeed`(현재 이미지의 실제 시드)·`ErrorCode`·`ErrorArguments`를 포함한다. Codex의 DTO 시드 필드는 0이며 적용된 시드를 뜻하지 않는다. 이전 ComfyUI 묶음의 저장 시드는 그대로 조회할 수 있다. 묶음 조건은 요청 당시의 사본이며 나중의 설정 변경에 영향받지 않는다.
 
-이어 만들기는 `collection_id`, 선택 재생성은 추가로 `frame_number`(1부터)·`prompt`를 받는다. 선택적 `seed`는 ComfyUI로 저장한 묶음에서만 허용한다. 현재 생성 환경과 관계없이 묶음의 저장된 생성 방식으로 처리한다. 둘 다 큐가 비었을 때 요청한다. 완료한 항목과 실패 전 이미지를 보존한다. 내보내기는 `collection_id`·`directory`(절대 폴더 경로)를 받아 새 하위 폴더를 만들고 `directory`·`sheet`·`metadata` 경로를 반환한다. 모든 항목에 이미지가 필요하다. 기존 `FiveViews` 묶음의 조회·이어 만들기·선택 재생성·내보내기는 저장된 방향과 장수를 유지하며 5번째 항목도 허용한다. 새 제작의 4방향 제한을 기존 묶음에 적용하지 않는다. 정렬·원본·좌표·실패 시 파일 계약은 [에셋 제작](AssetCreation.md)을 따른다.
+이어 만들기는 `collection_id`, 선택 재생성은 추가로 `frame_number`(1부터)·`prompt`를 받는다. 기존 묶음은 저장된 `frame_number`와 방향을 유지한다. 선택적 `seed`는 ComfyUI로 저장한 묶음에서만 허용한다. 현재 생성 환경과 관계없이 묶음의 저장된 생성 방식으로 처리한다. 둘 다 큐가 비었을 때 요청한다. 완료한 항목과 실패 전 이미지를 보존한다. 내보내기는 `collection_id`·`directory`(절대 폴더 경로)를 받아 새 하위 폴더를 만들고 `directory`·`sheet`·`metadata` 경로를 반환한다. 모든 항목에 이미지가 필요하다. 정렬·원본·좌표·실패 시 파일 계약은 [에셋 제작](AssetCreation.md)을 따른다.
 
 ## HTTP 메시지
 
@@ -343,7 +343,7 @@ App의 `Mcp/McpService.cs`는 `CreateTools()`에서 도구 정의와 private 처
 | --- | --- |
 | `instructions` | 최대 16,000자. 원하는 형상·재질만 설명한다. Blender 파일 저장·GLB 내보내기·미리보기 렌더는 Eidolon이 자동 수행하므로 지시문에서 제외한다. 새 모델은 이미지가 있으면 생략 가능. `.blend` 수정은 공백이 아닌 설명 필수 |
 | `reference_path` | 단일 이미지의 절대 로컬 경로. `views`와 동시 지정 불가 |
-| `views` | `front`, `left`, `right`, `back` 중 한 방향 이상의 이미지 경로 객체. `top`은 받지 않으며 지정한 방향만 사용 |
+| `views` | `front`, `left`, `right`, `back` 중 한 방향 이상의 이미지 경로 객체. 지정한 방향만 사용 |
 | `source_blend_path` | 선택적인 기존 `.blend`의 절대 로컬 경로. 이 원본을 덮어쓰지 않고 새 GUID 작업으로 수정 |
 | `maximum_triangle_count` | 정수 `0`(자동) 또는 `1`~`1,000,000`, 기본 `0` |
 

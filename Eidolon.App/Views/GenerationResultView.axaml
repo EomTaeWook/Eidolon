@@ -9,9 +9,9 @@
   </UserControl.Styles>
   <Border Classes="card" Padding="0" ClipToBounds="True">
     <Grid RowDefinitions="Auto,*">
-      <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="18,12">
+      <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="16,12">
         <Grid ColumnDefinitions="*,Auto">
-          <StackPanel Spacing="3" Margin="0,0,12,0" VerticalAlignment="Center">
+          <StackPanel Spacing="4" Margin="0,0,12,0" VerticalAlignment="Center">
             <TextBlock Text="{DynamicResource EidolonText291}" FontSize="14" FontWeight="SemiBold" />
             <WrapPanel>
               <TextBlock Text="{Binding GeneratedResult.DimensionsCaption, FallbackValue=''}" Classes="muted" FontSize="12" Margin="0,0,12,0" />
@@ -22,7 +22,7 @@
             </WrapPanel>
           </StackPanel>
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-            <Button Command="{Binding ExportGeneratedResultCommand}" ToolTip.Tip="{DynamicResource EidolonText122}" AutomationProperties.Name="{DynamicResource EidolonText122}">
+            <Button Command="{Binding ExportGeneratedResultCommand}" Classes="primary" MinHeight="36" ToolTip.Tip="{DynamicResource EidolonText122}" AutomationProperties.Name="{DynamicResource EidolonText122}">
               <Path Data="{StaticResource EidolonIconSave}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.6" />
             </Button>
             <Button Command="{Binding ReuseGeneratedPromptCommand}" ToolTip.Tip="{DynamicResource EidolonText121}" AutomationProperties.Name="{DynamicResource EidolonText121}">
@@ -39,7 +39,7 @@
       </Border>
       <Border Grid.Row="1" Background="{DynamicResource WindowBrush}" Padding="16" ClipToBounds="True">
         <Viewbox Stretch="Uniform" MaxWidth="1024" MaxHeight="1024" HorizontalAlignment="Center" VerticalAlignment="Center">
-          <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="2" ClipToBounds="True">
+          <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="4" ClipToBounds="True">
             <Grid Width="{Binding GeneratedResultImage.Size.Width, FallbackValue=1}" Height="{Binding GeneratedResultImage.Size.Height, FallbackValue=1}">
               <views:TransparencyBackground />
               <Image Source="{Binding GeneratedResultImage}" Stretch="Uniform" />

@@ -6,48 +6,46 @@
     </Style>
   </UserControl.Styles>
   <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,12,16">
-    <StackPanel Spacing="20" MaxWidth="1000" HorizontalAlignment="Stretch">
-      <Grid ColumnDefinitions="*,Auto" Margin="4,0,4,0">
-        <StackPanel Spacing="5" Margin="0,0,20,0">
-          <TextBlock Text="{DynamicResource EidolonText123}" FontSize="16" FontWeight="SemiBold" />
-          <TextBlock Text="{DynamicResource EidolonText124}" Classes="muted" FontSize="12" />
-        </StackPanel>
-        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-          <Button Command="{Binding OpenModelDirectoryCommand}" ToolTip.Tip="{Binding ModelDirectory}">
+    <StackPanel Spacing="12">
+      <StackPanel Spacing="6">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+          <TextBlock Text="{DynamicResource EidolonText123}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
+          <Button Grid.Column="1" Content="{DynamicResource EidolonText410}" Command="{Binding ScanCommand}" ToolTip.Tip="{DynamicResource EidolonText125}" />
+        </Grid>
+        <TextBlock Text="{DynamicResource EidolonText124}" Classes="muted" FontSize="12" />
+        <WrapPanel ItemSpacing="8" LineSpacing="8" IsVisible="{Binding CanOpenModelDirectories}">
+          <Button Classes="folderAction" Command="{Binding OpenModelDirectoryCommand}" ToolTip.Tip="{Binding ModelDirectory}">
             <StackPanel Orientation="Horizontal" Spacing="7">
               <Path Data="{StaticResource EidolonIconFolder}" Width="15" Height="15" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
               <TextBlock Text="{DynamicResource EidolonText571}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Command="{Binding OpenLoraDirectoryCommand}" ToolTip.Tip="{Binding LoraDirectory}">
+          <Button Classes="folderAction" Command="{Binding OpenLoraDirectoryCommand}" ToolTip.Tip="{Binding LoraDirectory}">
             <StackPanel Orientation="Horizontal" Spacing="7">
               <Path Data="{StaticResource EidolonIconFolder}" Width="15" Height="15" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
               <TextBlock Text="{DynamicResource EidolonText572}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Content="{DynamicResource EidolonText410}" Command="{Binding ScanCommand}" ToolTip.Tip="{DynamicResource EidolonText125}" />
-        </StackPanel>
-      </Grid>
-      <TextBlock Text="{Binding ModelFoldersHint}" Classes="muted" FontSize="12" Margin="4,0,4,0" />
-      <Border Background="{DynamicResource BadgeBrush}" CornerRadius="12" Padding="20" IsVisible="{Binding NeedsModelSetup}">
-        <StackPanel Spacing="5">
-          <TextBlock Text="{Binding ModelSetupCaption}" FontSize="14" FontWeight="SemiBold" />
+        </WrapPanel>
+        <TextBlock Text="{Binding ModelFoldersHint}" Classes="muted" FontSize="12" />
+        <StackPanel Spacing="4" IsVisible="{Binding NeedsModelSetup}">
+          <TextBlock Text="{Binding ModelSetupCaption}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" />
           <TextBlock Text="{Binding ModelSetupHint}" Classes="muted" FontSize="12" />
         </StackPanel>
-      </Border>
-      <Border Classes="card">
-        <StackPanel Spacing="12">
-          <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Text="{DynamicResource EidolonText411}" FontSize="16" FontWeight="SemiBold" />
+      </StackPanel>
+      <Border Classes="card" Padding="16">
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Text="{DynamicResource EidolonText411}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
             <Border Grid.Column="1" Background="{DynamicResource BadgeBrush}" CornerRadius="10" Padding="9,3" IsVisible="{Binding HasLibrary}">
               <TextBlock Text="{Binding Library.Count}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
             </Border>
           </Grid>
-          <TextBlock Text="{DynamicResource EidolonText418}" Classes="muted" FontSize="13" IsVisible="{Binding !HasLibrary}" MinHeight="48" VerticalAlignment="Center" />
+          <TextBlock Text="{DynamicResource EidolonText418}" Classes="muted" FontSize="13" IsVisible="{Binding !HasLibrary}" />
           <ListBox Classes="assetLibrary" ItemsSource="{Binding Library}" SelectedItem="{Binding SelectedAsset, Mode=TwoWay}" Background="Transparent" BorderThickness="0" IsVisible="{Binding HasLibrary}" MaxHeight="260" VerticalAlignment="Top" ScrollViewer.AllowAutoHide="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemContainerTheme>
               <ControlTheme TargetType="ListBoxItem">
-                <Setter Property="Padding" Value="12,10" />
+                <Setter Property="Padding" Value="10,7" />
                 <Setter Property="Margin" Value="0,0,0,4" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="VerticalContentAlignment" Value="Top" />
@@ -80,37 +78,33 @@
             </ListBox.ItemContainerTheme>
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="vm:AssetItem">
-                <Grid ColumnDefinitions="40,*" MinHeight="48">
-                  <Border Width="32" Height="32" Background="{DynamicResource BadgeBrush}" CornerRadius="8" VerticalAlignment="Top">
+                <Grid ColumnDefinitions="28,*" ColumnSpacing="10">
+                  <Border Width="28" Height="28" Background="{DynamicResource BadgeBrush}" CornerRadius="6" VerticalAlignment="Center" ToolTip.Tip="{Binding Asset.EngineName}">
                     <Grid>
                       <Path Data="{StaticResource EidolonIconImage}" Width="17" Height="17" Stretch="Uniform" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !IsLora}" />
                       <Path Data="{StaticResource EidolonIconTraining}" Width="17" Height="17" Stretch="Uniform" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding IsLora}" />
                     </Grid>
                   </Border>
-                  <StackPanel Grid.Column="1" Spacing="4">
+                  <StackPanel Grid.Column="1" Spacing="2">
                     <TextBlock Text="{Binding Label}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Label}" />
-                    <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
                       <TextBlock Text="{Binding KindCaption}" Classes="muted" FontSize="12" />
-                      <TextBlock Text="{Binding FamilyCaption}" Classes="muted" FontSize="12" />
-                    </StackPanel>
-                    <TextBlock Text="{Binding TriggerCaption}" Classes="muted" FontSize="11" IsVisible="{Binding HasTriggerWord}" TextWrapping="Wrap" />
+                      <TextBlock Grid.Column="1" Text="{Binding FamilyCaption}" Classes="muted" FontSize="12" />
+                      <TextBlock Grid.Column="2" Text="{Binding TriggerCaption}" Classes="muted" FontSize="12" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding TriggerCaption}" IsVisible="{Binding HasTriggerWord}" />
+                    </Grid>
                   </StackPanel>
                 </Grid>
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>
-          <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,16,0,0" IsVisible="{Binding HasSelectedAsset}">
-            <StackPanel Spacing="12">
-              <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Spacing="4" Margin="0,0,16,0">
-                  <TextBlock Text="{DynamicResource EidolonText127}" Classes="muted" FontSize="12" />
-                  <TextBlock Text="{Binding SelectedAsset.Label}" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap" />
-                </StackPanel>
-                <Button Grid.Column="1" Content="{DynamicResource EidolonText564}" Command="{Binding DeleteAssetCommand}" Classes="danger" VerticalAlignment="Center" />
-              </Grid>
-              <TextBlock Text="{DynamicResource EidolonText559}" Classes="muted" FontSize="12" />
+          <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,12,0,0" IsVisible="{Binding HasSelectedAsset}">
+            <StackPanel Spacing="8">
+              <StackPanel Spacing="2">
+                <TextBlock Text="{DynamicResource EidolonText127}" Classes="muted" FontSize="12" />
+                <TextBlock Text="{Binding SelectedAsset.Label}" FontSize="16" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SelectedAsset.Label}" />
+              </StackPanel>
               <TextBlock Text="{DynamicResource EidolonText414}" Foreground="{DynamicResource AccentBrush}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding NeedsAssetClassification}" />
-              <StackPanel Spacing="10" IsEnabled="{Binding Session.IsIdle}">
+              <StackPanel Spacing="6" IsEnabled="{Binding Session.IsIdle}">
                 <TextBlock Text="{DynamicResource EidolonText129}" Classes="label" />
                 <ComboBox ItemsSource="{Binding AvailableFamilies}" SelectedItem="{Binding SelectedFamily, Mode=TwoWay}">
                   <ComboBox.ItemTemplate>
@@ -120,20 +114,26 @@
                   </ComboBox.ItemTemplate>
                 </ComboBox>
                 <TextBlock Text="{DynamicResource EidolonText413}" Classes="muted" FontSize="12" />
-                <StackPanel Spacing="10" IsVisible="{Binding IsSelectedAssetLora}">
+                <StackPanel Spacing="6" IsVisible="{Binding IsSelectedAssetLora}">
                   <TextBlock Text="{DynamicResource EidolonText130}" Classes="label" />
                   <TextBox Text="{Binding AssetTrigger, Mode=TwoWay}" PlaceholderText="{DynamicResource EidolonText131}" FontSize="13" />
                   <TextBlock Text="{DynamicResource EidolonText132}" Classes="muted" FontSize="12" />
                 </StackPanel>
                 <Button Content="{DynamicResource EidolonText134}" Command="{Binding UpdateAssetCommand}" Classes="primary" HorizontalAlignment="Left" />
               </StackPanel>
+              <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,8,0,0" IsVisible="{Binding CanDeleteSelectedAsset}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                  <TextBlock Text="{DynamicResource EidolonText559}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
+                  <Button Grid.Column="1" Content="{DynamicResource EidolonText564}" Command="{Binding DeleteAssetCommand}" Classes="danger" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
             </StackPanel>
           </Border>
         </StackPanel>
       </Border>
-      <Border Classes="card">
-        <StackPanel Spacing="12">
-          <TextBlock Text="{DynamicResource EidolonText344}" FontSize="16" FontWeight="SemiBold" />
+      <Border Classes="card" Padding="16">
+        <StackPanel Spacing="6">
+          <TextBlock Text="{DynamicResource EidolonText344}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
           <TextBlock Text="{Binding ModelDownloadHint}" Classes="muted" FontSize="12" />
           <views:ModelDownloadsView />
         </StackPanel>

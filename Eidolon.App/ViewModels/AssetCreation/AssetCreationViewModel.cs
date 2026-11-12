@@ -24,31 +24,23 @@ namespace Eidolon.App.ViewModels
         private bool _pixelArt;
         private bool _running;
         private bool _preparing;
-        private AssetCollectionChoice _selectedCollection;
+        private int _collectionsRefreshRequest;
         private string _activeId = string.Empty;
         private int _shownFrame;
 
-        public AssetCreationViewModel(StudioSession session, StudioNavigationViewModel navigation, StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs, AssetsViewModel assets, AssetCreationService service, JobStore jobs, ISeedProvider seeds, AssetImageLoader images) : base(session, navigation, work, strings, dialogs)
+        public AssetCreationViewModel(StudioSession session, StudioNavigationViewModel navigation, StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs, AssetCreationService service, JobStore jobs, ISeedProvider seeds, AssetImageLoader images) : base(session, navigation, work, strings, dialogs)
         {
-            Assets = assets;
             _service = service;
             _jobs = jobs;
             _seeds = seeds;
             _images = images;
             Preview = new AssetPreviewViewModel(session, navigation, work, strings, dialogs, jobs, service, images);
             Preview.PropertyChanged += OnPreviewChanged;
-            Assets.PropertyChanged += OnAssetsChanged;
             _work.ProgressChanged += OnProgressChanged;
             CreateCommand = Command(CreateAsync, CanCreate);
             PickReferenceCommand = Command(PickReferenceAsync, () => Session.CanEditGenerationInputs == true);
-            RefreshCollectionsCommand = Command(RefreshCollectionsAsync, () =>
-            {
-                if (Session.IsInitialized == false)
-                {
-                    return false;
-                }
-                return Session.IsClosing == false;
-            });
+            OpenResumeCollectionCommand = new AsyncCommand(OpenResumeCollectionAsync, CanOpenCollection, OnCommandError);
+            _commands.Add(OpenResumeCollectionCommand);
             DeleteCollectionCommand = Command(DeleteCollectionAsync, CanDeleteCollection);
             ResumeCommand = Command(ResumeAsync, () =>
             {
@@ -100,12 +92,11 @@ namespace Eidolon.App.ViewModels
             Localize();
         }
 
-        public AssetsViewModel Assets { get; private set; }
         public AssetPreviewViewModel Preview { get; private set; }
         public ObservableCollection<AssetCollectionChoice> Collections { get; private set; } = new ObservableCollection<AssetCollectionChoice>();
         public AsyncCommand CreateCommand { get; private set; }
         public AsyncCommand PickReferenceCommand { get; private set; }
-        public AsyncCommand RefreshCollectionsCommand { get; private set; }
+        public AsyncCommand OpenResumeCollectionCommand { get; private set; }
         public AsyncCommand DeleteCollectionCommand { get; private set; }
         public AsyncCommand ResumeCommand { get; private set; }
         public AsyncCommand RegenerateCommand { get; private set; }
@@ -199,51 +190,24 @@ namespace Eidolon.App.ViewModels
                 Set(ref _pixelArt, value);
             }
         }
-        public double ChangeStrength
+        public bool HasResumeCollections
         {
             get
             {
-                return _reference.ChangeStrength;
-            }
-            set
-            {
-                _reference.ChangeStrength = value;
-                Raise();
-                RefreshCommands();
-            }
-        }
-        public AssetCollectionChoice SelectedCollection
-        {
-            get
-            {
-                return _selectedCollection;
-            }
-            set
-            {
-                if (Set(ref _selectedCollection, value) == false)
-                {
-                    return;
-                }
-                RefreshCommands();
-                if (value != null)
-                {
-                    ShowSelectedCollection(value.Id);
-                }
+                return Collections.Count > 0;
             }
         }
 
-        public bool IsComfyAssetCreation
+        public string CollectionStateCaption
         {
             get
             {
-                return Session.Settings.GenerationBackend == GenerationBackend.ComfyUI;
+                if (Preview.Collection == null)
+                {
+                    return string.Empty;
+                }
+                return AssetCollectionChoice.GetStateCaption(Preview.Collection.State, _strings);
             }
-        }
-
-        protected override void OnSessionPropertyChanged(object sender, PropertyChangedEventArgs args)
-        {
-            Raise(nameof(IsComfyAssetCreation));
-            base.OnSessionPropertyChanged(sender, args);
         }
 
         private bool CanCreate()
@@ -280,13 +244,6 @@ namespace Eidolon.App.ViewModels
             {
                 return false;
             }
-            if (IsComfyAssetCreation == true)
-            {
-                if (Assets.SelectedModel == null)
-                {
-                    return false;
-                }
-            }
             return true;
         }
 
@@ -315,53 +272,121 @@ namespace Eidolon.App.ViewModels
 
         private async Task<bool> LoadReferenceAsync(string path)
         {
-            if (string.IsNullOrEmpty(path) == true || Session.IsClosing == true)
+            if (string.IsNullOrEmpty(path) == true)
+            {
+                return false;
+            }
+            if (Session.IsClosing == true)
             {
                 return false;
             }
             int request = _reference.BeginLoad();
             byte[] data = await Task.Run(() => _images.Read(path), Session.Lifetime);
-            Bitmap thumbnail = await Task.Run(() => _images.Load(data, 192, false), Session.Lifetime);
-            if (Session.IsClosing == true || _reference.IsCurrentLoad(request) == false)
+            Bitmap thumbnail = await Task.Run(() => _images.Load(data, 512, false), Session.Lifetime);
+            try
             {
-                thumbnail.Dispose();
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                if (_reference.IsCurrentLoad(request) == false)
+                {
+                    return false;
+                }
+                await Preview.ClearAsync();
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                if (_reference.IsCurrentLoad(request) == false)
+                {
+                    return false;
+                }
+                _reference.SetImage(data, thumbnail, Path.GetFileName(path));
+                thumbnail = null;
+                Raise(nameof(HasReference));
+                Raise(nameof(ReferenceThumbnail));
+                Raise(nameof(ReferenceName));
+                RefreshCommands();
+                return true;
+            }
+            finally
+            {
+                thumbnail?.Dispose();
+            }
+        }
+
+        internal bool CanOpenCollection()
+        {
+            if (Session.CanQueue == false)
+            {
                 return false;
             }
-            _reference.SetImage(data, thumbnail, Path.GetFileName(path));
-            Raise(nameof(HasReference));
-            Raise(nameof(ReferenceThumbnail));
-            Raise(nameof(ReferenceName));
-            RefreshCommands();
-            return true;
+            return _preparing == false;
+        }
+
+        internal async Task OpenCollectionAsync(string id, int frameNumber = 0)
+        {
+            if (CanOpenCollection() == false)
+            {
+                return;
+            }
+            _reference.BeginLoad();
+            await Preview.ShowAsync(id, frameNumber);
+            if (Session.IsClosing == true)
+            {
+                return;
+            }
+            if (Preview.IsCurrent == false)
+            {
+                return;
+            }
+            if (Preview.Collection.Id != id)
+            {
+                return;
+            }
+            if (Navigation.IsAssetCreationView == false)
+            {
+                await Navigation.OpenAssetCreationAsync();
+            }
+        }
+
+        private Task OpenResumeCollectionAsync(object parameter)
+        {
+            if (parameter is AssetCollectionChoice choice)
+            {
+                if (Collections.Contains(choice) == true)
+                {
+                    return OpenCollectionAsync(choice.Id);
+                }
+            }
+            return Task.CompletedTask;
         }
 
         private async Task CreateAsync()
         {
-            DesktopSettings settings = Session.CreateActiveSettings(Session.Settings);
-            ModelAsset model = null;
-            List<ModelAsset> loras = new List<ModelAsset>();
-            long seed = 0;
-            if (settings.GenerationBackend == GenerationBackend.ComfyUI)
-            {
-                model = Assets.SelectedModel.Asset.Copy();
-                loras = Assets.Loras.Where(item => item.IsSelected == true).Select(item => item.Asset.Copy()).ToList();
-                seed = _seeds.Next();
-            }
+            StudioSettings settings = Session.Settings.Copy();
+            settings.GenerationBackend = GenerationBackend.Codex;
             AssetCreationInput input = new AssetCreationInput
             {
-                Kind = AssetCreationKind.FourViews, Prompt = Prompt,
-                FrameWidth = FrameSize, FrameHeight = FrameSize, Columns = Columns,
-                RemoveBackground = RemoveBackground, PixelArt = PixelArt, Seed = seed,
+                Kind = AssetCreationKind.FourViews,
+                Prompt = Prompt,
+                FrameWidth = FrameSize,
+                FrameHeight = FrameSize,
+                Columns = Columns,
+                RemoveBackground = RemoveBackground,
+                PixelArt = PixelArt,
                 Reference = new GenerationReferenceInput
                 {
-                    ImageData = _reference.ImageData.ToArray(), ImageName = _reference.ImageName,
-                    ChangeStrength = ChangeStrength, Mode = GenerationReferenceMode.Reimagine
+                    ImageData = _reference.ImageData.ToArray(),
+                    ImageName = _reference.ImageName,
+                    Mode = GenerationReferenceMode.Reimagine
                 }
             };
-            await EnqueueAsync(settings, model, loras, input, Session.Lifetime);
+            await EnqueueAsync(settings, input, Session.Lifetime);
         }
 
-        internal async Task<AssetCollection> EnqueueAsync(StudioSettings settings, ModelAsset model, List<ModelAsset> loras, AssetCreationInput input, CancellationToken token)
+        internal async Task<AssetCollection> EnqueueAsync(StudioSettings settings, AssetCreationInput input, CancellationToken token)
         {
             if (Session.CanQueue == false)
             {
@@ -385,7 +410,7 @@ namespace Eidolon.App.ViewModels
             bool accepted = false;
             try
             {
-                collection = await Task.Run(() => _service.Prepare(settings, model, loras, input, token), token);
+                collection = await Task.Run(() => _service.Prepare(settings, input, token), token);
                 token.ThrowIfCancellationRequested();
                 if (Session.CanQueue == false)
                 {
@@ -473,7 +498,10 @@ namespace Eidolon.App.ViewModels
             RefreshCommands();
             try
             {
-                await UpdatePreviewAsync(id);
+                if (Preview.RequestedCollectionId == id)
+                {
+                    await UpdatePreviewAsync(id);
+                }
                 if (action != null)
                 {
                     await action(token);
@@ -517,15 +545,7 @@ namespace Eidolon.App.ViewModels
             {
                 return false;
             }
-            if (_selectedCollection == null)
-            {
-                return false;
-            }
             if (Preview.IsCurrent == false)
-            {
-                return false;
-            }
-            if (Preview.Collection.Id != _selectedCollection.Id)
             {
                 return false;
             }
@@ -538,10 +558,9 @@ namespace Eidolon.App.ViewModels
 
         private async Task DeleteCollectionAsync()
         {
-            string id = _selectedCollection.Id;
-            string caption = _selectedCollection.Caption;
-            if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText656"),
-                _strings.Format("EidolonText657", caption)) == false)
+            string id = Preview.Collection.Id;
+            string caption = Preview.Title;
+            if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText656"), _strings.Format("EidolonText657", caption)) == false)
             {
                 return;
             }
@@ -549,7 +568,7 @@ namespace Eidolon.App.ViewModels
             {
                 return;
             }
-            if (_selectedCollection.Id != id)
+            if (Preview.Collection.Id != id)
             {
                 return;
             }
@@ -572,10 +591,9 @@ namespace Eidolon.App.ViewModels
             }
             await Session.WorkAsync(async token =>
             {
-                bool clearPreview = Preview.RequestedCollectionId == id;
                 try
                 {
-                    if (clearPreview == true)
+                    if (Preview.RequestedCollectionId == id)
                     {
                         await Preview.ClearAsync();
                     }
@@ -585,21 +603,6 @@ namespace Eidolon.App.ViewModels
                 finally
                 {
                     await RefreshCollectionsAsync();
-                    if (Session.IsClosing == false)
-                    {
-                        if (clearPreview == true)
-                        {
-                            if (_selectedCollection == null)
-                            {
-                                _selectedCollection = Collections.FirstOrDefault();
-                                Raise(nameof(SelectedCollection));
-                            }
-                            if (_selectedCollection != null)
-                            {
-                                await Preview.ShowAsync(_selectedCollection.Id);
-                            }
-                        }
-                    }
                     RefreshCommands();
                 }
             });
@@ -660,47 +663,68 @@ namespace Eidolon.App.ViewModels
             {
                 return;
             }
-            List<AssetCollection> collections = await Task.Run(() => _jobs.LoadAssetCollections(Session.Lifetime), Session.Lifetime);
+            int requestNumber = ++_collectionsRefreshRequest;
+            string directory = Session.Settings.GenerationDirectory;
+            List<AssetCollection> collections = await Task.Run(() => LoadResumeCollections(directory, Session.Lifetime), Session.Lifetime);
             if (Session.IsClosing == true)
             {
                 return;
             }
-            string selectedId = string.Empty;
-            if (Preview.HasCollection == true)
+            if (requestNumber != _collectionsRefreshRequest)
             {
-                selectedId = Preview.Collection.Id;
+                return;
             }
-            else if (_selectedCollection != null)
-            {
-                selectedId = _selectedCollection.Id;
-            }
-            _selectedCollection = null;
             Collections.Clear();
             foreach (AssetCollection collection in collections)
             {
-                if (collection.Kind == AssetCreationKind.SpriteAnimation)
+                Collections.Add(new AssetCollectionChoice(collection, _strings));
+            }
+            Raise(nameof(HasResumeCollections));
+            RefreshCommands();
+        }
+
+        private List<AssetCollection> LoadResumeCollections(string directory, CancellationToken cancellationToken)
+        {
+            List<AssetCollection> collections = _jobs.LoadAssetCollections(cancellationToken);
+            collections.RemoveAll(collection => collection.State is JobState.Preparing or JobState.Running);
+            if (collections.Count == 0)
+            {
+                return collections;
+            }
+            HashSet<string> hiddenCollectionIds = collections.Select(collection => collection.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            foreach (string path in _jobs.LoadGenerationPaths(directory, cancellationToken))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GenerationMetadata metadata = _jobs.FindGenerationImage(directory, path, cancellationToken)?.Metadata;
+                if (metadata == null)
                 {
                     continue;
                 }
-                Collections.Add(new AssetCollectionChoice(collection));
-            }
-            _selectedCollection = Collections.FirstOrDefault(item => item.Id == selectedId);
-            Raise(nameof(SelectedCollection));
-            RefreshCommands();
-        }
-        private async void ShowSelectedCollection(string id)
-        {
-            try
-            {
-                await Preview.ShowAsync(id);
-            }
-            catch (Exception error)
-            {
-                if (Session.IsClosing == false)
+                if (metadata.AssetFrameNumber < 1)
                 {
-                    Session.ReportError(error);
+                    continue;
+                }
+                AssetCollection savedCollection = collections.FirstOrDefault(collection => string.Equals(collection.Id, metadata.AssetCollectionId, StringComparison.OrdinalIgnoreCase));
+                if (savedCollection == null)
+                {
+                    continue;
+                }
+                if (metadata.AssetFrameNumber > savedCollection.Frames.Count)
+                {
+                    continue;
+                }
+                if (string.IsNullOrWhiteSpace(metadata.AssetFrameLabel) == true)
+                {
+                    continue;
+                }
+                hiddenCollectionIds.Remove(metadata.AssetCollectionId);
+                if (hiddenCollectionIds.Count == 0)
+                {
+                    break;
                 }
             }
+            collections.RemoveAll(collection => hiddenCollectionIds.Contains(collection.Id) == false);
+            return collections;
         }
         private async void OnProgressChanged(WorkProgress progress)
         {
@@ -729,21 +753,24 @@ namespace Eidolon.App.ViewModels
         }
         private void OnPreviewChanged(object sender, PropertyChangedEventArgs args)
         {
-            RefreshCommands();
-        }
-        private void OnAssetsChanged(object sender, PropertyChangedEventArgs args)
-        {
+            if (args.PropertyName == nameof(Preview.Collection))
+            {
+                Raise(nameof(CollectionStateCaption));
+            }
             RefreshCommands();
         }
         public override void Localize()
         {
             Preview.Localize();
+            foreach (AssetCollectionChoice collection in Collections)
+            {
+                collection.Localize(_strings);
+            }
             base.Localize();
         }
         public override void Dispose()
         {
             _work.ProgressChanged -= OnProgressChanged;
-            Assets.PropertyChanged -= OnAssetsChanged;
             Preview.PropertyChanged -= OnPreviewChanged;
             _reference.Dispose();
             Preview.Dispose();

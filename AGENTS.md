@@ -1,6 +1,6 @@
 # Eidolon
 
-작업 전에 [작업 규칙](Docs/WorkingRules.md), [기술 구조](Docs/EidolonArchitecture.md), [코딩 컨벤션](Docs/ReusableArchitecture/CodingConvention.md)을 읽는다.
+작업 전에 [작업 규칙](Docs/WorkingRules.md), [기술 구조](Docs/EidolonArchitecture.md), [코딩 컨벤션](Docs/CodingConvention.md)을 읽는다.
 
 코드 정리·아키텍처 검수 요청에는 `reusable-architecture-review` 스킬을 사용하고 [재사용 아키텍처 적용 절차](Docs/WorkingRules.md#재사용-아키텍처-적용)를 따른다.
 

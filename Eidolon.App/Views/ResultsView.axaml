@@ -58,11 +58,14 @@
     </Style>
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,Auto,*">
-    <Grid ColumnDefinitions="*,Auto">
-      <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
+      <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
         <TextBlock Text="{DynamicResource EidolonText372}" Classes="title" />
-        <TextBlock Text="{Binding GalleryCountCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
-        <ComboBox SelectionChanged="OnGalleryFilterSelectionChanged" SelectedIndex="{Binding GalleryFilterIndex, Mode=TwoWay}" MinWidth="160" MinHeight="38" VerticalAlignment="Center">
+        <Border Background="{DynamicResource WindowBrush}" CornerRadius="6" Padding="8,4" VerticalAlignment="Center">
+          <TextBlock Text="{Binding GalleryCountCaption}" Classes="muted" FontSize="12" FontWeight="SemiBold" />
+        </Border>
+      </StackPanel>
+        <ComboBox Grid.Row="1" SelectionChanged="OnGalleryFilterSelectionChanged" SelectedIndex="{Binding GalleryFilterIndex, Mode=TwoWay}" MinWidth="160" MinHeight="36" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,12,12,0">
           <ComboBox.SelectionBoxItemTemplate>
             <DataTemplate>
               <TextBlock Text="{ReflectionBinding $parent[ComboBox].SelectedItem.Content}" />
@@ -72,19 +75,20 @@
           <ComboBoxItem Content="{DynamicResource EidolonText705}" />
           <ComboBoxItem Content="{DynamicResource EidolonText606}" />
         </ComboBox>
-      </StackPanel>
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-        <Button Command="{Binding OpenImageFolderCommand}" Padding="12,8">
+      <WrapPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0,12,0,0">
+        <Button Command="{Binding OpenImageFolderCommand}" Padding="10,7" Margin="0,0,8,0" ToolTip.Tip="{DynamicResource EidolonText296}">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <Path Data="{StaticResource EidolonIconFolder}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
             <TextBlock Text="{DynamicResource EidolonText296}" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
-        <Button Content="{DynamicResource EidolonText273}" Command="{Binding RefreshGalleryCommand}" Padding="12,8" />
-        <Button Content="{DynamicResource EidolonText317}" Command="{Binding DeleteAllGenerationsCommand}" Classes="danger" IsVisible="{Binding HasGenerations}" Padding="12,8" />
-      </StackPanel>
+        <Button Content="{DynamicResource EidolonText273}" Command="{Binding RefreshGalleryCommand}" Padding="10,7" ToolTip.Tip="{DynamicResource EidolonText273}" />
+        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1,0,0,0" Padding="12,0,0,0" Margin="12,0,0,0" IsVisible="{Binding HasGenerations}">
+          <Button Content="{DynamicResource EidolonText317}" Command="{Binding DeleteAllGenerationsCommand}" Classes="danger" Padding="10,7" ToolTip.Tip="{DynamicResource EidolonText317}" />
+        </Border>
+      </WrapPanel>
     </Grid>
-    <StackPanel Grid.Row="1" Spacing="10" Margin="0,12,0,16">
+    <StackPanel Grid.Row="1" Spacing="10" Margin="0,8,0,12">
       <TextBlock Text="{DynamicResource EidolonText373}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
       <Border Background="{DynamicResource ErrorSurfaceBrush}" CornerRadius="8" Padding="12" IsVisible="{Binding HasGalleryError}">
         <StackPanel Spacing="6">
@@ -99,9 +103,9 @@
         <ColumnDefinition Width="20" />
         <ColumnDefinition Width="320" MinWidth="280" MaxWidth="560" />
       </Grid.ColumnDefinitions>
-      <Grid RowDefinitions="Auto,*,Auto">
-        <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,8" IsVisible="{Binding HasGenerations}">
-          <TextBlock Text="{Binding GallerySelectionCaption}" VerticalAlignment="Center" Foreground="{DynamicResource AccentBrush}" FontSize="12" />
+      <Grid RowDefinitions="Auto,*">
+        <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,10" IsVisible="{Binding HasGenerations}">
+          <TextBlock Text="{Binding GallerySelectionCaption}" VerticalAlignment="Center" Foreground="{DynamicResource TextBrush}" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding GallerySelectionCaption}" />
           <Button Grid.Column="1" Content="{DynamicResource EidolonText387}" Command="{Binding ClearGallerySelectionCommand}" Padding="10,7" Margin="0,0,8,0" />
           <Button Grid.Column="2" Content="{DynamicResource EidolonText316}" Command="{Binding DeleteGenerationCommand}" Classes="danger" Padding="10,7" />
         </Grid>
@@ -114,14 +118,14 @@
           <ListBox.ItemTemplate>
             <DataTemplate x:DataType="vm:GenerationItem">
               <Border Classes="resultCard" AutomationProperties.Name="{Binding Label}">
-                <Grid RowDefinitions="170,Auto">
+                <Grid RowDefinitions="160,Auto">
                   <Border Background="{DynamicResource WindowBrush}" CornerRadius="12,12,0,0" ClipToBounds="True" IsVisible="{Binding !IsAssetCollection}">
                     <Grid>
                       <views:TransparencyBackground IsVisible="{Binding HasThumbnail}" />
                       <Image Source="{Binding Thumbnail}" Stretch="Uniform" IsVisible="{Binding HasThumbnail}" />
                       <StackPanel Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !HasThumbnail}">
                         <Path Data="{StaticResource EidolonIconImage}" Width="30" Height="30" Stretch="Uniform" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.5" />
-                        <TextBlock Text="{Binding ThumbnailCaption}" Classes="muted" FontSize="12" />
+                        <TextBlock Text="{Binding ThumbnailCaption}" Classes="muted" FontSize="12" TextWrapping="Wrap" TextAlignment="Center" Margin="8,0" />
                       </StackPanel>
                     </Grid>
                   </Border>
@@ -148,55 +152,56 @@
                       </ItemsControl.ItemTemplate>
                     </ItemsControl>
                   </Border>
-                  <StackPanel Grid.Row="1" Spacing="6" Margin="14,12">
-                    <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FileName}" />
-                    <TextBlock Text="{Binding CollectionCaption}" Foreground="{DynamicResource AccentBrush}" FontSize="12" IsVisible="{Binding IsAssetCollection}" />
-                    <TextBlock Text="{Binding Metadata.Model.Name, FallbackValue=''}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" IsVisible="{Binding HasMetadata}" />
-                    <Grid ColumnDefinitions="*,Auto">
-                      <TextBlock Text="{Binding CreatedCaption}" Classes="muted" FontSize="11" />
-                      <TextBlock Grid.Column="1" Text="{Binding StateCaption}" Classes="muted" FontSize="11" />
+                  <Grid Grid.Row="1" RowDefinitions="20,18,22" RowSpacing="6" Margin="12,10">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                      <TextBlock Text="{Binding Label}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Label}" />
+                      <Border Grid.Column="1" Background="{DynamicResource BadgeBrush}" CornerRadius="4" Padding="6,2" MaxWidth="132" VerticalAlignment="Center" IsVisible="{Binding IsAssetCollection}">
+                        <TextBlock Text="{Binding CollectionCaption}" Foreground="{DynamicResource AccentBrush}" FontSize="10" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding CollectionCaption}" />
+                      </Border>
                     </Grid>
-                  </StackPanel>
+                    <TextBlock Grid.Row="1" Text="{Binding ModelNameCaption}" Classes="muted" FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" ToolTip.Tip="{Binding ModelNameCaption}" />
+                    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                      <TextBlock Text="{Binding CreatedCaption}" Classes="muted" FontSize="11" VerticalAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding CreatedCaption}" />
+                      <Border Grid.Column="1" Background="{DynamicResource WindowBrush}" CornerRadius="4" Padding="6,2">
+                        <TextBlock Text="{Binding StateCaption}" Classes="muted" FontSize="11" VerticalAlignment="Center" TextWrapping="NoWrap" ToolTip.Tip="{Binding StateCaption}" />
+                      </Border>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Border>
             </DataTemplate>
           </ListBox.ItemTemplate>
         </ListBox>
-        <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="12" Margin="0,8,0,0" HorizontalAlignment="Center" IsVisible="{Binding IsGalleryLoading}">
-          <StackPanel Orientation="Horizontal" Spacing="10">
-            <ProgressBar IsIndeterminate="True" Width="60" Height="4" VerticalAlignment="Center" />
-            <TextBlock Text="{DynamicResource EidolonText378}" Classes="muted" FontSize="12" />
-          </StackPanel>
-        </Border>
         <StackPanel Grid.Row="1" Spacing="12" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding IsGalleryEmpty}" MaxWidth="320" Margin="12,16">
           <Border Width="60" Height="60" CornerRadius="30" Background="{DynamicResource BadgeBrush}" HorizontalAlignment="Center">
             <Path Data="{StaticResource EidolonIconImage}" Width="26" Height="26" Stretch="Uniform" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.6" HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
           <TextBlock Text="{DynamicResource EidolonText325}" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap" />
           <TextBlock Text="{DynamicResource EidolonText304}" Classes="muted" FontSize="12" TextAlignment="Center" TextWrapping="Wrap" />
-          <Button Content="{DynamicResource EidolonText106}" Command="{Binding Navigation.ShowGenerationCommand}" HorizontalAlignment="Center" Padding="16,7" Margin="0,4,0,0" />
+          <Button Content="{DynamicResource EidolonText106}" Command="{Binding Navigation.ShowGenerationCommand}" Classes="primary" HorizontalAlignment="Center" Padding="16,7" Margin="0,4,0,0" />
         </StackPanel>
       </Grid>
       <GridSplitter Grid.Column="1" Classes="resultsSplitter" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Focusable="True" Cursor="SizeWestEast" />
-      <Grid Grid.Column="2" RowDefinitions="Auto,Auto,Auto,*" IsVisible="{Binding HasSelectedResult}">
-        <StackPanel Spacing="7" Margin="0,0,0,10">
+      <Grid Grid.Column="2" RowDefinitions="Auto,1.2*,Auto,*" IsVisible="{Binding HasSelectedResult}">
+        <StackPanel Spacing="6" Margin="0,0,0,10">
+          <TextBlock Text="{Binding SelectedResult.Label}" FontSize="16" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SelectedResult.Label}" />
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-            <SelectableTextBlock Text="{Binding SelectedResult.FileName}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
-            <Button Grid.Column="1" Command="{Binding CopyFileNameCommand}" Width="28" Height="28" MinHeight="28" Padding="6" VerticalAlignment="Top" ToolTip.Tip="{DynamicResource ReferenceCopyName}" AutomationProperties.Name="{DynamicResource ReferenceCopyName}">
+            <SelectableTextBlock Text="{Binding SelectedResult.FileName}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SelectedResult.Image.FilePath}" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Command="{Binding CopyFileNameCommand}" Width="32" Height="32" MinHeight="32" Padding="7" VerticalAlignment="Center" ToolTip.Tip="{DynamicResource ReferenceCopyName}" AutomationProperties.Name="{DynamicResource ReferenceCopyName}">
               <Path Data="M6,15 H3 V3 H15 V6 M8,8 H20 V20 H8 Z" Width="14" Height="14" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" />
             </Button>
           </Grid>
-          <TextBlock Text="{Binding SelectedResult.Label}" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SelectedResult.Label}" />
           <WrapPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding SelectedResult.Metadata.Model.Name, FallbackValue=''}" Classes="muted" FontSize="12" MaxWidth="220" TextTrimming="CharacterEllipsis" Margin="0,0,14,0" IsVisible="{Binding SelectedResult.HasMetadata}" />
+            <TextBlock Text="{Binding SelectedResult.ModelNameCaption}" Classes="muted" FontSize="12" MaxWidth="220" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SelectedResult.ModelNameCaption}" Margin="0,0,14,0" IsVisible="{Binding SelectedResult.HasMetadata}" />
               <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,0,14,0" IsVisible="{Binding SelectedResult.HasSeed}">
               <TextBlock Text="{DynamicResource EidolonText369}" Classes="muted" FontSize="12" />
               <SelectableTextBlock Text="{Binding SelectedResult.SeedCaption}" FontSize="12" />
             </StackPanel>
             <TextBlock Text="{Binding SelectedResult.DimensionsCaption}" Classes="muted" FontSize="12" />
           </WrapPanel>
+          <Button Content="{DynamicResource EidolonText793}" Command="{Binding OpenAssetCollectionCommand}" IsVisible="{Binding HasSavedAssetCollection}" HorizontalAlignment="Left" />
         </StackPanel>
-        <Border Grid.Row="1" Height="260" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="12" ClipToBounds="True">
+        <Border Grid.Row="1" MinHeight="140" Background="{DynamicResource WindowBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="8" ClipToBounds="True">
           <Border.ContextMenu>
             <ContextMenu>
               <MenuItem Header="{DynamicResource EidolonText603}" Command="{Binding UseResultForAssetCreationCommand}" />
@@ -208,8 +213,8 @@
             <TextBlock Text="{DynamicResource EidolonText307}" Classes="muted" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="16" IsVisible="{Binding !HasPreview}" />
           </Grid>
         </Border>
-        <Grid Grid.Row="2" ColumnDefinitions="*,8,*" RowDefinitions="42,8,42" Margin="0,12,0,16">
-          <Button Command="{Binding ExportCommand}" Classes="resultAction" ToolTip.Tip="{DynamicResource EidolonText122}">
+        <Grid Grid.Row="2" ColumnDefinitions="*,8,*" RowDefinitions="40,8,40" Margin="0,10,0,12">
+          <Button Command="{Binding ExportCommand}" Classes="resultAction primary" ToolTip.Tip="{DynamicResource EidolonText122}">
             <Grid ColumnDefinitions="16,8,*">
               <Path Data="{StaticResource EidolonIconSave}" Width="16" Height="16" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
               <TextBlock Grid.Column="2" Text="{DynamicResource EidolonText122}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
@@ -234,10 +239,10 @@
             </Grid>
           </Button>
         </Grid>
-        <Border Grid.Row="3" Classes="card" Padding="20">
-          <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" AllowAutoHide="False">
+        <Border Grid.Row="3" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
+          <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" AllowAutoHide="False" Padding="0,0,20,0">
             <StackPanel Spacing="12">
-              <views:PromptDetailsView DataContext="{Binding SelectedResult}" />
+              <views:PromptDetailsView DataContext="{Binding SelectedResult}" IsVisible="{ReflectionBinding HasMetadata}" />
               <TextBlock Text="{DynamicResource EidolonText388}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding !SelectedResult.HasMetadata}" />
               <Border Background="{DynamicResource ErrorSurfaceBrush}" CornerRadius="8" Padding="12" IsVisible="{Binding SelectedResult.HasError}">
                 <TextBlock Text="{Binding SelectedResult.ErrorMessage}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" FontSize="12" />
@@ -249,7 +254,7 @@
               <Border Height="1" Background="{DynamicResource BorderBrush}" />
               <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
                 <TextBlock Text="{DynamicResource EidolonText367}" Classes="muted" FontSize="12" Margin="0,0,10,0" />
-                <TextBlock Grid.Column="1" Text="{Binding SelectedResult.CreatedCaption}" Classes="muted" FontSize="12" />
+                <TextBlock Grid.Column="1" Text="{Binding SelectedResult.CreatedCaption}" Classes="muted" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SelectedResult.CreatedCaption}" />
                 <TextBlock Grid.Column="2" Text="{Binding SelectedResult.StateCaption}" Classes="muted" FontSize="12" />
               </Grid>
             </StackPanel>
