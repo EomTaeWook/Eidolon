@@ -46,6 +46,12 @@ Front, left, right, and back views generated from one telescope reference photo.
 
 Review the completed model alongside its reference images. Save the result as a Blender or GLB file, or continue editing it.
 
+### LoRA training setup
+
+![LoRA training input setup in Eidolon](Docs/images/readme-training.png)
+
+The generated woodland image is in the white-background group. Training was not started.
+
 ## Core experience
 
 - **Prompt-based generation**: Describe your subject and optionally add a reference image.
