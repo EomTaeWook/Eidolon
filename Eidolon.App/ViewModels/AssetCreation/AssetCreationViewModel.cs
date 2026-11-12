@@ -553,11 +553,32 @@ namespace Eidolon.App.ViewModels
             {
                 return;
             }
+            await DeleteCollectionAsync(id, caption);
+        }
+
+        internal async Task DeleteCollectionAsync(string id, string caption)
+        {
+            if (Session.IsIdle == false)
+            {
+                return;
+            }
+            if (Session.CanQueue == false)
+            {
+                return;
+            }
+            if (_preparing == true)
+            {
+                return;
+            }
             await Session.WorkAsync(async token =>
             {
+                bool clearPreview = Preview.RequestedCollectionId == id;
                 try
                 {
-                    await Preview.ClearAsync();
+                    if (clearPreview == true)
+                    {
+                        await Preview.ClearAsync();
+                    }
                     await Task.Run(() => _jobs.DeleteAssetCollection(id, token), token);
                     Session.Status = _strings.Format("EidolonText658", caption);
                 }
@@ -566,14 +587,17 @@ namespace Eidolon.App.ViewModels
                     await RefreshCollectionsAsync();
                     if (Session.IsClosing == false)
                     {
-                        if (_selectedCollection == null)
+                        if (clearPreview == true)
                         {
-                            _selectedCollection = Collections.FirstOrDefault();
-                            Raise(nameof(SelectedCollection));
-                        }
-                        if (_selectedCollection != null)
-                        {
-                            await Preview.ShowAsync(_selectedCollection.Id);
+                            if (_selectedCollection == null)
+                            {
+                                _selectedCollection = Collections.FirstOrDefault();
+                                Raise(nameof(SelectedCollection));
+                            }
+                            if (_selectedCollection != null)
+                            {
+                                await Preview.ShowAsync(_selectedCollection.Id);
+                            }
                         }
                     }
                     RefreshCommands();

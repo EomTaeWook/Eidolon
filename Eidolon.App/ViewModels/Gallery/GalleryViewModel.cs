@@ -113,7 +113,11 @@ namespace Eidolon.App.ViewModels
                 }
                 if (HasAssetCollectionSelection == true)
                 {
-                    return false;
+                    if (Session.CanQueue == false)
+                    {
+                        return false;
+                    }
+                    return GetSelectedAssetCollection() != null;
                 }
                 return HasGallerySelection;
             }
@@ -354,8 +358,61 @@ namespace Eidolon.App.ViewModels
             }
         }
 
+        private GenerationItem GetSelectedAssetCollection()
+        {
+            if (GallerySelection.Count != 1)
+            {
+                return null;
+            }
+            GenerationItem collection = GallerySelection[0];
+            if (collection.IsAssetCollection == false)
+            {
+                return null;
+            }
+            if (collection.Metadata == null)
+            {
+                return null;
+            }
+            if (Guid.TryParseExact(collection.Metadata.AssetCollectionId, "N", out _) == false)
+            {
+                return null;
+            }
+            return collection;
+        }
+
         private async Task DeleteGenerationsAsync(bool all)
         {
+            if (all == false)
+            {
+                GenerationItem collection = GetSelectedAssetCollection();
+                if (collection != null)
+                {
+                    if (CanDeleteGallerySelection == false)
+                    {
+                        return;
+                    }
+                    string collectionId = collection.Metadata.AssetCollectionId;
+                    string caption = collection.Label;
+                    if (await _dialogs.ConfirmDeleteAsync(_strings.GetString("EidolonText656"), _strings.Format("EidolonText657", caption)) == false)
+                    {
+                        return;
+                    }
+                    if (CanDeleteGallerySelection == false)
+                    {
+                        return;
+                    }
+                    if (GetSelectedAssetCollection() != collection)
+                    {
+                        return;
+                    }
+                    if (collection.Metadata.AssetCollectionId != collectionId)
+                    {
+                        return;
+                    }
+                    await _creation.DeleteCollectionAsync(collectionId, caption);
+                    return;
+                }
+            }
             if (HasAssetCollectionSelection == true)
             {
                 return;
