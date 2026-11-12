@@ -4,7 +4,7 @@
 
 **Eidolon is a desktop app for generating and editing images, creating game assets, and training LoRAs from prompts and reference images.**
 
-Choose ComfyUI or your installed Codex, then work with shared generation guidelines, saved results and five-view sheets in one app.
+Choose ComfyUI or your installed Codex, then work with shared generation guidelines, saved results and multi-view sheets in one app.
 
 ## Download
 
@@ -22,7 +22,7 @@ On Mac, use your installed, signed-in Codex or an external ComfyUI server. Local
 
 ## Actual app screens
 
-Eidolon 1.0.0 in Korean with the light theme. Pastel images were generated through the app using ComfyUI and Illustrious-XL-v0.1, then used for editing and five-view creation.
+Eidolon 1.0.0 in Korean with the light theme. Pastel images were generated through the app using ComfyUI and Illustrious-XL-v0.1, then used for editing and asset creation.
 
 ### Image generation
 
@@ -30,29 +30,17 @@ Eidolon 1.0.0 in Korean with the light theme. Pastel images were generated throu
 
 Describe the image and choose a reference and background options. Review the generated result above while preparing the next request in the input below.
 
-### Image editing
-
-![Edit screen with a pastel source image and color-change instructions](Docs/images/editing.png)
-
-Choose a source image and describe the changes.
-
 ### Results
 
 ![Eidolon Results screen with an image gallery, selected image and generation details, and reuse, edit and training actions](Docs/images/results.png)
 
 Select an image in the gallery to read its prompt and generation settings. Save the result, reuse its prompt, edit it, or use it for training.
 
-### Asset creation
-
-![Asset creation screen with five views generated from the pastel reference](Docs/images/assets.png)
-
-Generate front, right, left, back, and top views from a reference image, then compare them. Regenerate, replace, and export individual images from the same screen.
-
 ### 3D modeling
 
-![Eidolon 3D Modeling screen showing a generated character, four reference views, and its actual triangle count](Docs/images/modeling.png)
+![Eidolon 3D Modeling screen showing a generated telescope and its actual triangle count](Docs/images/modeling.png)
 
-The app shows a generated character in the 3D preview alongside its front, left, right, and back references. You can save the result as a Blender or GLB file or continue editing it.
+The app shows a telescope generated from a reference image in the 3D preview. You can save the result as a Blender or GLB file or continue editing it.
 
 ### LoRA training
 
@@ -67,7 +55,7 @@ The training screenshot shows image selection; training was not started. See the
 - **Prompt-based generation**: Describe your subject and optionally add a reference image.
 - **Shared style guidelines**: Save guidelines, exclusions, and presets for both generation and editing.
 - **Continue from a result**: Inspect generation settings, reuse a prompt, edit an image, or use it for training or asset creation.
-- **Game assets**: Create front, right, left, back, and top views from a reference, then compare and export them.
+- **Game assets**: Create front, right, left, and back views from a reference, then compare and export them.
 - **Train with your images**: Let the app prepare a dataset and use the completed LoRA when generating.
 
 ## Features
@@ -75,7 +63,7 @@ The training screenshot shows image selection; training was not started. See the
 - **Local English-tag conversion**: After installing the model, use the small button below the input to convert Korean/English text, then review and edit it in the same field
 - **Generation and editing**: ComfyUI or Codex, reference images, source-image editing, and transparent backgrounds
 - **Results**: Image and multi-view filters, grouped views with per-direction preview, saved prompts and settings, reuse, export, and selected-image deletion
-- **Multiple views**: Five directions, per-item regeneration and replacement, resume, and PNG, sheet, and coordinate JSON export
+- **Multiple views**: Four directions, per-item regeneration and replacement, resume, and PNG, sheet, and coordinate JSON export
 - **3D modeling**: Create from one image or multiple views, edit Blender scenes, preview in 3D, set a triangle limit, and save Blender or GLB files
 - **Models and LoRAs**: safetensors folder scanning, SD 1.5 and SDXL families, compatible LoRA selection, and automatic trigger words
 - **LoRA training**: Automatic dataset preparation, new or continued training, quick settings, cancellation, and estimated time remaining
@@ -100,7 +88,7 @@ Settings and job data are stored under `%LOCALAPPDATA%\Eidolon`. Replacing the e
 
 **Edit** takes a source image and edit instructions, then saves a new image. **Results** lets you reuse a prompt, edit, or train from an image. Right-click the large result image to send it to asset creation.
 
-**Asset creation** makes five views covering front, right, left, back, and top. Preview shows the generated originals, while export fits them to a shared output size. Deleting a collection removes its record and internal working files while preserving generated PNGs, prompt JSON, and exported files.
+**Asset creation** makes four views covering front, right, left, and back. Preview shows the generated originals, while export fits them to a shared output size. Deleting a collection removes its record and internal working files while preserving generated PNGs, prompt JSON, and exported files.
 
 **LoRA training** guides you through image selection, name and trigger review, and training settings. It requires a local ComfyUI runtime, a base model, and an NVIDIA GPU. A saved LoRA trigger is applied automatically when generating. Local checkpoints, LoRAs, seeds, and change strength do not apply to Codex generation.
 

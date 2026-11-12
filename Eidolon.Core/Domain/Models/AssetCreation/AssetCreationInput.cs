@@ -5,14 +5,14 @@ namespace Eidolon.Core.Domain
         public const int MaximumFrames = 32;
         public const int MaximumFrameSize = 2048;
         public const int DefaultViewFrameSize = 1024;
-        public const int ViewCount = 5;
+        public const int ViewCount = 4;
         public const long MaximumSheetPixels = 64 * 1000 * 1000;
 
         public AssetCreationInput()
         {
         }
 
-        public AssetCreationKind Kind { get; set; } = AssetCreationKind.FiveViews;
+        public AssetCreationKind Kind { get; set; } = AssetCreationKind.FourViews;
         public string Prompt { get; set; } = string.Empty;
         public GenerationReferenceInput Reference { get; set; }
         public long Seed { get; set; }
@@ -24,7 +24,7 @@ namespace Eidolon.Core.Domain
 
         public void Validate()
         {
-            if (Kind != AssetCreationKind.FiveViews)
+            if (Kind != AssetCreationKind.FourViews)
             {
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }

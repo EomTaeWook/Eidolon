@@ -55,7 +55,7 @@ namespace Eidolon.App.Mcp
         {
             return new[]
             {
-                new McpTool(new McpToolDefinition("eidolon_model_3d", "Queue one 3D modeling request using the saved native GPT/Codex CLI executable and execution model and installed Blender. Supply reference_path for one image or views with explicit front/left/right/back/top image paths, or source_blend_path to edit an existing Blender file. New modeling needs at least one image; editing a .blend requires instructions. Only absolute existing local PNG/JPEG/WebP images and .blend inputs are accepted. Uses the UI modeling input and common FIFO without changing UI selection or settings. Executable, scripts, working/output directories and agent overrides are not accepted. Claude and WSL modeling execution are unavailable. Originals are preserved and results use a new managed GUID folder. Returns accepted=true and request_id for acceptance only. Poll eidolon_get_modeling_result; use eidolon_get_status, eidolon_cancel_work and eidolon_clear_pending for the common queue.", ModelingSchema()) { ReadOnly = false, Idempotent = false, OpenWorld = true }, QueueModelingAsync),
+                new McpTool(new McpToolDefinition("eidolon_model_3d", "Queue one 3D modeling request using the saved native GPT/Codex CLI executable and execution model and installed Blender. Supply reference_path for one image or views with explicit front/left/right/back image paths, or source_blend_path to edit an existing Blender file. New modeling needs at least one image; editing a .blend requires instructions. Only absolute existing local PNG/JPEG/WebP images and .blend inputs are accepted. Uses the UI modeling input and common FIFO without changing UI selection or settings. Executable, scripts, working/output directories and agent overrides are not accepted. Claude and WSL modeling execution are unavailable. Originals are preserved and results use a new managed GUID folder. Returns accepted=true and request_id for acceptance only. Poll eidolon_get_modeling_result; use eidolon_get_status, eidolon_cancel_work and eidolon_clear_pending for the common queue.", ModelingSchema()) { ReadOnly = false, Idempotent = false, OpenWorld = true }, QueueModelingAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_modeling_result", "Read one managed 3D modeling request by its GUID request_id. Returns completed .blend/.glb paths and the exported triangle count only after the existing completion marker and output files are present. Reports queued/running/cancelled/failed only when confirmed by the current queue, latest modeling execution or existing failure marker. unknown/not_found are not completion or proof of cancellation. Older cancelled/discarded requests without an existing record cannot be reconstructed. No logs, scripts, arbitrary paths or file contents are returned. Poll eidolon_get_status and use its exact active_request with eidolon_cancel_work; eidolon_clear_pending discards queued requests.", ModelingResultSchema()) { ReadOnly = true, Idempotent = true, OpenWorld = false }, GetModelingResultAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_status",
                     "Read Eidolon readiness, current work, pending_count, pending_requests, progress, error, can_cancel_work and can_cancel_training. Poll after enqueueing any work. For current-work cancellation pass this response's exact active_request to eidolon_cancel_work. The training-specific alias is eidolon_cancel_training. Use eidolon_clear_pending to discard waiting requests without stopping the active one. In-flight HTTP tool calls use notifications/cancelled with their JSON-RPC request ID, before acceptance or completion.")
@@ -114,7 +114,7 @@ namespace Eidolon.App.Mcp
                     Idempotent = true,
                     OpenWorld = false
                 }, ListImagesAsync),
-                new McpTool(new McpToolDefinition("eidolon_create_views", "Queue exactly five views in this order: front, anatomical right side, anatomical left side, back, directly overhead top. Only the camera moves; preserve the reference pose, geometry, proportions and equipment on their original anatomical sides. Right and left are separate true side views, never mirrored copies. Side cameras are exactly 90 degrees from the front, back is 180 degrees and top looks vertically down at 90 degrees; no diagonal or mixed views. All supplied prompts MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe appearance, materials, colors and style without changing the required viewpoints or pose. Only reference_path is required; prompt is optional. Frame size defaults to 1024. Uses the saved ComfyUI or Codex backend. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. These are AI reference images, not geometrically verified projections; review each result. Returns collection_id; poll eidolon_get_asset_collection.", AssetCreationSchema()), CreateViewsAsync),
+                new McpTool(new McpToolDefinition("eidolon_create_views", "Queue exactly four views in this order: front, anatomical right side, anatomical left side, back. Only the camera moves; preserve the reference pose, geometry, proportions and equipment on their original anatomical sides. Right and left are separate true side views, never mirrored copies. Side cameras are exactly 90 degrees from the front and back is 180 degrees; no diagonal or mixed views. All supplied prompts MUST be in English with detailed comma-separated tags or short tag phrases. Translate requests in other languages before calling. Read eidolon_get_instructions first; for ComfyUI, follow the target checkpoint prompt_guidance from eidolon_list_models rather than a universal tag template. Describe appearance, materials, colors and style without changing the required viewpoints or pose. Only reference_path is required; prompt is optional. Frame size defaults to 1024. Sheet columns default to 4 and accept integers from 1 to 4. Uses the saved ComfyUI or Codex backend. Checkpoints, LoRAs, seed and change_strength apply only to ComfyUI. These are AI reference images, not geometrically verified projections; review each result. Returns collection_id; poll eidolon_get_asset_collection.", AssetCreationSchema()), CreateViewsAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_asset_collection", "Read a collection state and ordered frame paths, prompts, seeds and errors.",
                     CollectionSchema()) { ReadOnly = true, Idempotent = true, OpenWorld = false }, GetAssetCollectionAsync),
                 new McpTool(new McpToolDefinition("eidolon_list_asset_collections", "List the latest 20 asset collections with IDs and completion counts.")
@@ -1405,7 +1405,7 @@ namespace Eidolon.App.Mcp
             schema["required"] = new JsonArray("reference_path");
             properties["prompt"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000, ["description"] = "Optional English-only subject description as detailed comma-separated tags or short tag phrases for appearance, proportions, materials, textures, colors, style, lighting and background. Translate the user's request into English. For ComfyUI, use the target checkpoint prompt_guidance from eidolon_list_models; read the backend and saved instruction prefixes with eidolon_get_instructions first. Omit to use the reference subject without an additional description." };
             properties["frame_size"] = new JsonObject { ["type"] = "integer", ["minimum"] = 16, ["maximum"] = AssetCreationInput.MaximumFrameSize };
-            properties["columns"] = new JsonObject { ["type"] = "integer", ["minimum"] = 1, ["maximum"] = AssetCreationInput.MaximumFrames };
+            properties["columns"] = new JsonObject { ["type"] = "integer", ["minimum"] = 1, ["maximum"] = AssetCreationInput.ViewCount, ["default"] = AssetCreationInput.ViewCount };
             properties["pixel_art"] = new JsonObject { ["type"] = "boolean" };
             return schema;
         }
@@ -1446,7 +1446,7 @@ namespace Eidolon.App.Mcp
         private JsonObject ModelingSchema()
         {
             JsonObject views = new JsonObject();
-            foreach (string direction in new string[] { "front", "left", "right", "back", "top" })
+            foreach (string direction in new string[] { "front", "left", "right", "back" })
             {
                 views[direction] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 };
             }
@@ -1457,11 +1457,10 @@ namespace Eidolon.App.Mcp
                 {
                     ["instructions"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000 },
                     ["reference_path"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 },
-                    ["views"] = new JsonObject { ["type"] = "object", ["properties"] = views, ["minProperties"] = 1, ["maxProperties"] = 5, ["additionalProperties"] = false },
+                    ["views"] = new JsonObject { ["type"] = "object", ["properties"] = views, ["additionalProperties"] = false },
                     ["source_blend_path"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 },
                     ["maximum_triangle_count"] = new JsonObject { ["type"] = "integer", ["minimum"] = 0, ["maximum"] = 1000000, ["default"] = 0 }
                 },
-                ["anyOf"] = new JsonArray(new JsonObject { ["required"] = new JsonArray("reference_path") }, new JsonObject { ["required"] = new JsonArray("views") }, new JsonObject { ["required"] = new JsonArray("source_blend_path") }),
                 ["additionalProperties"] = false
             };
         }
@@ -1522,12 +1521,12 @@ namespace Eidolon.App.Mcp
                     {
                         throw new ArgumentException("views must contain at least one direction.");
                     }
-                    string[] directions = new string[] { "front", "left", "right", "back", "top" };
+                    string[] directions = new string[] { "front", "left", "right", "back" };
                     foreach (KeyValuePair<string, JsonNode> view in views)
                     {
                         if (directions.Contains(view.Key) == false)
                         {
-                            throw new ArgumentException("views only supports front, left, right, back and top.");
+                            throw new ArgumentException("views only supports front, left, right and back.");
                         }
                         if (view.Value == null)
                         {
@@ -1778,7 +1777,7 @@ namespace Eidolon.App.Mcp
                 McpGenerationOptions generationOptions = CreateGenerationOptions(arguments, true);
                 AssetCreationInput input = new AssetCreationInput
                 {
-                    Kind = AssetCreationKind.FiveViews, Reference = reference, Seed = generationOptions.Seed,
+                    Kind = AssetCreationKind.FourViews, Reference = reference, Seed = generationOptions.Seed,
                     RemoveBackground = generationOptions.RemoveBackground,
                     FrameWidth = ReadInteger(arguments, "frame_size", AssetCreationInput.DefaultViewFrameSize), FrameHeight = ReadInteger(arguments, "frame_size", AssetCreationInput.DefaultViewFrameSize),
                     Columns = ReadInteger(arguments, "columns", AssetCreationInput.ViewCount)

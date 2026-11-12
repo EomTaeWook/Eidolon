@@ -31,7 +31,7 @@
           <TextBlock Text="{DynamicResource EidolonText732}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
           <Button Grid.Column="1" Content="{DynamicResource EidolonText735}" Command="{Binding ReadReferenceFeaturesCommand}" Classes="quiet" />
         </Grid>
-        <TextBox Text="{Binding PreservationPrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="84" MaxHeight="180" Watermark="{DynamicResource EidolonText732}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+        <TextBox Text="{Binding PreservationPrompt, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="84" MaxHeight="180" PlaceholderText="{DynamicResource EidolonText732}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" />
         <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsReadingReferenceFeatures}">
           <ProgressBar IsIndeterminate="True" Width="40" Height="3" VerticalAlignment="Center" />
           <TextBlock Text="{DynamicResource EidolonText734}" Classes="muted" FontSize="11" TextWrapping="Wrap" />

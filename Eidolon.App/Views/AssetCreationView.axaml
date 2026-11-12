@@ -119,7 +119,7 @@
                   <TextBlock Text="{DynamicResource EidolonText615}" FontSize="12" />
                   <NumericUpDown Value="{Binding FrameSize, Mode=TwoWay}" Minimum="16" Maximum="2048" FormatString="0" />
                   <TextBlock Text="{DynamicResource EidolonText616}" FontSize="12" />
-                  <NumericUpDown Value="{Binding Columns, Mode=TwoWay}" Minimum="1" Maximum="5" FormatString="0" />
+                  <NumericUpDown Value="{Binding Columns, Mode=TwoWay}" Minimum="1" Maximum="4" FormatString="0" />
                 </StackPanel>
               </StackPanel>
               <TextBlock Text="{DynamicResource EidolonText629}" Classes="muted" FontSize="12" />

@@ -8,6 +8,7 @@ namespace Eidolon.Core.Infrastructure
 {
     public class JobStore
     {
+        private const int LegacyFiveViewsFrameCount = 5;
         private readonly AtomicJsonFile _json;
         private readonly RuntimeInstaller _runtimeInstaller;
         private readonly string _directory;
@@ -350,7 +351,7 @@ namespace Eidolon.Core.Infrastructure
                 }
                 if (collection.Kind == AssetCreationKind.FiveViews)
                 {
-                    if (collection.Frames.Count != AssetCreationInput.ViewCount)
+                    if (collection.Frames.Count != LegacyFiveViewsFrameCount)
                     {
                         throw new StudioException(StudioMessageCode.InvalidAssetCollection);
                     }
@@ -487,7 +488,7 @@ namespace Eidolon.Core.Infrastructure
                         {
                             belongsToCollection = false;
                         }
-                        if (image.Metadata.AssetFrameNumber > AssetCreationInput.ViewCount)
+                        if (image.Metadata.AssetFrameNumber > LegacyFiveViewsFrameCount)
                         {
                             belongsToCollection = false;
                         }

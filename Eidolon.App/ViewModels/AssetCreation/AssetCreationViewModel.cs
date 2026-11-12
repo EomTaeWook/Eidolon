@@ -349,7 +349,7 @@ namespace Eidolon.App.ViewModels
             }
             AssetCreationInput input = new AssetCreationInput
             {
-                Kind = AssetCreationKind.FiveViews, Prompt = Prompt,
+                Kind = AssetCreationKind.FourViews, Prompt = Prompt,
                 FrameWidth = FrameSize, FrameHeight = FrameSize, Columns = Columns,
                 RemoveBackground = RemoveBackground, PixelArt = PixelArt, Seed = seed,
                 Reference = new GenerationReferenceInput
@@ -371,7 +371,11 @@ namespace Eidolon.App.ViewModels
             {
                 throw new StudioException(StudioMessageCode.GenerationRecordBusy);
             }
-            if (input.Kind != AssetCreationKind.FiveViews)
+            if (input.Kind != AssetCreationKind.FourViews)
+            {
+                throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+            }
+            if (input.Columns > AssetCreationInput.ViewCount)
             {
                 throw new StudioException(StudioMessageCode.InvalidAssetCollection);
             }

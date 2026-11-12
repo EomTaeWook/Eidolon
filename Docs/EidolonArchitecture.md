@@ -88,7 +88,7 @@ View는 DI 컨테이너, HTTP 클라이언트나 별도 작업 큐를 생성하�
 
 에셋 제작은 저장된 ComfyUI 또는 Codex 생성 방식을 사용한다. Codex는 체크포인트 없이 기준 이미지와 항목별 설명을 기존 생성 경계로 전달하며 모델·LoRA·참고 강도·시드 입력을 표시하지 않는다. 이어 만들기와 재생성은 묶음에 저장된 생성 방식과 지침을 사용한다.
 
-에셋 제작 탭은 정면·우측·좌측·후면·윗면의 5방향 다면도 초안을 제공한다. `AssetCreationService`는 기존 `StudioService.GenerateAsync`를 순서대로 호출하고 `JobStore`에 묶음·부분 완료·항목의 원본 Job 연결을 저장한다. `AssetFrameImporter`는 교체 이미지 사본을 준비하고 `AssetSheetExporter`는 공통 캔버스에 PNG·시트·좌표 메타데이터를 내보낸다. `AssetFrameRenderer`는 내보내기의 알파 경계를 측정하며 App의 `AssetImageLoader`는 생성 원본을 미리보기 크기로 읽는다. 원본·생성 메타데이터를 덮어쓰거나 별도 보정 이미지 저장소를 만들지 않는다. 별도 큐·GPU 사용권을 만들지 않는다. 화면·저장·품질 한계 계약은 [에셋 제작](AssetCreation.md)이 소유한다.
+에셋 제작 탭은 정면·우측·좌측·후면의 4방향 다면도 초안을 제공한다. `AssetCreationService`는 기존 `StudioService.GenerateAsync`를 순서대로 호출하고 `JobStore`에 묶음·부분 완료·항목의 원본 Job 연결을 저장한다. `AssetFrameImporter`는 교체 이미지 사본을 준비하고 `AssetSheetExporter`는 공통 캔버스에 PNG·시트·좌표 메타데이터를 내보낸다. `AssetFrameRenderer`는 내보내기의 알파 경계를 측정하며 App의 `AssetImageLoader`는 생성 원본을 미리보기 크기로 읽는다. 원본·생성 메타데이터를 덮어쓰거나 별도 보정 이미지 저장소를 만들지 않는다. 별도 큐·GPU 사용권을 만들지 않는다. 화면·저장·품질 한계 계약은 [에셋 제작](AssetCreation.md)이 소유한다.
 
 MCP의 참고 생성·편집은 호출자가 확정한 유지 특징을 받거나 공식 sampling 응답을 받아 기존 생성 큐에 접수한다. 같은 서버·도구에서 `2025` 초기화·세션의 POST SSE와 `2026-07-28` 요청별 MRTR을 함께 지원한다. 프로토콜 세대·세션·전송 왕복과 도구 문맥은 라이브러리가, 이미지·보호된 재개 상태·요청 사본과 특징 검증은 공통 App 처리 메서드가 소유한다. sampling 미지원 시 직접 특징 입력이나 명시적 생략을 요구하며 로컬 모델로 대신 분석하지 않는다. 상세 계약은 [MCP 연결](Mcp.md#호출자-모델과-유지-특징-왕복)을 따른다.
 

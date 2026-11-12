@@ -592,7 +592,6 @@ namespace Eidolon.App.ViewModels
             };
             AdditionalDirectionImages = new ModelingImageItem[]
             {
-                new ModelingImageItem("top", "EidolonText640", strings),
                 new ModelingImageItem("side", "EidolonText638", strings)
             };
             PickDirectionImageCommand = new AsyncCommand(parameter => PickDirectionImageAsync(parameter as ModelingImageItem), () => Session.CanEditGenerationInputs, OnCommandError);
