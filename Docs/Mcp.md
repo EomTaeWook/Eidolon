@@ -341,7 +341,7 @@ App의 `Mcp/McpService.cs`는 `CreateTools()`에서 도구 정의와 private 처
 
 | 인자 | 계약 |
 | --- | --- |
-| `instructions` | 최대 16,000자. 새 모델은 이미지가 있으면 생략 가능. `.blend` 수정은 공백이 아닌 설명 필수 |
+| `instructions` | 최대 16,000자. 원하는 형상·재질만 설명한다. Blender 파일 저장·GLB 내보내기·미리보기 렌더는 Eidolon이 자동 수행하므로 지시문에서 제외한다. 새 모델은 이미지가 있으면 생략 가능. `.blend` 수정은 공백이 아닌 설명 필수 |
 | `reference_path` | 단일 이미지의 절대 로컬 경로. `views`와 동시 지정 불가 |
 | `views` | `front`, `left`, `right`, `back` 중 한 방향 이상의 이미지 경로 객체. `top`은 받지 않으며 지정한 방향만 사용 |
 | `source_blend_path` | 선택적인 기존 `.blend`의 절대 로컬 경로. 이 원본을 덮어쓰지 않고 새 GUID 작업으로 수정 |
