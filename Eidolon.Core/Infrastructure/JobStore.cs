@@ -177,27 +177,76 @@ namespace Eidolon.Core.Infrastructure
                 {
                     throw new StudioException(StudioMessageCode.InvalidJobDirectory);
                 }
-                EnsureRegularDirectoryTree(directory, cancellationToken);
-                AssetCollection collection = LoadAssetCollection(collectionId);
-                if (collection.Kind == AssetCreationKind.SpriteAnimation)
+                EnsureRegularDirectoryParents(_directory);
+                string markerPath = AssetCollectionDeletionMarkerPath(Guid.ParseExact(collectionId, "N"));
+                FileAttributes? markerAttributes = ReadAttributesIfPresent(markerPath);
+                if (markerAttributes.HasValue == true)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    if ((markerAttributes.Value & (FileAttributes.ReparsePoint | FileAttributes.Directory)) != 0)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+                    }
                 }
-                if (collection.State == JobState.Preparing)
+                FileAttributes? directoryAttributes = ReadAttributesIfPresent(directory);
+                if (directoryAttributes.HasValue == true)
                 {
-                    throw new StudioException(StudioMessageCode.GenerationRecordBusy);
+                    if ((directoryAttributes.Value & FileAttributes.Directory) == 0)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+                    }
+                    EnsureRegularDirectoryTree(directory, cancellationToken);
+                    AssetCollection collection = LoadAssetCollection(collectionId);
+                    if (collection.Kind == AssetCreationKind.SpriteAnimation)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidAssetCollection);
+                    }
+                    if (collection.State == JobState.Preparing)
+                    {
+                        throw new StudioException(StudioMessageCode.GenerationRecordBusy);
+                    }
+                    if (collection.State == JobState.Running)
+                    {
+                        throw new StudioException(StudioMessageCode.GenerationRecordBusy);
+                    }
+                    if (File.Exists(Path.Combine(directory, "Job.json")) == true)
+                    {
+                        throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    EnsureRegularDirectoryParents(directory);
+                    Directory.Delete(directory, true);
                 }
-                if (collection.State == JobState.Running)
+                else
                 {
-                    throw new StudioException(StudioMessageCode.GenerationRecordBusy);
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
-                if (File.Exists(Path.Combine(directory, "Job.json")) == true)
+                if (markerAttributes.HasValue == false)
                 {
-                    throw new StudioException(StudioMessageCode.InvalidJobDirectory);
+                    Directory.CreateDirectory(_directory);
+                    EnsureRegularDirectoryParents(_directory);
+                    using FileStream marker = new(markerPath, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
                 }
-                cancellationToken.ThrowIfCancellationRequested();
-                EnsureRegularDirectoryParents(directory);
-                Directory.Delete(directory, true);
+            }
+        }
+
+        private string AssetCollectionDeletionMarkerPath(Guid collectionId)
+        {
+            return Path.Combine(_directory, collectionId.ToString("N") + ".asset-collection-deleted");
+        }
+
+        private static FileAttributes? ReadAttributesIfPresent(string path)
+        {
+            try
+            {
+                return File.GetAttributes(path);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return null;
             }
         }
 
@@ -515,6 +564,14 @@ namespace Eidolon.Core.Infrastructure
                     foreach (IGrouping<string, GenerationImage> collectionGroup in collectionImages.GroupBy(image => image.Metadata.AssetCollectionId, StringComparer.OrdinalIgnoreCase))
                     {
                         token.ThrowIfCancellationRequested();
+                        FileAttributes? deletionMarker = ReadAttributesIfPresent(AssetCollectionDeletionMarkerPath(Guid.ParseExact(collectionGroup.Key, "N")));
+                        if (deletionMarker.HasValue == true)
+                        {
+                            if ((deletionMarker.Value & (FileAttributes.ReparsePoint | FileAttributes.Directory)) == 0)
+                            {
+                                continue;
+                            }
+                        }
                         List<GenerationImage> members = collectionGroup.OrderByDescending(image => image.CreatedAtUtc).ThenBy(image => image.FilePath, StringComparer.OrdinalIgnoreCase).ToList();
                         GenerationImage representative = members.FirstOrDefault(image => string.Equals(image.Metadata.AssetFrameLabel, "front", StringComparison.OrdinalIgnoreCase));
                         if (representative == null)
