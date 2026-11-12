@@ -10,11 +10,11 @@ Choose ComfyUI or your installed Codex, then work with shared generation guideli
 
 | Platform | Download |
 |---|---|
-| Windows x64 | [Eidolon-v1.0.5-win-x64.exe](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.5/Eidolon-v1.0.5-win-x64.exe) |
-| macOS 14+ · Apple Silicon | [Eidolon-v1.0.5-osx-arm64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.5/Eidolon-v1.0.5-osx-arm64.app.zip) |
-| macOS 14+ · Intel | [Eidolon-v1.0.5-osx-x64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.5/Eidolon-v1.0.5-osx-x64.app.zip) |
+| Windows x64 | [Eidolon-v1.0.6-win-x64.exe](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.6/Eidolon-v1.0.6-win-x64.exe) |
+| macOS 14+ · Apple Silicon | [Eidolon-v1.0.6-osx-arm64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.6/Eidolon-v1.0.6-osx-arm64.app.zip) |
+| macOS 14+ · Intel | [Eidolon-v1.0.6-osx-x64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.6/Eidolon-v1.0.6-osx-x64.app.zip) |
 
-[Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.5)
+[Release notes](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.6)
 
 On Windows, run the single `.exe`. On Mac, extract the ZIP, move `Eidolon.app` to a writable Applications folder, and open it in Finder. No separate .NET installation is required. The Mac apps are ad-hoc signed without Apple notarization; the first launch may require approval under Privacy & Security in System Settings.
 
@@ -30,13 +30,11 @@ Eidolon 1.0.0 in Korean with the light theme. Pastel images were generated throu
 
 Describe the image and choose a reference and background options. Review the generated result above while preparing the next request in the input below.
 
-### Editing and partial edits
+### Image editing
 
 ![Edit screen with a pastel source image and color-change instructions](Docs/images/editing.png)
 
-Choose a source image and describe the changes. For a partial edit, paint the area to change before submitting the request.
-
-![Painting the region to change on the source image in the partial-edit screen](Docs/images/partial-editing.png)
+Choose a source image and describe the changes.
 
 ### Results
 
@@ -49,6 +47,12 @@ Select an image in the gallery to read its prompt and generation settings. Save 
 ![Asset creation screen with five views generated from the pastel reference](Docs/images/assets.png)
 
 Generate front, right, left, back, and top views from a reference image, then compare them. Regenerate, replace, and export individual images from the same screen.
+
+### 3D modeling
+
+![Eidolon 3D Modeling screen showing a generated character, four reference views, and its actual triangle count](Docs/images/modeling.png)
+
+The app shows a generated character in the 3D preview alongside its front, left, right, and back references. You can save the result as a Blender or GLB file or continue editing it.
 
 ### LoRA training
 
@@ -72,18 +76,19 @@ The training screenshot shows image selection; training was not started. See the
 - **Generation and editing**: ComfyUI or Codex, reference images, source-image editing, and transparent backgrounds
 - **Results**: Image and multi-view filters, grouped views with per-direction preview, saved prompts and settings, reuse, export, and selected-image deletion
 - **Multiple views**: Five directions, per-item regeneration and replacement, resume, and PNG, sheet, and coordinate JSON export
+- **3D modeling**: Create from one image or multiple views, edit Blender scenes, preview in 3D, set a triangle limit, and save Blender or GLB files
 - **Models and LoRAs**: safetensors folder scanning, SD 1.5 and SDXL families, compatible LoRA selection, and automatic trigger words
 - **LoRA training**: Automatic dataset preparation, new or continued training, quick settings, cancellation, and estimated time remaining
 - **Jobs**: A shared queue, additional requests while running, cancellation, pending-request cleanup, and preserved originals and logs
 - **Settings and connections**: Korean and English, light and black themes, output folder, external ComfyUI servers, and MCP
 
-Multiple views are reference-based drafts. Review generated appearance and viewpoints for your use case. The current distribution targets Windows x64.
+Multiple views are reference-based drafts. Review generated appearance and viewpoints for your use case. Packages are available for Windows x64 and macOS (Apple Silicon and Intel).
 
 ## Run
 
 ### Run the release
 
-1. Save the Windows x64 executable from Releases and run it.
+1. On Windows, run the release EXE. On macOS, extract the ZIP and open Eidolon.app.
 2. Open **Generation environment > Generation methods**, then choose ComfyUI or Codex.
 3. For Codex, sign in to your installed Codex. Choose an execution model from the retrieved list; Default model uses the CLI default. Select `codex.exe` if the app cannot locate it.
 4. For ComfyUI, prepare the engine in **Settings > Engine setup and connection**. Install a model in **Generation environment > Models and LoRAs**, or put `.safetensors` files in Model folder or LoRA folder and refresh.
@@ -101,6 +106,14 @@ Settings and job data are stored under `%LOCALAPPDATA%\Eidolon`. Replacing the e
 
 The app's **Help** screen provides instructions in both languages. See the [user guide](Docs/Usage.md) in Korean and the [asset creation guide](Docs/AssetCreation.md) for detailed workflows and export contracts.
 
+### 3D modeling
+
+1. Set up Blender under **Settings > Engine setup and connection > Blender** and sign in to the installed Codex CLI. Modeling uses the GPT agent model saved in the generation settings.
+2. Open **3D Modeling** and select one reference image or multiple views. To change an existing model, open a .blend file and describe the edit, or choose **Continue editing this model** on a result.
+3. Add the job, inspect the 3D preview and actual triangle count, then save a Blender or GLB file. Edits preserve the original file.
+
+See the [3D modeling guide](Docs/Modeling.md) for view directions, triangle limits, and output locations.
+
 ### Run from source
 
 Development requires the .NET 10 SDK. From the repository root:
@@ -111,12 +124,12 @@ dotnet run --project Eidolon.App/Eidolon.App.csproj
 
 ## MCP
 
-The MCP server starts automatically after app initialization. Register `http://127.0.0.1:8190/mcp` with your client. View the server status or manually stop and start it in **Settings > MCP connection**. Generation, editing, results, asset creation, and LoRA training use the same job queue as the UI. Training accepts absolute image or folder paths for white and black backgrounds directly and trains both groups into one LoRA. Per-request guidelines leave saved settings unchanged. See [MCP usage](Docs/Mcp.md) for examples and connection details.
+The MCP server starts automatically after app initialization. Register `http://127.0.0.1:8190/mcp` with your client. View the server status or manually stop and start it in **Settings > MCP connection**. Generation, editing, results, asset creation, 3D modeling, and LoRA training use the same job queue as the UI. Queue a modeling job with `eidolon_model_3d` and retrieve its result with `eidolon_get_modeling_result`. Training accepts absolute image or folder paths for white and black backgrounds directly and trains both groups into one LoRA. Per-request guidelines leave saved settings unchanged. See [MCP usage](Docs/Mcp.md) for examples and connection details.
 
 ## Technology
 
 - **Language and runtime**: C# / .NET 10
-- **Distribution**: Windows x64
+- **Distribution**: Windows x64, macOS Apple Silicon and Intel
 - **UI**: Avalonia
 - **Generation**: ComfyUI or installed Codex
 

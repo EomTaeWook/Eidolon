@@ -6,6 +6,7 @@ using Eidolon.App.Localization;
 using Eidolon.App.Presenters;
 using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
+using Eidolon.Modeling;
 
 namespace Eidolon.App.ViewModels
 {
@@ -18,12 +19,24 @@ namespace Eidolon.App.ViewModels
         private readonly RuntimeInstaller _installer;
         private readonly ComfyEngine _engine;
         private readonly JobStore _jobs;
+        private readonly BlenderInstaller _blenderInstaller;
         private int _runtimeModulesRequest;
         private Exception _runtimeModulesFailure;
         public ObservableCollection<RuntimeModuleItem> RuntimeModules { get; private set; } = new ObservableCollection<RuntimeModuleItem>();
         public ObservableCollection<RuntimeModuleItem> CustomNodes { get; private set; } = new ObservableCollection<RuntimeModuleItem>();
         public AsyncCommand InstallCommand { get; private set; }
         public AsyncCommand InstallPromptConverterCommand { get; private set; }
+        public AsyncCommand InstallBlenderCommand
+        {
+            get;
+            private set;
+        }
+
+        public AsyncCommand OpenBlenderDirectoryCommand
+        {
+            get;
+            private set;
+        }
         public AsyncCommand DeletePromptConverterCommand { get; private set; }
         public AsyncCommand StartEngineCommand { get; private set; }
         public AsyncCommand StopEngineCommand { get; private set; }
@@ -31,6 +44,174 @@ namespace Eidolon.App.ViewModels
         public AsyncCommand RefreshRuntimeModulesCommand { get; private set; }
         public AsyncCommand OpenTrainingDataCommand { get; private set; }
         public AsyncCommand ClearTrainingDataCommand { get; private set; }
+
+        public string BlenderVersion
+        {
+            get
+            {
+                return BlenderInstaller.Version;
+            }
+        }
+
+        public string BlenderInstallDirectory
+        {
+            get
+            {
+                string installDirectory = PromptConverterInstallDirectory;
+                if (Path.IsPathFullyQualified(installDirectory) == false)
+                {
+                    return string.Empty;
+                }
+                if (installDirectory.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+                {
+                    return string.Empty;
+                }
+                if (File.Exists(installDirectory) == true)
+                {
+                    return string.Empty;
+                }
+                try
+                {
+                    return _blenderInstaller.GetInstallDirectory(installDirectory);
+                }
+                catch (ArgumentException)
+                {
+                    return string.Empty;
+                }
+                catch (IOException)
+                {
+                    return string.Empty;
+                }
+                catch (NotSupportedException)
+                {
+                    return string.Empty;
+                }
+            }
+        }
+
+        public string BlenderExecutablePath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(BlenderInstallDirectory) == true)
+                {
+                    return string.Empty;
+                }
+                return _blenderInstaller.GetInstalledExecutable(PromptConverterInstallDirectory);
+            }
+        }
+
+        public string BlenderStatus
+        {
+            get
+            {
+                if (BlenderInstaller.IsPlatformSupported == false)
+                {
+                    return _strings.GetString("EidolonText769");
+                }
+                if (string.IsNullOrEmpty(BlenderInstallDirectory) == true)
+                {
+                    if (string.IsNullOrWhiteSpace(PromptConverterInstallDirectory) == true)
+                    {
+                        return _strings.Format(StudioMessageCode.InstallDirectoryRequired);
+                    }
+                    return _strings.Format(StudioMessageCode.InstallPathInvalid);
+                }
+                if (string.IsNullOrEmpty(BlenderExecutablePath) == true)
+                {
+                    return _strings.GetString("EidolonText277");
+                }
+                return _strings.GetString("EidolonText276");
+            }
+        }
+
+        public bool CanInstallBlender
+        {
+            get
+            {
+                if (Session.IsIdle == false)
+                {
+                    return false;
+                }
+                if (BlenderInstaller.IsPlatformSupported == false)
+                {
+                    return false;
+                }
+                if (string.IsNullOrEmpty(BlenderInstallDirectory) == true)
+                {
+                    return false;
+                }
+                return string.IsNullOrEmpty(BlenderExecutablePath);
+            }
+        }
+
+        public bool CanEditInstallDirectory
+        {
+            get
+            {
+                if (Session.IsIdle == false)
+                {
+                    return false;
+                }
+                if (BlenderInstaller.IsPlatformSupported == true)
+                {
+                    return true;
+                }
+                return CanInstallEngine;
+            }
+        }
+
+        private async Task InstallBlenderAsync(string installDirectory, CancellationToken cancellationToken)
+        {
+            string logDirectory = Path.Combine(Path.GetDirectoryName(_blenderInstaller.GetInstallDirectory(installDirectory)), "Logs");
+            bool isInstalling = true;
+            IProgress<BlenderDownloadProgress> progress = new Progress<BlenderDownloadProgress>(update =>
+            {
+                if (isInstalling == false)
+                {
+                    return;
+                }
+                if (Session.IsClosing == true)
+                {
+                    return;
+                }
+                if (cancellationToken.IsCancellationRequested == true)
+                {
+                    return;
+                }
+                Session.Status = _strings.GetString("EidolonText743");
+                Session.Percent = update.Percent;
+                Session.Indeterminate = update.IsIndeterminate;
+            });
+            try
+            {
+                Session.Status = _strings.GetString("EidolonText743");
+                await _blenderInstaller.InstallAsync(installDirectory, progress, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                if (string.IsNullOrWhiteSpace(Session.Settings.InstallDirectory) == true)
+                {
+                    DesktopSettings settings = Session.Settings.Copy();
+                    settings.InstallDirectory = installDirectory;
+                    Session.SaveSettings(settings);
+                }
+                Session.Status = _strings.GetString("EidolonText744");
+                Session.Percent = 100;
+                Session.Indeterminate = false;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception error)
+            {
+                throw new InvalidOperationException(_strings.Format("EidolonText775", logDirectory), error);
+            }
+            finally
+            {
+                isInstalling = false;
+                RefreshCommands();
+            }
+        }
 
         public string PromptConverterInstallDirectory
         {
@@ -79,17 +260,26 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        public string PromptConverterStatus
+        public bool IsPromptConverterInstalled
         {
             get
             {
                 string installDirectory = PromptConverterInstallDirectory;
-                if (Path.IsPathFullyQualified(installDirectory) == true)
+                if (Path.IsPathFullyQualified(installDirectory) == false)
                 {
-                    if (_installer.IsPromptConverterInstalled(installDirectory) == true)
-                    {
-                        return _strings.GetString("EidolonText276");
-                    }
+                    return false;
+                }
+                return _installer.IsPromptConverterInstalled(installDirectory);
+            }
+        }
+
+        public string PromptConverterStatus
+        {
+            get
+            {
+                if (IsPromptConverterInstalled == true)
+                {
+                    return _strings.GetString("EidolonText276");
                 }
                 return _strings.GetString("EidolonText277");
             }
@@ -303,6 +493,7 @@ namespace Eidolon.App.ViewModels
                 error.Code == StudioMessageCode.RuntimeNotInstalled || error.Code == StudioMessageCode.RuntimeIncomplete ||
                 error.Code == StudioMessageCode.GenerationRuntimeMissing)
             {
+                Navigation.SelectedEngineToolTab = 0;
                 Navigation.SelectedSettingsTab = 1;
                 Navigation.SelectedTab = 4;
                 Session.Status = _strings.GetString("EidolonText225");
@@ -489,7 +680,7 @@ namespace Eidolon.App.ViewModels
             }
         }
 
-        public EngineViewModel(StudioSession session, StudioNavigationViewModel navigation, StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs, AssetsViewModel assets, SettingsViewModel settings, AssetLibrary library, RuntimeInstaller installer, ComfyEngine engine, JobStore jobs) : base(session, navigation, work, strings, dialogs)
+        public EngineViewModel(StudioSession session, StudioNavigationViewModel navigation, StudioWorkPresenter work, StringHelper strings, DesktopDialogs dialogs, AssetsViewModel assets, SettingsViewModel settings, AssetLibrary library, RuntimeInstaller installer, ComfyEngine engine, JobStore jobs, BlenderInstaller blenderInstaller) : base(session, navigation, work, strings, dialogs)
         {
             Assets = assets;
             Settings = settings;
@@ -497,7 +688,21 @@ namespace Eidolon.App.ViewModels
             _installer = installer;
             _engine = engine;
             _jobs = jobs;
+            _blenderInstaller = blenderInstaller;
             Settings.PropertyChanged += OnSettingsChanged;
+            InstallBlenderCommand = Command(() =>
+            {
+                string installDirectory = PromptConverterInstallDirectory;
+                return Session.WorkAsync(cancellationToken => InstallBlenderAsync(installDirectory, cancellationToken));
+            }, () => CanInstallBlender);
+            OpenBlenderDirectoryCommand = Command(() => _dialogs.OpenFolderAsync(BlenderInstallDirectory), () =>
+            {
+                if (Session.IsClosing == true)
+                {
+                    return false;
+                }
+                return Directory.Exists(BlenderInstallDirectory);
+            });
             InstallCommand = Command(() =>
             {
                 DesktopSettings requestedSettings = Settings.CreateEngineSettings();
@@ -564,6 +769,12 @@ namespace Eidolon.App.ViewModels
 
         protected override void RefreshCommands()
         {
+            Raise(nameof(BlenderVersion));
+            Raise(nameof(BlenderInstallDirectory));
+            Raise(nameof(BlenderExecutablePath));
+            Raise(nameof(BlenderStatus));
+            Raise(nameof(CanInstallBlender));
+            Raise(nameof(CanEditInstallDirectory));
             Raise(nameof(EngineStatus));
             Raise(nameof(StopEngineCaption));
             Raise(nameof(IsEngineConnected));
@@ -572,6 +783,7 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(PromptConverterInstallDirectory));
             Raise(nameof(CanInstallPromptConverter));
             Raise(nameof(CanDeletePromptConverter));
+            Raise(nameof(IsPromptConverterInstalled));
             Raise(nameof(PromptConverterStatus));
             Raise(nameof(CanOpenTrainingData));
             Raise(nameof(CanClearTrainingData));

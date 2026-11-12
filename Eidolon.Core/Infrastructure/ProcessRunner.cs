@@ -11,13 +11,13 @@ namespace Eidolon.Core.Infrastructure
         public ProcessRunner()
         {
         }
-        public async Task RunAsync(string executable, IEnumerable<string> arguments, string workingDirectory,
-            string logPath, CancellationToken cancellationToken,
-            IReadOnlyDictionary<string, string> environment = null, Action<string> lineReceived = null,
-            bool stopWithParent = false, string standardInput = null, Action<string> standardOutputReceived = null,
-            Action<string> standardOutputChunkReceived = null)
+        public async Task RunAsync(string executable, IEnumerable<string> arguments, string workingDirectory, string logPath, CancellationToken cancellationToken, IReadOnlyDictionary<string, string> environment = null, Action<string> lineReceived = null, bool stopWithParent = false, string standardInput = null, Action<string> standardOutputReceived = null, Action<string> standardOutputChunkReceived = null, bool showWindow = false)
         {
             ProcessStartInfo start = CreateStartInfo(executable, arguments, workingDirectory, environment);
+            if (showWindow == true)
+            {
+                start.WindowStyle = ProcessWindowStyle.Normal;
+            }
             if (standardInput != null)
             {
                 start.RedirectStandardInput = true;

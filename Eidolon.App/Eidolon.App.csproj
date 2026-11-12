@@ -3,13 +3,14 @@
     <OutputType>WinExe</OutputType>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <AssemblyName>Eidolon</AssemblyName>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <NoWarn>$(NoWarn);AVLN3001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Eidolon.Core/Eidolon.Core.csproj" />
+    <ProjectReference Include="../Eidolon.Modeling/Eidolon.Modeling.csproj" />
     <ProjectReference Include="../Mcp.Core/MCP.Core.csproj" />
     <ProjectReference Include="../DataContainer/DataContainer.csproj" />
     <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />

@@ -5,17 +5,28 @@ namespace Eidolon.App.ViewModels
         private int _selectedTab;
         private int _selectedEnvironmentTab;
         private int _selectedSettingsTab;
+        private int _selectedEngineToolTab;
         public AsyncCommand ShowEditingCommand { get; private set; }
         public AsyncCommand ShowGenerationCommand { get; private set; }
         public AsyncCommand ShowResultsCommand { get; private set; }
         public AsyncCommand ShowTrainingCommand { get; private set; }
         public AsyncCommand ShowGenerationEnvironmentCommand { get; private set; }
         public AsyncCommand ShowEngineSettingsCommand { get; private set; }
+        public AsyncCommand ShowBlenderSettingsCommand
+        {
+            get;
+            private set;
+        }
         public AsyncCommand ShowEngineCommand { get; private set; }
         public AsyncCommand ShowModelsCommand { get; private set; }
         public AsyncCommand ShowSettingsCommand { get; private set; }
         public AsyncCommand ShowHelpCommand { get; private set; }
         public AsyncCommand ShowAssetCreationCommand { get; private set; }
+        public AsyncCommand ShowModelingCommand
+        {
+            get;
+            private set;
+        }
 
         public int SelectedTab
         {
@@ -36,6 +47,7 @@ namespace Eidolon.App.ViewModels
                     Raise(nameof(IsSettingsView));
                     Raise(nameof(IsHelpView));
                     Raise(nameof(IsAssetCreationView));
+                    Raise(nameof(IsModelingView));
                 }
             }
         }
@@ -96,6 +108,18 @@ namespace Eidolon.App.ViewModels
             }
         }
 
+        public int SelectedEngineToolTab
+        {
+            get
+            {
+                return _selectedEngineToolTab;
+            }
+            set
+            {
+                Set(ref _selectedEngineToolTab, value);
+            }
+        }
+
         public bool IsTrainingView
         {
             get
@@ -136,6 +160,14 @@ namespace Eidolon.App.ViewModels
             }
         }
 
+        public bool IsModelingView
+        {
+            get
+            {
+                return SelectedTab == 8;
+            }
+        }
+
         private readonly Func<int, Task> _navigate;
 
         public StudioNavigationViewModel(Func<int, Task> navigate, Action<Exception> onError)
@@ -147,11 +179,13 @@ namespace Eidolon.App.ViewModels
             ShowTrainingCommand = new AsyncCommand(() => NavigateAsync(2), () => true, onError);
             ShowGenerationEnvironmentCommand = new AsyncCommand(() => NavigateAsync(3), () => true, onError);
             ShowEngineSettingsCommand = new AsyncCommand(OpenEngineSettingsAsync, () => true, onError);
+            ShowBlenderSettingsCommand = new AsyncCommand(() => OpenEngineSettingsAsync(1), () => true, onError);
             ShowEngineCommand = ShowEngineSettingsCommand;
             ShowModelsCommand = new AsyncCommand(OpenModelsAsync, () => true, onError);
             ShowSettingsCommand = new AsyncCommand(() => NavigateAsync(4), () => true, onError);
             ShowHelpCommand = new AsyncCommand(() => NavigateAsync(5), () => true, onError);
             ShowAssetCreationCommand = new AsyncCommand(OpenAssetCreationAsync, () => true, onError);
+            ShowModelingCommand = new AsyncCommand(() => NavigateAsync(8), () => true, onError);
         }
 
         private Task NavigateAsync(int tab)
@@ -161,6 +195,12 @@ namespace Eidolon.App.ViewModels
 
         internal Task OpenEngineSettingsAsync()
         {
+            return OpenEngineSettingsAsync(0);
+        }
+
+        private Task OpenEngineSettingsAsync(int engineToolTab)
+        {
+            SelectedEngineToolTab = engineToolTab;
             SelectedSettingsTab = 1;
             return NavigateAsync(4);
         }

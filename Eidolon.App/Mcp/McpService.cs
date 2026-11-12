@@ -6,6 +6,7 @@ using Eidolon.App.ViewModels;
 using Eidolon.Core.Application;
 using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
+using Eidolon.Modeling;
 using MCP.Core.Models.Tools;
 using MCP.Core.Tools;
 using SkiaSharp;
@@ -32,10 +33,10 @@ namespace Eidolon.App.Mcp
         private readonly StringHelper _strings;
         private readonly AssetCreationViewModel _creation;
         private readonly AssetCreationService _assetService;
+        private readonly ModelingViewModel _modeling;
         private readonly JsonSerializerOptions _assetJson = new JsonSerializerOptions { Converters = { new JsonStringEnumConverter() } };
 
-        public McpService(StudioSession session, AssetsViewModel assets, GenerationViewModel generation,
-            JobStore jobs, ISeedProvider seeds, StringHelper strings, AssetCreationViewModel creation, AssetCreationService assetService, TrainingViewModel training, StudioWorkPresenter work)
+        public McpService(StudioSession session, AssetsViewModel assets, GenerationViewModel generation, JobStore jobs, ISeedProvider seeds, StringHelper strings, AssetCreationViewModel creation, AssetCreationService assetService, TrainingViewModel training, StudioWorkPresenter work, ModelingViewModel modeling)
         {
             _session = session;
             _assets = assets;
@@ -47,12 +48,15 @@ namespace Eidolon.App.Mcp
             _strings = strings;
             _creation = creation;
             _assetService = assetService;
+            _modeling = modeling;
         }
 
         public IReadOnlyList<McpTool> CreateTools()
         {
             return new[]
             {
+                new McpTool(new McpToolDefinition("eidolon_model_3d", "Queue one 3D modeling request using the saved native GPT/Codex CLI executable and execution model and installed Blender. Supply reference_path for one image or views with explicit front/left/right/back/top image paths, or source_blend_path to edit an existing Blender file. New modeling needs at least one image; editing a .blend requires instructions. Only absolute existing local PNG/JPEG/WebP images and .blend inputs are accepted. Uses the UI modeling input and common FIFO without changing UI selection or settings. Executable, scripts, working/output directories and agent overrides are not accepted. Claude and WSL modeling execution are unavailable. Originals are preserved and results use a new managed GUID folder. Returns accepted=true and request_id for acceptance only. Poll eidolon_get_modeling_result; use eidolon_get_status, eidolon_cancel_work and eidolon_clear_pending for the common queue.", ModelingSchema()) { ReadOnly = false, Idempotent = false, OpenWorld = true }, QueueModelingAsync),
+                new McpTool(new McpToolDefinition("eidolon_get_modeling_result", "Read one managed 3D modeling request by its GUID request_id. Returns completed .blend/.glb paths and the exported triangle count only after the existing completion marker and output files are present. Reports queued/running/cancelled/failed only when confirmed by the current queue, latest modeling execution or existing failure marker. unknown/not_found are not completion or proof of cancellation. Older cancelled/discarded requests without an existing record cannot be reconstructed. No logs, scripts, arbitrary paths or file contents are returned. Poll eidolon_get_status and use its exact active_request with eidolon_cancel_work; eidolon_clear_pending discards queued requests.", ModelingResultSchema()) { ReadOnly = true, Idempotent = true, OpenWorld = false }, GetModelingResultAsync),
                 new McpTool(new McpToolDefinition("eidolon_get_status",
                     "Read Eidolon readiness, current work, pending_count, pending_requests, progress, error, can_cancel_work and can_cancel_training. Poll after enqueueing any work. For current-work cancellation pass this response's exact active_request to eidolon_cancel_work. The training-specific alias is eidolon_cancel_training. Use eidolon_clear_pending to discard waiting requests without stopping the active one. In-flight HTTP tool calls use notifications/cancelled with their JSON-RPC request ID, before acceptance or completion.")
                 {
@@ -1436,6 +1440,325 @@ namespace Eidolon.App.Mcp
             {
                 return fallback;
             }
+        private JsonObject ModelingSchema()
+        {
+            JsonObject views = new JsonObject();
+            foreach (string direction in new string[] { "front", "left", "right", "back", "top" })
+            {
+                views[direction] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 };
+            }
+            return new JsonObject
+            {
+                ["type"] = "object",
+                ["properties"] = new JsonObject
+                {
+                    ["instructions"] = new JsonObject { ["type"] = "string", ["maxLength"] = 16000 },
+                    ["reference_path"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 },
+                    ["views"] = new JsonObject { ["type"] = "object", ["properties"] = views, ["minProperties"] = 1, ["maxProperties"] = 5, ["additionalProperties"] = false },
+                    ["source_blend_path"] = new JsonObject { ["type"] = "string", ["minLength"] = 1, ["maxLength"] = 4096 },
+                    ["maximum_triangle_count"] = new JsonObject { ["type"] = "integer", ["minimum"] = 0, ["maximum"] = 1000000, ["default"] = 0 }
+                },
+                ["anyOf"] = new JsonArray(new JsonObject { ["required"] = new JsonArray("reference_path") }, new JsonObject { ["required"] = new JsonArray("views") }, new JsonObject { ["required"] = new JsonArray("source_blend_path") }),
+                ["additionalProperties"] = false
+            };
+        }
+
+        private JsonObject ModelingResultSchema()
+        {
+            return new JsonObject
+            {
+                ["type"] = "object",
+                ["properties"] = new JsonObject { ["request_id"] = new JsonObject { ["type"] = "string", ["minLength"] = 32, ["maxLength"] = 36 } },
+                ["required"] = new JsonArray("request_id"),
+                ["additionalProperties"] = false
+            };
+        }
+
+        private async Task<McpToolResult> QueueModelingAsync(JsonObject arguments, CancellationToken cancellationToken)
+        {
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                foreach (KeyValuePair<string, JsonNode> argument in arguments)
+                {
+                    if (new string[] { "instructions", "reference_path", "views", "source_blend_path", "maximum_triangle_count" }.Contains(argument.Key) == false)
+                    {
+                        throw new ArgumentException("Unsupported modeling argument: " + argument.Key);
+                    }
+                    if (argument.Value == null)
+                    {
+                        throw new ArgumentException("Modeling arguments cannot be null.");
+                    }
+                }
+                if (arguments.ContainsKey("reference_path") == true)
+                {
+                    if (arguments.ContainsKey("views") == true)
+                    {
+                        throw new ArgumentException("Use reference_path or views, not both.");
+                    }
+                }
+                string instructions = string.Empty;
+                if (arguments["instructions"] != null)
+                {
+                    instructions = arguments["instructions"].GetValue<string>();
+                }
+                string sourceBlendPath = string.Empty;
+                if (arguments["source_blend_path"] != null)
+                {
+                    sourceBlendPath = ReadModelingPath(arguments["source_blend_path"]);
+                }
+                List<ModelingReference> references = new List<ModelingReference>();
+                if (arguments["reference_path"] != null)
+                {
+                    references.Add(new ModelingReference("reference", ReadModelingPath(arguments["reference_path"])));
+                }
+                if (arguments["views"] != null)
+                {
+                    JsonObject views = arguments["views"].AsObject();
+                    if (views.Count == 0)
+                    {
+                        throw new ArgumentException("views must contain at least one direction.");
+                    }
+                    string[] directions = new string[] { "front", "left", "right", "back", "top" };
+                    foreach (KeyValuePair<string, JsonNode> view in views)
+                    {
+                        if (directions.Contains(view.Key) == false)
+                        {
+                            throw new ArgumentException("views only supports front, left, right, back and top.");
+                        }
+                        if (view.Value == null)
+                        {
+                            throw new ArgumentException("A view must contain an image path.");
+                        }
+                    }
+                    foreach (string direction in directions)
+                    {
+                        if (views[direction] != null)
+                        {
+                            references.Add(new ModelingReference(direction, ReadModelingPath(views[direction])));
+                        }
+                    }
+                }
+                int maximumTriangleCount = 0;
+                if (arguments["maximum_triangle_count"] != null)
+                {
+                    maximumTriangleCount = arguments["maximum_triangle_count"].GetValue<int>();
+                }
+                Task<string> acceptance = await Dispatcher.UIThread.InvokeAsync<Task<string>>(() =>
+                {
+                    EnsureAvailable(cancellationToken);
+                    return _modeling.EnqueueAsync(instructions, references, sourceBlendPath, maximumTriangleCount, cancellationToken);
+                });
+                string requestId = await acceptance.ConfigureAwait(false);
+                return new McpToolResult(new JsonObject { ["accepted"] = true, ["request_id"] = requestId, ["result_tool"] = "eidolon_get_modeling_result", ["status_tool"] = "eidolon_get_status" });
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested == true)
+            {
+                throw;
+            }
+            catch (OperationCanceledException)
+            {
+                return new McpToolResult("Modeling readiness could not be confirmed before acceptance. Use eidolon_get_status and retry after checking native GPT and Blender readiness.", true);
+            }
+            catch (ArgumentException error)
+            {
+                return new McpToolResult(error.Message, true);
+            }
+            catch (InvalidOperationException error)
+            {
+                return new McpToolResult(error.Message, true);
+            }
+            catch (Exception)
+            {
+                return new McpToolResult("The modeling request was not accepted. Check the local input files and native GPT/Blender readiness with eidolon_get_status.", true);
+            }
+        }
+
+        private string ReadModelingPath(JsonNode value)
+        {
+            string path = value.GetValue<string>();
+            if (string.IsNullOrWhiteSpace(path) == true)
+            {
+                throw new ArgumentException("Modeling input paths cannot be empty.");
+            }
+            if (path.Length > 4096)
+            {
+                throw new ArgumentException("Modeling input paths must not exceed 4096 characters.");
+            }
+            if (OperatingSystem.IsWindows() == true)
+            {
+                string windowsPath = path.Replace('/', '\\');
+                foreach (string prefix in new string[] { @"\\", @"\??\", @"\Device\" })
+                {
+                    if (windowsPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                        throw new ArgumentException("UNC and device paths are not accepted as local modeling inputs.");
+                    }
+                }
+            }
+            if (Path.IsPathFullyQualified(path) == false)
+            {
+                throw new ArgumentException("Modeling input paths must be absolute local file paths.");
+            }
+            return Path.GetFullPath(path);
+        }
+
+        private async Task<McpToolResult> GetModelingResultAsync(JsonObject arguments, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (arguments.Count != 1)
+                {
+                    throw new ArgumentException("Only request_id is accepted.");
+                }
+                if (arguments["request_id"] == null)
+                {
+                    throw new ArgumentException("request_id is required.");
+                }
+                if (Guid.TryParse(arguments["request_id"].GetValue<string>(), out Guid requestGuid) == false)
+                {
+                    throw new ArgumentException("request_id must be a GUID.");
+                }
+                string requestId = requestGuid.ToString("N");
+                (string Directory, string State) context = await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    EnsureAvailable(cancellationToken);
+                    return (Path.Combine(_session.DataDirectory, "Modeling"), _modeling.GetRequestState(requestId));
+                });
+                if (context.State != "unknown")
+                {
+                    return new McpToolResult(ModelingRequestState(requestId, context.State));
+                }
+                JsonObject result = await Task.Run(() => ReadModelingResultAsync(context.Directory, requestId, cancellationToken), cancellationToken).ConfigureAwait(false);
+                if (result["state"].GetValue<string>() == "not_found")
+                {
+                    return new McpToolResult(result.ToJsonString(), true);
+                }
+                return new McpToolResult(result);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested == true)
+            {
+                throw;
+            }
+            catch (ArgumentException error)
+            {
+                return new McpToolResult(error.Message, true);
+            }
+            catch (Exception)
+            {
+                return new McpToolResult("The managed modeling result could not be read. No completion is confirmed; use eidolon_get_status.", true);
+            }
+        }
+
+        private JsonObject ModelingRequestState(string requestId, string state)
+        {
+            return new JsonObject { ["request_id"] = requestId, ["state"] = state, ["completed"] = false, ["status_tool"] = "eidolon_get_status", ["cancel_tool"] = "eidolon_cancel_work", ["clear_pending_tool"] = "eidolon_clear_pending" };
+        }
+
+        private async Task<JsonObject> ReadModelingResultAsync(string modelingDirectory, string requestId, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            string requestDirectory = Path.Combine(modelingDirectory, requestId);
+            EnsureModelingResultHasNoLinks(modelingDirectory, requestDirectory);
+            if (Directory.Exists(requestDirectory) == false)
+            {
+                return ModelingRequestState(requestId, "not_found");
+            }
+            if (File.Exists(Path.Combine(requestDirectory, "Failure.txt")) == true)
+            {
+                return ModelingRequestState(requestId, "failed");
+            }
+            if (Directory.Exists(Path.Combine(requestDirectory, "Refined")) == true)
+            {
+                return ModelingRequestState(requestId, "unknown");
+            }
+            string completionPath = Path.Combine(requestDirectory, "Control", "Draft.json");
+            EnsureModelingResultHasNoLinks(modelingDirectory, completionPath);
+            if (File.Exists(completionPath) == false)
+            {
+                return ModelingRequestState(requestId, "unknown");
+            }
+            await using FileStream completionStream = new FileStream(completionPath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true);
+            if (completionStream.Length < 1)
+            {
+                throw new InvalidDataException("Incomplete modeling completion marker.");
+            }
+            if (completionStream.Length > 65536)
+            {
+                throw new InvalidDataException("Invalid modeling completion marker size.");
+            }
+            using JsonDocument completion = await JsonDocument.ParseAsync(completionStream, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (completion.RootElement.TryGetProperty("error", out JsonElement errorElement) == false)
+            {
+                throw new InvalidDataException("Missing modeling completion state.");
+            }
+            if (errorElement.ValueKind != JsonValueKind.String)
+            {
+                throw new InvalidDataException("Invalid modeling completion state.");
+            }
+            if (string.IsNullOrEmpty(errorElement.GetString()) == false)
+            {
+                return ModelingRequestState(requestId, "failed");
+            }
+            if (completion.RootElement.TryGetProperty("triangleCount", out JsonElement triangleElement) == false)
+            {
+                return ModelingRequestState(requestId, "unknown");
+            }
+            if (triangleElement.TryGetInt32(out int triangleCount) == false)
+            {
+                throw new InvalidDataException("Invalid exported triangle count.");
+            }
+            ArgumentOutOfRangeException.ThrowIfNegative(triangleCount);
+            string blendPath = Path.Combine(requestDirectory, "Draft", "Model.blend");
+            string glbPath = Path.Combine(requestDirectory, "Draft", "Model.glb");
+            foreach (string outputPath in new string[] { blendPath, glbPath })
+            {
+                EnsureModelingResultHasNoLinks(modelingDirectory, outputPath);
+                FileInfo output = new FileInfo(outputPath);
+                if (output.Exists == false)
+                {
+                    return ModelingRequestState(requestId, "unknown");
+                }
+                if (output.Length < 1)
+                {
+                    return ModelingRequestState(requestId, "unknown");
+                }
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            return new JsonObject { ["request_id"] = requestId, ["state"] = "completed", ["completed"] = true, ["blend_path"] = blendPath, ["glb_path"] = glbPath, ["triangle_count"] = triangleCount };
+        }
+
+        private void EnsureModelingResultHasNoLinks(string modelingDirectory, string path)
+        {
+            string root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(modelingDirectory));
+            string currentPath = Path.GetFullPath(path);
+            while (true)
+            {
+                try
+                {
+                    if ((File.GetAttributes(currentPath) & FileAttributes.ReparsePoint) != 0)
+                    {
+                        throw new IOException("Linked modeling results are not accepted.");
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                }
+                catch (DirectoryNotFoundException)
+                {
+                }
+                if (currentPath == root)
+                {
+                    return;
+                }
+                currentPath = Path.GetDirectoryName(currentPath);
+                if (string.IsNullOrEmpty(currentPath) == true)
+                {
+                    throw new IOException("The modeling result is outside the managed directory.");
+                }
+            }
+        }
+
             return (int)arguments[name].GetValue<double>();
         }
         private Task<McpToolResult> CreateViewsAsync(JsonObject arguments, CancellationToken cancellationToken)

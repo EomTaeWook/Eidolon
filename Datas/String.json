@@ -7366,5 +7366,365 @@
     "Name": "EidolonText738",
     "Kor": "\uC790\uB3D9 \uCD94\uCD9C\uD558\uC9C0 \uBABB\uD558\uBA74 \uD2B9\uC9D5 \uB2E4\uC2DC \uC77D\uAE30\uB97C \uB204\uB974\uAC70\uB098 \uC720\uC9C0\uD560 \uD2B9\uC9D5\uC744 \uC9C1\uC811 \uC785\uB825\uD558\uC138\uC694.",
     "Eng": "If extraction is unavailable or cancelled, read the features again or enter them manually."
+  },
+  {
+    "Id": 3818,
+    "Name": "EidolonText739",
+    "Kor": "3D \uBAA8\uB378\uB9C1",
+    "Eng": "3D modeling"
+  },
+  {
+    "Id": 3819,
+    "Name": "EidolonText740",
+    "Kor": "\uC774\uBBF8\uC9C0\uB85C 3D \uBAA8\uB378\uC744 \uB9CC\uB4E4\uAC70\uB098 \uAE30\uC874 Blender \uD30C\uC77C\uC744 \uC218\uC815\uD569\uB2C8\uB2E4.",
+    "Eng": "Create a 3D model from images or edit an existing Blender file."
+  },
+  {
+    "Id": 3820,
+    "Name": "EidolonText741",
+    "Kor": "Blender \uC124\uCE58",
+    "Eng": "Install Blender"
+  },
+  {
+    "Id": 3821,
+    "Name": "EidolonText742",
+    "Kor": "Blender\uB294 \uC800\uC7A5\uB41C \uC5D4\uC9C4 \uC124\uCE58 \uD3F4\uB354 \uC544\uB798 Blender \uD3F4\uB354\uC5D0 \uC124\uCE58\uD569\uB2C8\uB2E4. \uC800\uC7A5\uB41C \uACBD\uB85C\uAC00 \uC5C6\uC73C\uBA74 \uC704\uC5D0\uC11C \uC120\uD0DD\uD55C \uC124\uCE58 \uD3F4\uB354\uB97C \uC0AC\uC6A9\uD569\uB2C8\uB2E4.",
+    "Eng": "Blender is installed in the Blender subfolder of the saved engine installation folder. If no path is saved, the installation folder selected above is used."
+  },
+  {
+    "Id": 3822,
+    "Name": "EidolonText743",
+    "Kor": "Blender \uC124\uCE58 \uC911",
+    "Eng": "Installing Blender"
+  },
+  {
+    "Id": 3823,
+    "Name": "EidolonText744",
+    "Kor": "Blender \uC124\uCE58 \uC644\uB8CC",
+    "Eng": "Blender installed"
+  },
+  {
+    "Id": 3824,
+    "Name": "EidolonText745",
+    "Kor": "\uC5D4\uC9C4 \uD0ED\uC5D0\uC11C Blender\uB97C \uC124\uCE58\uD558\uC138\uC694.",
+    "Eng": "Install Blender in Engine setup."
+  },
+  {
+    "Id": 3825,
+    "Name": "EidolonText746",
+    "Kor": "\uC774\uBBF8\uC9C0 1\uC7A5",
+    "Eng": "Single image"
+  },
+  {
+    "Id": 3826,
+    "Name": "EidolonText747",
+    "Kor": "\uB2E4\uBA74\uB3C4 \uC120\uD0DD",
+    "Eng": "Choose multiple views"
+  },
+  {
+    "Id": 3827,
+    "Name": "EidolonText748",
+    "Kor": "\uAE30\uC874 Blender \uD30C\uC77C \uC218\uC815 (\uC120\uD0DD)",
+    "Eng": "Edit an existing Blender file (optional)"
+  },
+  {
+    "Id": 3828,
+    "Name": "EidolonText749",
+    "Kor": "Blender \uD30C\uC77C \uC5F4\uAE30 (.blend)",
+    "Eng": "Open Blender file (.blend)"
+  },
+  {
+    "Id": 3829,
+    "Name": "EidolonText750",
+    "Kor": "\uB9CC\uB4E4\uAC70\uB098 \uBC14\uAFC0 \uB0B4\uC6A9",
+    "Eng": "What to create or change"
+  },
+  {
+    "Id": 3830,
+    "Name": "EidolonText751",
+    "Kor": "\uC608: \uB9DD\uCE58 \uC190\uC7A1\uC774\uB97C \uB354 \uC9E7\uAC8C \uB9CC\uB4E4\uC5B4 \uC8FC\uC138\uC694.",
+    "Eng": "Example: Make the hammer handle shorter."
+  },
+  {
+    "Id": 3831,
+    "Name": "EidolonText752",
+    "Kor": "3D \uC791\uC5C5 \uCD94\uAC00",
+    "Eng": "Add 3D task"
+  },
+  {
+    "Id": 3832,
+    "Name": "EidolonText753",
+    "Kor": "\uC774 \uBAA8\uB378 \uC774\uC5B4\uC11C \uC218\uC815",
+    "Eng": "Continue editing this model"
+  },
+  {
+    "Id": 3835,
+    "Name": "EidolonText756",
+    "Kor": "\uACB0\uACFC \uD3F4\uB354 \uC5F4\uAE30",
+    "Eng": "Open result folder"
+  },
+  {
+    "Id": 3836,
+    "Name": "EidolonText757",
+    "Kor": "Blender \uC7A5\uBA74 \uC5EC\uB294 \uC911",
+    "Eng": "Opening Blender scene"
+  },
+  {
+    "Id": 3837,
+    "Name": "EidolonText758",
+    "Kor": "AI \uBAA8\uB378\uB9C1 \uC791\uC5C5 \uC791\uC131 \uC911",
+    "Eng": "Planning modeling changes"
+  },
+  {
+    "Id": 3838,
+    "Name": "EidolonText759",
+    "Kor": "Blender \uB80C\uB354\uB9C1 \uC911",
+    "Eng": "Rendering in Blender"
+  },
+  {
+    "Id": 3840,
+    "Name": "EidolonText761",
+    "Kor": "3D \uBAA8\uB378\uB9C1 \uC644\uB8CC",
+    "Eng": "3D modeling completed"
+  },
+  {
+    "Id": 3841,
+    "Name": "EidolonText762",
+    "Kor": "3D \uBAA8\uB378\uB9C1\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. \uACB0\uACFC\u00B7\uB85C\uADF8 \uD3F4\uB354: {0}",
+    "Eng": "3D modeling failed. Result and log folder: {0}"
+  },
+  {
+    "Id": 3843,
+    "Name": "EidolonText764",
+    "Kor": "\uC774\uBBF8\uC9C0\u00B7\uB2E4\uBA74\uB3C4 \uB610\uB294 \uAE30\uC874 Blender \uC7A5\uBA74\uC744 \uC120\uD0DD\uD558\uC138\uC694.",
+    "Eng": "Choose an image, multiple views, or an existing Blender scene."
+  },
+  {
+    "Id": 3844,
+    "Name": "EidolonText765",
+    "Kor": "\uB9CC\uB4E4\uAC70\uB098 \uC218\uC815\uD560 \uB0B4\uC6A9\uC744 \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Enter what to create or change."
+  },
+  {
+    "Id": 3845,
+    "Name": "EidolonText766",
+    "Kor": "\uC720\uD6A8 \uBC29\uD5A5 {0}\uAC1C",
+    "Eng": "{0} valid views"
+  },
+  {
+    "Id": 3846,
+    "Name": "EidolonText767",
+    "Kor": "Blender \uC124\uCE58 \uC704\uCE58",
+    "Eng": "Blender installation folder"
+  },
+  {
+    "Id": 3847,
+    "Name": "EidolonText768",
+    "Kor": "Blender \uC2E4\uD589 \uD30C\uC77C",
+    "Eng": "Blender executable"
+  },
+  {
+    "Id": 3848,
+    "Name": "EidolonText769",
+    "Kor": "\uD604\uC7AC \uC6B4\uC601\uCCB4\uC81C\u00B7\uC544\uD0A4\uD14D\uCC98\uB294 Blender \uC790\uB3D9 \uC124\uCE58\uB97C \uC9C0\uC6D0\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Automatic Blender installation is unavailable on this operating system or architecture."
+  },
+  {
+    "Id": 3851,
+    "Name": "EidolonText772",
+    "Kor": "\uD30C\uC77C \uC120\uD0DD \uD574\uC81C",
+    "Eng": "Clear file selection"
+  },
+  {
+    "Id": 3853,
+    "Name": "EidolonText774",
+    "Kor": "\uBAA8\uB378\uB9C1 \uC694\uCCAD\uC744 \uC900\uBE44\uD558\uC138\uC694.",
+    "Eng": "Prepare a modeling request."
+  },
+  {
+    "Id": 3854,
+    "Name": "EidolonText775",
+    "Kor": "Blender \uC124\uCE58\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. \uB85C\uADF8 \uD3F4\uB354: {0}",
+    "Eng": "Blender installation failed. Log folder: {0}"
+  },
+  {
+    "Id": 3855,
+    "Name": "EidolonText776",
+    "Kor": "Blender \uD30C\uC77C \uC800\uC7A5",
+    "Eng": "Save Blender file"
+  },
+  {
+    "Id": 3856,
+    "Name": "EidolonText777",
+    "Kor": "GLB \uD30C\uC77C \uC800\uC7A5",
+    "Eng": "Save GLB file"
+  },
+  {
+    "Id": 3858,
+    "Name": "EidolonText779",
+    "Kor": "\uBAA8\uB378\uB9C1 \uCDE8\uC18C",
+    "Eng": "Cancel modeling"
+  },
+  {
+    "Id": 3859,
+    "Name": "EidolonText780",
+    "Kor": "\uAE30\uC874 \uB2E4\uBA74\uB3C4 \uBD88\uB7EC\uC624\uAE30",
+    "Eng": "Load existing multiple views"
+  },
+  {
+    "Id": 3860,
+    "Name": "EidolonText781",
+    "Kor": "{0} (\uBC29\uD5A5 \uBBF8\uC9C0\uC815)",
+    "Eng": "{0} (direction unspecified)"
+  },
+  {
+    "Id": 3861,
+    "Name": "EidolonText782",
+    "Kor": "3D \uBCF4\uAE30",
+    "Eng": "3D view"
+  },
+  {
+    "Id": 3862,
+    "Name": "EidolonText783",
+    "Kor": "\uD654\uBA74 \uB9DE\uCDA4",
+    "Eng": "Fit to view"
+  },
+  {
+    "Id": 3863,
+    "Name": "EidolonText784",
+    "Kor": "\uBAA8\uB378\uB9C1\uC744 \uC644\uB8CC\uD558\uBA74 \uC5EC\uAE30\uC11C 3D \uBAA8\uB378\uC744 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The 3D model appears here when modeling finishes."
+  },
+  {
+    "Id": 3865,
+    "Name": "EidolonText786",
+    "Kor": "\uCD5C\uB300 \uBA74 \uC218(\uC0BC\uAC01\uD615)",
+    "Eng": "Maximum face count (triangles)"
+  },
+  {
+    "Id": 3866,
+    "Name": "EidolonText787",
+    "Kor": "0 \uB610\uB294 \uBE44\uC6CC \uB450\uBA74 \uC790\uB3D9\uC785\uB2C8\uB2E4. \uC9C1\uC811 \uC9C0\uC815\uD560 \uB54C\uB294 \uC0BC\uAC01\uD615 1~1,000,000\uAC1C\uB97C \uC785\uB825\uD558\uC138\uC694.",
+    "Eng": "Use 0 or leave empty for automatic. To set a limit, enter 1 to 1,000,000 triangles."
+  },
+  {
+    "Id": 3867,
+    "Name": "EidolonText788",
+    "Kor": "\uCD5C\uB300 \uC0BC\uAC01\uD615 \uC218\uB294 0(\uC790\uB3D9) \uB610\uB294 1~1,000,000 \uC0AC\uC774\uC758 \uC815\uC218\uC5EC\uC57C \uD569\uB2C8\uB2E4.",
+    "Eng": "Maximum triangles must be 0 (automatic) or an integer from 1 to 1,000,000."
+  },
+  {
+    "Id": 3868,
+    "Name": "EidolonText789",
+    "Kor": "\uC2E4\uC81C \uC0BC\uAC01\uD615 \uC218: {0}",
+    "Eng": "Actual triangles: {0}"
+  },
+  {
+    "Id": 3869,
+    "Name": "EidolonText790",
+    "Kor": "\uC2E4\uC81C \uC0BC\uAC01\uD615 \uC218: \uBBF8\uD655\uC778",
+    "Eng": "Actual triangles: unknown"
+  },
+  {
+    "Id": 3870,
+    "Name": "EidolonText791",
+    "Kor": "\uBAA8\uB378\uB9C1 \uC911 Blender \uCC3D \uD45C\uC2DC",
+    "Eng": "Show Blender window during modeling"
+  },
+  {
+    "Id": 3884,
+    "Name": "EidolonText805",
+    "Kor": "\uBAA8\uB378\uB9C1 \uC5D0\uC774\uC804\uD2B8",
+    "Eng": "Modeling agent"
+  },
+  {
+    "Id": 3885,
+    "Name": "EidolonText806",
+    "Kor": "Claude Code \uC5F0\uACB0 \uC900\uBE44 \uC911",
+    "Eng": "Claude Code support is not available yet"
+  },
+  {
+    "Id": 3886,
+    "Name": "EidolonText807",
+    "Kor": "\uB9CC\uB4E4\uAC70\uB098 \uBC14\uAFC0 \uB0B4\uC6A9 (\uC120\uD0DD)",
+    "Eng": "What to create or change (optional)"
+  },
+  {
+    "Id": 3887,
+    "Name": "EidolonText808",
+    "Kor": "GPT\uB97C \uC0AC\uC6A9\uD558\uB824\uBA74 Codex CLI\uB97C \uC124\uCE58\uD558\uC138\uC694.",
+    "Eng": "Install Codex CLI to use GPT."
+  },
+  {
+    "Id": 3888,
+    "Name": "EidolonText809",
+    "Kor": "Codex CLI\uC5D0\uC11C ChatGPT\uC5D0 \uB85C\uADF8\uC778\uD558\uC138\uC694.",
+    "Eng": "Sign in to ChatGPT in Codex CLI."
+  },
+  {
+    "Id": 3889,
+    "Name": "EidolonText810",
+    "Kor": "Claude\uB97C \uC0AC\uC6A9\uD558\uB824\uBA74 Claude Code\uB97C \uC124\uCE58\uD558\uC138\uC694.",
+    "Eng": "Install Claude Code to use Claude."
+  },
+  {
+    "Id": 3890,
+    "Name": "EidolonText811",
+    "Kor": "Claude Code\uC5D0\uC11C Claude\uC5D0 \uB85C\uADF8\uC778\uD558\uC138\uC694.",
+    "Eng": "Sign in to Claude in Claude Code."
+  },
+  {
+    "Id": 3891,
+    "Name": "EidolonText812",
+    "Kor": "\uB85C\uADF8\uC778 \uC0C1\uD0DC \uD655\uC778 \uC911",
+    "Eng": "Checking sign-in status"
+  },
+  {
+    "Id": 3892,
+    "Name": "EidolonText813",
+    "Kor": "\uB85C\uADF8\uC778 \uC0C1\uD0DC\uB97C \uD655\uC778\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uD655\uC778\uD574 \uC8FC\uC138\uC694.",
+    "Eng": "Could not check sign-in status. Try again."
+  },
+  {
+    "Id": 3902,
+    "Name": "EidolonText823",
+    "Kor": "\uC124\uCE58\u00B7\uB85C\uADF8\uC778 \uC0C1\uD0DC\uB9CC \uD45C\uC2DC\uD558\uBA70 WSL\uC5D0\uC11C\uB294 \uC791\uC5C5\uC744 \uC2DC\uC791\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "Only installation and sign-in status are shown. Modeling cannot start in WSL."
+  },
+  {
+    "Id": 3903,
+    "Name": "EidolonText824",
+    "Kor": "\uC124\uCE58 \uBC0F \uB85C\uADF8\uC778 \uD655\uC778\uB428",
+    "Eng": "Installation and sign-in confirmed"
+  },
+  {
+    "Id": 3904,
+    "Name": "EidolonText825",
+    "Kor": "\uB4F1\uB85D\uB41C WSL \uBC30\uD3EC\uD310\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "No registered WSL distributions."
+  },
+  {
+    "Id": 3905,
+    "Name": "EidolonText826",
+    "Kor": "\uC218\uC815 \uB300\uC0C1: {0}",
+    "Eng": "Editing: {0}"
+  },
+  {
+    "Id": 3906,
+    "Name": "EidolonText827",
+    "Kor": "\uC218\uC815 \uC791\uC5C5 \uCD94\uAC00",
+    "Eng": "Add editing task"
+  },
+  {
+    "Id": 3907,
+    "Name": "EidolonText828",
+    "Kor": "\uC0C8 \uBAA8\uB378\uB85C \uC804\uD658",
+    "Eng": "Switch to a new model"
+  },
+  {
+    "Id": 3908,
+    "Name": "EidolonText829",
+    "Kor": "\uC6D0\uBCF8 Blender \uD30C\uC77C\uC740 \uB36E\uC5B4\uC4F8 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uB2E4\uB978 \uC774\uB984\uC73C\uB85C \uC800\uC7A5\uD558\uC138\uC694.",
+    "Eng": "The original Blender file cannot be overwritten. Save with a different name."
   }
 ]

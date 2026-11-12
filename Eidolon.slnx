@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="Eidolon.Core/Eidolon.Core.csproj" />
+  <Project Path="Eidolon.Modeling/Eidolon.Modeling.csproj" />
   <Folder Name="/Shared/">
     <Project Path="DataContainer/DataContainer.csproj" />
     <Project Path="Mcp.Core/MCP.Core.csproj" />

@@ -6,6 +6,7 @@ using Eidolon.App.Presenters;
 using Eidolon.Core.Application;
 using Eidolon.Core.Infrastructure;
 using Eidolon.Core.Domain;
+using Eidolon.Modeling;
 
 namespace Eidolon.App.ViewModels
 {
@@ -13,6 +14,11 @@ namespace Eidolon.App.ViewModels
     {
         public McpViewModel Mcp { get; private set; }
         public AssetCreationViewModel AssetCreation { get; private set; }
+        public ModelingViewModel Modeling
+        {
+            get;
+            private set;
+        }
         private readonly ComfyEngine _engine;
         private readonly StudioWorkPresenter _work;
         private readonly StringHelper _strings;
@@ -27,7 +33,7 @@ namespace Eidolon.App.ViewModels
         public SettingsViewModel Settings { get; private set; }
         public AppUpdateViewModel Updates { get; private set; }
 
-        public StudioViewModel(SettingsStore settingsStore, AssetLibrary assets, JobStore jobs, RuntimeInstaller installer, ComfyEngine engine, StudioService studio, DesktopDialogs dialogs, ThemeService themes, LanguageService languages, StringHelper strings, StudioWorkPresenter work, ISeedProvider seeds, CodexModelCatalog codexModels, string dataDirectory, AssetCreationService assetCreation, AssetImageLoader assetImages, ApplicationUpdateService updates, ApplicationUpdateInstaller updateInstaller, ApplicationUpdateRestartPresenter updateRestart, PromptConverter promptConverter, CodexImageEngine codexImageEngine)
+        public StudioViewModel(SettingsStore settingsStore, AssetLibrary assets, JobStore jobs, RuntimeInstaller installer, ComfyEngine engine, StudioService studio, DesktopDialogs dialogs, ThemeService themes, LanguageService languages, StringHelper strings, StudioWorkPresenter work, ISeedProvider seeds, CodexModelCatalog codexModels, string dataDirectory, AssetCreationService assetCreation, AssetImageLoader assetImages, ApplicationUpdateService updates, ApplicationUpdateInstaller updateInstaller, ApplicationUpdateRestartPresenter updateRestart, PromptConverter promptConverter, CodexImageEngine codexImageEngine, BlenderModelingService modelingService, BlenderInstaller blenderInstaller, CodexExecutableLocator codexExecutableLocator, ModelingAgentStatusChecker modelingAgentStatusChecker)
         {
             _engine = engine;
             _work = work;
@@ -40,9 +46,10 @@ namespace Eidolon.App.ViewModels
             Generation = new GenerationViewModel(Session, Navigation, work, strings, dialogs, Assets, jobs, studio, seeds, promptConverter, installer, codexImageEngine);
             Training = new TrainingViewModel(Session, Navigation, work, strings, dialogs, Assets, studio);
             AssetCreation = new AssetCreationViewModel(Session, Navigation, work, strings, dialogs, Assets, assetCreation, jobs, seeds, assetImages);
+            Modeling = new ModelingViewModel(Session, Navigation, work, strings, dialogs, modelingService, blenderInstaller, codexExecutableLocator, jobs, assetImages, modelingAgentStatusChecker);
             Gallery = new GalleryViewModel(Session, Navigation, work, strings, dialogs, Generation, Training, jobs, AssetCreation);
-            Engine = new EngineViewModel(Session, Navigation, work, strings, dialogs, Assets, Settings, assets, installer, engine, jobs);
-            Mcp = new McpViewModel(Session, Navigation, work, strings, dialogs, new McpService(Session, Assets, Generation, jobs, seeds, strings, AssetCreation, assetCreation, Training, work));
+            Engine = new EngineViewModel(Session, Navigation, work, strings, dialogs, Assets, Settings, assets, installer, engine, jobs, blenderInstaller);
+            Mcp = new McpViewModel(Session, Navigation, work, strings, dialogs, new McpService(Session, Assets, Generation, jobs, seeds, strings, AssetCreation, assetCreation, Training, work, Modeling));
             Generation.ImageGenerated += Gallery.ShowGeneratedImage;
             Settings.LanguageChanged += Localize;
             _work.Finished += OnWorkFinished;
@@ -68,6 +75,11 @@ namespace Eidolon.App.ViewModels
                 }
                 await Gallery.RefreshGalleryAsync(true);
                 await AssetCreation.RefreshCollectionsAsync();
+                if (Session.IsClosing == true)
+                {
+                    return;
+                }
+                await Modeling.RefreshCollectionsAsync();
                 if (Session.IsClosing == true)
                 {
                     return;
@@ -112,6 +124,10 @@ namespace Eidolon.App.ViewModels
             {
                 return AssetCreation.RefreshCollectionsAsync();
             }
+            if (tab == 8)
+            {
+                return Modeling.RefreshCollectionsAsync();
+            }
             if ((tab == 0 || tab == 1) && Session.IsIdle == true
                 && (Session.HasLocalModelRuntime == true || Session.IsEngineConnected == true))
             {
@@ -144,6 +160,11 @@ namespace Eidolon.App.ViewModels
                     return;
                 }
                 await AssetCreation.RefreshCollectionsAsync();
+                if (Session.IsClosing == true)
+                {
+                    return;
+                }
+                await Modeling.RefreshCollectionsAsync();
             }
             catch (Exception error)
             {
@@ -162,6 +183,7 @@ namespace Eidolon.App.ViewModels
             Gallery.Localize();
             Mcp.Localize();
             AssetCreation.Localize();
+            Modeling.Localize();
             Training.Localize();
             Engine.Localize();
             Settings.Localize();
@@ -173,7 +195,7 @@ namespace Eidolon.App.ViewModels
             Session.BeginClosing();
             try
             {
-                await Task.WhenAll(_refreshAfterWork, Gallery.WaitForLoadAsync(), Settings.WaitForModelsAsync(), Training.WaitForDescriptionAsync(), _work.DisposeAsync().AsTask(), Mcp.CloseAsync(), AssetCreation.Preview.CloseAsync(), Updates.CloseAsync());
+                await Task.WhenAll(_refreshAfterWork, Gallery.WaitForLoadAsync(), Settings.WaitForModelsAsync(), Training.WaitForDescriptionAsync(), _work.DisposeAsync().AsTask(), Mcp.CloseAsync(), AssetCreation.Preview.CloseAsync(), Modeling.CloseAsync(), Updates.CloseAsync());
             }
             finally
             {
@@ -192,6 +214,7 @@ namespace Eidolon.App.ViewModels
                         Gallery.Dispose();
                         Mcp.Dispose();
                         AssetCreation.Dispose();
+                        Modeling.Dispose();
                         Generation.Dispose();
                         Training.Dispose();
                         Engine.Dispose();

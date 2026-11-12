@@ -121,6 +121,78 @@ namespace Eidolon.App.Services
             }
         }
 
+        public async Task<string> PickBlendFileAsync()
+        {
+            IReadOnlyList<IStorageFile> files = await _desktop.MainWindow.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = _strings.GetString("EidolonText749"),
+                AllowMultiple = false,
+                FileTypeFilter = new[] { new FilePickerFileType("Blender") { Patterns = new[] { "*.blend" } } }
+            });
+            if (files.Count == 0)
+            {
+                return string.Empty;
+            }
+            using IStorageFile sceneFile = files[0];
+            string scenePath = sceneFile.TryGetLocalPath();
+            if (string.IsNullOrWhiteSpace(scenePath) == true)
+            {
+                throw new InvalidOperationException(_strings.GetString("EidolonText202"));
+            }
+            return scenePath;
+        }
+
+        public async Task ExportModelingFileAsync(string sourcePath, string protectedSourcePath = "")
+        {
+            string extension = Path.GetExtension(sourcePath).TrimStart('.');
+            string title = _strings.GetString("EidolonText776");
+            if (extension.Equals("glb", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                title = _strings.GetString("EidolonText777");
+            }
+            using IStorageFile targetFile = await _desktop.MainWindow.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = title,
+                SuggestedFileName = Path.GetFileName(sourcePath),
+                DefaultExtension = extension,
+                FileTypeChoices = new[] { new FilePickerFileType(extension.ToUpperInvariant()) { Patterns = new[] { "*." + extension } } },
+                ShowOverwritePrompt = true
+            });
+            if (targetFile == null)
+            {
+                return;
+            }
+            string targetPath = targetFile.TryGetLocalPath();
+            if (targetPath != null)
+            {
+                if (Path.GetFullPath(targetPath).Equals(Path.GetFullPath(sourcePath), StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return;
+                }
+                if (string.IsNullOrWhiteSpace(protectedSourcePath) == false)
+                {
+                    string normalizedTargetPath = Path.GetFullPath(targetPath);
+                    string normalizedProtectedSourcePath = Path.GetFullPath(protectedSourcePath);
+                    if (OperatingSystem.IsMacOS() == true)
+                    {
+                        normalizedTargetPath = normalizedTargetPath.Normalize(System.Text.NormalizationForm.FormC);
+                        normalizedProtectedSourcePath = normalizedProtectedSourcePath.Normalize(System.Text.NormalizationForm.FormC);
+                    }
+                    if (normalizedTargetPath.Equals(normalizedProtectedSourcePath, StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                        throw new InvalidOperationException(_strings.GetString("EidolonText829"));
+                    }
+                }
+            }
+            await using Stream sourceStream = File.OpenRead(sourcePath);
+            await using Stream targetStream = await targetFile.OpenWriteAsync();
+            if (targetStream.CanSeek == true)
+            {
+                targetStream.SetLength(0);
+            }
+            await sourceStream.CopyToAsync(targetStream);
+        }
+
         public Task CopyFileNameAsync(string fileName)
         {
             return _desktop.MainWindow.Clipboard.SetTextAsync(fileName);

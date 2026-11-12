@@ -332,3 +332,52 @@ App의 `Mcp/McpService.cs`는 `CreateTools()`에서 도구 정의와 private 처
 현재 변경은 빌드·테스트·클라이언트 접속 검증을 수행하지 않았다.
 
 생성·편집·에셋 제작 도구는 저장된 생성 방식을 사용합니다. Codex 방식에서는 체크포인트·LoRA·시드·변경 강도 인자를 지정하면 오류를 반환하며, 응답에는 생성 방식과 Codex 실행 모델을 제공합니다. 공통 지침의 요청별 사본과 참고 이미지는 기존 Codex 생성 경계로 전달합니다.
+
+## 3D 모델링 도구
+
+### `eidolon_model_3d`
+
+모델링 UI의 `ModelingInput`과 같은 실행 연결로 공용 FIFO에 요청한다. UI 입력·선택이나 저장 설정을 임시 변경하지 않는다. 저장된 네이티브 GPT(Codex CLI) 실행 경로·모델과 Blender를 확인하며, Claude·WSL에서 모델링을 시작하지 않는다. 초기화·종료·유지 관리·예약 작업 때문에 접수할 수 없거나 설치·로그인을 확인하지 못하면 `accepted=true`를 반환하지 않는다.
+
+| 인자 | 계약 |
+| --- | --- |
+| `instructions` | 최대 16,000자. 새 모델은 이미지가 있으면 생략 가능. `.blend` 수정은 공백이 아닌 설명 필수 |
+| `reference_path` | 단일 이미지의 절대 로컬 경로. `views`와 동시 지정 불가 |
+| `views` | `front`, `left`, `right`, `back`, `top` 중 한 방향 이상의 이미지 경로 객체. 지정한 방향만 사용 |
+| `source_blend_path` | 선택적인 기존 `.blend`의 절대 로컬 경로. 이 원본을 덮어쓰지 않고 새 GUID 작업으로 수정 |
+| `maximum_triangle_count` | 정수 `0`(자동) 또는 `1`~`1,000,000`, 기본 `0` |
+
+이미지는 기존 PNG·JPG·JPEG·WebP 파일이며 32MB·4천만 픽셀 제한과 App의 기존 디코딩 검사를 적용한다. Windows의 UNC·디바이스 경로는 슬래시 표기를 정규화한 뒤 접두사로 거절하며, 파일 존재 확인·읽기·디코딩 전에 검사한다. 참조 경로는 접수 시 고정하고 실제 바이트는 큐 실행 시 기존 엔진이 복사하므로 시작 전 해당 파일을 유지해야 한다. 밝은 배경 합성이나 방향 반전은 하지 않는다. 실행 파일, 실행 모델 덮어쓰기, 에이전트, 작업·출력 폴더, 스크립트, 임의 Python 및 그 밖의 인자는 허용하지 않는다. Blender 창은 기본 꺼짐이다.
+
+```json
+{
+  "instructions": "Keep the shape and shorten the handle slightly",
+  "views": {
+    "front": "D:/References/front.png",
+    "left": "D:/References/left.png",
+    "right": "D:/References/right.png",
+    "back": "D:/References/back.png"
+  },
+  "maximum_triangle_count": 20000
+}
+```
+
+응답은 `accepted=true`, `request_id`, `result_tool`, `status_tool`이다. `request_id`는 기존 관리 작업 폴더의 32자리 GUID이며 완료 ID나 별도 저장소를 새로 만들지 않는다. 공용 작업 제목은 `3D [<request_id>]`다. 접수 뒤 모델 호출·렌더가 실패하거나 취소될 수 있으므로 같은 요청을 재전송하지 말고 조회한다.
+
+### `eidolon_get_modeling_result`
+
+인자는 `request_id` GUID 하나뿐이다. 하이픈 있는 GUID도 관리 폴더 이름인 32자리 형식으로 정규화하며 임의 경로는 받지 않는다. 결과는 `request_id`, `state`, `completed`이며 완료일 때만 `blend_path`, `glb_path`, `triangle_count`가 추가된다. 실제 작업을 완료한 기존 `Control/Draft.json`의 오류 없는 상태·삼각형 수와 비어 있지 않은 `Draft/Model.blend`·`Draft/Model.glb`를 확인한다. 삼각형 수는 키트가 실제 GLB를 내보내며 계산한 값이다. 로그·오류 본문·스크립트·임의 파일 내용은 반환하지 않고 링크를 경유한 관리 결과도 거절한다.
+
+| `state` | 확인 근거 |
+| --- | --- |
+| `queued` | 해당 GUID의 공용 대기 제목이 현재 큐에 있음 |
+| `running` | 해당 공용 현재 제목 또는 현재 `ModelingInput`의 GUID와 일치 |
+| `cancelled` | 최근 모델링 요청의 GUID와 실제 취소 처리 상태가 일치 |
+| `failed` | 최근 실패 상태 또는 관리 요청의 기존 `Failure.txt`/실패 완료 표식이 있음 |
+| `completed` | 완료 표식과 `.blend`·`.glb` 및 실제 삼각형 수가 모두 확인됨 |
+| `unknown` | 폴더는 있으나 상태·완료 증거가 불충분하거나 옛 `Refined` 결과의 최종 선택을 복원할 수 없음 |
+| `not_found` | 현재 큐·최근 실행 상태·관리 폴더에서 요청을 찾지 못함. 오류 응답의 JSON 텍스트로 제공 |
+
+`completed=false`는 완료가 아니다. 대기·실행·취소·실패 응답은 `status_tool`, `cancel_tool`, `clear_pending_tool`로 기존 도구를 안내한다. `eidolon_get_status`의 정확한 `active_request`를 `eidolon_cancel_work`에 주고, 대기 요청 전체를 버릴 때는 기존 `eidolon_clear_pending`을 사용한다. 시작 전 비운 요청, 과거 취소, 앱 재시작 이후의 비영속 상태는 남은 증거 없이 취소나 실패로 단정하지 않는다. 취소 상태와 부분 산출물은 별개이며, 새 결과 이력 저장소나 영속 취소 표식은 추가하지 않는다.
+
+이번 연결은 App `McpService`·`ModelingViewModel`과 기존 루트 주입에 한정한다. MCP.Core 전송·서브모듈, 모델링 엔진·Python·생성 UI·다국어 원본은 변경하지 않았다. 도구 등록·실행·렌더·실제 취소·빌드·테스트 검증은 수행하지 않았다. 모델링 실행과 원본 보호는 [3D 모델링](Modeling.md#모델링-mcp)을 따른다.

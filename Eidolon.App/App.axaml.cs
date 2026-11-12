@@ -12,6 +12,7 @@ using Eidolon.Core.Domain;
 using Eidolon.Core.Infrastructure;
 using System.Reflection;
 using Eidolon.Core.Infrastructure.AssetCreation;
+using Eidolon.Modeling;
 
 namespace Eidolon.App
 {
@@ -114,6 +115,15 @@ namespace Eidolon.App
             _serviceContainer.RegisterType<AssetFramePromptBuilder, AssetFramePromptBuilder>(LifeScope.Singleton);
             _serviceContainer.RegisterType<StudioWorkQueue, StudioWorkQueue>(LifeScope.Singleton);
             _serviceContainer.RegisterType<MainWindow, MainWindow>(LifeScope.Singleton);
+            _serviceContainer.RegisterType<BlenderModelingService>(serviceProvider => new BlenderModelingService((modelingProcessRequest, cancellationToken) => RunModelingProcessAsync(serviceProvider, modelingProcessRequest, cancellationToken)), LifeScope.Singleton);
+            _serviceContainer.RegisterType<BlenderInstaller>(serviceProvider => new BlenderInstaller((sourceUrl, destinationPath, expectedChecksum, blenderDownloadProgress, cancellationToken) =>
+            {
+                IProgress<WorkProgress> downloadProgress = new Progress<WorkProgress>(workProgress =>
+                {
+                    blenderDownloadProgress.Report(new BlenderDownloadProgress(workProgress.Percent, workProgress.IsIndeterminate));
+                });
+                return serviceProvider.GetService<FileDownloader>().DownloadAsync(sourceUrl, destinationPath, expectedChecksum, downloadProgress, cancellationToken);
+            }, (modelingProcessRequest, cancellationToken) => RunModelingProcessAsync(serviceProvider, modelingProcessRequest, cancellationToken)), LifeScope.Singleton);
             _serviceContainer.RegisterType<FileDownloader>(provider => new FileDownloader(
                 _downloadsHttp, provider.GetService<TimeProvider>()), LifeScope.Singleton);
             _serviceContainer.RegisterType<BackgroundRemovalService>(provider => new BackgroundRemovalService(
@@ -126,9 +136,15 @@ namespace Eidolon.App
                 _engineHttp, provider.GetService<ProcessRunner>(), provider.GetService<RuntimeInstaller>(),
                 provider.GetService<ComfyWorkflowBuilder>(), provider.GetService<FileDownloader>(),
                 provider.GetService<TimeProvider>()), LifeScope.Singleton);
-            _serviceContainer.RegisterType<StudioViewModel>(provider => new StudioViewModel(provider.GetService<SettingsStore>(), provider.GetService<AssetLibrary>(), provider.GetService<JobStore>(), provider.GetService<RuntimeInstaller>(), provider.GetService<ComfyEngine>(), provider.GetService<StudioService>(), provider.GetService<DesktopDialogs>(), provider.GetService<ThemeService>(), provider.GetService<LanguageService>(), provider.GetService<StringHelper>(), provider.GetService<StudioWorkPresenter>(), provider.GetService<ISeedProvider>(), provider.GetService<CodexModelCatalog>(), dataDirectory, provider.GetService<AssetCreationService>(), provider.GetService<AssetImageLoader>(), provider.GetService<ApplicationUpdateService>(), provider.GetService<ApplicationUpdateInstaller>(), provider.GetService<ApplicationUpdateRestartPresenter>(), provider.GetService<PromptConverter>(), provider.GetService<CodexImageEngine>()), LifeScope.Singleton);
+            _serviceContainer.RegisterType<ModelingAgentStatusChecker>(provider => new ModelingAgentStatusChecker(provider.GetService<ProcessRunner>()), LifeScope.Singleton);
+            _serviceContainer.RegisterType<StudioViewModel>(provider => new StudioViewModel(provider.GetService<SettingsStore>(), provider.GetService<AssetLibrary>(), provider.GetService<JobStore>(), provider.GetService<RuntimeInstaller>(), provider.GetService<ComfyEngine>(), provider.GetService<StudioService>(), provider.GetService<DesktopDialogs>(), provider.GetService<ThemeService>(), provider.GetService<LanguageService>(), provider.GetService<StringHelper>(), provider.GetService<StudioWorkPresenter>(), provider.GetService<ISeedProvider>(), provider.GetService<CodexModelCatalog>(), dataDirectory, provider.GetService<AssetCreationService>(), provider.GetService<AssetImageLoader>(), provider.GetService<ApplicationUpdateService>(), provider.GetService<ApplicationUpdateInstaller>(), provider.GetService<ApplicationUpdateRestartPresenter>(), provider.GetService<PromptConverter>(), provider.GetService<CodexImageEngine>(), provider.GetService<BlenderModelingService>(), provider.GetService<BlenderInstaller>(), provider.GetService<CodexExecutableLocator>(), provider.GetService<ModelingAgentStatusChecker>()), LifeScope.Singleton);
             _serviceContainer.RegisterDependencies(typeof(StringHelper).Assembly);
             return _serviceContainer.Build();
+        }
+
+        private Task RunModelingProcessAsync(IServiceProvider serviceProvider, ModelingProcessRequest modelingProcessRequest, CancellationToken cancellationToken)
+        {
+            return serviceProvider.GetService<ProcessRunner>().RunAsync(modelingProcessRequest.Executable, modelingProcessRequest.Arguments, modelingProcessRequest.WorkingDirectory, modelingProcessRequest.LogPath, cancellationToken, stopWithParent: true, standardInput: modelingProcessRequest.StandardInput, standardOutputReceived: modelingProcessRequest.StandardOutputReceived, showWindow: modelingProcessRequest.ShowWindow);
         }
 
         private void OnExit(object sender, ControlledApplicationLifetimeExitEventArgs arguments)

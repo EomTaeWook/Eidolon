@@ -10,11 +10,11 @@ ComfyUI와 설치된 Codex 중 생성 방식을 선택하고, 공통 생성 지�
 
 | 운영체제 | 다운로드 |
 |---|---|
-| Windows x64 | [Eidolon-v1.0.5-win-x64.exe](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.5/Eidolon-v1.0.5-win-x64.exe) |
-| macOS 14+ · Apple Silicon | [Eidolon-v1.0.5-osx-arm64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.5/Eidolon-v1.0.5-osx-arm64.app.zip) |
-| macOS 14+ · Intel | [Eidolon-v1.0.5-osx-x64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.5/Eidolon-v1.0.5-osx-x64.app.zip) |
+| Windows x64 | [Eidolon-v1.0.6-win-x64.exe](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.6/Eidolon-v1.0.6-win-x64.exe) |
+| macOS 14+ · Apple Silicon | [Eidolon-v1.0.6-osx-arm64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.6/Eidolon-v1.0.6-osx-arm64.app.zip) |
+| macOS 14+ · Intel | [Eidolon-v1.0.6-osx-x64.app.zip](https://github.com/EomTaeWook/Eidolon/releases/download/v1.0.6/Eidolon-v1.0.6-osx-x64.app.zip) |
 
-[릴리스 정보](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.5)
+[릴리스 정보](https://github.com/EomTaeWook/Eidolon/releases/tag/v1.0.6)
 
 Windows는 단일 `.exe`를 실행하세요. 맥은 ZIP을 풀고 `Eidolon.app`을 쓰기 가능한 Applications 폴더로 옮긴 뒤 Finder에서 실행하세요. 별도 .NET 설치는 필요 없습니다. 맥 배포는 ad-hoc 서명이며 Apple 공증이 없어 최초 실행 시 시스템 설정의 개인정보 보호 및 보안에서 허용이 필요할 수 있습니다.
 
@@ -22,7 +22,7 @@ Windows는 단일 `.exe`를 실행하세요. 맥은 ZIP을 풀고 `Eidolon.app`�
 
 ## 실제 사용 화면
 
-Eidolon 1.0.0의 한국어·라이트 화면입니다. 앱의 ComfyUI 방식과 Illustrious-XL-v0.1 모델로 파스텔 이미지를 생성하고 편집·다면도 제작에 사용했습니다.
+이미지 작업은 Eidolon 1.0.0의 한국어·라이트 화면입니다. 앱의 ComfyUI 방식과 Illustrious-XL-v0.1 모델로 파스텔 이미지를 생성하고 편집·다면도 제작에 사용했습니다.
 
 ### 이미지 생성
 
@@ -30,13 +30,11 @@ Eidolon 1.0.0의 한국어·라이트 화면입니다. 앱의 ComfyUI 방식과 
 
 만들고 싶은 대상을 설명하고 참고 이미지와 배경 옵션을 정합니다. 위쪽에서 생성 결과를 확인하고 아래쪽 입력란에서 다음 요청을 작성합니다.
 
-### 이미지 편집·부분 고치기
+### 이미지 편집
 
 ![파스텔 이미지를 원본으로 선택하고 색상 변경 설명을 입력한 편집 화면](Docs/images/editing.png)
 
-원본 이미지를 선택해 변경할 내용을 입력합니다. 부분 고치기는 바꿀 영역을 칠한 뒤 요청합니다.
-
-![원본 이미지 위에 수정할 영역을 칠하는 부분 고치기 화면](Docs/images/partial-editing.png)
+원본 이미지를 선택해 변경할 내용을 입력합니다.
 
 ### 생성 결과
 
@@ -49,6 +47,12 @@ Eidolon 1.0.0의 한국어·라이트 화면입니다. 앱의 ComfyUI 방식과 
 ![파스텔 기준 이미지로 다섯 방향을 생성한 에셋 제작 화면](Docs/images/assets.png)
 
 기준 이미지로 정면·우측·좌측·후면·윗면의 다섯 이미지를 만들고 비교합니다. 선택 이미지 재생성·교체와 시트 내보내기를 같은 화면에서 진행합니다.
+
+### 3D 모델링
+
+![Eidolon 3D 모델링 화면의 캐릭터 결과, 네 방향의 참고 이미지와 실제 삼각형 수](Docs/images/modeling.png)
+
+정면·좌측·우측·후면 참고 이미지로 생성한 캐릭터를 앱의 3D 미리보기에서 확인한 화면입니다. 결과를 Blender 또는 GLB 파일로 저장하거나 이어서 수정할 수 있습니다.
 
 ### LoRA 학습
 
@@ -72,18 +76,19 @@ Eidolon 1.0.0의 한국어·라이트 화면입니다. 앱의 ComfyUI 방식과 
 - **이미지 생성·편집**: ComfyUI 또는 Codex, 참고 이미지 생성, 원본 이미지 편집, 투명 배경
 - **생성 결과**: 일반 이미지·다면도 필터, 다면도 묶음과 방향별 미리보기, 생성 조건 조회와 재사용, 개별 이미지 내보내기와 선택 삭제
 - **다면도**: 5방향 생성, 개별 재생성·교체, 미완성 이어 만들기, PNG·시트·좌표 JSON 내보내기
+- **3D 모델링**: 이미지·다면도에서 모델 생성, 기존 Blender 장면 수정, 3D 미리보기, 삼각형 상한과 Blender·GLB 저장
 - **모델·LoRA**: safetensors 폴더 조회, SD 1.5·SDXL 계열 관리, LoRA 선택과 트리거 자동 적용
 - **LoRA 학습**: 학습 데이터 자동 준비, 새 학습·이어 학습, 빠른 학습 설정, 취소와 예상 남은 시간
 - **작업 관리**: 공용 대기열, 실행 중 다음 요청 추가, 취소·대기 요청 비우기, 원본과 실행 로그 보존
 - **설정·연결**: 한국어·영어, 라이트·블랙 테마, 저장 폴더, 외부 ComfyUI 서버와 MCP
 
-다면도는 참고 이미지 기반 초안입니다. 생성된 외형·시점은 사용 목적에 맞게 검토하세요. 현재 배포 대상은 Windows x64입니다.
+다면도는 참고 이미지 기반 초안입니다. 생성된 외형·시점은 사용 목적에 맞게 검토하세요. Windows x64와 macOS(Apple Silicon·Intel)용 배포 파일을 제공합니다.
 
 ## 실행
 
 ### 배포 파일 실행
 
-1. 릴리스의 Windows x64 EXE를 원하는 폴더에 저장하고 실행합니다.
+1. Windows는 릴리스 EXE를 실행합니다. macOS는 ZIP을 풀고 Eidolon.app을 실행합니다.
 2. **생성 환경 → 생성 방식**에서 ComfyUI 또는 Codex를 선택합니다.
 3. Codex는 설치된 Codex에서 먼저 로그인합니다. 실행 모델은 가져온 목록에서 선택하며 기본 모델 항목은 CLI 기본값을 사용합니다. 실행 파일을 찾지 못하면 `codex.exe` 경로를 선택하세요.
 4. ComfyUI는 **설정 → 엔진 설치·연결**에서 엔진을 준비합니다. **생성 환경 → 모델·LoRA**에서 모델을 설치하거나 모델 폴더·LoRA 폴더에 `.safetensors` 파일을 넣고 새로고침합니다.
@@ -103,6 +108,14 @@ Eidolon 1.0.0의 한국어·라이트 화면입니다. 앱의 ComfyUI 방식과 
 
 단계별 안내, 저장 위치와 문제 해결은 [사용법](Docs/Usage.md), 제작·내보내기 계약은 [에셋 제작](Docs/AssetCreation.md)에 정리했습니다.
 
+### 3D 모델링
+
+1. **설정 → 엔진 설치·연결 → Blender**에서 Blender를 준비하고, 설치된 Codex CLI에 로그인합니다. 모델링은 생성 환경에서 저장한 GPT 실행 모델을 사용합니다.
+2. **3D 모델링**에서 참고 이미지 한 장이나 다면도를 선택합니다. 기존 모델을 고칠 때는 .blend 파일을 열고 바꿀 내용을 입력하거나, 결과에서 **이 모델 이어서 수정**을 선택합니다.
+3. 작업을 추가한 뒤 3D 미리보기와 실제 삼각형 수를 확인하고 Blender 또는 GLB 파일을 저장합니다. 수정 작업은 원본을 보존합니다.
+
+입력 방향과 삼각형 상한, 결과 저장 위치는 [3D 모델링 안내](Docs/Modeling.md)를 참고하세요.
+
 ### 소스에서 실행
 
 개발 실행에는 .NET 10 SDK가 필요합니다. 저장소 루트에서 실행합니다.
@@ -113,12 +126,12 @@ dotnet run --project Eidolon.App/Eidolon.App.csproj
 
 ## MCP 연결
 
-앱 초기화가 끝나면 MCP 서버가 자동으로 시작됩니다. `http://127.0.0.1:8190/mcp`를 MCP 클라이언트에 등록하고 **설정 → MCP 연결**에서 서버 상태 확인과 수동 정지·시작을 할 수 있습니다. 이미지 생성·편집과 결과 조회, 에셋 제작·LoRA 학습도 UI와 같은 작업 큐를 사용합니다. 학습은 흰색·검정색 배경별 이미지나 폴더의 절대 경로를 직접 받아 LoRA 하나를 만듭니다. 요청별 생성 지침은 저장 설정을 변경하지 않습니다. 호출 예시와 연결 안내는 [MCP 사용법](Docs/Mcp.md)을 참고하세요.
+앱 초기화가 끝나면 MCP 서버가 자동으로 시작됩니다. `http://127.0.0.1:8190/mcp`를 MCP 클라이언트에 등록하고 **설정 → MCP 연결**에서 서버 상태 확인과 수동 정지·시작을 할 수 있습니다. 이미지 생성·편집과 결과 조회, 에셋 제작·3D 모델링·LoRA 학습도 UI와 같은 작업 큐를 사용합니다. 모델링은 `eidolon_model_3d`로 접수하고 `eidolon_get_modeling_result`에서 결과를 조회합니다. 학습은 흰색·검정색 배경별 이미지나 폴더의 절대 경로를 직접 받아 LoRA 하나를 만듭니다. 요청별 생성 지침은 저장 설정을 변경하지 않습니다. 호출 예시와 연결 안내는 [MCP 사용법](Docs/Mcp.md)을 참고하세요.
 
 ## 기술 방향
 
 - **언어·런타임**: C# / .NET 10
-- **현재 배포 플랫폼**: Windows x64
+- **현재 배포 플랫폼**: Windows x64, macOS Apple Silicon·Intel
 - **UI**: Avalonia
 - **생성 방식**: ComfyUI 또는 설치된 Codex
 
