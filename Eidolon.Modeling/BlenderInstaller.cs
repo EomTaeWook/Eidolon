@@ -101,6 +101,7 @@ namespace Eidolon.Modeling
             EnsurePathHasNoLinks(installDirectory);
             if (GetInstalledExecutable(engineInstallDirectory).Length != 0)
             {
+                PrepareModelingNotesDirectory(engineInstallDirectory);
                 return;
             }
             if (Path.Exists(installDirectory) == true)
@@ -173,6 +174,35 @@ namespace Eidolon.Modeling
                     EnsurePathHasNoLinks(stagingDirectory);
                     Directory.Delete(stagingDirectory, true);
                 }
+            }
+            PrepareModelingNotesDirectory(engineInstallDirectory);
+        }
+
+        internal static string PrepareModelingNotesDirectory(string engineInstallDirectory)
+        {
+            if (string.IsNullOrWhiteSpace(engineInstallDirectory) == true)
+            {
+                return string.Empty;
+            }
+            engineInstallDirectory = engineInstallDirectory.Trim();
+            if (Path.IsPathFullyQualified(engineInstallDirectory) == false)
+            {
+                return string.Empty;
+            }
+            if (Directory.Exists(engineInstallDirectory) == false)
+            {
+                return string.Empty;
+            }
+            try
+            {
+                string notesDirectory = Path.GetFullPath(Path.Combine(engineInstallDirectory, "ModelingNotes"));
+                EnsurePathHasNoLinks(notesDirectory);
+                Directory.CreateDirectory(notesDirectory);
+                return notesDirectory;
+            }
+            catch (Exception error) when (error is ArgumentException or IOException or UnauthorizedAccessException or NotSupportedException)
+            {
+                return string.Empty;
             }
         }
 

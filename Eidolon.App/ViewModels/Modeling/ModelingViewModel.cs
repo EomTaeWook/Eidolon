@@ -1616,7 +1616,7 @@ namespace Eidolon.App.ViewModels
             {
                 instructions = Instructions.Trim();
             }
-            ModelingInput input = new ModelingInput(agentExecutablePath, agentModel, BlenderExecutablePath, outputDirectory, SourceBlendPath, instructions, references, maximumTriangleCount, showBlenderWindow, agent, PartsBlendPath);
+            ModelingInput input = new ModelingInput(agentExecutablePath, agentModel, BlenderExecutablePath, outputDirectory, SourceBlendPath, instructions, references, maximumTriangleCount, showBlenderWindow, agent, PartsBlendPath, Session.Settings.InstallDirectory);
             EnqueueModelingInput(input, false);
             return Task.CompletedTask;
         }
@@ -1690,7 +1690,7 @@ namespace Eidolon.App.ViewModels
             }
             EnsureModelingCanQueue(cancellationToken);
             string outputDirectory = Path.Combine(Session.DataDirectory, "Modeling", Guid.NewGuid().ToString("N"));
-            ModelingInput input = new ModelingInput(executablePath, settings.CodexModel, blenderExecutablePath, outputDirectory, capturedSourceBlendPath, capturedInstructions, validatedReferences, maximumTriangleCount, false, ModelingAgent.Codex);
+            ModelingInput input = new ModelingInput(executablePath, settings.CodexModel, blenderExecutablePath, outputDirectory, capturedSourceBlendPath, capturedInstructions, validatedReferences, maximumTriangleCount, false, ModelingAgent.Codex, engineInstallDirectory: settings.InstallDirectory);
             return EnqueueModelingInput(input, true);
         }
 
