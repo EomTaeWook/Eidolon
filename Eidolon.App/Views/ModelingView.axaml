@@ -149,6 +149,12 @@
             <Button Content="{DynamicResource EidolonText749}" Command="{Binding PickBlendCommand}" Margin="0,0,8,8" />
             <Button Content="{DynamicResource EidolonText772}" Command="{Binding ClearBlendCommand}" Margin="0,0,0,8" IsVisible="{Binding HasSourceBlendPath}" />
           </WrapPanel>
+          <TextBlock Text="{DynamicResource EidolonText831}" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding PartsBlendFileName}" ToolTip.Tip="{Binding PartsBlendPath}" IsVisible="{Binding HasPartsBlendPath}" TextTrimming="CharacterEllipsis" />
+          <WrapPanel>
+            <Button Content="{DynamicResource EidolonText832}" Command="{Binding PickPartsBlendCommand}" Margin="0,0,8,8" />
+            <Button Content="{DynamicResource EidolonText772}" Command="{Binding ClearPartsBlendCommand}" Margin="0,0,0,8" IsVisible="{Binding HasPartsBlendPath}" />
+          </WrapPanel>
           <TextBlock Text="{DynamicResource EidolonText786}" FontWeight="SemiBold" TextWrapping="Wrap" />
           <NumericUpDown Value="{Binding MaximumTriangleCount, Mode=TwoWay}" Minimum="0" Maximum="1000000" Increment="1" FormatString="0" HorizontalAlignment="Stretch" />
           <TextBlock Text="{DynamicResource EidolonText787}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
@@ -203,8 +209,8 @@
     <Border Grid.Row="4" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Padding="16,12">
       <StackPanel Spacing="8">
         <StackPanel Spacing="8" IsEnabled="{Binding Session.CanEditGenerationInputs}">
-          <TextBlock Text="{DynamicResource EidolonText807}" Classes="label" IsVisible="{Binding !HasSourceBlendPath}" />
-          <TextBlock Text="{DynamicResource EidolonText750}" Classes="label" IsVisible="{Binding HasSourceBlendPath}" />
+          <TextBlock Text="{DynamicResource EidolonText807}" Classes="label" IsVisible="{Binding !NeedsModelingInstructions}" />
+          <TextBlock Text="{DynamicResource EidolonText750}" Classes="label" IsVisible="{Binding NeedsModelingInstructions}" />
           <TextBox Text="{Binding Instructions, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="80" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="{DynamicResource EidolonText751}" />
         </StackPanel>
         <WrapPanel HorizontalAlignment="Right">

@@ -121,11 +121,11 @@ namespace Eidolon.App.Services
             }
         }
 
-        public async Task<string> PickBlendFileAsync()
+        public async Task<string> PickBlendFileAsync(string titleKey = "EidolonText749")
         {
             IReadOnlyList<IStorageFile> files = await _desktop.MainWindow.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = _strings.GetString("EidolonText749"),
+                Title = _strings.GetString(titleKey),
                 AllowMultiple = false,
                 FileTypeFilter = new[] { new FilePickerFileType("Blender") { Patterns = new[] { "*.blend" } } }
             });
@@ -142,7 +142,7 @@ namespace Eidolon.App.Services
             return scenePath;
         }
 
-        public async Task ExportModelingFileAsync(string sourcePath, string protectedSourcePath = "")
+        public async Task ExportModelingFileAsync(string sourcePath, params string[] protectedSourcePaths)
         {
             string extension = Path.GetExtension(sourcePath).TrimStart('.');
             string title = _strings.GetString("EidolonText776");
@@ -169,13 +169,20 @@ namespace Eidolon.App.Services
                 {
                     return;
                 }
-                if (string.IsNullOrWhiteSpace(protectedSourcePath) == false)
+                string normalizedTargetPath = Path.GetFullPath(targetPath);
+                if (OperatingSystem.IsMacOS() == true)
                 {
-                    string normalizedTargetPath = Path.GetFullPath(targetPath);
+                    normalizedTargetPath = normalizedTargetPath.Normalize(System.Text.NormalizationForm.FormC);
+                }
+                foreach (string protectedSourcePath in protectedSourcePaths)
+                {
+                    if (string.IsNullOrWhiteSpace(protectedSourcePath) == true)
+                    {
+                        continue;
+                    }
                     string normalizedProtectedSourcePath = Path.GetFullPath(protectedSourcePath);
                     if (OperatingSystem.IsMacOS() == true)
                     {
-                        normalizedTargetPath = normalizedTargetPath.Normalize(System.Text.NormalizationForm.FormC);
                         normalizedProtectedSourcePath = normalizedProtectedSourcePath.Normalize(System.Text.NormalizationForm.FormC);
                     }
                     if (normalizedTargetPath.Equals(normalizedProtectedSourcePath, StringComparison.OrdinalIgnoreCase) == true)

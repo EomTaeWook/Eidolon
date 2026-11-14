@@ -35,7 +35,9 @@ namespace Eidolon.App.ViewModels
         private CancellationTokenSource _wslStatusCancellationTokenSource;
         private Task _wslStatusTask = Task.CompletedTask;
         private string _sourceBlendPath = string.Empty;
+        private string _partsBlendPath = string.Empty;
         private string _resultSourceBlendPath = string.Empty;
+        private string _resultPartsBlendPath = string.Empty;
         private string _instructions = string.Empty;
         private decimal? _maximumTriangleCount = 0m;
         private bool _showBlenderWindow;
@@ -534,6 +536,18 @@ namespace Eidolon.App.ViewModels
             private set;
         }
 
+        public AsyncCommand PickPartsBlendCommand
+        {
+            get;
+            private set;
+        }
+
+        public AsyncCommand ClearPartsBlendCommand
+        {
+            get;
+            private set;
+        }
+
         public AsyncCommand ModelCommand
         {
             get;
@@ -689,6 +703,12 @@ namespace Eidolon.App.ViewModels
                 SourceBlendPath = string.Empty;
                 return Task.CompletedTask;
             }, () => Session.CanEditGenerationInputs);
+            PickPartsBlendCommand = Command(PickPartsBlendAsync, () => Session.CanEditGenerationInputs);
+            ClearPartsBlendCommand = Command(() =>
+            {
+                PartsBlendPath = string.Empty;
+                return Task.CompletedTask;
+            }, () => Session.CanEditGenerationInputs);
             ModelCommand = Command(QueueModelingAsync, () => CanModel);
             CancelModelingCommand = Command(() => _work.CancelCurrentAsync(_activeRequestTitle), () => IsModeling);
             ContinueResultCommand = Command(() =>
@@ -697,8 +717,8 @@ namespace Eidolon.App.ViewModels
                 return Task.CompletedTask;
             }, () => CanContinue);
             OpenResultCommand = Command(() => _dialogs.OpenFolderAsync(OutputDirectory), () => CanOpenResult);
-            SaveBlendCommand = Command(() => _dialogs.ExportModelingFileAsync(BlendPath, _resultSourceBlendPath), () => CanContinue);
-            SaveGlbCommand = Command(() => _dialogs.ExportModelingFileAsync(GlbPath), () => CanSaveGlb);
+            SaveBlendCommand = Command(() => _dialogs.ExportModelingFileAsync(BlendPath, _resultSourceBlendPath, _resultPartsBlendPath), () => CanContinue);
+            SaveGlbCommand = Command(() => _dialogs.ExportModelingFileAsync(GlbPath, _resultSourceBlendPath, _resultPartsBlendPath), () => CanSaveGlb);
         }
 
         public string ReferencePath
@@ -767,6 +787,49 @@ namespace Eidolon.App.ViewModels
             get
             {
                 return Path.GetFileName(SourceBlendPath);
+            }
+        }
+
+        public string PartsBlendPath
+        {
+            get
+            {
+                return _partsBlendPath;
+            }
+            private set
+            {
+                if (Set(ref _partsBlendPath, value) == true)
+                {
+                    RefreshCommands();
+                }
+            }
+        }
+
+        public string PartsBlendFileName
+        {
+            get
+            {
+                return Path.GetFileName(PartsBlendPath);
+            }
+        }
+
+        public bool HasPartsBlendPath
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(PartsBlendPath) == false;
+            }
+        }
+
+        public bool NeedsModelingInstructions
+        {
+            get
+            {
+                if (HasSourceBlendPath == true)
+                {
+                    return true;
+                }
+                return HasPartsBlendPath;
             }
         }
 
@@ -1065,6 +1128,17 @@ namespace Eidolon.App.ViewModels
                 {
                     return _strings.GetString("EidolonText813");
                 }
+                if (HasPartsBlendPath == true)
+                {
+                    if (File.Exists(PartsBlendPath) == false)
+                    {
+                        return _strings.GetString("EidolonText834");
+                    }
+                    if (string.IsNullOrWhiteSpace(Instructions) == true)
+                    {
+                        return _strings.GetString("EidolonText833");
+                    }
+                }
                 if (HasSourceBlendPath == true)
                 {
                     if (string.IsNullOrWhiteSpace(Instructions) == true)
@@ -1086,6 +1160,10 @@ namespace Eidolon.App.ViewModels
                     return _strings.GetString("EidolonText788");
                 }
                 if (string.IsNullOrWhiteSpace(SourceBlendPath) == false)
+                {
+                    return string.Empty;
+                }
+                if (HasPartsBlendPath == true)
                 {
                     return string.Empty;
                 }
@@ -1290,6 +1368,20 @@ namespace Eidolon.App.ViewModels
                 return;
             }
             SourceBlendPath = scenePath;
+        }
+
+        private async Task PickPartsBlendAsync()
+        {
+            string partsPath = await _dialogs.PickBlendFileAsync("EidolonText832");
+            if (string.IsNullOrWhiteSpace(partsPath) == true)
+            {
+                return;
+            }
+            if (Session.IsClosing == true)
+            {
+                return;
+            }
+            PartsBlendPath = ValidateModelingInputPath(partsPath, ".blend");
         }
 
         public Task RefreshCollectionsAsync()
@@ -1524,7 +1616,7 @@ namespace Eidolon.App.ViewModels
             {
                 instructions = Instructions.Trim();
             }
-            ModelingInput input = new ModelingInput(agentExecutablePath, agentModel, BlenderExecutablePath, outputDirectory, SourceBlendPath, instructions, references, maximumTriangleCount, showBlenderWindow, agent);
+            ModelingInput input = new ModelingInput(agentExecutablePath, agentModel, BlenderExecutablePath, outputDirectory, SourceBlendPath, instructions, references, maximumTriangleCount, showBlenderWindow, agent, PartsBlendPath);
             EnqueueModelingInput(input, false);
             return Task.CompletedTask;
         }
@@ -1642,7 +1734,7 @@ namespace Eidolon.App.ViewModels
             {
                 if (extension != requiredExtension)
                 {
-                    throw new ArgumentException("source_blend_path must identify a .blend file.");
+                    throw new ArgumentException("The modeling input must identify a .blend file.");
                 }
             }
             else
@@ -1711,6 +1803,7 @@ namespace Eidolon.App.ViewModels
             IsModeling = true;
             _result = null;
             _resultSourceBlendPath = string.Empty;
+            _resultPartsBlendPath = string.Empty;
             OutputDirectory = input.OutputDirectory;
             SetStage("EidolonText757");
             RefreshResult();
@@ -1747,6 +1840,7 @@ namespace Eidolon.App.ViewModels
                 }
                 _result = result;
                 _resultSourceBlendPath = input.SourceBlendPath;
+                _resultPartsBlendPath = input.PartsBlendPath;
                 OutputDirectory = result.DirectoryPath;
                 SetStage("EidolonText761");
                 Session.Indeterminate = false;
@@ -2252,6 +2346,9 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(SourceBlendTargetCaption));
             Raise(nameof(ModelingSubmitCaption));
             Raise(nameof(HasSourceBlendPath));
+            Raise(nameof(HasPartsBlendPath));
+            Raise(nameof(PartsBlendFileName));
+            Raise(nameof(NeedsModelingInstructions));
             Raise(nameof(HasBlenderExecutablePath));
             Raise(nameof(ReferencePath));
             Raise(nameof(ReferenceCaption));

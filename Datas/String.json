@@ -7804,5 +7804,29 @@
     "Name": "EidolonText830",
     "Kor": "\uCD5C\uC885 \uBE44\uAD50\uB97C \uD1B5\uACFC\uD558\uC9C0 \uBABB\uD574 \uCD08\uC548\uC744 \uD45C\uC2DC\uD569\uB2C8\uB2E4.",
     "Eng": "The refinement did not pass the final comparison. Showing the draft."
+  },
+  {
+    "Id": 3910,
+    "Name": "EidolonText831",
+    "Kor": "Blender \uBD80\uD488 \uBD88\uB7EC\uC624\uAE30",
+    "Eng": "Append Blender parts"
+  },
+  {
+    "Id": 3911,
+    "Name": "EidolonText832",
+    "Kor": "\uBD80\uD488 \uC6D0\uBCF8 \uC120\uD0DD (.blend)",
+    "Eng": "Choose parts source (.blend)"
+  },
+  {
+    "Id": 3912,
+    "Name": "EidolonText833",
+    "Kor": "\uAC00\uC838\uC62C \uC624\uBE0C\uC81D\uD2B8\uB098 \uCEEC\uB809\uC158\uC744 \uC124\uBA85\uC5D0 \uC801\uC5B4 \uC8FC\uC138\uC694.",
+    "Eng": "Describe the object or collection to append."
+  },
+  {
+    "Id": 3913,
+    "Name": "EidolonText834",
+    "Kor": "\uBD80\uD488 \uC6D0\uBCF8 \uD30C\uC77C\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+    "Eng": "The Blender parts source could not be found."
   }
 ]

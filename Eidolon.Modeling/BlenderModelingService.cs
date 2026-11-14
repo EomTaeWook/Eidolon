@@ -137,6 +137,28 @@ namespace Eidolon.Modeling
             string blenderExecutable = RequireInputFile(input.BlenderExecutablePath, nameof(input.BlenderExecutablePath));
             string codexExecutable = RequireInputFile(input.CodexExecutablePath, nameof(input.CodexExecutablePath));
             string sourceBlendPath = string.Empty;
+            string partsBlendPath = string.Empty;
+            if (string.IsNullOrWhiteSpace(input.PartsBlendPath) == false)
+            {
+                if (OperatingSystem.IsWindows() == true)
+                {
+                    string windowsPath = input.PartsBlendPath.Replace('/', '\\');
+                    foreach (string prefix in new string[] { @"\\", @"\??\", @"\Device\" })
+                    {
+                        if (windowsPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) == true)
+                        {
+                            throw new ArgumentException("The parts source must be a local .blend file.", nameof(input));
+                        }
+                    }
+                }
+                partsBlendPath = RequireInputFile(input.PartsBlendPath, nameof(input.PartsBlendPath));
+                if (Path.GetExtension(partsBlendPath).Equals(".blend", StringComparison.OrdinalIgnoreCase) == false)
+                {
+                    throw new ArgumentException("The parts source must be a .blend file.", nameof(input));
+                }
+                BlenderInstaller.EnsurePathHasNoLinks(partsBlendPath);
+                ArgumentException.ThrowIfNullOrWhiteSpace(input.Instructions);
+            }
             if (string.IsNullOrWhiteSpace(input.SourceBlendPath) == false)
             {
                 sourceBlendPath = RequireInputFile(input.SourceBlendPath, nameof(input.SourceBlendPath));
@@ -148,7 +170,10 @@ namespace Eidolon.Modeling
             }
             else if (input.References.Count == 0)
             {
-                throw new ArgumentException("A reference image or a source scene is required.", nameof(input));
+                if (partsBlendPath.Length == 0)
+                {
+                    throw new ArgumentException("A reference image, a source scene, or a parts source is required.", nameof(input));
+                }
             }
             string directory = CreateRequestDirectory(input.OutputDirectory);
             string controlDirectory = Path.Combine(directory, "Control");
@@ -164,9 +189,15 @@ namespace Eidolon.Modeling
                 await WriteNewTextAsync(kitPath, kit, token).ConfigureAwait(false);
                 await WriteNewTextAsync(schemaPath, PlanSchema, token).ConfigureAwait(false);
                 List<ModelingReference> referenceImages = await CopyReferencesAsync(input.References, directory, token).ConfigureAwait(false);
+                string referenceManifest = JsonSerializer.Serialize(referenceImages.Select(image => new[] { image.Direction, Path.GetFileName(image.ImagePath) }));
+                await WriteNewTextAsync(Path.Combine(controlDirectory, "References.json"), referenceManifest, token).ConfigureAwait(false);
 
                 progress?.Report(ModelingStage.Opening);
                 List<string> blenderArguments = new() { "--factory-startup", "--disable-autoexec", "--python-exit-code", "1", "--python", kitPath, "--", directory, sourceBlendPath, input.MaximumTriangleCount.ToString(CultureInfo.InvariantCulture) };
+                if (partsBlendPath.Length > 0)
+                {
+                    blenderArguments.Add(partsBlendPath);
+                }
                 if (input.ShowBlenderWindow == false)
                 {
                     blenderArguments.Insert(0, "--background");

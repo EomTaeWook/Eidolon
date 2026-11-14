@@ -2,7 +2,7 @@ namespace Eidolon.Modeling
 {
     public class ModelingInput
     {
-        public ModelingInput(string CodexExecutablePath, string CodexModel, string BlenderExecutablePath, string OutputDirectory, string SourceBlendPath, string Instructions, IReadOnlyList<ModelingReference> References, int maximumTriangleCount = 0, bool showBlenderWindow = false, ModelingAgent agent = ModelingAgent.Codex)
+        public ModelingInput(string CodexExecutablePath, string CodexModel, string BlenderExecutablePath, string OutputDirectory, string SourceBlendPath, string Instructions, IReadOnlyList<ModelingReference> References, int maximumTriangleCount = 0, bool showBlenderWindow = false, ModelingAgent agent = ModelingAgent.Codex, string partsBlendPath = "")
         {
             ArgumentOutOfRangeException.ThrowIfNegative(maximumTriangleCount);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(maximumTriangleCount, 1_000_000);
@@ -11,6 +11,7 @@ namespace Eidolon.Modeling
             this.BlenderExecutablePath = BlenderExecutablePath;
             this.OutputDirectory = OutputDirectory;
             this.SourceBlendPath = SourceBlendPath;
+            PartsBlendPath = partsBlendPath;
             this.Instructions = Instructions;
             this.References = References.ToArray();
             MaximumTriangleCount = maximumTriangleCount;
@@ -39,6 +40,11 @@ namespace Eidolon.Modeling
         }
 
         public string SourceBlendPath
+        {
+            get;
+        }
+
+        public string PartsBlendPath
         {
             get;
         }
