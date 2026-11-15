@@ -8,7 +8,7 @@ Eidolon은 Avalonia 기반 Windows 데스크톱 이미지 생성·LoRA 학습 �
 
 이미지 생성은 생성 환경에서 ComfyUI 또는 설치된 Codex의 내장 이미지 생성을 선택한다. 공통 지침·제외할 요소는 설정에서 관리한다. ComfyUI의 노드 편집기를 대체하거나 노드 그래프를 화면에 노출하지 않는다. 설치, 모델·LoRA 관리, 생성, 학습, 이어 학습과 학습 결과 등록을 하나의 앱에서 제공한다.
 
-기본 모델은 SDXL Base 1.0, 기본 생성 크기는 1024×1024다. SD 1.5는 가져온 모델의 호환 계열로 지원한다. Bough의 Core/App 분리, Dignus DI, 템플릿 로딩, Excel 다국어와 라이트 테마 구성을 참고한다. 코드와 배포에 적용하는 규칙은 [코딩 컨벤션](CodingConvention.md)과 [릴리스 정책](ReleasePolicy.md)이 소유한다.
+기본 모델은 SDXL Base 1.0, 기본 생성 크기는 1024×1024다. SD 1.5는 가져온 모델의 호환 계열로 지원한다. 코드와 배포에 적용하는 규칙은 [코딩 컨벤션](CodingConvention.md)과 [릴리스 정책](ReleasePolicy.md)이 소유한다.
 
 참고 이미지의 유지할 특징은 기존 Codex 이미지 입력 경로에서 텍스트로 추출하고 App의 참고 입력에서 확인·수정한다. 로컬 프롬프트 변환 모델의 역할은 번역·형식 정리로 유지하며, 요청·수명·실제 프롬프트 기록 계약은 [원본 특징 유지](ImageEditing.md#원본-특징-유지)가 소유한다.
 
@@ -306,7 +306,7 @@ Core의 `TrainingImageInput`은 파일 경로와 배경을 소유한다. 요청 
 
 ## 앱 업데이트
 
-앱 버전과 업데이트는 App이 소유하며 Core는 해당 타입·메시지 코드를 참조하지 않는다. 설정의 앱 업데이트 탭에서 `AppUpdateView`·`AppUpdateViewModel`이 현재 버전·정식 릴리스 조회·설치·진행·취소를 제공한다. 버전은 얇은 테두리의 정보 영역에 표시하고 기존 릴리스 열기 명령은 Bough와 같은 GitHub 아이콘 버튼으로 제공한다. `StudioViewModel.InitializeAsync`는 화면 초기화 후 `CheckOnStartup`으로 조회만 한 번 시작하고 완료를 기다리지 않는다. 자동 조회와 수동 조회는 기존 `_checking`·요청 취소·종료 대기를 공유하며 다운로드·설치는 기존 사용자 명령으로만 진행한다. 업데이트 후 재시작 결과 표시가 있으면 자동 조회를 생략한다. App의 `Services/Updates`는 조회·검증 다운로드·설치 준비·보조 실행을 나누고 배포용 버전·업데이트 모델과 메시지 코드는 `Models/Updates`에 둔다. `ApplicationUpdateException`은 App의 독립 예외이며 `ApplicationUpdateMessageTemplates`·`StringHelper`가 번역한다. 업데이트 진행은 App의 `StudioSession` 표시 상태에 반영한다. HTTP와 DI는 기존 App 조립 경계를 사용한다. 설치는 기존 유지 관리 큐를 사용하고 App의 재시작 Presenter가 기존 닫기를 요청한다. `Program`은 정상 UI 종료 뒤에 설치를 승인한다. 보조 전용 진입점은 UI와 사용자 설정을 초기화하지 않으며 원래 프로세스가 종료된 뒤 파일을 교체한다. 단일 파일 배포와 교체·복원 계약은 [앱 업데이트](ApplicationUpdate.md)를 따른다.
+앱 버전과 업데이트는 App이 소유하며 Core는 해당 타입·메시지 코드를 참조하지 않는다. 설정의 앱 업데이트 탭에서 `AppUpdateView`·`AppUpdateViewModel`이 현재 버전·정식 릴리스 조회·설치·진행·취소를 제공한다. 버전은 얇은 테두리의 정보 영역에 표시하고 릴리스는 GitHub 아이콘 버튼으로 연다. `StudioViewModel.InitializeAsync`는 화면 초기화 후 `CheckOnStartup`으로 조회만 한 번 시작하고 완료를 기다리지 않는다. 자동 조회와 수동 조회는 기존 `_checking`·요청 취소·종료 대기를 공유하며 다운로드·설치는 기존 사용자 명령으로만 진행한다. 업데이트 후 재시작 결과 표시가 있으면 자동 조회를 생략한다. App의 `Services/Updates`는 조회·검증 다운로드·설치 준비·보조 실행을 나누고 배포용 버전·업데이트 모델과 메시지 코드는 `Models/Updates`에 둔다. `ApplicationUpdateException`은 App의 독립 예외이며 `ApplicationUpdateMessageTemplates`·`StringHelper`가 번역한다. 업데이트 진행은 App의 `StudioSession` 표시 상태에 반영한다. HTTP와 DI는 기존 App 조립 경계를 사용한다. 설치는 기존 유지 관리 큐를 사용하고 App의 재시작 Presenter가 기존 닫기를 요청한다. `Program`은 정상 UI 종료 뒤에 설치를 승인한다. 보조 전용 진입점은 UI와 사용자 설정을 초기화하지 않으며 원래 프로세스가 종료된 뒤 파일을 교체한다. 단일 파일 배포와 교체·복원 계약은 [앱 업데이트](ApplicationUpdate.md)를 따른다.
 
 ## 다국어와 템플릿
 
