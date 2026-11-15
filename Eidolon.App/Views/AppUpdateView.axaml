@@ -1,25 +1,30 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:converters="using:Avalonia.Data.Converters" xmlns:vm="using:Eidolon.App.ViewModels" x:Class="Eidolon.App.Views.AppUpdateView" x:DataType="vm:AppUpdateViewModel">
-  <StackPanel Spacing="8">
-    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-      <StackPanel Spacing="4" VerticalAlignment="Center">
+  <Border Classes="card" Padding="16">
+    <StackPanel Spacing="12">
+      <StackPanel Spacing="4">
         <WrapPanel ItemSpacing="8" LineSpacing="4">
           <TextBlock Text="{DynamicResource EidolonText666}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
-          <SelectableTextBlock Text="{Binding CurrentVersionCaption}" Foreground="{DynamicResource MutedBrush}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center" />
+          <Border Background="{DynamicResource BadgeBrush}" CornerRadius="6" Padding="8,4" VerticalAlignment="Center">
+            <SelectableTextBlock Text="{Binding CurrentVersionCaption}" Foreground="{DynamicResource TextBrush}" FontSize="12" TextWrapping="Wrap" />
+          </Border>
         </WrapPanel>
-        <TextBlock Text="{Binding StatusCaption}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding StatusCaption}" FontWeight="SemiBold" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding InstallHint}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding InstallHint, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}" />
+        <TextBlock Text="{DynamicResource EidolonText676}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
       </StackPanel>
-      <WrapPanel Grid.Column="1" ItemSpacing="8" LineSpacing="4" VerticalAlignment="Center">
+      <WrapPanel ItemSpacing="8" LineSpacing="4">
         <Panel IsVisible="{Binding HasUpdate}">
           <Button Content="{DynamicResource EidolonText669}" Command="{Binding InstallCommand}" Classes="primary" IsVisible="{ReflectionBinding $self.IsEffectivelyEnabled}" MinWidth="80" />
         </Panel>
         <Button Content="{DynamicResource EidolonText668}" Command="{Binding CheckCommand}" Classes.primary="{Binding !HasUpdate}" IsVisible="{Binding !IsBusy}" MinWidth="80" VerticalAlignment="Center" />
         <Button Content="{DynamicResource EidolonText677}" Command="{Binding CancelCommand}" IsVisible="{Binding IsBusy}" MinWidth="80" VerticalAlignment="Center" />
-        <Button Command="{Binding OpenReleaseCommand}" Width="32" MinHeight="32" Padding="7" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="{DynamicResource EidolonText670}" AutomationProperties.Name="{DynamicResource EidolonText670}">
-          <Path Data="{StaticResource EidolonIconGitHub}" Width="16" Height="16" Stretch="Uniform" Fill="{ReflectionBinding $parent[Button].Foreground}" />
+        <Button Command="{Binding OpenReleaseCommand}" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Path Data="{StaticResource EidolonIconGitHub}" Width="16" Height="16" Stretch="Uniform" Fill="{ReflectionBinding $parent[Button].Foreground}" VerticalAlignment="Center" />
+            <TextBlock Text="{DynamicResource EidolonText670}" VerticalAlignment="Center" />
+          </StackPanel>
         </Button>
       </WrapPanel>
-    </Grid>
-    <TextBlock Text="{Binding InstallHint}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding InstallHint, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}" />
-    <TextBlock Text="{DynamicResource EidolonText676}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
-  </StackPanel>
+    </StackPanel>
+  </Border>
 </UserControl>

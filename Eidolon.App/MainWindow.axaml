@@ -22,7 +22,7 @@
           </Button>
           <Button Command="{Binding Navigation.ShowAssetCreationCommand}" Classes="navigation" Classes.active="{Binding Navigation.IsAssetCreationView}" Padding="8,8" CornerRadius="8" FontSize="13" Margin="0,2,4,2">
             <StackPanel Orientation="Horizontal" Spacing="6">
-              <Path Data="{StaticResource EidolonIconResults}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
+              <Path Data="{StaticResource EidolonIconMultiView}" Width="18" Height="18" Stretch="Uniform" Stroke="{ReflectionBinding $parent[Button].Foreground}" StrokeThickness="1.7" VerticalAlignment="Center" />
               <TextBlock Text="{DynamicResource EidolonText603}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>

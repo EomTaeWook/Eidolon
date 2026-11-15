@@ -21,47 +21,58 @@
       <Setter Property="MinHeight" Value="32" />
       <Setter Property="FontSize" Value="14" />
     </Style>
+    <Style Selector="TabItem.settingsSection">
+      <Setter Property="Width" Value="168" />
+      <Setter Property="MinHeight" Value="42" />
+      <Setter Property="Margin" Value="0,0,0,6" />
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,*">
-    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="12,8">
-      <TextBlock Text="{DynamicResource EidolonText110}" FontSize="16" FontWeight="SemiBold" />
+    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,12">
+      <TextBlock Text="{DynamicResource EidolonText110}" Classes="title" />
     </Border>
-    <TabControl Grid.Row="1" SelectedIndex="{Binding Navigation.SelectedSettingsTab, Mode=TwoWay}" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-      <TabItem Header="{DynamicResource EidolonText594}">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" AllowAutoHide="False">
-          <views:GeneralSettingsView Margin="16" MaxWidth="700" HorizontalAlignment="Left" />
-        </ScrollViewer>
+    <TabControl Grid.Row="1" Margin="0,12,0,0" Padding="0" TabStripPlacement="Left" SelectedIndex="{Binding Navigation.SelectedSettingsTab, Mode=TwoWay}" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+      <TabItem Classes="settingsSection" Header="{DynamicResource EidolonText594}">
+        <views:GeneralSettingsView Margin="16,0,0,0" />
       </TabItem>
-      <TabItem Header="{DynamicResource EidolonText109}">
+      <TabItem Classes="settingsSection" Header="{DynamicResource EidolonText109}">
         <views:EngineView DataContext="{Binding Engine}" />
       </TabItem>
-      <TabItem Header="{DynamicResource EidolonText595}">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" AllowAutoHide="False">
-          <StackPanel Margin="16" Spacing="8" MaxWidth="700" HorizontalAlignment="Left" DataContext="{Binding Mcp}" x:DataType="vm:McpViewModel">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-              <TextBlock Text="{Binding StatusCaption}" Classes="muted" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center" />
-              <Panel Grid.Column="1" VerticalAlignment="Center">
-                <Button Content="{DynamicResource EidolonText600}" Command="{Binding StartCommand}" Classes="primary" IsVisible="{Binding !IsRunning}" />
-                <Button Content="{DynamicResource EidolonText601}" Command="{Binding StopCommand}" IsVisible="{Binding IsRunning}" />
-              </Panel>
-            </Grid>
-            <TextBox Text="{Binding Endpoint, Mode=OneWay}" IsReadOnly="True" Classes="folderPath" ToolTip.Tip="{Binding Endpoint}" />
-            <StackPanel Spacing="4">
-              <TextBlock Text="{DynamicResource EidolonText596}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
-              <TextBlock Text="{DynamicResource EidolonText597}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+      <TabItem Classes="settingsSection" Header="{DynamicResource EidolonText595}">
+        <ScrollViewer Margin="16,0,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" AllowAutoHide="True">
+          <Border Classes="card" Margin="0,0,16,16" Padding="16" DataContext="{Binding Mcp}" x:DataType="vm:McpViewModel">
+            <StackPanel Spacing="12">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel Spacing="4" VerticalAlignment="Center">
+                  <TextBlock Text="{DynamicResource EidolonText595}" FontSize="16" FontWeight="SemiBold" />
+                  <TextBlock Text="{Binding StatusCaption}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+                </StackPanel>
+                <Panel Grid.Column="1" VerticalAlignment="Center">
+                  <Button Content="{DynamicResource EidolonText600}" Command="{Binding StartCommand}" Classes="primary" IsVisible="{Binding !IsRunning}" />
+                  <Button Content="{DynamicResource EidolonText601}" Command="{Binding StopCommand}" IsVisible="{Binding IsRunning}" />
+                </Panel>
+              </Grid>
+              <StackPanel Spacing="4">
+                <TextBlock Text="{DynamicResource EidolonText252}" Classes="label" />
+                <TextBox Text="{Binding Endpoint, Mode=OneWay}" IsReadOnly="True" Classes="folderPath" ToolTip.Tip="{Binding Endpoint}" AutomationProperties.Name="{DynamicResource EidolonText252}" />
+              </StackPanel>
+              <StackPanel Spacing="4">
+                <TextBlock Text="{DynamicResource EidolonText596}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+                <TextBlock Text="{DynamicResource EidolonText597}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
+              </StackPanel>
             </StackPanel>
-          </StackPanel>
+          </Border>
         </ScrollViewer>
       </TabItem>
-      <TabItem Header="{DynamicResource EidolonText666}">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" AllowAutoHide="False">
-          <views:AppUpdateView DataContext="{Binding Updates}" Margin="16" MaxWidth="700" HorizontalAlignment="Left">
-            <views:AppUpdateView.Styles>
-              <Style Selector="TextBlock[FontSize=16][FontWeight=SemiBold]">
-                <Setter Property="IsVisible" Value="False" />
-              </Style>
-            </views:AppUpdateView.Styles>
-          </views:AppUpdateView>
+      <TabItem Classes="settingsSection" Header="{DynamicResource EidolonText666}">
+        <ScrollViewer Margin="16,0,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" AllowAutoHide="True">
+          <views:AppUpdateView DataContext="{Binding Updates}" Margin="0,0,16,16" />
         </ScrollViewer>
       </TabItem>
     </TabControl>
