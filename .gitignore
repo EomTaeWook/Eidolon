@@ -4,3 +4,4 @@
 *.user
 artifacts/
 .codex-build/
+/.codex-attachments/*
