@@ -259,6 +259,15 @@
               </Border>
               <Border Classes="card">
                 <StackPanel Spacing="10">
+                  <TextBlock Text="{DynamicResource EidolonText739}" FontSize="16" FontWeight="SemiBold" />
+                  <TextBlock Text="{DynamicResource EidolonText740}" TextWrapping="Wrap" />
+                  <TextBlock Text="{DynamicResource EidolonText835}" TextWrapping="Wrap" />
+                  <TextBlock Text="{DynamicResource EidolonText836}" Classes="muted" />
+                  <Button Content="{DynamicResource EidolonText739}" Command="{Binding Navigation.ShowModelingCommand}" HorizontalAlignment="Left" />
+                </StackPanel>
+              </Border>
+              <Border Classes="card">
+                <StackPanel Spacing="10">
                   <TextBlock Text="{DynamicResource EidolonText191}" FontSize="16" FontWeight="SemiBold" />
                   <TextBlock Text="{DynamicResource EidolonText192}" TextWrapping="Wrap" />
                   <TextBlock Text="{DynamicResource EidolonText193}" Classes="muted" />

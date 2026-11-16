@@ -102,6 +102,8 @@ The app's **Help** screen provides instructions in both languages. See the [user
 2. Open **3D Modeling** and select one reference image or multiple views. To change an existing model, open a .blend file and describe the edit, or choose **Continue editing this model** on a result.
 3. Add the job, inspect the 3D preview and actual triangle count, then save a Blender or GLB file. Edits preserve the original file.
 
+**Modeling notes (`ModelingNotes`)**: Save techniques you want to reuse as Markdown. If the installation path under **Settings > Engine** is `D:\AI`, place a UTF-8 `.md` file directly in `D:\AI\ModelingNotes`, for example `surface-details.md`. You might write, “Fit the eyes and mouth to the head surface, and check from the side that they don't float.” The app and MCP read your notes when the next job starts. You write and maintain the notes yourself.
+
 See the [3D modeling guide](Docs/Modeling.md) for view directions, triangle limits, and output locations.
 
 ### Run from source

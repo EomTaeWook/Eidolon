@@ -7828,5 +7828,17 @@
     "Name": "EidolonText834",
     "Kor": "\uBD80\uD488 \uC6D0\uBCF8 \uD30C\uC77C\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
     "Eng": "The Blender parts source could not be found."
+  },
+  {
+    "Id": 3914,
+    "Name": "EidolonText835",
+    "Kor": "\uBC18\uBCF5\uD574\uC11C \uC4F0\uB294 \uBAA8\uB378\uB9C1 \uBC29\uBC95\uC740 \uC124\uC815 \u2192 \uC5D4\uC9C4\uC758 \uC124\uCE58 \uACBD\uB85C \uC544\uB798 ModelingNotes \uD3F4\uB354\uC5D0 UTF-8 .md \uD30C\uC77C\uB85C \uB123\uC73C\uC138\uC694. \uC124\uCE58 \uACBD\uB85C\uAC00 D:\\AI\uB77C\uBA74 D:\\AI\\ModelingNotes\uAC00 \uD574\uB2F9 \uD3F4\uB354\uC785\uB2C8\uB2E4.",
+    "Eng": "Save techniques you want to reuse as UTF-8 .md files in the ModelingNotes folder under the installation path in Settings \u003E Engine. For example, if the installation path is D:\\AI, use D:\\AI\\ModelingNotes."
+  },
+  {
+    "Id": 3915,
+    "Name": "EidolonText836",
+    "Kor": "\uD3F4\uB354\uB294 Blender \uC124\uCE58 \uB610\uB294 \uCCAB \uBAA8\uB378\uB9C1 \uC791\uC5C5\uC5D0\uC11C \uB9CC\uB4E4\uC5B4\uC9D1\uB2C8\uB2E4. \uC571\uACFC MCP\uB294 \uB2E4\uC74C \uC791\uC5C5\uBD80\uD130 \uBB38\uC11C\uB97C \uCC38\uACE0\uD569\uB2C8\uB2E4. \uAE30\uBCF8 Markdown\uC740 \uC5C6\uC73C\uBA70 \uC0C8 \uB178\uD558\uC6B0\uB294 \uC9C1\uC811 \uC801\uC5B4 \uB123\uC73C\uC138\uC694.",
+    "Eng": "The folder is created when you install Blender or start your first modeling job. The app and MCP read your notes when the next job starts. No Markdown files are included by default; write and add your own."
   }
 ]
