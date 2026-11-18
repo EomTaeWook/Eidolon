@@ -78,15 +78,15 @@ Windows는 단일 `.exe`를 실행하세요. 맥은 ZIP을 풀고 `Eidolon.app`�
 
 ### 배포 파일 실행
 
-1. Windows는 릴리스 EXE를 실행합니다. macOS는 ZIP을 풀고 Eidolon.app을 실행합니다.
+1. Windows는 릴리스 EXE를 실행합니다. macOS는 ZIP을 풀고 `Eidolon.app`을 응용 프로그램 폴더로 옮겨 실행합니다.
 2. **생성 환경 → 생성 방식**에서 ComfyUI 또는 Codex를 선택합니다.
-3. Codex는 설치된 Codex에서 먼저 로그인합니다. 실행 모델은 가져온 목록에서 선택하며 기본 모델 항목은 CLI 기본값을 사용합니다. 실행 파일을 찾지 못하면 `codex.exe` 경로를 선택하세요.
-4. ComfyUI는 **설정 → 엔진 설치·연결**에서 엔진을 준비합니다. **생성 환경 → 모델·LoRA**에서 모델을 설치하거나 모델 폴더·LoRA 폴더에 `.safetensors` 파일을 넣고 새로고침합니다.
+3. Codex는 설치된 Codex에서 먼저 로그인합니다. 실행 모델은 가져온 목록에서 선택하며 기본 모델 항목은 CLI 기본값을 사용합니다. 앱이 실행 파일을 찾지 못하면 Windows에서는 `codex.exe`, macOS에서는 `codex` 파일을 선택하세요.
+4. ComfyUI는 **설정 → 엔진 → ComfyUI**에서 준비합니다. **생성 환경 → 모델·LoRA**에서 모델을 설치하거나 모델 폴더·LoRA 폴더에 `.safetensors` 파일을 넣고 새로고침합니다.
 5. **생성 환경 → 공통 생성 지침**에서 지침·제외할 요소와 프리셋을 정한 뒤 **생성 환경 저장**을 누릅니다. **이미지 생성**에서 설명을 입력해 요청을 추가하세요.
 
-설정과 작업 데이터는 `%LOCALAPPDATA%\Eidolon`에 저장합니다. 앱을 업데이트할 때 실행 파일을 교체해도 이 데이터는 유지됩니다.
+설정과 작업 데이터는 Windows에서 `%LOCALAPPDATA%\Eidolon`, macOS에서 `~/Library/Application Support/Eidolon`에 저장합니다. 앱을 업데이트해도 이 데이터는 유지됩니다.
 
-설정 위쪽의 **앱 업데이트**에서 현재 버전과 새 정식 버전을 확인할 수 있습니다. **업데이트 후 재시작**은 공식 Windows x64 배포본을 다운로드·검증하고 정상 종료 후 교체합니다. 개발 실행은 자동 설치 대상에서 제외됩니다. 배포 파일과 버전 계약은 [앱 업데이트](Docs/ApplicationUpdate.md)를 참고하세요.
+**설정 → 앱 업데이트**에서 현재 버전과 새 정식 버전을 확인하세요. **업데이트 후 재시작**을 누르면 Windows x64 또는 사용 중인 macOS 아키텍처에 맞는 공식 배포본을 내려받아 검증하고, 앱이 정상 종료된 뒤 교체합니다. 개발 실행에서는 자동 설치를 지원하지 않습니다. 자세한 조건은 [앱 업데이트 안내](Docs/ApplicationUpdate.md)를 참고하세요.
 
 ### 이미지와 에셋 작업
 
@@ -100,7 +100,7 @@ Windows는 단일 `.exe`를 실행하세요. 맥은 ZIP을 풀고 `Eidolon.app`�
 
 ### 3D 모델링
 
-1. **설정 → 엔진 설치·연결 → Blender**에서 Blender를 준비하고, 설치된 Codex CLI에 로그인합니다. 모델링은 생성 환경에서 저장한 GPT 실행 모델을 사용합니다.
+1. **설정 → 엔진 → Blender**에서 Blender를 준비하고, 설치된 Codex CLI에 로그인합니다. 모델링은 생성 환경에서 저장한 GPT 실행 모델을 사용합니다.
 2. **3D 모델링**에서 참고 이미지 한 장이나 다면도를 선택합니다. 기존 모델을 고칠 때는 .blend 파일을 열고 바꿀 내용을 입력하거나, 결과에서 **이 모델 이어서 수정**을 선택합니다.
 3. 작업을 추가한 뒤 3D 미리보기와 실제 삼각형 수를 확인하고 Blender 또는 GLB 파일을 저장합니다. 수정 작업은 원본을 보존합니다.
 
@@ -110,9 +110,10 @@ Windows는 단일 `.exe`를 실행하세요. 맥은 ZIP을 풀고 `Eidolon.app`�
 
 ### 소스에서 실행
 
-개발 실행에는 .NET 10 SDK가 필요합니다. 저장소 루트에서 실행합니다.
+개발 실행에는 .NET 10 SDK와 Git이 필요합니다. 내려받은 저장소의 루트에서 `Mcp.Core` 서브모듈을 준비한 뒤 실행하세요.
 
 ```powershell
+git submodule update --init --recursive
 dotnet run --project Eidolon.App/Eidolon.App.csproj
 ```
 
@@ -139,13 +140,13 @@ Windows x64 자체 포함 단일 EXE는 다음 명령으로 만듭니다.
 dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o artifacts\win-x64 -m:1 /p:UseSharedCompilation=false
 ```
 
-런타임과 UI·문자열·고지 리소스는 EXE에 포함합니다. 생성·학습 엔진과 가중치는 선택한 설치 경로에 별도로 준비합니다. 로컬 모델 설치·자동 변환·생성 연결의 확인 범위와 한계는 [로컬 프롬프트 변환](Docs/PromptConversion.md), 이전 다면도 확인 범위는 [품질 검증 기록](Docs/AssetCreationQuality.md), 이번 변경 사항은 [릴리스 노트](Docs/Releases/1.0.2.md)를 참고하세요.
+런타임과 UI·문자열·고지 리소스는 배포 파일에 포함합니다. 생성·학습 엔진과 가중치는 선택한 설치 경로에 별도로 준비합니다. 로컬 모델과 생성 연결의 확인 범위는 [로컬 프롬프트 변환](Docs/PromptConversion.md), 이전 다면도 확인 범위는 [품질 검증 기록](Docs/AssetCreationQuality.md), 플랫폼별 배포 방법은 [릴리스 정책](Docs/ReleasePolicy.md), 버전별 변경 사항은 [릴리스 노트](Docs/Releases/)를 참고하세요.
 
 ## 라이선스
 
 Eidolon은 [Eidolon Source License 1.0](LICENSE)을 적용하는 소스 공개형(source-available) 소프트웨어입니다.
 
-독립 [MCP.Core](https://github.com/EomTaeWook/Mcp.Core) 서브모듈에는 별도의 [MIT 라이선스](Mcp.Core/LICENSE)를 적용합니다.
+독립 [MCP.Core](https://github.com/EomTaeWook/Mcp.Core) 서브모듈에는 별도의 [MIT 라이선스](https://github.com/EomTaeWook/Mcp.Core/blob/a5044a60769c2284bffa005100821cd19b4c212f/LICENSE)를 적용합니다.
 
 - 개인·교육·회사 내부 업무와 상업용 게임·에셋 제작에 무료로 사용할 수 있습니다.
 - 소스 수정과 무료 재배포는 라이선스·저작권 고지를 유지하고 주요 변경 내용을 표시하는 조건으로 허용합니다.

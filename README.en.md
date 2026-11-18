@@ -78,13 +78,15 @@ Multiple views are reference-based drafts. Review generated appearance and viewp
 
 ### Run the release
 
-1. On Windows, run the release EXE. On macOS, extract the ZIP and open Eidolon.app.
+1. On Windows, run the release EXE. On macOS, extract the ZIP, move `Eidolon.app` to Applications, and open it.
 2. Open **Generation environment > Generation methods**, then choose ComfyUI or Codex.
-3. For Codex, sign in to your installed Codex. Choose an execution model from the retrieved list; Default model uses the CLI default. Select `codex.exe` if the app cannot locate it.
-4. For ComfyUI, prepare the engine in **Settings > Engine setup and connection**. Install a model in **Generation environment > Models and LoRAs**, or put `.safetensors` files in Model folder or LoRA folder and refresh.
+3. For Codex, sign in to your installed Codex. Choose an execution model from the retrieved list; Default model uses the CLI default. If Eidolon cannot locate the executable, select `codex.exe` on Windows or `codex` on macOS.
+4. Set up ComfyUI in **Settings > Engine > ComfyUI**. Install a model in **Generation environment > Models and LoRAs**, or put `.safetensors` files in the model or LoRA folder and refresh.
 5. Open **Generation environment > Shared generation instructions**, set guidelines, exclusions and presets, save the generation environment, and submit a description in **Generate**.
 
-Settings and job data are stored under `%LOCALAPPDATA%\Eidolon`. Replacing the executable for an update preserves this data.
+Settings and job data are stored under `%LOCALAPPDATA%\Eidolon` on Windows and `~/Library/Application Support/Eidolon` on macOS. Updates preserve this data.
+
+Check your current version and new releases in **Settings > App updates**. **Update and restart** downloads and verifies the official package for Windows x64 or your macOS architecture, then replaces the app after it exits. Automatic installation is unavailable in development builds. See the [app update guide](Docs/ApplicationUpdate.md) for requirements.
 
 ### Images and assets
 
@@ -98,7 +100,7 @@ The app's **Help** screen provides instructions in both languages. See the [user
 
 ### 3D modeling
 
-1. Set up Blender under **Settings > Engine setup and connection > Blender** and sign in to the installed Codex CLI. Modeling uses the GPT agent model saved in the generation settings.
+1. Set up Blender under **Settings > Engine > Blender** and sign in to the installed Codex CLI. Modeling uses the GPT agent model saved in the generation settings.
 2. Open **3D Modeling** and select one reference image or multiple views. To change an existing model, open a .blend file and describe the edit, or choose **Continue editing this model** on a result.
 3. Add the job, inspect the 3D preview and actual triangle count, then save a Blender or GLB file. Edits preserve the original file.
 
@@ -108,9 +110,10 @@ See the [3D modeling guide](Docs/Modeling.md) for view directions, triangle limi
 
 ### Run from source
 
-Development requires the .NET 10 SDK. From the repository root:
+Development requires the .NET 10 SDK and Git. Initialize the `Mcp.Core` submodule from the repository root, then run the app:
 
 ```powershell
+git submodule update --init --recursive
 dotnet run --project Eidolon.App/Eidolon.App.csproj
 ```
 
@@ -137,13 +140,13 @@ Publish the self-contained Windows x64 executable with:
 dotnet publish Eidolon.App/Eidolon.App.csproj -p:PublishProfile=WindowsX64 -o artifacts\win-x64 -m:1 /p:UseSharedCompilation=false
 ```
 
-The executable includes the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. See [local prompt conversion](Docs/PromptConversion.md) for installation, conversion and generation checks and limitations, the earlier [multi-view validation record](Docs/AssetCreationQuality.md), and the [release notes](Docs/Releases/1.0.2.md) for this update.
+The release packages include the runtime, UI libraries, localized resources, and notices. Generation engines and weights are installed separately in your selected directory. See [local prompt conversion](Docs/PromptConversion.md) for its verification scope, the earlier [multi-view validation record](Docs/AssetCreationQuality.md), the [release policy](Docs/ReleasePolicy.md) for platform packaging, and [release notes by version](Docs/Releases/) for changes.
 
 ## License
 
 Eidolon is source-available software under the [Eidolon Source License 1.0](LICENSE).
 
-The independent [MCP.Core](https://github.com/EomTaeWook/Mcp.Core) submodule is licensed separately under [MIT](Mcp.Core/LICENSE).
+The independent [MCP.Core](https://github.com/EomTaeWook/Mcp.Core) submodule is licensed separately under [MIT](https://github.com/EomTaeWook/Mcp.Core/blob/a5044a60769c2284bffa005100821cd19b4c212f/LICENSE).
 
 - Free use is permitted for personal, educational, internal business, and commercial game and asset production.
 - Modification and free redistribution are permitted when license and copyright notices are preserved, material changes are identified, and recipients receive the same terms.
