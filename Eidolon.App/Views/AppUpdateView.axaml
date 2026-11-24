@@ -2,12 +2,13 @@
   <Border Classes="card" Padding="16">
     <StackPanel Spacing="12">
       <StackPanel Spacing="4">
-        <WrapPanel ItemSpacing="8" LineSpacing="4">
-          <TextBlock Text="{DynamicResource EidolonText666}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
-          <Border Background="{DynamicResource BadgeBrush}" CornerRadius="6" Padding="8,4" VerticalAlignment="Center">
-            <SelectableTextBlock Text="{Binding CurrentVersionCaption}" Foreground="{DynamicResource TextBrush}" FontSize="12" TextWrapping="Wrap" />
-          </Border>
-        </WrapPanel>
+        <TextBlock Text="{DynamicResource EidolonText666}" FontSize="16" FontWeight="SemiBold" />
+        <Border Background="{DynamicResource BadgeBrush}" CornerRadius="6" Padding="12,8" Margin="0,4">
+          <StackPanel Spacing="6">
+            <SelectableTextBlock Text="{Binding CurrentVersionCaption}" Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap" />
+            <SelectableTextBlock Text="{Binding LatestVersionCaption}" Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
         <TextBlock Text="{Binding StatusCaption}" FontWeight="SemiBold" TextWrapping="Wrap" />
         <TextBlock Text="{Binding InstallHint}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding InstallHint, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}" />
         <TextBlock Text="{DynamicResource EidolonText676}" Classes="muted" FontSize="12" TextWrapping="Wrap" />

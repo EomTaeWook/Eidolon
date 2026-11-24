@@ -7840,5 +7840,11 @@
     "Name": "EidolonText836",
     "Kor": "\uD3F4\uB354\uB294 Blender \uC124\uCE58 \uB610\uB294 \uCCAB \uBAA8\uB378\uB9C1 \uC791\uC5C5\uC5D0\uC11C \uB9CC\uB4E4\uC5B4\uC9D1\uB2C8\uB2E4. \uC571\uACFC MCP\uB294 \uB2E4\uC74C \uC791\uC5C5\uBD80\uD130 \uBB38\uC11C\uB97C \uCC38\uACE0\uD569\uB2C8\uB2E4. \uAE30\uBCF8 Markdown\uC740 \uC5C6\uC73C\uBA70 \uC0C8 \uB178\uD558\uC6B0\uB294 \uC9C1\uC811 \uC801\uC5B4 \uB123\uC73C\uC138\uC694.",
     "Eng": "The folder is created when you install Blender or start your first modeling job. The app and MCP read your notes when the next job starts. No Markdown files are included by default; write and add your own."
+  },
+  {
+    "Id": 3916,
+    "Name": "EidolonText837",
+    "Kor": "\uCD5C\uC2E0 \uC815\uC2DD \uBC84\uC804 {0}",
+    "Eng": "Latest stable version {0}"
   }
 ]

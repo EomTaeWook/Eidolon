@@ -60,6 +60,21 @@ namespace Eidolon.App.ViewModels
             }
         }
 
+        public string LatestVersionCaption
+        {
+            get
+            {
+                if (_check != null)
+                {
+                    if (_check.HasStableRelease == true)
+                    {
+                        return _strings.Format("EidolonText837", _check.Release.Version);
+                    }
+                }
+                return _strings.Format("EidolonText837", "—");
+            }
+        }
+
         public bool IsBusy
         {
             get
@@ -555,6 +570,7 @@ namespace Eidolon.App.ViewModels
             Raise(nameof(IsIndeterminate));
             Raise(nameof(Percentage));
             Raise(nameof(HasUpdate));
+            Raise(nameof(LatestVersionCaption));
             Raise(nameof(StatusCaption));
             Raise(nameof(InstallHint));
             RefreshCommands();
